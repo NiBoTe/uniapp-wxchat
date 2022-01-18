@@ -1,0 +1,50 @@
+
+@import 'uview-ui/theme.scss';
+/* 页面左右间距 */
+$spacing-lg: 30upx;
+$spacing-base: 20upx;
+$spacing-sm: 10upx;
+
+$color-white: #fff;
+$color-black: #000;
+
+$page-row-spacing: 30upx;
+$page-color-base: #f8f8f8;
+$page-color-light: #f8f6fc;
+$base-color: #4A99F8;
+
+/* 文字尺寸 */
+$font-sm: 24upx;
+$font-base: 28upx;
+$font-lg: 32upx;
+$font-bg: 34upx;
+
+/*文字颜色*/
+$font-color-dark: #060523;
+$font-color-base: #606266;
+$font-color-light: #B3B3B8;
+$font-color-disabled: #C0C4CC;
+$font-color-spec: #4399fc;
+$font-color-place: #D8D9DB;
+
+
+/* 边框颜色 */
+$border-color-dark: #DCDFE6;
+$border-color-base: #E4E7ED;
+$border-color-light: #EBEEF5;
+
+/* 图片加载中颜色 */
+$image-bg-color: #eee;
+
+/* 行为相关颜色 */
+$uni-color-primary:#fa436a;
+$uni-color-success: #4cd964;
+$uni-color-warning: #f0ad4e;
+$uni-color-error: #dd524d;
+
+
+// uview 重置
+$u-type-primary: #2C3AFF;
+$u-type-primary-light: #ecf5ff;
+$u-type-primary-disabled: #a0cfff;
+$u-type-primary-dark: #2b85e4;

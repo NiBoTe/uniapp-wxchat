@@ -1,0 +1,162 @@
+{
+	"easycom": {
+		"^u-(.*)": "uview-ui/components/u-$1/u-$1.vue"
+	},
+	"pages": [
+		// 主页
+		{
+			"path": "pages/index/index",
+			"style": {
+				"enablePullDownRefresh": true,
+				"navigationStyle": "custom", // 隐藏系统导航栏
+				"navigationBarTextStyle": "white",
+				"navigationBarTitleText": "易考绘"
+			}
+		}, {
+			"path": "pages/circle/index",
+			"style": {
+				"navigationBarTitleText": "圈子",
+				"enablePullDownRefresh": false
+			}
+
+		}, {
+			"path": "pages/teacher/index",
+			"style": {
+				"navigationBarTitleText": "名师",
+				"enablePullDownRefresh": false
+			}
+
+		}, {
+			"path": "pages/center/index",
+			"style": {
+				"navigationBarTitleText": "",
+				"enablePullDownRefresh": false
+			}
+
+		}, {
+			"path": "pages/profile/profile",
+			"style": {
+				"navigationBarTitleText": "",
+				"enablePullDownRefresh": false
+			}
+
+		}
+	],
+	"subPackages": [
+		// 设置
+		{
+			"root": "pages/set",
+			"pages": [
+				// 关于详情
+				{
+					"path": "about/detail",
+					"style": {
+						"navigationBarTitleText": "隐私政策"
+					}
+				},
+				{
+					"path": "about/agreement",
+					"style": {
+						"navigationBarTitleText": "用户协议",
+						"enablePullDownRefresh": false
+					}
+
+				}
+			]
+		},
+		// 公共
+		{
+			"root": "pages/public",
+			"pages": [{
+				"path": "logintype",
+				"style": {
+					"navigationBarTitleText": "",
+					"navigationBarTextStyle": "black",
+					"navigationBarBackgroundColor": "#ffffff"
+				}
+			}, {
+				"path": "register",
+				"style": {
+					"navigationBarTitleText": "注册账号",
+					"enablePullDownRefresh": false,
+					"navigationBarTextStyle": "black",
+					"navigationBarBackgroundColor": "#ffffff"
+				}
+			}, {
+				"path": "forgotPassword",
+				"style": {
+					"navigationBarTitleText": "找回密码",
+					"enablePullDownRefresh": false,
+					"navigationBarTextStyle": "black",
+					"navigationBarBackgroundColor": "#ffffff"
+				}
+
+			}, {
+				"path": "roleSelection",
+				"style": {
+					"navigationBarTitleText": "角色选择",
+					"enablePullDownRefresh": false,
+					"navigationBarTextStyle": "black",
+					"navigationBarBackgroundColor": "#ffffff"
+				}
+
+			}, {
+				"path": "bindphone",
+				"style": {
+					"navigationBarTitleText": "",
+					"enablePullDownRefresh": false,
+					"navigationBarTextStyle": "black",
+					"navigationBarBackgroundColor": "#ffffff"
+				}
+
+			}, {
+				"path": "search",
+				"style": {
+					"navigationBarTitleText": "",
+					"enablePullDownRefresh": false,
+					"navigationBarTextStyle": "black",
+					"navigationBarBackgroundColor": "#ffffff"
+				}
+
+			}]
+		}
+	],
+	"globalStyle": {
+		"navigationBarTitleText": "易考绘",
+		"navigationBarTextStyle": "white"
+		// "navigationBarBackgroundColor": "#4A99F8"
+	},
+	"tabBar": {
+		"custom": true,
+		"color": "#333333",
+		"selectedColor": "#4256A8",
+		"borderStyle": "black",
+		"backgroundColor": "#ffffff",
+		"list": [{
+				"pagePath": "pages/index/index",
+				"text": "首页"
+			},
+			{
+				"pagePath": "pages/circle/index",
+				"text": "圈子"
+			},
+			{
+				"pagePath": "pages/center/index",
+				"text": "中心"
+			},
+			{
+				"pagePath": "pages/teacher/index",
+				"text": "名师"
+			},
+			{
+				"pagePath": "pages/profile/profile",
+				"text": "我的"
+			}
+		]
+	},
+	"permission": {
+		"scope.userLocation": {
+			"desc": "你的位置信息将用于小程序位置接口的效果展示"
+		}
+	}
+}

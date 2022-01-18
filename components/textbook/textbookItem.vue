@@ -1,0 +1,138 @@
+<template>
+	<view class="container">
+		<view class="item">
+			<view class="item-image">
+				<u-lazy-load threshold="-450" border-radius="10" image="https://img2.baidu.com/it/u=2013499784,686759970&fm=253&fmt=auto&app=120&f=JPEG?w=800&h=1333"></u-lazy-load>
+				<view class="item-image-badge">
+					<text>¥</text>
+					<text>299</text>
+				</view>
+			</view>
+			
+			<view class="footer">
+				<view class="footer-title u-flex">
+					<view class="image">
+						<u-avatar size="65" src="https://img1.baidu.com/it/u=2716398045,2043787292&fm=253&fmt=auto&app=120&f=JPEG?w=800&h=800"></u-avatar>
+					</view>
+					<view class="text">李琮明</view>
+				</view>
+				
+				<view class="footer-subtitle u-flex u-row-between">
+					<view class="left">热度值</view>
+					<view class="right u-flex">
+						<image src="/static/public/hot.png"></image>
+						<text>32.7w</text>
+					</view>
+				</view>
+			</view>
+		</view>
+	</view>
+</template>
+
+<script>
+	export default {
+		name:"TextbookItem",
+		data() {
+			return {
+				
+			};
+		}
+	}
+</script>
+
+<style lang="scss">
+
+
+.container{
+	.item{
+		margin: 10rpx;
+		background: #FFFFFF;
+		border-radius: 16rpx;
+		
+		&-image{
+			position: relative;
+			overflow: hidden;
+			border-top-left-radius: 16rpx;
+			border-top-right-radius: 16rpx;
+			&-badge{
+				
+				position: absolute;
+				right: 0;
+				bottom: 0;
+				height: 40rpx;
+				line-height: 40rpx;
+				padding:0 10rpx 0 14rpx;
+				background: rgba($color: #000000, $alpha: .5);
+				border-radius: 16rpx 0px 0px 0px;
+				font-size: 26rpx;
+				font-weight: 800;
+				color: #FFFFFF;
+				
+				text{
+					&:first-of-type{
+						font-size: 22rpx;
+						font-weight: bold;
+					}
+				}
+			}
+		}
+		
+		
+		.footer{
+			padding: 0 20rpx 26rpx;
+			&-title{
+				position: relative;
+				z-index: 2;
+				margin-top: -16rpx;
+				
+				.image{
+					// width: 74rpx;
+					// height: 74rpx;
+					// line-height: 74rpx;
+					padding: 4rpx;
+					text-align: center;
+					overflow: hidden;
+					border-radius: 50rpx;
+					background-color: #fff;
+					image{
+						width: 65rpx;
+						height: 65rpx;
+					}
+				}
+				.text{
+					margin-left: 16rpx;
+					font-size: 24rpx;
+					font-weight: 500;
+					color: #3A3D71;
+				}
+			}
+			
+			
+			&-subtitle{
+				
+				margin-top: 16rpx;
+				.left{
+					font-size: 24rpx;
+					color: #9E9E9E;
+				}
+				
+				.right{
+					align-items: flex-start;
+					image{
+						width: 24rpx;
+						height: 30rpx;
+					}
+					
+					text{
+						margin-left: 8rpx;
+						font-size: 24rpx;
+						color: #3A3D71;
+					}
+				}
+			}
+		}
+		
+		
+	}
+}
+</style>
