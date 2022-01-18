@@ -77,6 +77,7 @@
 
 		.item {
 			margin: 10rpx;
+			margin-bottom: 24rpx;
 			background: #FFFFFF;
 			border-radius: 16rpx;
 

@@ -1,5 +1,5 @@
 <template>
-	<view class="container">
+	<view>
 		<tab-bar :selected="1"></tab-bar>
 	</view>
 </template>
@@ -18,6 +18,6 @@
 	}
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 
 </style>

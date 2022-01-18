@@ -66,6 +66,7 @@
 		bottom: 0;
 		left: 0;
 		right: 0;
+		z-index: 999;
 		height: 164rpx;
 		background: white;
 		display: flex;
