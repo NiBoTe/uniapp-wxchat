@@ -36,6 +36,14 @@
 					</view>
 					
 				</view>
+				
+				<view class="r-tab">
+					<view class="tab-list">
+						<view class="tab-item" v-for="item in rightTabList" :key="item.id">
+							{{ item.name }}
+						</view>
+					</view>
+				</view>
 			</view>
 		</view>
 	</view>
@@ -51,7 +59,8 @@
 					{name: '十大妓院',id: 2,children: [{name: '西安航空学院',id: '2-1'},{name: '华培学院',id: '2-2'},{name: '商洛学院',id: '2-3'}]}
 				],
 				leftNum: 0,
-				leftItemNum: '1-1'
+				leftItemNum: '1-1',
+				rightTabList: [{id: 1,name: '设计师'},{id: 2,name: '产品设计'},{id: 3,name: '环境设计'},{id: 4,name: '平面设计'}]
 			}
 		},
 		methods: {
@@ -195,6 +204,22 @@
 							margin-right: 62rpx;
 						}
 					}
+				}
+				
+				.r-tab{
+					// display: flex;
+					overflow-x: scroll;
+					width: 100%;
+					padding-left: 16rpx;
+					padding-bottom: 20rpx;
+					.tab-list{
+						white-space: nowrap;
+						.tab-item{
+							display: inline-block;
+							margin-right: 50rpx;
+						}
+					}
+					border-bottom: 2rpx solid #E9E9E9;
 				}
 			}
 		}
