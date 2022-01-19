@@ -99,62 +99,7 @@
 					<view class="column-label">学习名师画作</view>
 				</view>
 
-				<scroll-view class="tabs" :scroll-x="true">
-					<view class="tab">
-						<text>素描</text>
-						<view class="tab-border">
-							<image src="/static/public/home_scroll_style.png"></image>
-						</view>
-					</view>
-					<view class="tab">
-						<text>素描</text>
-						<view class="tab-border">
-							<image src="/static/public/home_scroll_style.png"></image>
-						</view>
-					</view>
-					<view class="tab">
-						<text>素描</text>
-						<view class="tab-border">
-							<image src="/static/public/home_scroll_style.png"></image>
-						</view>
-					</view>
-					<view class="tab">
-						<text>素描</text>
-						<view class="tab-border">
-							<image src="/static/public/home_scroll_style.png"></image>
-						</view>
-					</view>
-					<view class="tab">
-						<text>素描</text>
-						<view class="tab-border">
-							<image src="/static/public/home_scroll_style.png"></image>
-						</view>
-					</view>
-					<view class="tab">
-						<text>素描</text>
-						<view class="tab-border">
-							<image src="/static/public/home_scroll_style.png"></image>
-						</view>
-					</view>
-					<view class="tab">
-						<text>素描</text>
-						<view class="tab-border">
-							<image src="/static/public/home_scroll_style.png"></image>
-						</view>
-					</view>
-					<view class="tab">
-						<text>素描</text>
-						<view class="tab-border">
-							<image src="/static/public/home_scroll_style.png"></image>
-						</view>
-					</view>
-					<view class="tab">
-						<text>素描</text>
-						<view class="tab-border">
-							<image src="/static/public/home_scroll_style.png"></image>
-						</view>
-					</view>
-				</scroll-view>
+				<drawing-column></drawing-column>
 
 				<scroll-view class="highScore" :scroll-x="true">
 					<view class="highScore-item" v-for="(item, index) in highScoreList" :key="index">
@@ -166,7 +111,7 @@
 					<text>更多</text>
 				</view>
 			</view>
-			
+
 			<!-- 名师推荐 -->
 			<view class="page-wrapper">
 				<view class="gap"></view>
@@ -176,70 +121,17 @@
 					<view class="line"></view>
 					<view class="column-label">借鉴名师经验</view>
 				</view>
-			
-				<scroll-view class="tabs" :scroll-x="true">
-					<view class="tab">
-						<text>素描</text>
-						<view class="tab-border">
-							<image src="/static/public/home_scroll_style.png"></image>
-						</view>
-					</view>
-					<view class="tab">
-						<text>素描</text>
-						<view class="tab-border">
-							<image src="/static/public/home_scroll_style.png"></image>
-						</view>
-					</view>
-					<view class="tab">
-						<text>素描</text>
-						<view class="tab-border">
-							<image src="/static/public/home_scroll_style.png"></image>
-						</view>
-					</view>
-					<view class="tab">
-						<text>素描</text>
-						<view class="tab-border">
-							<image src="/static/public/home_scroll_style.png"></image>
-						</view>
-					</view>
-					<view class="tab">
-						<text>素描</text>
-						<view class="tab-border">
-							<image src="/static/public/home_scroll_style.png"></image>
-						</view>
-					</view>
-					<view class="tab">
-						<text>素描</text>
-						<view class="tab-border">
-							<image src="/static/public/home_scroll_style.png"></image>
-						</view>
-					</view>
-					<view class="tab">
-						<text>素描</text>
-						<view class="tab-border">
-							<image src="/static/public/home_scroll_style.png"></image>
-						</view>
-					</view>
-					<view class="tab">
-						<text>素描</text>
-						<view class="tab-border">
-							<image src="/static/public/home_scroll_style.png"></image>
-						</view>
-					</view>
-					<view class="tab">
-						<text>素描</text>
-						<view class="tab-border">
-							<image src="/static/public/home_scroll_style.png"></image>
-						</view>
-					</view>
-				</scroll-view>
-			
+
+				<drawing-column></drawing-column>
+
 				<view class="teacher">
 					<u-row gutter="42">
 						<u-col span="4">
 							<view class="teacher-item">
 								<view class="teacher-head">
-									<image src="https://img1.baidu.com/it/u=1597761366,2823600315&fm=253&fmt=auto&app=138&f=JPEG?w=889&h=500" mode="aspectFill"></image>
+									<image
+										src="https://img1.baidu.com/it/u=1597761366,2823600315&fm=253&fmt=auto&app=138&f=JPEG?w=889&h=500"
+										mode="aspectFill"></image>
 									<view class="teacher-name">刘泉海</view>
 								</view>
 								<view class="teacher-text u-line-2">
@@ -250,7 +142,9 @@
 						<u-col span="4">
 							<view class="teacher-item">
 								<view class="teacher-head">
-									<image src="https://img1.baidu.com/it/u=1597761366,2823600315&fm=253&fmt=auto&app=138&f=JPEG?w=889&h=500" mode="aspectFill"></image>
+									<image
+										src="https://img1.baidu.com/it/u=1597761366,2823600315&fm=253&fmt=auto&app=138&f=JPEG?w=889&h=500"
+										mode="aspectFill"></image>
 									<view class="teacher-name">刘泉海</view>
 								</view>
 								<view class="teacher-text u-line-2">
@@ -261,7 +155,9 @@
 						<u-col span="4">
 							<view class="teacher-item">
 								<view class="teacher-head">
-									<image src="https://img1.baidu.com/it/u=1597761366,2823600315&fm=253&fmt=auto&app=138&f=JPEG?w=889&h=500" mode="aspectFill"></image>
+									<image
+										src="https://img1.baidu.com/it/u=1597761366,2823600315&fm=253&fmt=auto&app=138&f=JPEG?w=889&h=500"
+										mode="aspectFill"></image>
 									<view class="teacher-name">刘泉海</view>
 								</view>
 								<view class="teacher-text u-line-2">
@@ -270,14 +166,14 @@
 							</view>
 						</u-col>
 					</u-row>
-					
+
 				</view>
-			
+
 				<view class="more">
 					<text>更多</text>
 				</view>
 			</view>
-			
+
 			<!-- 热门评画 -->
 			<view class="page-wrapper">
 				<view class="gap"></view>
@@ -287,64 +183,11 @@
 					<view class="line"></view>
 					<view class="column-label">名师点评速提升</view>
 				</view>
-			
-				<scroll-view class="tabs" :scroll-x="true" style="margin-bottom: 30rpx;">
-					<view class="tab">
-						<text>素描</text>
-						<view class="tab-border">
-							<image src="/static/public/home_scroll_style.png"></image>
-						</view>
-					</view>
-					<view class="tab">
-						<text>素描</text>
-						<view class="tab-border">
-							<image src="/static/public/home_scroll_style.png"></image>
-						</view>
-					</view>
-					<view class="tab">
-						<text>素描</text>
-						<view class="tab-border">
-							<image src="/static/public/home_scroll_style.png"></image>
-						</view>
-					</view>
-					<view class="tab">
-						<text>素描</text>
-						<view class="tab-border">
-							<image src="/static/public/home_scroll_style.png"></image>
-						</view>
-					</view>
-					<view class="tab">
-						<text>素描</text>
-						<view class="tab-border">
-							<image src="/static/public/home_scroll_style.png"></image>
-						</view>
-					</view>
-					<view class="tab">
-						<text>素描</text>
-						<view class="tab-border">
-							<image src="/static/public/home_scroll_style.png"></image>
-						</view>
-					</view>
-					<view class="tab">
-						<text>素描</text>
-						<view class="tab-border">
-							<image src="/static/public/home_scroll_style.png"></image>
-						</view>
-					</view>
-					<view class="tab">
-						<text>素描</text>
-						<view class="tab-border">
-							<image src="/static/public/home_scroll_style.png"></image>
-						</view>
-					</view>
-					<view class="tab">
-						<text>素描</text>
-						<view class="tab-border">
-							<image src="/static/public/home_scroll_style.png"></image>
-						</view>
-					</view>
-				</scroll-view>
-			
+				
+				<div style="margin-bottom: 30rpx;">
+					<drawing-column></drawing-column>
+				</div>
+
 				<view class="evaluation">
 					<u-waterfall v-model="flowList" ref="uWaterfall">
 						<template v-slot:left="{leftList}">
@@ -359,9 +202,9 @@
 						</template>
 					</u-waterfall>
 				</view>
-			
+
 			</view>
-			
+
 		</view>
 		<tab-bar :selected="0"></tab-bar>
 	</view>
@@ -369,13 +212,15 @@
 
 <script>
 	import tabBar from '@/components/tabbar/tabbar.vue'
+	import DrawingColumn from '@/components/drawingColumn/drawingColumn.vue'
 	import TextbookItem from '@/components/textbook/textbookItem.vue'
 	import PaintingEvaluationItem from '@/components/paintingEvaluation/paintingEvaluationItem.vue'
 	export default {
 		components: {
 			tabBar,
 			TextbookItem,
-			PaintingEvaluationItem
+			PaintingEvaluationItem,
+			DrawingColumn
 		},
 		data() {
 			return {
@@ -715,52 +560,7 @@
 			}
 
 
-			// tabs
 
-			.tabs {
-				height: 54rpx;
-				white-space: nowrap;
-
-				.tab {
-					height: 52rpx;
-					margin-right: 34rpx;
-					display: inline-block;
-					position: relative;
-					padding: 0 28rpx;
-					background: #F3F3F3;
-					border-radius: 36rpx;
-					border: 4rpx solid transparent;
-
-					&:first-of-type {
-						margin-left: 32rpx;
-					}
-
-					&.active {
-						background: #EFF2FF;
-
-						text {
-							color: $u-type-primary;
-						}
-					}
-
-					text {
-						font-size: 24rpx;
-						color: #3A3D71;
-					}
-
-					&-border {
-						position: absolute;
-						right: -8rpx;
-						bottom: -8rpx;
-
-						image {
-							display: block;
-							width: 36rpx;
-							height: 36rpx;
-						}
-					}
-				}
-			}
 
 			// 高分教材
 			.highScore {
@@ -776,22 +576,24 @@
 					}
 				}
 			}
-			
+
 			// 名师推荐
-			.teacher{
+			.teacher {
 				margin: 30rpx 16rpx 0;
-				.teacher-item{
-					.teacher-head{
+
+				.teacher-item {
+					.teacher-head {
 						position: relative;
 						padding-bottom: 6rpx;
-						image{
+
+						image {
 							display: block;
 							border-radius: 16rpx;
 							width: 100%;
 							height: 234rpx;
 						}
-						
-						.teacher-name{
+
+						.teacher-name {
 							position: absolute;
 							left: 0;
 							bottom: 0;
@@ -806,21 +608,21 @@
 							color: #FFFFFF;
 						}
 					}
-					
-					.teacher-text{
+
+					.teacher-text {
 						margin: 10rpx 0 28rpx;
 						font-size: 26rpx;
 						color: #3A3D71;
 					}
 				}
 			}
-			
+
 			// 热门评话
-			.evaluation{
+			.evaluation {
 				background-color: #F3F3F3;
 				padding: 28rpx 24rpx;
 			}
-			
+
 			.more {
 				margin: 0 32rpx 40rpx;
 				margin-left: 42rpx;
