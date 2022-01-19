@@ -36,7 +36,7 @@
 		}, {
 			"path": "pages/profile/profile",
 			"style": {
-				"navigationBarTitleText": "",
+				"navigationBarTitleText": "历年考题",
 				"enablePullDownRefresh": false
 			}
 
@@ -118,7 +118,14 @@
 					"navigationBarBackgroundColor": "#ffffff"
 				}
 
-			}]
+			} ,{
+                    "path" : "historyExQuestions/historyExQuestions",
+                    "style" : {
+						"navigationBarTitleText": "",
+						"enablePullDownRefresh": false
+			    }
+             }
+            ]
 		}
 	],
 	"globalStyle": {
