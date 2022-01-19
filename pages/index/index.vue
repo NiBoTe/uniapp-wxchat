@@ -57,7 +57,7 @@
 							</view>
 							<view class="left-item">
 								<view class="left-item-label u-flex">
-									<image src="/static/public/home_tested_style.png"></image>
+									<image src="/static/public/home_nottested_style.png"></image>
 									<text>我的未考</text>
 								</view>
 
@@ -88,6 +88,280 @@
 					</u-col>
 				</u-row>
 			</view>
+
+			<!-- 高分素材 -->
+			<view class="page-wrapper">
+				<view class="gap"></view>
+				<view class="column u-flex">
+					<image :src="setSrc('home_high_score.png')"></image>
+					<view class="column-title">高分素材</view>
+					<view class="line"></view>
+					<view class="column-label">学习名师画作</view>
+				</view>
+
+				<scroll-view class="tabs" :scroll-x="true">
+					<view class="tab">
+						<text>素描</text>
+						<view class="tab-border">
+							<image src="/static/public/home_scroll_style.png"></image>
+						</view>
+					</view>
+					<view class="tab">
+						<text>素描</text>
+						<view class="tab-border">
+							<image src="/static/public/home_scroll_style.png"></image>
+						</view>
+					</view>
+					<view class="tab">
+						<text>素描</text>
+						<view class="tab-border">
+							<image src="/static/public/home_scroll_style.png"></image>
+						</view>
+					</view>
+					<view class="tab">
+						<text>素描</text>
+						<view class="tab-border">
+							<image src="/static/public/home_scroll_style.png"></image>
+						</view>
+					</view>
+					<view class="tab">
+						<text>素描</text>
+						<view class="tab-border">
+							<image src="/static/public/home_scroll_style.png"></image>
+						</view>
+					</view>
+					<view class="tab">
+						<text>素描</text>
+						<view class="tab-border">
+							<image src="/static/public/home_scroll_style.png"></image>
+						</view>
+					</view>
+					<view class="tab">
+						<text>素描</text>
+						<view class="tab-border">
+							<image src="/static/public/home_scroll_style.png"></image>
+						</view>
+					</view>
+					<view class="tab">
+						<text>素描</text>
+						<view class="tab-border">
+							<image src="/static/public/home_scroll_style.png"></image>
+						</view>
+					</view>
+					<view class="tab">
+						<text>素描</text>
+						<view class="tab-border">
+							<image src="/static/public/home_scroll_style.png"></image>
+						</view>
+					</view>
+				</scroll-view>
+
+				<scroll-view class="highScore" :scroll-x="true">
+					<view class="highScore-item" v-for="(item, index) in highScoreList" :key="index">
+						<textbook-item :item="item" imgHeight="440"></textbook-item>
+					</view>
+				</scroll-view>
+
+				<view class="more">
+					<text>更多</text>
+				</view>
+			</view>
+			
+			<!-- 名师推荐 -->
+			<view class="page-wrapper">
+				<view class="gap"></view>
+				<view class="column u-flex">
+					<image :src="setSrc('home_famous_teacher.png')"></image>
+					<view class="column-title">名师推荐</view>
+					<view class="line"></view>
+					<view class="column-label">借鉴名师经验</view>
+				</view>
+			
+				<scroll-view class="tabs" :scroll-x="true">
+					<view class="tab">
+						<text>素描</text>
+						<view class="tab-border">
+							<image src="/static/public/home_scroll_style.png"></image>
+						</view>
+					</view>
+					<view class="tab">
+						<text>素描</text>
+						<view class="tab-border">
+							<image src="/static/public/home_scroll_style.png"></image>
+						</view>
+					</view>
+					<view class="tab">
+						<text>素描</text>
+						<view class="tab-border">
+							<image src="/static/public/home_scroll_style.png"></image>
+						</view>
+					</view>
+					<view class="tab">
+						<text>素描</text>
+						<view class="tab-border">
+							<image src="/static/public/home_scroll_style.png"></image>
+						</view>
+					</view>
+					<view class="tab">
+						<text>素描</text>
+						<view class="tab-border">
+							<image src="/static/public/home_scroll_style.png"></image>
+						</view>
+					</view>
+					<view class="tab">
+						<text>素描</text>
+						<view class="tab-border">
+							<image src="/static/public/home_scroll_style.png"></image>
+						</view>
+					</view>
+					<view class="tab">
+						<text>素描</text>
+						<view class="tab-border">
+							<image src="/static/public/home_scroll_style.png"></image>
+						</view>
+					</view>
+					<view class="tab">
+						<text>素描</text>
+						<view class="tab-border">
+							<image src="/static/public/home_scroll_style.png"></image>
+						</view>
+					</view>
+					<view class="tab">
+						<text>素描</text>
+						<view class="tab-border">
+							<image src="/static/public/home_scroll_style.png"></image>
+						</view>
+					</view>
+				</scroll-view>
+			
+				<view class="teacher">
+					<u-row gutter="42">
+						<u-col span="4">
+							<view class="teacher-item">
+								<view class="teacher-head">
+									<image src="https://img1.baidu.com/it/u=1597761366,2823600315&fm=253&fmt=auto&app=138&f=JPEG?w=889&h=500" mode="aspectFill"></image>
+									<view class="teacher-name">刘泉海</view>
+								</view>
+								<view class="teacher-text u-line-2">
+									中国美术学院雕塑系研究生全国第…中国美术学院雕塑系研究生全国第…
+								</view>
+							</view>
+						</u-col>
+						<u-col span="4">
+							<view class="teacher-item">
+								<view class="teacher-head">
+									<image src="https://img1.baidu.com/it/u=1597761366,2823600315&fm=253&fmt=auto&app=138&f=JPEG?w=889&h=500" mode="aspectFill"></image>
+									<view class="teacher-name">刘泉海</view>
+								</view>
+								<view class="teacher-text u-line-2">
+									中国美术学院雕塑系研究生全国第…中国美术学院雕塑系研究生全国第…
+								</view>
+							</view>
+						</u-col>
+						<u-col span="4">
+							<view class="teacher-item">
+								<view class="teacher-head">
+									<image src="https://img1.baidu.com/it/u=1597761366,2823600315&fm=253&fmt=auto&app=138&f=JPEG?w=889&h=500" mode="aspectFill"></image>
+									<view class="teacher-name">刘泉海</view>
+								</view>
+								<view class="teacher-text u-line-2">
+									中国美术学院雕塑系研究生全国第…中国美术学院雕塑系研究生全国第…
+								</view>
+							</view>
+						</u-col>
+					</u-row>
+					
+				</view>
+			
+				<view class="more">
+					<text>更多</text>
+				</view>
+			</view>
+			
+			<!-- 热门评画 -->
+			<view class="page-wrapper">
+				<view class="gap"></view>
+				<view class="column u-flex">
+					<image :src="setSrc('home_evaluation.png')"></image>
+					<view class="column-title">热门评画</view>
+					<view class="line"></view>
+					<view class="column-label">名师点评速提升</view>
+				</view>
+			
+				<scroll-view class="tabs" :scroll-x="true" style="margin-bottom: 30rpx;">
+					<view class="tab">
+						<text>素描</text>
+						<view class="tab-border">
+							<image src="/static/public/home_scroll_style.png"></image>
+						</view>
+					</view>
+					<view class="tab">
+						<text>素描</text>
+						<view class="tab-border">
+							<image src="/static/public/home_scroll_style.png"></image>
+						</view>
+					</view>
+					<view class="tab">
+						<text>素描</text>
+						<view class="tab-border">
+							<image src="/static/public/home_scroll_style.png"></image>
+						</view>
+					</view>
+					<view class="tab">
+						<text>素描</text>
+						<view class="tab-border">
+							<image src="/static/public/home_scroll_style.png"></image>
+						</view>
+					</view>
+					<view class="tab">
+						<text>素描</text>
+						<view class="tab-border">
+							<image src="/static/public/home_scroll_style.png"></image>
+						</view>
+					</view>
+					<view class="tab">
+						<text>素描</text>
+						<view class="tab-border">
+							<image src="/static/public/home_scroll_style.png"></image>
+						</view>
+					</view>
+					<view class="tab">
+						<text>素描</text>
+						<view class="tab-border">
+							<image src="/static/public/home_scroll_style.png"></image>
+						</view>
+					</view>
+					<view class="tab">
+						<text>素描</text>
+						<view class="tab-border">
+							<image src="/static/public/home_scroll_style.png"></image>
+						</view>
+					</view>
+					<view class="tab">
+						<text>素描</text>
+						<view class="tab-border">
+							<image src="/static/public/home_scroll_style.png"></image>
+						</view>
+					</view>
+				</scroll-view>
+			
+				<view class="evaluation">
+					<u-waterfall v-model="flowList" ref="uWaterfall">
+						<template v-slot:left="{leftList}">
+							<view class="item" v-for="(item, index) in leftList" :key="index">
+								<painting-evaluation-item :item="item"></painting-evaluation-item>
+							</view>
+						</template>
+						<template v-slot:right="{rightList}">
+							<view class="item" v-for="(item, index) in rightList" :key="index">
+								<painting-evaluation-item :item="item"></painting-evaluation-item>
+							</view>
+						</template>
+					</u-waterfall>
+				</view>
+			
+			</view>
+			
 		</view>
 		<tab-bar :selected="0"></tab-bar>
 	</view>
@@ -95,9 +369,13 @@
 
 <script>
 	import tabBar from '@/components/tabbar/tabbar.vue'
+	import TextbookItem from '@/components/textbook/textbookItem.vue'
+	import PaintingEvaluationItem from '@/components/paintingEvaluation/paintingEvaluationItem.vue'
 	export default {
 		components: {
-			tabBar
+			tabBar,
+			TextbookItem,
+			PaintingEvaluationItem
 		},
 		data() {
 			return {
@@ -114,11 +392,79 @@
 						image: 'https://cdn.uviewui.com/uview/swiper/3.jpg',
 						title: '谁念西风独自凉，萧萧黄叶闭疏窗，沉思往事立残阳'
 					}
-				]
+				],
+				highScoreList: [{
+						price: 35,
+						title: '北国风光，千里冰封，万里雪飘',
+						shop: '李白杜甫白居易旗舰店',
+						image: 'http://pic.sc.chinaz.com/Files/pic/pic9/202002/zzpic23327_s.jpg',
+					},
+					{
+						price: 75,
+						title: '望长城内外，惟余莽莽',
+						shop: '李白杜甫白居易旗舰店',
+						image: 'https://img1.baidu.com/it/u=2716398045,2043787292&fm=253&fmt=auto&app=120&f=JPEG?w=800&h=800',
+					},
+					{
+						price: 385,
+						title: '大河上下，顿失滔滔',
+						shop: '李白杜甫白居易旗舰店',
+						image: 'https://img2.baidu.com/it/u=2013499784,686759970&fm=253&fmt=auto&app=120&f=JPEG?w=800&h=1333',
+					},
+					{
+						price: 784,
+						title: '欲与天公试比高',
+						shop: '李白杜甫白居易旗舰店',
+						image: 'http://pic2.sc.chinaz.com/Files/pic/pic9/202002/zzpic23369_s.jpg',
+					},
+					{
+						price: 7891,
+						title: '须晴日，看红装素裹，分外妖娆',
+						shop: '李白杜甫白居易旗舰店',
+						image: 'http://pic2.sc.chinaz.com/Files/pic/pic9/202002/hpic2130_s.jpg',
+					},
+					{
+						price: 2341,
+						shop: '李白杜甫白居易旗舰店',
+						title: '江山如此多娇，引无数英雄竞折腰',
+						image: 'http://pic1.sc.chinaz.com/Files/pic/pic9/202002/zzpic23346_s.jpg',
+					},
+					{
+						price: 661,
+						shop: '李白杜甫白居易旗舰店',
+						title: '惜秦皇汉武，略输文采',
+						image: 'http://pic1.sc.chinaz.com/Files/pic/pic9/202002/zzpic23344_s.jpg',
+					},
+					{
+						price: 1654,
+						title: '唐宗宋祖，稍逊风骚',
+						shop: '李白杜甫白居易旗舰店',
+						image: 'http://pic1.sc.chinaz.com/Files/pic/pic9/202002/zzpic23343_s.jpg',
+					},
+					{
+						price: 1678,
+						title: '一代天骄，成吉思汗',
+						shop: '李白杜甫白居易旗舰店',
+						image: 'http://pic1.sc.chinaz.com/Files/pic/pic9/202002/zzpic23343_s.jpg',
+					},
+					{
+						price: 924,
+						title: '只识弯弓射大雕',
+						shop: '李白杜甫白居易旗舰店',
+						image: 'http://pic1.sc.chinaz.com/Files/pic/pic9/202002/zzpic23343_s.jpg',
+					},
+					{
+						price: 8243,
+						title: '俱往矣，数风流人物，还看今朝',
+						shop: '李白杜甫白居易旗舰店',
+						image: 'http://pic1.sc.chinaz.com/Files/pic/pic9/202002/zzpic23343_s.jpg',
+					},
+				],
+				flowList: []
 			}
 		},
 		onLoad() {
-
+			this.flowList = this.highScoreList;
 		},
 		methods: {
 
@@ -129,9 +475,8 @@
 <style lang="scss" scoped>
 	.container {
 		background-color: #fff;
-		position: relative;
-		height: 100vh;
-		overflow: hidden;
+
+		padding-bottom: 164rpx;
 
 		.page {
 			.header {
@@ -313,7 +658,7 @@
 								margin-top: 18rpx;
 								margin-bottom: 26rpx;
 								width: 248rpx;
-								border-bottom: 4rpx solid;
+								border-bottom: 2rpx solid;
 								border-image: linear-gradient(90deg, #fff 0%, #F9DCC3 50%, #fff 100%, ) 2 2 2 2;
 							}
 
@@ -333,6 +678,163 @@
 				}
 			}
 
+			// 栏目
+			.column {
+				margin: 40rpx 32rpx 34rpx;
+
+				image {
+					width: 48rpx;
+					height: 48rpx;
+				}
+
+				&-title {
+					margin-left: 18rpx;
+					font-size: 32rpx;
+					font-weight: 600;
+					color: #1B1B1B;
+				}
+
+				.line {
+					margin: 0 20rpx;
+					width: 2rpx;
+					height: 29rpx;
+					border: 2rpx solid #BEBEBE;
+				}
+
+				&-label {
+					font-size: 24rpx;
+					color: #9C9C9C;
+				}
+			}
+
+			// 间隔
+			.gap {
+				width: 100%;
+				height: 16rpx;
+				background-color: #F7F7F7;
+			}
+
+
+			// tabs
+
+			.tabs {
+				height: 54rpx;
+				white-space: nowrap;
+
+				.tab {
+					height: 52rpx;
+					margin-right: 34rpx;
+					display: inline-block;
+					position: relative;
+					padding: 0 28rpx;
+					background: #F3F3F3;
+					border-radius: 36rpx;
+					border: 4rpx solid transparent;
+
+					&:first-of-type {
+						margin-left: 32rpx;
+					}
+
+					&.active {
+						background: #EFF2FF;
+
+						text {
+							color: $u-type-primary;
+						}
+					}
+
+					text {
+						font-size: 24rpx;
+						color: #3A3D71;
+					}
+
+					&-border {
+						position: absolute;
+						right: -8rpx;
+						bottom: -8rpx;
+
+						image {
+							display: block;
+							width: 36rpx;
+							height: 36rpx;
+						}
+					}
+				}
+			}
+
+			// 高分教材
+			.highScore {
+				margin: 32rpx 0 0;
+				white-space: nowrap;
+
+				&-item {
+					display: inline-block;
+					width: 356rpx;
+
+					&:first-of-type {
+						margin-left: 28rpx;
+					}
+				}
+			}
+			
+			// 名师推荐
+			.teacher{
+				margin: 30rpx 16rpx 0;
+				.teacher-item{
+					.teacher-head{
+						position: relative;
+						padding-bottom: 6rpx;
+						image{
+							display: block;
+							border-radius: 16rpx;
+							width: 100%;
+							height: 234rpx;
+						}
+						
+						.teacher-name{
+							position: absolute;
+							left: 0;
+							bottom: 0;
+							min-width: 120rpx;
+							height: 54rpx;
+							line-height: 54rpx;
+							padding: 0 24rpx;
+							background: #515ADC;
+							border-radius: 27rpx;
+							font-size: 24rpx;
+							font-weight: 600;
+							color: #FFFFFF;
+						}
+					}
+					
+					.teacher-text{
+						margin: 10rpx 0 28rpx;
+						font-size: 26rpx;
+						color: #3A3D71;
+					}
+				}
+			}
+			
+			// 热门评话
+			.evaluation{
+				background-color: #F3F3F3;
+				padding: 28rpx 24rpx;
+			}
+			
+			.more {
+				margin: 0 32rpx 40rpx;
+				margin-left: 42rpx;
+				height: 72rpx;
+				line-height: 72rpx;
+				text-align: center;
+				background: #F3F3F3;
+				border-radius: 16rpx;
+
+				text {
+					font-size: 24rpx;
+					color: #3A3D71;
+				}
+			}
 		}
 	}
 </style>
