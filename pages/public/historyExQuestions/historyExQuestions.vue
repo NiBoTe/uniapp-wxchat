@@ -333,7 +333,7 @@
 									  -webkit-box-orient: vertical;
 								}
 								.time{
-									margin-top: 12rpx;
+									margin-top: 14rpx;
 									display: flex;
 									.t-l{
 										flex: 1;
@@ -368,7 +368,7 @@
 									height: 2rpx;
 									background: #E9E9E9;
 									margin-top: 26rpx;
-									margin-bottom: 20rpx;
+									margin-bottom: 24rpx;
 								}
 								.bottom{
 									width: 100%;
