@@ -118,14 +118,20 @@
 					"navigationBarBackgroundColor": "#ffffff"
 				}
 
-			} ,{
-                    "path" : "historyExQuestions/historyExQuestions",
-                    "style" : {
-						"navigationBarTitleText": "",
-						"enablePullDownRefresh": false
-			    }
-             }
-            ]
+			}, {
+				"path": "historyExQuestions/historyExQuestions",
+				"style": {
+					"navigationBarTitleText": "",
+					"enablePullDownRefresh": false
+				}
+			}, {
+				"path": "paintingEvaluation/index",
+				"style": {
+					"navigationBarTitleText": "智能评画",
+					"enablePullDownRefresh": false
+				}
+
+			}]
 		}
 	],
 	"globalStyle": {
