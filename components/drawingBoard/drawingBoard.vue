@@ -1,40 +1,65 @@
 <template>
-	<view class="htz-signature-body">
+	<view class="drawingBoard-body">
 		<canvas :canvas-id="cid" :id="cid" @touchstart="touchstart" @touchmove="touchmove"
 			@touchend="touchend"></canvas>
-		<view class="htz-signature-fixed-bottom">
-			<view class="htz-signature-fixed-bottom-item htz-signature-tools">
-				<view class="htz-signature-tools-item" @click="lineWidth">
-					<image src="../../static/htz-signature/bicuxi.png"></image>
-					<view>线条</view>
+		<view class="drawingBoard-fixed-bottom">
+			
+			<view class="drawingBoard-fixed-bottom-handle">
+				<view class="drawingBoard-btn" v-if="selectActive === 0">
+					<image :src="setSrc('painting/voice_start.png')"></image>
+					<text>长按添加评语</text>
 				</view>
-				<view class="htz-signature-tools-item" @click="color">
-					<image src="../../static/htz-signature/color-plate-fill.png"></image>
-					<view>颜色</view>
-				</view>
-				<view class="htz-signature-tools-item" @click="revoke">
-					<image src="../../static/htz-signature/chehuinormal.png"></image>
-					<view>撤回</view>
-				</view>
-				<view class="htz-signature-tools-item" @click="clear">
-					<image src="../../static/htz-signature/qingkong_1.png"></image>
-					<view>清空</view>
+				<view class="drawingBoard-text" v-if="selectActive === 2">
+					<view class="drawingBoard-color">
+						<color-picker ref="colorPicker" :color="colorValue" @confirm="colorConfirm"></color-picker>
+					</view>
 				</view>
 			</view>
-			<view class="htz-signature-fixed-bottom-item sumbit" @click="sumbit">提交</view>
+			<view class="drawingBoard-fixed-bottom-item drawingBoard-tools">
+				<view class="drawingBoard-tools-item" @click="selectHandle(0)">
+					<image v-if="selectActive === 0" :src="setSrc('painting/voice_active.png')"></image>
+					<image v-else :src="setSrc('painting/voice.png')"></image>
+				</view>
+				
+				<view class="drawingBoard-tools-item" @click="selectHandle(1)">
+					<image v-if="selectActive === 1" :src="setSrc('painting/words_active.png')"></image>
+					<image v-else :src="setSrc('painting/words.png')"></image>
+				</view>
+				<view class="drawingBoard-tools-item" @click="selectHandle(2)">
+					<image v-if="selectActive === 2" :src="setSrc('painting/pen_active.png')"></image>
+					<image v-else :src="setSrc('painting/pen.png')"></image>
+				</view>
+				<view class="drawingBoard-tools-item" @click="lineWidth">
+					<image :src="setSrc('painting/arrow.png')"></image>
+				</view>
+				<view class="drawingBoard-tools-item" @click="color">
+					<image :src="setSrc('painting/circle.png')"></image>
+				</view>
+				<view class="drawingBoard-tools-item" @click="revoke">
+					<image :src="setSrc('painting/esc.png')"></image>
+				</view>
+				<!-- <view class="drawingBoard-tools-item" @click="clear">
+					<image src="../../static/drawingBoard/qingkong_1.png"></image>
+				</view> -->
+			</view>
+			
+			<view class="drawingBoard-next">
+				<view class="drawingBoard-btn">下一步</view>
+			</view>
+			<!-- <view class="drawingBoard-fixed-bottom-item sumbit" @click="sumbit">提交</view> -->
 		</view>
 
-		<cover-view class="htz-signature-color-main" v-if="colorShow">
+		<cover-view class="drawingBoard-color-main" v-if="colorShow">
 			<cover-view @click="selColor(index)"
-				:class="index==colorIndex?'htz-signature-color-item on ':'htz-signature-color-item '"
+				:class="index==colorIndex?'drawingBoard-color-item on ':'drawingBoard-color-item '"
 				:style="'background-color:'+item.value" v-for="(item,index) in colorData" :key="index">
-				<cover-image class="htz-signature-color-item-icon" src="../../static/htz-signature/on.png">
+				<cover-image class="drawingBoard-color-item-icon" src="../../static/drawingBoard/on.png">
 				</cover-image>
 			</cover-view>
 		</cover-view>
-		<cover-view class="htz-signature-color-main" v-if="lineWidthShow">
+		<cover-view class="drawingBoard-color-main" v-if="lineWidthShow">
 			<cover-view @click="selLineWidth(index)"
-				:class="index==lineWidthIndex?'htz-signature-lineWidth-item on':'htz-signature-lineWidth-item'"
+				:class="index==lineWidthIndex?'drawingBoard-lineWidth-item on':'drawingBoard-lineWidth-item'"
 				v-for="(item,index) in lineWidthData" :key="index">
 				<cover-view
 					:style="'width:60%;height:'+item+'px;background-color:#000000;position: absolute;top: 50%;left: 20%;margin-top:-'+item/2+'px'">
@@ -45,8 +70,12 @@
 </template>
 
 <script>
+	import ColorPicker from '@/components/color-picker/color-picker.vue'
 	export default {
 		name: 'DrawingBoard',
+		components:{
+			ColorPicker
+		},
 		props: {
 			cid: {
 				type: String,
@@ -55,6 +84,7 @@
 		},
 		data() {
 			return {
+				selectActive: 0,
 				id: '',
 				Strokes: [],
 				dom: null,
@@ -62,6 +92,8 @@
 				height: 0,
 				colorShow: false,
 				colorIndex: 0,
+				colorValue: {r: 255,g: 0,b: 0,a: 0.6},
+				lineColor: '#000000',
 				colorData: [{
 					name: 'black',
 					value: '#000000'
@@ -103,6 +135,7 @@
 			});
 		},
 		methods: {
+			
 			touchmoveEnd(e) {
 				e.preventDefault();
 				e.stopPropagation();
@@ -214,7 +247,7 @@
 				this.Strokes.push({
 					imageData: null,
 					style: {
-						color: this.colorData[this.colorIndex].value,
+						color: this.colorValue,
 						lineWidth: this.lineWidthData[this.lineWidthIndex],
 					},
 					points: [{
@@ -269,64 +302,71 @@
 					this.dom.stroke();
 					this.dom.draw(true);
 				}
+			},
+			selectHandle(index){
+				if(this.selectActive === index) {
+					this.selectActive = -1;
+				} else {
+					this.selectActive = index;
+				}
+				
+			},
+			// 选择颜色
+			colorConfirm(e){
+				console.log(e)
+				this.colorValue = e.hex
 			}
 		}
 	}
 </script>
 
-<style>
-	.htz-signature-body {
+<style scoped lang="scss">
+	
+	.drawingBoard-body {
 		position: fixed;
 		top: 0;
-		bottom: 120rpx;
+		bottom: calc(210rpx + env(safe-area-inset-bottom));
+		bottom: calc(210rpx + constant(safe-area-inset-bottom));
 		left: 0;
 		width: 100%;
 	}
 
-	.htz-signature-body canvas {
+	.drawingBoard-body canvas {
 		width: 100%;
 		height: 100%;
 	}
 
-	.htz-signature-fixed-bottom {
+	.drawingBoard-fixed-bottom {
 		position: fixed;
 		bottom: 0;
 		left: 0;
 		width: 100%;
-		height: 120rpx;
-		line-height: 120rpx;
 		text-align: center;
 		color: #000;
 		z-index: 11;
-		display: -webkit-box;
-		display: -webkit-flex;
 		display: flex;
+		flex-direction: column;
 		background-color: #fff;
 	}
 
-	.htz-signature-fixed-bottom .htz-signature-fixed-bottom-item {
-		-webkit-box-flex: 3;
-		-webkit-flex-grow: 3;
-		flex-grow: 3;
-		border-top: 1px solid #1890ff;
-		color: #1890ff;
+	.drawingBoard-fixed-bottom .drawingBoard-fixed-bottom-item {
+		padding: 12rpx;
 	}
 
-	.htz-signature-fixed-bottom view.sumbit {
+	.drawingBoard-fixed-bottom view.sumbit {
 		-webkit-box-flex: 1;
 		-webkit-flex-grow: 1;
 		flex-grow: 1;
-		background-color: #1890ff;
 		color: #fff;
 	}
 
-	.htz-signature-tools {
+	.drawingBoard-tools {
 		display: -webkit-box;
 		display: -webkit-flex;
 		display: flex;
 	}
 
-	.htz-signature-tools-item {
+	.drawingBoard-tools-item {
 		text-align: center;
 		-webkit-box-flex: 1;
 		-webkit-flex-grow: 1;
@@ -335,17 +375,16 @@
 
 	}
 
-	.htz-signature-fixed-bottom-item view image {
-		width: 50rpx;
-		height: 50rpx;
-		padding-top: 10rpx;
+	.drawingBoard-fixed-bottom-item view image {
+		width: 76rpx;
+		height: 76rpx;
 	}
 
-	.htz-signature-tools-item view {
+	.drawingBoard-tools-item view {
 		font-size: 22rpx;
 	}
 
-	.htz-signature-color-main {
+	.drawingBoard-color-main {
 		position: fixed;
 		bottom: 120rpx;
 		left: 0;
@@ -367,7 +406,7 @@
 		-o-transition: display 2s;
 	}
 
-	.htz-signature-color-item {
+	.drawingBoard-color-item {
 		width: 80rpx;
 		height: 80rpx;
 		background-color: #000000;
@@ -376,7 +415,7 @@
 		position: relative;
 	}
 
-	.htz-signature-lineWidth-item {
+	.drawingBoard-lineWidth-item {
 		width: 80rpx;
 		height: 80rpx;
 		background-color: #fff;
@@ -385,15 +424,15 @@
 		position: relative;
 	}
 
-	.htz-signature-lineWidth-item.on {
+	.drawingBoard-lineWidth-item.on {
 		border: 1px solid #d4a39e;
 	}
 
-	.htz-signature-color-item .htz-signature-color-item-icon {
+	.drawingBoard-color-item .drawingBoard-color-item-icon {
 		display: none;
 	}
 
-	.htz-signature-color-item.on .htz-signature-color-item-icon {
+	.drawingBoard-color-item.on .drawingBoard-color-item-icon {
 		display: block;
 		position: absolute;
 		top: 50%;
@@ -406,5 +445,66 @@
 
 	.black {
 		background-color: #000000 !important;
+	}
+	
+	
+	// 操作面板
+	
+	.drawingBoard-fixed-bottom-handle{
+		height: 128rpx;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		background-color: #F3F3F3;
+		
+		
+		// 按钮
+		.drawingBoard-btn{
+			width: 324rpx;
+			height: 80rpx;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			background: $u-type-primary;
+			border-radius: 44rpx;
+			image{
+				width: 52rpx;
+				height: 36rpx;
+			}
+			text{
+				margin-left: 10rpx;
+				font-size: 28rpx;
+				font-weight: 500;
+				color: #FFFFFF;
+			}
+		}
+		
+		// 颜色
+	
+		.drawingBoard-text{
+			width: 100%;
+			padding: 0 40rpx;
+			.drawingBoard-color{
+				
+			}
+		}
+	}
+	
+	
+	// 下一步
+	
+	.drawingBoard-next{
+		padding: 24rpx 48rpx;
+		padding-bottom: constant(safe-area-inset-bottom);
+		padding-bottom: env(safe-area-inset-bottom);
+		.drawingBoard-btn{
+			height: 80rpx;
+			line-height: 80rpx;
+			background: $u-type-primary;
+			border-radius: 44rpx;
+			font-size: 28rpx;
+			font-weight: 500;
+			color: #FFFFFF;
+		}
 	}
 </style>
