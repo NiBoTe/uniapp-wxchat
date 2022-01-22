@@ -131,6 +131,39 @@
 					"enablePullDownRefresh": false
 				}
 
+			}, {
+				"path": "school/index",
+				"style": {
+					"navigationBarTitleText": "名牌高校",
+					"enablePullDownRefresh": false,
+					"navigationBarTextStyle": "black",
+					"navigationBarBackgroundColor": "#FFFFFF"
+				}
+
+			}, {
+				"path": "school/detail",
+				"style": {
+					"navigationBarTitleText": "",
+					"enablePullDownRefresh": false,
+					"navigationBarTextStyle": "black",
+					"navigationBarBackgroundColor": "#FFFFFF"
+				}
+
+			}, {
+				"path": "top/top",
+				"style": {
+					"navigationBarTitleText": "TOP美考",
+					"navigationStyle": "custom",
+					"enablePullDownRefresh": false
+				}
+			}, {
+				"path": "top/detail",
+				"style": {
+					"navigationBarTitleText": "考试详情",
+					"navigationStyle": "custom",
+					"enablePullDownRefresh": false
+				}
+
 			}]
 		}
 	],
