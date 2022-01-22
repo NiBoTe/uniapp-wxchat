@@ -121,10 +121,39 @@
 			}, {
 				"path": "historyExQuestions/historyExQuestions",
 				"style": {
-					"navigationBarTitleText": "",
+					"navigationBarTitleText": "历年考题",
 					"enablePullDownRefresh": false
 				}
-			}, {
+			},
+			{
+				"path": "historyExQuestions/excontent",
+				"style": {
+					"navigationBarTitleText": "考试内容",
+					"enablePullDownRefresh": false
+				}
+			}, 
+			{
+				"path": "historyExQuestions/topScoreList",
+				"style": {
+					"navigationBarTitleText": "高分试卷",
+					"enablePullDownRefresh": false
+				}
+			},
+			{
+				"path": "historyExQuestions/detail",
+				"style": {
+					"navigationBarTitleText": "试卷详情",
+					"enablePullDownRefresh": false
+				}
+			},
+			{
+				"path": "historyExQuestions/sureOrder",
+				"style": {
+					"navigationBarTitleText": "确认订单",
+					"enablePullDownRefresh": false
+				}
+			},
+			{
 				"path": "paintingEvaluation/index",
 				"style": {
 					"navigationBarTitleText": "智能评画",
