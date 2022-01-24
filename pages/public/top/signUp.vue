@@ -91,11 +91,39 @@
 		</view>
 
 		<!-- 选择地址 -->
-		<u-popup v-model="popShow" mode="bottom" :safe-area-inset-bottom="true" border-radius="40">
+		<u-popup v-model="popShow" mode="bottom" closeable :safe-area-inset-bottom="true" border-radius="40">
+			<view class="pop-header">请选择考试地址</view>
 			<view class="pop-content">
 				<sort-picker-list ref="sortPickerList"></sort-picker-list>
 			</view>
 		</u-popup>
+
+
+		<u-modal v-model="modalShow" :show-title="false" border-radius="32" cancel-color="#9E9E9E"
+			:show-cancel-button="showCancelButton" :cancel-style="cancelStyle" :confirm-style="confirmStyle"
+			:cancel-text="cancelText" :confirm-text="confirmText" :confirm-color="themeColor" :mask-close-able="true">
+			<view class="modal-content">
+				<!-- 删除 -->
+				<view class="remove">
+					<image :src="setSrc('signUp_remove_bg.png')"></image>
+					<text>是否删除当前学生信息</text>
+				</view>
+
+				<!-- 保存 -->
+				<!-- <view class="save">
+					<image :src="setSrc('signUp_save_bg.png')"></image>
+					<text>是否保存当前学生信息</text>
+					<text class="dec">信息保存下次可继续编辑</text>
+				</view> -->
+
+				<!-- 提交 -->
+				<!-- <view class="submit">
+					<image :src="setSrc('signUp_submit_bg.png')"></image>
+					<text>请确认信息是否有误</text>
+					<text class="dec">信息确认可直接提交支付</text>
+				</view> -->
+			</view>
+		</u-modal>
 	</view>
 </template>
 
@@ -109,12 +137,20 @@
 		},
 		data() {
 			return {
-				popShow: true, // 选择地址
+
+				themeColor: this.$mConstDataConfig.themeColor,
+				showCancelButton: true,
+				cancelStyle: {
+					fontWeight: '500'
+				},
+				confirmStyle: {
+					fontWeight: '500'
+				},
+				cancelText: "取消",
+				confirmText: "删除",
+				popShow: false, // 选择地址
+				modalShow: false, // 删除模态框
 				scrollTop: 0,
-				indexList: ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S",
-					"T", "U",
-					"V", "W", "X", "Y", "Z"
-				],
 				background: {
 					backgroundImage: "url('https://ykh-wxapp.oss-cn-hangzhou.aliyuncs.com/wx_applet_img/top_navbar_bg.png')",
 					backgroundSize: 'cover',
@@ -127,52 +163,7 @@
 				}],
 				typeMenus: false,
 				code: '',
-				codeName: '',
-				dataArr: [{
-						name: '中国',
-						value: 'China'
-					},
-					{
-						name: '俄罗斯',
-						value: 'Russia'
-					},
-					{
-						name: '美国',
-						value: 'America'
-					},
-					{
-						name: '澳大利亚',
-						value: 'Australia'
-					},
-					{
-						name: '巴西',
-						value: 'Brazil'
-					},
-					{
-						name: '韩国',
-						value: 'Korea'
-					},
-					{
-						name: '朝鲜',
-						value: 'North Korea'
-					},
-					{
-						name: '英国',
-						value: 'Britain'
-					},
-					{
-						name: '德国',
-						value: 'Germany'
-					},
-					{
-						name: '加拿大',
-						value: 'Canada'
-					},
-					{
-						name: '非洲',
-						value: 'New Zealand'
-					},
-				]
+				codeName: ''
 			}
 		},
 		methods: {
@@ -181,7 +172,7 @@
 			},
 			focus() {
 				this.menusPopShow = true;
-				
+
 			},
 			tapPopup(e) {
 				console.log(e)
@@ -317,7 +308,83 @@
 
 
 	// 选择地址
+	.pop-header {
+		margin: 34rpx 28rpx;
+		font-size: 28rpx;
+		font-weight: bold;
+		color: #3A3D71;
+	}
+
 	.pop-content {
-		height: 1000rpx;
+		height: 800rpx;
+	}
+
+
+	//  删除、保存学生
+	.modal-content {
+		padding: 38rpx 38rpx 50rpx;
+		font-size: 32rpx;
+		font-weight: bold;
+		color: #3A3D71;
+
+		&>view {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+		}
+
+		// 删除
+		.remove {
+			image {
+				width: 232rpx;
+				height: 214rpx;
+			}
+
+			text {
+				display: block;
+				margin-top: 36rpx;
+			}
+		}
+
+		// 保存
+		.save {
+			padding: 66rpx 38rpx 38rpx;
+
+			image {
+				width: 320rpx;
+				height: 144rpx;
+			}
+
+			text {
+				display: block;
+				margin-top: 36rpx;
+
+				&.dec {
+					margin-top: 14rpx;
+					font-size: 24rpx;
+					color: #9E9E9E;
+				}
+			}
+		}
+
+		// 提交
+		.submit {
+			padding: 42rpx 38rpx 38rpx;
+
+			image {
+				width: 262rpx;
+				height: 180rpx;
+			}
+
+			text {
+				display: block;
+				margin-top: 36rpx;
+				&.dec {
+					margin-top: 14rpx;
+					font-size: 24rpx;
+					color: #9E9E9E;
+				}
+			}
+		}
 	}
 </style>

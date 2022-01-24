@@ -201,6 +201,22 @@
 						"enablePullDownRefresh": false
 					}
 
+				}, {
+					"path": "top/addStudent",
+					"style": {
+						"navigationBarTitleText": "",
+						"navigationStyle": "custom",
+						"enablePullDownRefresh": false
+					}
+
+				}, {
+					"path": "top/paySuccess",
+					"style": {
+						"navigationBarTitleText": "",
+						"navigationStyle": "custom",
+						"enablePullDownRefresh": false
+					}
+
 				}
 			]
 		}

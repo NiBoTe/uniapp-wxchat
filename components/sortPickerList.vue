@@ -3,9 +3,11 @@
 		<scroll-view class="t-index-address__scroll-view" :scroll-into-view="scrollview" :scroll-y="true"
 			:enable-flex="true">
 			<view :id="group.initial" v-for="group in cityList" :key="group.initial">
+
 				<view class="t-index-address__anchor">
 					<text>{{ group.initial }}</text>
 				</view>
+
 				<view class="t-index-address__list">
 					<view class="t-index-address__cell" v-for="(city, index) in group.list" :key="index"
 						@click="$emit('select', city)">
@@ -77,28 +79,28 @@
 			width: 100%;
 			font-size: 28rpx;
 			font-weight: 500;
-			color: #606266;
-			background-color: rgb(245, 245, 245);
+			color: #3A3D71;
 		}
 
 		&__list {
-			padding: 0 70rpx 0 30rpx;
+			padding: 0 70rpx 0 28rpx;
 		}
 
 		&__cell {
-			height: 100rpx;
-			line-height: 100rpx;
-			border-bottom: 1rpx solid #f2f2f2;
+			padding: 0 0 28rpx;
+			font-size: 26rpx;
+			color: #3A3D71;
 
 			&:last-child {
-				border: none;
+				border-bottom: 1rpx solid #f2f2f2;
+				padding-bottom: 30rpx;
 			}
 		}
 
 		&__sidebar {
 			position: fixed;
 			top: 50%;
-			right:  34rpx;
+			right: 34rpx;
 			padding: 10rpx 0;
 			transform: translateY(-50%);
 			z-index: 99;
