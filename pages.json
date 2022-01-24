@@ -68,132 +68,141 @@
 		{
 			"root": "pages/public",
 			"pages": [{
-				"path": "logintype",
-				"style": {
-					"navigationBarTitleText": "",
-					"navigationBarTextStyle": "black",
-					"navigationBarBackgroundColor": "#ffffff"
-				}
-			}, {
-				"path": "register",
-				"style": {
-					"navigationBarTitleText": "注册账号",
-					"enablePullDownRefresh": false,
-					"navigationBarTextStyle": "black",
-					"navigationBarBackgroundColor": "#ffffff"
-				}
-			}, {
-				"path": "forgotPassword",
-				"style": {
-					"navigationBarTitleText": "找回密码",
-					"enablePullDownRefresh": false,
-					"navigationBarTextStyle": "black",
-					"navigationBarBackgroundColor": "#ffffff"
-				}
+					"path": "logintype",
+					"style": {
+						"navigationBarTitleText": "",
+						"navigationBarTextStyle": "black",
+						"navigationBarBackgroundColor": "#ffffff"
+					}
+				}, {
+					"path": "register",
+					"style": {
+						"navigationBarTitleText": "注册账号",
+						"enablePullDownRefresh": false,
+						"navigationBarTextStyle": "black",
+						"navigationBarBackgroundColor": "#ffffff"
+					}
+				}, {
+					"path": "forgotPassword",
+					"style": {
+						"navigationBarTitleText": "找回密码",
+						"enablePullDownRefresh": false,
+						"navigationBarTextStyle": "black",
+						"navigationBarBackgroundColor": "#ffffff"
+					}
 
-			}, {
-				"path": "roleSelection",
-				"style": {
-					"navigationBarTitleText": "角色选择",
-					"enablePullDownRefresh": false,
-					"navigationBarTextStyle": "black",
-					"navigationBarBackgroundColor": "#ffffff"
-				}
+				}, {
+					"path": "roleSelection",
+					"style": {
+						"navigationBarTitleText": "角色选择",
+						"enablePullDownRefresh": false,
+						"navigationBarTextStyle": "black",
+						"navigationBarBackgroundColor": "#ffffff"
+					}
 
-			}, {
-				"path": "bindphone",
-				"style": {
-					"navigationBarTitleText": "",
-					"enablePullDownRefresh": false,
-					"navigationBarTextStyle": "black",
-					"navigationBarBackgroundColor": "#ffffff"
-				}
+				}, {
+					"path": "bindphone",
+					"style": {
+						"navigationBarTitleText": "",
+						"enablePullDownRefresh": false,
+						"navigationBarTextStyle": "black",
+						"navigationBarBackgroundColor": "#ffffff"
+					}
 
-			}, {
-				"path": "search",
-				"style": {
-					"navigationBarTitleText": "",
-					"enablePullDownRefresh": false,
-					"navigationBarTextStyle": "black",
-					"navigationBarBackgroundColor": "#ffffff"
-				}
+				}, {
+					"path": "search",
+					"style": {
+						"navigationBarTitleText": "",
+						"enablePullDownRefresh": false,
+						"navigationBarTextStyle": "black",
+						"navigationBarBackgroundColor": "#ffffff"
+					}
 
-			}, {
-				"path": "historyExQuestions/historyExQuestions",
-				"style": {
-					"navigationBarTitleText": "历年考题",
-					"enablePullDownRefresh": false
-				}
-			},
-			{
-				"path": "historyExQuestions/excontent",
-				"style": {
-					"navigationBarTitleText": "考试内容",
-					"enablePullDownRefresh": false
-				}
-			}, 
-			{
-				"path": "historyExQuestions/topScoreList",
-				"style": {
-					"navigationBarTitleText": "高分试卷",
-					"enablePullDownRefresh": false
-				}
-			},
-			{
-				"path": "historyExQuestions/detail",
-				"style": {
-					"navigationBarTitleText": "试卷详情",
-					"enablePullDownRefresh": false
-				}
-			},
-			{
-				"path": "historyExQuestions/sureOrder",
-				"style": {
-					"navigationBarTitleText": "确认订单",
-					"enablePullDownRefresh": false
-				}
-			},
-			{
-				"path": "paintingEvaluation/index",
-				"style": {
-					"navigationBarTitleText": "智能评画",
-					"enablePullDownRefresh": false
-				}
+				}, {
+					"path": "historyExQuestions/historyExQuestions",
+					"style": {
+						"navigationBarTitleText": "历年考题",
+						"enablePullDownRefresh": false
+					}
+				},
+				{
+					"path": "historyExQuestions/excontent",
+					"style": {
+						"navigationBarTitleText": "考试内容",
+						"enablePullDownRefresh": false
+					}
+				},
+				{
+					"path": "historyExQuestions/topScoreList",
+					"style": {
+						"navigationBarTitleText": "高分试卷",
+						"enablePullDownRefresh": false
+					}
+				},
+				{
+					"path": "historyExQuestions/detail",
+					"style": {
+						"navigationBarTitleText": "试卷详情",
+						"enablePullDownRefresh": false
+					}
+				},
+				{
+					"path": "historyExQuestions/sureOrder",
+					"style": {
+						"navigationBarTitleText": "确认订单",
+						"enablePullDownRefresh": false
+					}
+				},
+				{
+					"path": "paintingEvaluation/index",
+					"style": {
+						"navigationBarTitleText": "智能评画",
+						"enablePullDownRefresh": false
+					}
 
-			}, {
-				"path": "school/index",
-				"style": {
-					"navigationBarTitleText": "名牌高校",
-					"enablePullDownRefresh": false,
-					"navigationBarTextStyle": "black",
-					"navigationBarBackgroundColor": "#FFFFFF"
-				}
+				}, {
+					"path": "school/index",
+					"style": {
+						"navigationBarTitleText": "名牌高校",
+						"enablePullDownRefresh": false,
+						"navigationBarTextStyle": "black",
+						"navigationBarBackgroundColor": "#FFFFFF"
+					}
 
-			}, {
-				"path": "school/detail",
-				"style": {
-					"navigationBarTitleText": "",
-					"enablePullDownRefresh": false,
-					"navigationBarTextStyle": "black",
-					"navigationBarBackgroundColor": "#FFFFFF"
-				}
+				}, {
+					"path": "school/detail",
+					"style": {
+						"navigationBarTitleText": "",
+						"enablePullDownRefresh": false,
+						"navigationBarTextStyle": "black",
+						"navigationBarBackgroundColor": "#FFFFFF"
+					}
 
-			}, {
-				"path": "top/top",
-				"style": {
-					"navigationBarTitleText": "TOP美考",
-					"navigationStyle": "custom",
-					"enablePullDownRefresh": false
-				}
-			}, {
-				"path": "top/detail",
-				"style": {
-					"navigationBarTitleText": "考试详情",
-					"navigationStyle": "custom",
-					"enablePullDownRefresh": false
-				}
+				}, {
+					"path": "top/top",
+					"style": {
+						"navigationBarTitleText": "TOP美考",
+						"navigationStyle": "custom",
+						"enablePullDownRefresh": false
+					}
+				}, {
+					"path": "top/detail",
+					"style": {
+						"navigationBarTitleText": "考试详情",
+						"navigationStyle": "custom",
+						"enablePullDownRefresh": false
+					}
 
-			}]
+				}, {
+					"path": "top/signUp",
+					"style": {
+						"navigationBarTitleText": "",
+						"navigationStyle": "custom",
+						"enablePullDownRefresh": false
+					}
+
+				}
+			]
 		}
 	],
 	"globalStyle": {
