@@ -93,18 +93,18 @@ $mRouter.beforeEach((navType, to) => {
 
 App.mpType = 'app';
 
-Vue.mixin({
-	computed: {
-		themeColor: {
-			get() {
-				return store.getters.themeColor;
-			},
-			set(val) {
-				store.state.themeColor = val;
-			}
-		}
-	}
-});
+// Vue.mixin({
+// 	computed: {
+// 		themeColor: {
+// 			get() {
+// 				return store.getters.themeColor;
+// 			},
+// 			set(val) {
+// 				store.state.themeColor = val;
+// 			}
+// 		}
+// 	}
+// });
 
 const app = new Vue({
 	...App,

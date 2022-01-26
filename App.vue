@@ -51,21 +51,14 @@
 				if (token) {
 					// await this.handleVerifyAccessToken(token); // 验证token
 				}
-				// #ifdef H5
-				if (this.$mPayment.isWechat()) {
-					await this.$mPayment.wxConfigH5(window.location.href);
-				}
-				// #endif
 			},
 
 			// 初始化系统信息
 			initSystemInfo() {
 				uni.getSystemInfo({
 					success(e) {
-						
-						console.log(e)
+						console.log(e.statusBarHeight)
 						Vue.prototype.StatusBar = e.statusBarHeight;
-						// eslint-disable-next-line
 						const custom = wx.getMenuButtonBoundingClientRect();
 						Vue.prototype.Custom = custom;
 						Vue.prototype.CustomBar = custom.top - e.statusBarHeight;

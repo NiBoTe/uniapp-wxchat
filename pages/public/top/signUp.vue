@@ -1,7 +1,7 @@
 <template>
 	<view class="top">
 		<view class="navbar">
-			<u-navbar title="考试报名" immersive back-icon-color="#ffffff" :background="background" :border-bottom="false"
+			<u-navbar title="考试报名" back-icon-color="#ffffff" :background="background" :border-bottom="false"
 				title-color="#ffffff">
 			</u-navbar>
 		</view>
@@ -80,6 +80,20 @@
 
 			<u-gap height="16" bg-color="#F7F7F7"></u-gap>
 
+			<view class="list">
+				<view class="item u-flex u-row-between" v-for="(item, index) in studentList" :key="index">
+					<u-icon name="minus-circle-fill" color="#FF334D"></u-icon>
+					<view class="item-box u-flex u-row-between">
+						<view class="left-box">
+							<text class="left-name">张学良</text>
+							<text class="left-subname">3310***********818</text>
+						</view>
+						<view class="right">
+							<image src="/static/public/update.png"></image>
+						</view>
+					</view>
+				</view>
+			</view>
 
 			<view class="add u-flex">
 				<image src="/static/public/add_people.png"></image>
@@ -87,6 +101,16 @@
 			</view>
 		</view>
 		<view class="footer">
+			<view class="footer-num u-flex u-row-between">
+				<view class="left">总人数：5人</view>
+				<view class="right u-flex">
+					<view class="right-label">总费用</view>
+					<view class="right-price">
+						<text>¥</text>
+						<text>1495</text>
+					</view>
+				</view>
+			</view>
 			<view class="footer-btn" @click="submitTap">去支付</view>
 		</view>
 
@@ -163,7 +187,8 @@
 				}],
 				typeMenus: false,
 				code: '',
-				codeName: ''
+				codeName: '',
+				studentList: [1, 2, 3, 4],
 			}
 		},
 		methods: {
@@ -186,11 +211,9 @@
 				this.typeMenus = e.title !== '个人';
 			},
 			popScroll(e) {
-				console.log(e)
 				this.scrollTop = e.detail.scrollTop;
 			},
 			indexListScroll(e) {
-				console.log(e)
 				this.scrollTop = e;
 			}
 		},
@@ -201,19 +224,15 @@
 <style scoped lang="scss">
 	.top {
 		height: calc(100vh);
+		overflow: hidden;
 		background-color: #fff;
 	}
 
-	.navbar {
-		height: 146rpx;
-	}
 
 	.content {
-		height: calc(100vh - 146rpx);
+		height: 100%;
+		// padding-bottom: 140rpx;
 		overflow: auto;
-
-		// padding-bottom: calc(134rpx + constant(safe-area-inset-bottom));
-		// padding-bottom: calc(134rpx + env(safe-area-inset-bottom));
 
 		.base {
 			&-item {
@@ -257,6 +276,43 @@
 		}
 
 
+		.list {
+			.item {
+				padding: 0 34rpx 0 26rpx;
+
+				&-box {
+					flex: 1;
+					padding: 36rpx 0;
+					border-bottom: 2rpx solid #E9E9E9;
+
+					.left-box {
+						margin-left: 24rpx;
+						display: flex;
+						flex-direction: column;
+
+						.left-name {
+							font-size: 26rpx;
+							font-weight: bold;
+							color: #3A3D71;
+						}
+
+						.left-subname {
+							margin-top: 10rpx;
+							font-size: 24rpx;
+							color: #3A3D71;
+						}
+					}
+				}
+
+				.right {
+					image {
+						width: 32rpx;
+						height: 32rpx;
+					}
+				}
+			}
+		}
+
 		// 添加学生
 		.add {
 			margin: 36rpx 34rpx 40rpx 28rpx;
@@ -288,7 +344,38 @@
 		padding-bottom: calc(14rpx + constant(safe-area-inset-bottom));
 		padding-bottom: calc(14rpx + env(safe-area-inset-bottom));
 		background-color: #fff;
-
+		
+		&-num{
+			padding-bottom: 38rpx;
+			.left{
+				font-size: 26rpx;
+				color: #9E9E9E;
+			}
+			
+			.right{
+				
+				&-label{
+					font-size: 24rpx;
+					color: #3A3D71;
+				}
+				
+				&-price{
+					margin-left: 24rpx;
+					text{
+						font-size: 34rpx;
+						font-weight: 800;
+						color: #35CE96;
+						
+						&:first-of-type{
+							font-size: 28rpx;
+							font-weight: bold;
+							color: #35CE96;
+						}
+					}
+				}
+			}
+		}
+		
 		&-btn {
 			height: 88rpx;
 			line-height: 88rpx;
@@ -379,6 +466,7 @@
 			text {
 				display: block;
 				margin-top: 36rpx;
+
 				&.dec {
 					margin-top: 14rpx;
 					font-size: 24rpx;
