@@ -10,7 +10,7 @@
 					<view class="search-btn">搜索</view>
 				</view>
 				<view class="swipers">
-					<u-swiper :list="swiperList" height="240" border-radius="16"></u-swiper>
+					<u-swiper :list="bannerList" height="240" border-radius="16"></u-swiper>
 				</view>
 			</view>
 
@@ -24,18 +24,18 @@
 					<image src="/static/public/home_tab02.png"></image>
 					<text>高分教材</text>
 				</view>
-				<view class="menus-item">
+				<view class="menus-item" @click="navTo('/pages/public/historyExQuestions/historyExQuestions')">
 					<image src="/static/public/home_tab03.png"></image>
 					<text>历年考题</text>
 				</view>
-				<view class="menus-item">
+				<view class="menus-item" @click="navTo('/pages/public/school/index')">
 					<image src="/static/public/home_tab04.png"></image>
 					<text>名牌高校</text>
 				</view>
 			</view>
 			<!-- top 美考入口 -->
 
-			<view class="top">
+			<view class="top" @click="navTo('/pages/public/top/index')">
 				<image :src="setSrc('home_top_banner.png')"></image>
 			</view>
 
@@ -51,9 +51,11 @@
 									<text>我的已考</text>
 								</view>
 
-								<view class="left-item-sublabel u-line-1">
-									<text>浙江省2021年第一次模</text>
-								</view>
+								<swiper class="left-item-sublabel u-line-1" :circular="true" :autoplay="true" :disable-touch="true">
+									<swiper-item class="u-line-1" v-for="(item, index) in recentExam" :key="index">
+										<text>{{item.name}}</text>
+									</swiper-item>
+								</swiper>
 							</view>
 							<view class="left-item">
 								<view class="left-item-label u-flex">
@@ -61,30 +63,53 @@
 									<text>我的未考</text>
 								</view>
 
-								<view class="left-item-sublabel u-line-1">
-									<text>浙江省2021年第一次模</text>
-								</view>
+								<swiper class="left-item-sublabel u-line-1" :circular="true" :autoplay="true" :disable-touch="true">
+									<swiper-item class="u-line-1" v-for="(item, index) in untestedExam" :key="index">
+										<text>{{item.name}}</text>
+									</swiper-item>
+								</swiper>
 							</view>
 						</view>
 					</u-col>
 					<u-col span="6">
+						
+						
 						<view class="right">
 							<view class="right-item">
 								<view class="right-item-label u-flex">
 									<image :src="setSrc('home_ecent_exam_label.png')"></image>
 									<text>近期考试</text>
 								</view>
-
+								<swiper class="right-item-sublabel" :circular="true" :autoplay="true" :disable-touch="true">
+									<swiper-item class="right-item-sublabel-item" v-for="(item, index) in recentExam" :key="index">
+										<view class="title u-line-2">{{item.name}}</view>
+										<view class="line"></view>
+										<view class="subtitle u-flex u-row-between">
+											<text>{{item.enrollStartTime}}</text>
+											<image src="/static/public/home_lately_style.png"></image>
+										</view>
+									</swiper-item>
+								</swiper>
+							</view>
+						</view>
+						<!-- <swiper class="right" :circular="true" :autoplay="true" :disable-touch="true">
+							<swiper-item class="right-item">
+								<view class="right-item-label u-flex">
+									<image :src="setSrc('home_ecent_exam_label.png')"></image>
+									<text>近期考试</text>
+								</view>
+							
 								<view class="right-item-sublabel">
-									<view class="title">浙江省2021年第一次模拟考试</view>
+									<view class="title">{{item.name}}</view>
 									<view class="line"></view>
 									<view class="subtitle u-flex u-row-between">
-										<text>2021.8.30</text>
+										<text>{{item.enrollStartTime}}</text>
 										<image src="/static/public/home_lately_style.png"></image>
 									</view>
 								</view>
-							</view>
-						</view>
+							</swiper-item>
+						</swiper> -->
+					
 					</u-col>
 				</u-row>
 			</view>
@@ -215,6 +240,8 @@
 	import DrawingColumn from '@/components/drawingColumn/drawingColumn.vue'
 	import TextbookItem from '@/components/textbook/textbookItem.vue'
 	import PaintingEvaluationItem from '@/components/paintingEvaluation/paintingEvaluationItem.vue'
+	
+	import { banner, exam, moduleConfigure } from '@/api/homepage.js'
 	export default {
 		components: {
 			tabBar,
@@ -225,19 +252,11 @@
 		data() {
 			return {
 				StatusBar: this.StatusBar,
-				swiperList: [{
-						image: 'https://cdn.uviewui.com/uview/swiper/1.jpg',
-						title: '昨夜星辰昨夜风，画楼西畔桂堂东'
-					},
-					{
-						image: 'https://cdn.uviewui.com/uview/swiper/2.jpg',
-						title: '身无彩凤双飞翼，心有灵犀一点通'
-					},
-					{
-						image: 'https://cdn.uviewui.com/uview/swiper/3.jpg',
-						title: '谁念西风独自凉，萧萧黄叶闭疏窗，沉思往事立残阳'
-					}
-				],
+				bannerList: [], // banner,
+				recentExam: [], // 近期考试
+				testedExam: [], // 我的已考
+				untestedExam: [], // 我的未考
+				moduleMap: {},
 				highScoreList: [{
 						price: 35,
 						title: '北国风光，千里冰封，万里雪飘',
@@ -310,9 +329,38 @@
 		},
 		onLoad() {
 			this.flowList = this.highScoreList;
+			
+			this.initData();
 		},
 		methods: {
-
+			initData(){
+				this.$http.get(banner, {
+					crowed: 0
+				}).then(res => {
+					console.log(res)
+					this.bannerList = res.data ?? []
+				})
+				
+				this.$http.get(exam).then(res => {
+					console.log(res.data)
+					const data = res.data;
+					
+					this.recentExam = data.recentExam;
+					this.testedExam = data.testedExam;
+					this.untestedExam = data.untestedExam;
+				})
+				
+				this.$http.get(moduleConfigure).then(res => {
+					console.log(res.data)
+					this.moduleMap = res.data
+					console.log(this.moduleMap)
+				})
+			},
+			navTo(route){
+				this.$mRouter.push({
+					route
+				})
+			}
 		}
 	}
 </script>

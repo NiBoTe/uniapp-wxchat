@@ -122,6 +122,7 @@
 					"path": "historyExQuestions/historyExQuestions",
 					"style": {
 						"navigationBarTitleText": "历年考题",
+						"navigationStyle": "custom", // 隐藏系统导航栏
 						"enablePullDownRefresh": false
 					}
 				},
@@ -201,23 +202,24 @@
 						"enablePullDownRefresh": false
 					}
 
-				}, {
-					"path": "top/addStudent",
-					"style": {
-						"navigationBarTitleText": "",
-						"navigationStyle": "custom",
-						"enablePullDownRefresh": false
-					}
-
-				}, {
-					"path": "top/paySuccess",
-					"style": {
-						"navigationBarTitleText": "",
-						"navigationStyle": "custom",
-						"enablePullDownRefresh": false
-					}
-
 				}
+				// , {
+				// 	"path": "top/addStudent",
+				// 	"style": {
+				// 		"navigationBarTitleText": "",
+				// 		"navigationStyle": "custom",
+				// 		"enablePullDownRefresh": false
+				// 	}
+
+				// }, {
+				// 	"path": "top/paySuccess",
+				// 	"style": {
+				// 		"navigationBarTitleText": "",
+				// 		"navigationStyle": "custom",
+				// 		"enablePullDownRefresh": false
+				// 	}
+
+				// }
 			]
 		}
 	],

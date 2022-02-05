@@ -4,23 +4,23 @@
 			<scroll-view scroll-y scroll-with-animation class="u-tab-view menu-scroll-view" :scroll-top="scrollTop"
 				:scroll-into-view="itemId">
 				<view v-for="(item,index) in tabbar" :key="index" class="u-tab-item"
-					:class="[current == index ? 'u-tab-item-active' : '']" @tap.stop="swichMenu(index)">
+					:class="[current == index ? 'u-tab-item-active' : '']" @tap.stop="swichMenu(item, index)">
 					<text class="u-line-1">{{item.name}}</text>
 				</view>
 			</scroll-view>
 			<scroll-view :scroll-top="scrollRightTop" scroll-y scroll-with-animation class="right-box"
 				@scroll="rightScroll">
 				<view class="page-view">
-					<view class="class-item" :id="'item' + index" v-for="(item , index) in tabbar" :key="index" @click="detailTap(item)">
+					 <!-- :id="'item' + index" -->
+					<view class="class-item" v-for="(item , index) in list" :key="index" @click="detailTap(item)">
 						<view class="item-container">
-							<view class="thumb-box u-flex u-row-between" v-for="(item1, index1) in item.foods"
-								:key="index1">
+							<view class="thumb-box u-flex u-row-between">
 								<view class="left u-flex">
-									<image class="item-menu-image" :src="item1.icon"></image>
+									<image class="item-menu-image" :src="item.logo"></image>
 								</view>
 								<view class="right">
-									<view class="item-menu-name">{{item1.name}}</view>
-									<view class="item-menu-dec u-line-2">中国美术学院的前身是国立艺术院。1928中国美术学院的前身是国立艺术院</view>
+									<view class="item-menu-name">{{item.name}}</view>
+									<view class="item-menu-dec u-line-2">{{item.description}}</view>
 								</view>
 							</view>
 						</view>
@@ -31,6 +31,8 @@
 	</view>
 </template>
 <script>
+	
+	import { classify, schoolList } from '@/api/school.js';
 	export default {
 		data() {
 			return {
@@ -40,23 +42,10 @@
 				menuHeight: 0, // 左边菜单的高度
 				menuItemHeight: 0, // 左边菜单item的高度
 				itemId: '', // 栏目右边scroll-view用于滚动的id
-				tabbar: [{
-					"name": "浙江省",
-					"foods": [{
-						"name": "中国美术学院",
-						"key": "中国美术学院",
-						"icon": "https://cdn.uviewui.com/uview/common/classify/1/1.jpg",
-						"cat": 10
-					}]
-				}, {
-					"name": "陕西省",
-					"foods": [{
-						"name": "西安电子科技大学",
-						"key": "西安电子科技大学",
-						"icon": "https://cdn.uviewui.com/uview/common/classify/1/1.jpg",
-						"cat": 10
-					}]
-				}],
+				tabbar: [],
+				list: [],
+				classifyId: '',
+				provinceId: '',
 				menuItemPos: [],
 				arr: [],
 				scrollRightTop: 0, // 右边栏目scroll-view的滚动条高度
@@ -65,29 +54,54 @@
 			}
 		},
 		onLoad() {
-
+			this.initData()
 		},
 		onReady() {
 			this.getMenuItemTop()
 		},
 		methods: {
-			detailTap(){
+			initData(){
+				this.$http.get(classify).then(res => {
+					console.log(res)
+					this.tabbar = res.data
+					if(this.tabbar.length){
+						this.classifyId = this.tabbar[0].classify_id;
+						this.provinceId = this.tabbar[0].province_id;
+						this.getSchoolList()
+					}
+				})
+			},
+			getSchoolList(){
+				this.$http.post(schoolList, {
+					classifyId: this.classifyId,
+					provinceId: this.provinceId,
+					size: 100
+				}).then(res => {
+					this.list = res.data.records
+				})
+			},
+			detailTap(item){
+				console.log(item)
 				this.$mRouter.push({
-					route: '/pages/public/school/detail'
+					route: `/pages/public/school/detail?universityId=${item.id}`
 				})
 			},
 			// 点击左边的栏目切换
-			async swichMenu(index) {
-				if (this.arr.length == 0) {
-					await this.getMenuItemTop();
-				}
-				if (index == this.current) return;
-				this.scrollRightTop = this.oldScrollTop;
-				this.$nextTick(function() {
-					this.scrollRightTop = this.arr[index];
-					this.current = index;
-					this.leftMenuStatus(index);
-				})
+			async swichMenu(item, index) {
+				console.log(item)
+				this.current = index;
+				this.classifyId = item.classify_id;
+				this.getSchoolList();
+				// if (this.arr.length == 0) {
+				// 	await this.getMenuItemTop();
+				// }
+				// if (index == this.current) return;
+				// this.scrollRightTop = this.oldScrollTop;
+				// this.$nextTick(function() {
+				// 	this.scrollRightTop = this.arr[index];
+				// 	this.current = index;
+				// 	this.leftMenuStatus(index);
+				// })
 			},
 			// 获取一个目标元素的高度
 			getElRect(elClass, dataVal) {
@@ -157,28 +171,28 @@
 			},
 			// 右边菜单滚动
 			async rightScroll(e) {
-				this.oldScrollTop = e.detail.scrollTop;
-				if (this.arr.length == 0) {
-					await this.getMenuItemTop();
-				}
-				if (this.timer) return;
-				if (!this.menuHeight) {
-					await this.getElRect('menu-scroll-view', 'menuHeight');
-				}
-				setTimeout(() => { // 节流
-					this.timer = null;
-					// scrollHeight为右边菜单垂直中点位置
-					let scrollHeight = e.detail.scrollTop + this.menuHeight / 2;
-					for (let i = 0; i < this.arr.length; i++) {
-						let height1 = this.arr[i];
-						let height2 = this.arr[i + 1];
-						// 如果不存在height2，意味着数据循环已经到了最后一个，设置左边菜单为最后一项即可
-						if (!height2 || scrollHeight >= height1 && scrollHeight < height2) {
-							this.leftMenuStatus(i);
-							return;
-						}
-					}
-				}, 10)
+				// this.oldScrollTop = e.detail.scrollTop;
+				// if (this.arr.length == 0) {
+				// 	await this.getMenuItemTop();
+				// }
+				// if (this.timer) return;
+				// if (!this.menuHeight) {
+				// 	await this.getElRect('menu-scroll-view', 'menuHeight');
+				// }
+				// setTimeout(() => { // 节流
+				// 	this.timer = null;
+				// 	// scrollHeight为右边菜单垂直中点位置
+				// 	let scrollHeight = e.detail.scrollTop + this.menuHeight / 2;
+				// 	for (let i = 0; i < this.arr.length; i++) {
+				// 		let height1 = this.arr[i];
+				// 		let height2 = this.arr[i + 1];
+				// 		// 如果不存在height2，意味着数据循环已经到了最后一个，设置左边菜单为最后一项即可
+				// 		if (!height2 || scrollHeight >= height1 && scrollHeight < height2) {
+				// 			this.leftMenuStatus(i);
+				// 			return;
+				// 		}
+				// 	}
+				// }, 10)
 			}
 		}
 	}
@@ -187,9 +201,6 @@
 <style lang="scss" scoped>
 	.u-wrap {
 		height: calc(100vh);
-		/* #ifdef H5 */
-		height: calc(100vh - var(--window-top));
-		/* #endif */
 		display: flex;
 		flex-direction: column;
 	}
@@ -286,7 +297,7 @@
 	}
 
 	.thumb-box {
-		margin-top: 28rpx;
+		padding-top: 28rpx;
 	}
 
 
@@ -304,10 +315,10 @@
 	}
 
 	.right {
+		flex: 1;
 		margin: 0 34rpx 0 28rpx;
 		padding-bottom: 30rpx;
 		border-bottom: 2rpx solid #E9E9E9;
-
 
 		.item-menu-name {
 			font-size: 28rpx;

@@ -14,7 +14,7 @@
 
 			<view class="form-item">
 				<view class="ipt">
-					<u-input type="number" maxlength="25" placeholder-style="placeholderStyle" :clearable="clearable" v-model="form.password" placeholder="请输入您的验证码" />
+					<u-input type="number" maxlength="6" placeholder-style="placeholderStyle" :clearable="clearable" v-model="form.code" placeholder="请输入您的验证码" />
 				</view>
 			</view>
 			
@@ -36,7 +36,7 @@
 				</view>
 			</u-checkbox>
 			<view class="u-flex">
-				<button :disabled="btnLoading" :loading="btnLoading" type="primary" class="register" @click="toAuthRegister">
+				<button :disabled="btnLoading" :loading="btnLoading" type="primary" class="register" @click="toSubmit">
 					<text>注册</text>
 				</button>
 			</view>
@@ -46,9 +46,8 @@
 </template>
 <script>
 	import {
-		mpWechatLogin,
-		wechatH5Login,
-		login
+		register,
+		sendSmsCode
 	} from '@/api/login';
 
 	export default {
@@ -60,6 +59,7 @@
 				wxcode: null,
 				form: {
 					phone: '',
+					code: '',
 					password: '',
 				},
 				tips: '获取验证码',
@@ -100,38 +100,34 @@
 				});
 			},
 			// 注册
-			toAuthRegister(e) {
+			toSubmit(e) {
 				this.btnLoading = true;
 				if (!this.appAgreementDefaultSelect) {
 					this.$mHelper.toast('请阅读并同意协议', 1.5 * 1000);
 					this.btnLoading = false;
 					return;
 				}
-				if (e.detail.errMsg === 'getPhoneNumber:ok') {
-					this.thirdPartyRegister();
-				} else {
-					this.btnLoading = false;
-				}
+				this.thirdPartyRegister();
 
 			},
 			thirdPartyRegister() {
 				const data = {
-					userName: this.form.phone,
-					endpoint: 'APP',
+					mobile: this.form.phone,
+					platform: 'miniapp',
+					code: this.form.code,
 					password: this.form.password
 				}
-				this.$http.post(login, data).then(async r => {
-					await this.$mStore.commit('setToken', r.token);
-					await this.$mStore.commit('login', r);
+				this.$http.post(register, data).then(async r => {
+					const data = r.data;
+					await this.$mStore.commit('setToken', data.token);
+					await this.$mStore.commit('login', data.user);
 					this.$mHelper.toast('已为您授权登录');
-					this.$mRouter.redirectTo({
+					this.$mRouter.reLaunch({
 						route: '/pages/index/index'
 					});
 					this.btnLoading = false;
 				}).catch(e => {
-					console.log(e)
-					const err = JSON.parse(e.data)
-					this.$mHelper.toast(err.message)
+					this.$mHelper.toast(e.msg)
 					this.btnLoading = false;
 				});
 			},
@@ -139,27 +135,35 @@
 				this.tips = text;
 			},
 			getCode() {
+				if (!this.$mHelper.checkMobile(this.form.phone)) {
+					this.$mHelper.toast('手机号码格式有误')
+					return
+				}
 				if (this.$refs.uCode.canGetCode) {
 					// 模拟向后端请求验证码
 					uni.showLoading({
 						title: '正在获取验证码'
 					})
-					setTimeout(() => {
+					this.$http.post(sendSmsCode, {
+						mobile: this.form.phone,
+						type: 6
+					}).then(res => {
 						uni.hideLoading();
-						// 这里此提示会被this.start()方法中的提示覆盖
-						this.$u.toast('验证码已发送');
-						// 通知验证码组件内部开始倒计时
+						this.$mHelper.toast('验证码已发送');
 						this.$refs.uCode.start();
-					}, 2000);
+					}).catch(err => {
+						uni.hideLoading();
+						this.$mHelper.toast(err.msg);
+					})
 				} else {
-					this.$u.toast('倒计时结束后再发送');
+					this.$mHelper.toast('倒计时结束后再发送');
 				}
 			},
 			end() {
-				this.$u.toast('倒计时结束');
+				// this.$u.toast('倒计时结束');
 			},
 			start() {
-				this.$u.toast('倒计时开始');
+				// this.$u.toast('倒计时开始');
 			},
 			toBack(){
 				this.$mRouter.back()

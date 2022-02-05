@@ -176,36 +176,15 @@ export default class Request {
 				sslVerify: _config.sslVerify,
 				// #endif
 				complete: response => {
-
-					console.log(response.statusCode)
 					if (this.validateStatus(response.statusCode)) {
-						console.log('123123123123123')
-						// 成功
-						if (response.data && response.data.indexOf('{403}') !== -1) {
-							$mRouter.redirectTo({
-								route: '/pages/public/logintype'
-							})
+						const data = JSON.parse(response.data)
+						if(this.validateStatus(data.code)){
+							// 成功
+							resolve(data);
 						} else {
-							if (response.data === '') {
-								resolve(response.data);
-							} else {
-								response.data = jsonBig.parse(response.data)
-								response.config = handleRe;
-								resolve(response.data);
-							}
-
+							reject(data);
 						}
-
-					} else if (response.statusCode === 403 || (response.data.message && response
-							.data.message.indexOf(
-								'{403}') !== -1)) {
-						$mRouter.redirectTo({
-							route: '/pages/public/logintype'
-						})
-					} else if (response.data.indexOf('{403}') !== -1) {
-						$mRouter.redirectTo({
-							route: '/pages/public/logintype'
-						})
+					
 					} else {
 						// response = this.requestComFail(response);
 						reject(response);

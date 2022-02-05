@@ -1,71 +1,54 @@
 <template>
 	<view class="container">
 		<scroll-view class="tabs" :scroll-x="true">
-			<view class="tab">
-				<text>素描</text>
-				<view class="tab-border">
+			<view class="tab" :class="type !== 'list' ? 'zero' : '' " v-for="(item, index) in list" :key="index" @click="tabClick(item, index)">
+				<text>{{item.year}}</text>
+				<view class="tab-border" v-if="activeIndex === index">
 					<image src="/static/public/home_scroll_style.png"></image>
 				</view>
 			</view>
-			<view class="tab">
-				<text>素描</text>
-				<view class="tab-border">
-					<image src="/static/public/home_scroll_style.png"></image>
-				</view>
-			</view>
-			<view class="tab">
-				<text>素描</text>
-				<view class="tab-border">
-					<image src="/static/public/home_scroll_style.png"></image>
-				</view>
-			</view>
-			<view class="tab">
-				<text>素描</text>
-				<view class="tab-border">
-					<image src="/static/public/home_scroll_style.png"></image>
-				</view>
-			</view>
-			<view class="tab">
-				<text>素描</text>
-				<view class="tab-border">
-					<image src="/static/public/home_scroll_style.png"></image>
-				</view>
-			</view>
-			<view class="tab">
-				<text>素描</text>
-				<view class="tab-border">
-					<image src="/static/public/home_scroll_style.png"></image>
-				</view>
-			</view>
-			<view class="tab">
-				<text>素描</text>
-				<view class="tab-border">
-					<image src="/static/public/home_scroll_style.png"></image>
-				</view>
-			</view>
-			<view class="tab">
-				<text>素描</text>
-				<view class="tab-border">
-					<image src="/static/public/home_scroll_style.png"></image>
-				</view>
-			</view>
-			<view class="tab">
-				<text>素描</text>
-				<view class="tab-border">
-					<image src="/static/public/home_scroll_style.png"></image>
-				</view>
-			</view>
+			
 		</scroll-view>
 	</view>
 </template>
 
 <script>
+	
 	export default {
 		name:"drawingColumn",
+		props: {
+			type: {
+				type: String,
+				default:'list'
+			}
+		},
 		data() {
 			return {
-				
+				list: [],
+				activeIndex: 0,
 			};
+		},
+		created() {
+				this.initData()
+		},
+		methods:{
+			initData(){
+				// if(this.type === 'time') {
+				// 	let times = []
+				// 	for(let i = 0; i< 10; i++){
+				// 		times.push(new Date().getFullYear() - i);
+				// 	}
+				// 	this.list = times
+				// }
+				
+			},
+			timeShow(list){
+				this.list = list
+			},
+			tabClick(item, index){
+				this.activeIndex = index
+				this.$emit('change', {item, index})
+			}
 		}
 	}
 </script>
@@ -85,11 +68,15 @@
 			background: #F3F3F3;
 			border-radius: 36rpx;
 			border: 4rpx solid transparent;
-	
+			
+			
+			
 			&:first-of-type {
 				margin-left: 32rpx;
 			}
-	
+			&.zero{
+				margin-left: 0;
+			}
 			&.active {
 				background: #EFF2FF;
 	

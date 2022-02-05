@@ -21,13 +21,13 @@
 
 			<view class="form-item">
 				<view class="ipt">
-					<u-input type="number" maxlength="25" placeholder-style="placeholderStyle" :clearable="clearable" v-model="form.password" placeholder="请输入您的验证码" />
+					<u-input type="number" maxlength="25" placeholder-style="placeholderStyle" :clearable="clearable" v-model="form.code" placeholder="请输入您的验证码" />
 				</view>
 			</view>
 		</view>
 		<view class="footer">
 			<view class="u-flex">
-				<button :disabled="btnDisabled" :loading="btnLoading" type="primary" class="submit" :class="btnDisabled ? 'disabled' : ''" @click="toAuthRegister">
+				<button :disabled="btnDisabled" :loading="btnLoading" type="primary" class="submit" :class="btnDisabled ? 'disabled' : ''" @click="toSubmit">
 					<text>立即绑定</text>
 				</button>
 			</view>
@@ -37,22 +37,21 @@
 </template>
 <script>
 	import {
-		mpWechatLogin,
-		wechatH5Login,
-		login
+		loginOrRegisterBySmsCode,
+		sendSmsCode,
 	} from '@/api/login';
 
 	export default {
 		data() {
 			return {
-				btnDisabled: true,
 				btnLoading: false,
 				appAgreementDefaultSelect: this.$mSettingConfig.appAgreementDefaultSelect, // 是否允许点击登录按钮
 				appName: this.$mSettingConfig.appName,
 				wxcode: null,
 				form: {
 					phone: '',
-					password: '',
+					ticket: '',
+					code: ''
 				},
 				tips: '获取验证码',
 				seconds: 60,
@@ -64,66 +63,34 @@
 				}
 			};
 		},
-		onShow() {
-			this.btnLoading = false;
-			if (uni.getStorageSync('accessToken')) {
-				this.$mRouter.reLaunch({
-					route: '/pages/index/index'
-				});
-			}
-		},
 		onLoad(options) {
-			this.$mStore.commit('logout');
-
-			// 如果不是第一次进来 就不需要强制阅读协议
-			if (!uni.getStorageSync('notFirstTimeLogin')) {
-				if (!this.appAgreementDefaultSelect) {
-					this.appAgreementDefaultSelect = false;
-				}
-			} else {
-				this.appAgreementDefaultSelect = true;
+			if(options.ticket) this.form.ticket = options.ticket
+		},
+		computed:{
+			btnDisabled(){
+				return this.form.phone === '' || this.form.code === ''
 			}
 		},
 		methods: {
-			// 通用跳转
-			navTo(route) {
-				this.$mRouter.redirectTo({
-					route
-				});
-			},
-			// 注册
-			toAuthRegister(e) {
+			toSubmit() {
 				this.btnLoading = true;
-				if (!this.appAgreementDefaultSelect) {
-					this.$mHelper.toast('请阅读并同意协议', 1.5 * 1000);
-					this.btnLoading = false;
-					return;
-				}
-				if (e.detail.errMsg === 'getPhoneNumber:ok') {
-					this.thirdPartyRegister();
-				} else {
-					this.btnLoading = false;
-				}
-
-			},
-			thirdPartyRegister() {
 				const data = {
-					userName: this.form.phone,
-					endpoint: 'APP',
-					password: this.form.password
+					mobile: this.form.phone,
+					platform: 'miniapp',
+					code: this.form.code,
+					ticket: this.form.ticket
 				}
-				this.$http.post(login, data).then(async r => {
-					await this.$mStore.commit('setToken', r.token);
-					await this.$mStore.commit('login', r);
+				this.$http.post(loginOrRegisterBySmsCode, data).then(async r => {
+					const data = r.data;
+					await this.$mStore.commit('setToken', data.token);
+					await this.$mStore.commit('login', data.user);
 					this.$mHelper.toast('已为您授权登录');
-					this.$mRouter.redirectTo({
+					this.$mRouter.reLaunch({
 						route: '/pages/index/index'
 					});
 					this.btnLoading = false;
 				}).catch(e => {
-					console.log(e)
-					const err = JSON.parse(e.data)
-					this.$mHelper.toast(err.message)
+					this.$mHelper.toast(e.msg)
 					this.btnLoading = false;
 				});
 			},
@@ -131,27 +98,37 @@
 				this.tips = text;
 			},
 			getCode() {
+				if (!this.$mHelper.checkMobile(this.form.phone)) {
+					this.$mHelper.toast('手机号码格式有误')
+					return
+				}
 				if (this.$refs.uCode.canGetCode) {
 					// 模拟向后端请求验证码
 					uni.showLoading({
 						title: '正在获取验证码'
 					})
-					setTimeout(() => {
+					this.$http.post(sendSmsCode, {
+						mobile: this.form.phone,
+						type: 1
+					}).then(res => {
+						console.log(res)
 						uni.hideLoading();
 						// 这里此提示会被this.start()方法中的提示覆盖
 						this.$u.toast('验证码已发送');
 						// 通知验证码组件内部开始倒计时
 						this.$refs.uCode.start();
-					}, 2000);
+					}).catch(err => {
+						console.log(err)
+					})
 				} else {
 					this.$u.toast('倒计时结束后再发送');
 				}
 			},
 			end() {
-				this.$u.toast('倒计时结束');
+				// this.$u.toast('倒计时结束');
 			},
 			start() {
-				this.$u.toast('倒计时开始');
+				// this.$u.toast('倒计时开始');
 			},
 			toBack(){
 				this.$mRouter.back()

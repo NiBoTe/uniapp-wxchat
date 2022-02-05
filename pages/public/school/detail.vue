@@ -1,18 +1,36 @@
 <template>
 	<view class="detail">
-		<u-parse :html="content"></u-parse>
+		<u-parse :html="detail.detail"></u-parse>
 	</view>
 </template>
 
 <script>
+	import { schoolDetail } from '@/api/school.js'
 	export default {
 		data() {
 			return {
-				content: `
-					<p>露从今夜白，月是故乡明</p>
-					<img src="https://cdn.uviewui.com/uview/swiper/2.jpg" />
-				`
+				universityId: null,
+				detail: {},
 			};
+		},
+		onLoad(options) {
+			console.log(options)
+			if(options.universityId) this.universityId = options.universityId
+			this.initData();
+		},
+		methods:{
+			initData(){
+				console.log('========')
+				this.$http.get(schoolDetail, {
+					universityId: this.universityId
+				}).then(res => {
+					console.log(res)
+					this.detail = res.data
+					uni.setNavigationBarTitle({
+						title: this.detail.name
+					})
+				})
+			}
 		}
 	}
 </script>

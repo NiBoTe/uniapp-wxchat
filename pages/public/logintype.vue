@@ -7,28 +7,32 @@
 
 		<view class="title">{{loginType === 'code' ? '手机快捷登录' : '账号密码登录'}}</view>
 		<view class="subtitle" v-if="loginType === 'code'">未注册过的手机号将自动创建账号</view>
-		<view class="subtitle" v-else>  </view>
+		<view class="subtitle" v-else> </view>
 		<view class="form">
 			<view class="form-item">
 				<view class="ipt">
-					<u-input v-model="form.phone" placeholder-style="placeholderStyle" type="number" maxlength="11" :clearable="clearable" placeholder="请输入您的手机号" />
+					<u-input v-model="form.phone" placeholder-style="placeholderStyle" type="number" maxlength="11"
+						:clearable="clearable" placeholder="请输入您的手机号" />
 				</view>
 				<view class="code" @click="getCode()">
 					<text>{{tips}}</text>
-					<u-verification-code :seconds="seconds" change-text="XS后重新获取" @end="end" @start="start" ref="uCode" @change="codeChange">
+					<u-verification-code :seconds="seconds" change-text="XS后重新获取" @end="end" @start="start" ref="uCode"
+						@change="codeChange">
 					</u-verification-code>
 				</view>
 			</view>
 
 			<view class="form-item" v-if="loginType === 'code'">
 				<view class="ipt">
-					<u-input type="number" maxlength="25" placeholder-style="placeholderStyle" :clearable="clearable" v-model="form.password" placeholder="请输入您的验证码" />
+					<u-input type="number" maxlength="25" placeholder-style="placeholderStyle" :clearable="clearable"
+						v-model="form.code" placeholder="请输入您的验证码" />
 				</view>
 			</view>
-			
+
 			<view class="form-item" v-if="loginType === 'password'">
 				<view class="ipt">
-					<u-input type="password" placeholder-style="placeholderStyle" :clearable="clearable" v-model="form.password" placeholder="请输入您的密码" />
+					<u-input type="password" placeholder-style="placeholderStyle" :clearable="clearable"
+						v-model="form.password" placeholder="请输入您的密码" />
 				</view>
 			</view>
 		</view>
@@ -57,7 +61,8 @@
 					<text>手机号快捷登录</text>
 				</button>
 				<view class="line" v-if="loginType === 'password'"></view>
-				<button class="other-btn" @click="navTo('/pages/public/forgotPassword')" v-if="loginType === 'password'">
+				<button class="other-btn" @click="navTo('/pages/public/forgotPassword')"
+					v-if="loginType === 'password'">
 					<text>忘记密码</text>
 				</button>
 			</view>
@@ -65,7 +70,7 @@
 
 		<view class="login-other">
 			<u-divider color="#9E9E9E" fontSize="24" half-width="250" border-color="#E9E9E9">其他方式登录</u-divider>
-			<button>
+			<button @click="wxLogin">
 				<image src="/static/login_wechat.png"></image>
 			</button>
 		</view>
@@ -75,8 +80,9 @@
 <script>
 	import {
 		mpWechatLogin,
-		wechatH5Login,
-		login
+		sendSmsCode,
+		loginOrRegisterBySmsCode,
+		loginByMobilePassword,
 	} from '@/api/login';
 
 	export default {
@@ -88,8 +94,9 @@
 				loginType: 'code',
 				wxcode: null,
 				form: {
-					phone: '',
+					phone: '18292658643',
 					password: '',
+					code: '',
 				},
 				tips: '获取验证码',
 				seconds: 60,
@@ -102,6 +109,7 @@
 			};
 		},
 		onShow() {
+			this.getWxCode()
 			this.btnLoading = false;
 			if (uni.getStorageSync('accessToken')) {
 				this.$mRouter.reLaunch({
@@ -120,7 +128,7 @@
 			} else {
 				this.appAgreementDefaultSelect = true;
 			}
-			this.getWxCode()
+
 		},
 		methods: {
 			getWxCode() {
@@ -148,79 +156,139 @@
 					this.btnLoading = false;
 					return;
 				}
-				if (e.detail.errMsg === 'getPhoneNumber:ok') {
-					// 检查登录态是否过期
-					wx.checkSession({
-						success(res) {
-							this.thirdPartyAuthLogin();
-						},
-						fail(err) {
-							wx.login({
-								success: res => {
-									_this.wxcode = res.code
-									_this.thirdPartyAuthLogin();;
-								}
-							})
-						}
-					})
-
+				
+				if(this.loginType === 'code') {
+					this.thirdPartyAuthLogin();
 				} else {
-					_this.btnLoading = false;
+					this.passwordLogin();
 				}
+				return
+				// if (e.detail.errMsg === 'getPhoneNumber:ok') {
+				// 	// 检查登录态是否过期
+				// 	wx.checkSession({
+				// 		success(res) {
+							
+				// 		},
+				// 		fail(err) {
+				// 			wx.login({
+				// 				success: res => {
+				// 					_this.wxcode = res.code
+				// 					_this.thirdPartyAuthLogin();;
+				// 				}
+				// 			})
+				// 		}
+				// 	})
+
+				// } else {
+				// 	_this.btnLoading = false;
+				// }
 
 			},
+
 			thirdPartyAuthLogin() {
 				const data = {
-					userName: this.form.phone,
-					endpoint: 'APP',
-					password: this.form.password
+					mobile: this.form.phone,
+					platform: 'miniapp',
+					code: this.form.code
 				}
-				this.$http.post(login, data).then(async r => {
-					// if (r.code != '000000') {
-					// 	this.$mHelper.toast(r.msg)
-					// 	return
-					// }
-					await this.$mStore.commit('setToken', r.token);
-					await this.$mStore.commit('login', r);
+				this.$http.post(loginOrRegisterBySmsCode, data).then(async r => {
+					const data = r.data;
+					await this.$mStore.commit('setToken', data.token);
+					await this.$mStore.commit('login', data.user);
 					this.$mHelper.toast('已为您授权登录');
-					this.$mRouter.redirectTo({
+					this.$mRouter.reLaunch({
 						route: '/pages/index/index'
 					});
 					this.btnLoading = false;
 				}).catch(e => {
-					console.log(e)
-					const err = JSON.parse(e.data)
-					this.$mHelper.toast(err.message)
+					this.$mHelper.toast(e.msg)
 					this.btnLoading = false;
 				});
+			},
+			
+			// 手机号密码登录
+			passwordLogin(){
+				const data = {
+					mobile: this.form.phone,
+					platform: 'miniapp',
+					password: this.form.password
+				}
+				this.$http.post(loginByMobilePassword, data).then(async r => {
+					const data = r.data;
+					await this.$mStore.commit('setToken', data.token);
+					await this.$mStore.commit('login', data.user);
+					this.$mHelper.toast('已为您授权登录');
+					this.$mRouter.reLaunch({
+						route: '/pages/index/index'
+					});
+					this.btnLoading = false;
+				}).catch(e => {
+					this.$mHelper.toast(e.msg)
+					this.btnLoading = false;
+				});
+			},
+			// 微信登录
+			wxLogin() {
+				this.$http.post(mpWechatLogin, {
+					code: this.wxcode
+				}).then(async r => {
+					const data = r.data;
+					await this.$mStore.commit('setToken', data.token);
+					await this.$mStore.commit('login', data.user);
+					this.$mHelper.toast('已为您授权登录');
+					this.$mRouter.reLaunch({
+						route: '/pages/index/index'
+					});
+				}).catch(err => {
+					console.log(err)
+					if (err.code === 201) {
+						this.$mRouter.push({
+							route: `/pages/public/bindphone?ticket=${err.data.ticket}`
+						})
+					} else {
+						this.$mHelper.toast(err.msg)
+					}
+				})
 			},
 			codeChange(text) {
 				this.tips = text;
 			},
 			getCode() {
+
+				if (!this.$mHelper.checkMobile(this.form.phone)) {
+					this.$mHelper.toast('手机号码格式有误')
+					return
+				}
 				if (this.$refs.uCode.canGetCode) {
 					// 模拟向后端请求验证码
 					uni.showLoading({
 						title: '正在获取验证码'
 					})
-					setTimeout(() => {
+					this.$http.post(sendSmsCode, {
+						mobile: this.form.phone,
+						type: 1
+					}).then(res => {
+						console.log(res)
 						uni.hideLoading();
 						// 这里此提示会被this.start()方法中的提示覆盖
 						this.$u.toast('验证码已发送');
 						// 通知验证码组件内部开始倒计时
 						this.$refs.uCode.start();
-					}, 2000);
+					}).catch(err => {
+						console.log(err)
+					})
+
 				} else {
 					this.$u.toast('倒计时结束后再发送');
 				}
 			},
 			end() {
-				this.$u.toast('倒计时结束');
+				// this.$u.toast('倒计时结束');
 			},
 			start() {
-				this.$u.toast('倒计时开始');
+				// this.$u.toast('倒计时开始');
 			},
-			toBack(){
+			toBack() {
 				this.$mRouter.back()
 			}
 		}
@@ -265,7 +333,7 @@
 				display: flex;
 				align-items: center;
 				border-bottom: 2rpx solid #E9E9E9;
-				
+
 				&:first-of-type {
 					margin-top: 68rpx;
 				}
@@ -318,6 +386,7 @@
 				display: flex;
 				justify-content: center;
 				align-items: center;
+
 				button {
 					margin: 0;
 					padding: 0;
@@ -333,8 +402,8 @@
 						border: none;
 					}
 				}
-				
-				.line{
+
+				.line {
 					margin: 0 24rpx;
 					width: 2rpx;
 					height: 24rpx;
@@ -372,8 +441,8 @@
 		/deep/ .u-checkbox__label {
 			margin-right: 0 !important;
 		}
-		
-		/deep/ .u-input__input{
+
+		/deep/ .u-input__input {
 			font-size: 30rpx;
 			font-weight: 500;
 			color: #333;

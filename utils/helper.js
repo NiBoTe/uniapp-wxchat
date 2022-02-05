@@ -213,5 +213,9 @@ export default {
 		var reg = new RegExp((`(${key})`), "gm");
 		var replace = '<span style="color:#2C3AFF;font-weight:bold;">$1</span>';
 		return str.replace(reg, replace);
+	},
+	// 验证手机号
+	checkMobile(mobile){
+	    return RegExp(/^1[34578]\d{9}$/).test(mobile);
 	}
 };
