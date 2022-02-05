@@ -2,7 +2,8 @@
 	<view class="container">
 		<scroll-view class="tabs" :scroll-x="true">
 			<view class="tab" :class="type !== 'list' ? 'zero' : '' " v-for="(item, index) in list" :key="index" @click="tabClick(item, index)">
-				<text>{{item.year}}</text>
+				<text v-if="type === 'time'">{{item.year}}</text>
+				<text v-else>{{item}}</text>
 				<view class="tab-border" v-if="activeIndex === index">
 					<image src="/static/public/home_scroll_style.png"></image>
 				</view>
@@ -24,7 +25,7 @@
 		},
 		data() {
 			return {
-				list: [],
+				list: ['素描','素描','素描','素描'],
 				activeIndex: 0,
 			};
 		},

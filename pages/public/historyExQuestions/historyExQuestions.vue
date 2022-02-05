@@ -159,7 +159,7 @@
 				this.$http.post(questionPageList, {
 					menuId: this.leftItemNum,
 					specialty: this.rightTabList[rightTabNum],
-					year: this.leftItemNum
+					year: this.yearSpecialtyList[this.rightTimeNum].year
 				}).then(res => {
 					console.log(res)
 				})
