@@ -36,7 +36,8 @@
 		}, {
 			"path": "pages/profile/profile",
 			"style": {
-				"navigationBarTitleText": "历年考题",
+				"navigationBarTitleText": "我的",
+				"navigationStyle": "custom",
 				"enablePullDownRefresh": false
 			}
 
@@ -122,7 +123,7 @@
 					"path": "historyExQuestions/historyExQuestions",
 					"style": {
 						"navigationBarTitleText": "历年考题",
-						"navigationStyle": "custom", // 隐藏系统导航栏
+						"navigationStyle": "custom",
 						"enablePullDownRefresh": false
 					}
 				},
@@ -130,6 +131,7 @@
 					"path": "historyExQuestions/excontent",
 					"style": {
 						"navigationBarTitleText": "考试内容",
+						"navigationStyle": "custom",
 						"enablePullDownRefresh": false
 					}
 				},
@@ -137,6 +139,7 @@
 					"path": "historyExQuestions/topScoreList",
 					"style": {
 						"navigationBarTitleText": "高分试卷",
+						"navigationStyle": "custom",
 						"enablePullDownRefresh": false
 					}
 				},
@@ -144,6 +147,7 @@
 					"path": "historyExQuestions/detail",
 					"style": {
 						"navigationBarTitleText": "试卷详情",
+						"navigationStyle": "custom",
 						"enablePullDownRefresh": false
 					}
 				},

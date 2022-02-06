@@ -23,7 +23,7 @@
 						
 					</view>
 				
-					<view class="item-list" @click="handleItemListClick(items)" :class="leftItemNum === items.id? 'item-list-active':''" v-show="leftNum === index" v-for="items in item.childMenus" :key="items.id">
+					<view class="item-list" @click="handleItemListClick(items, indexs)" :class="leftItemNum === indexs ? 'item-list-active':''" v-show="leftNum === index" v-for="(items, indexs) in item.childMenus" :key="items.id">
 						 {{ items.name }}
 					</view>
 				
@@ -31,7 +31,7 @@
 			</view>
 			<view class="c-right">
 				<view class="title">
-					{{leftItemName}}
+					{{leftItemName || ''}}
 				</view>
 				<view class="date">
 				<!-- 	<view class="date-list">
@@ -50,25 +50,25 @@
 					</view>
 				</scroll-view>
 				
-				<view class="r-content">
-					<view class="test-list">
-						<view class="test-name">考试名称</view>
-						<view class="subjects-item">
+				<scroll-view scroll-y class="r-content" @scrolltolower="lower">
+					<view class="test-list" v-for="(item, index) in list" :key="index">
+						<view class="test-name">{{item.name}}</view>
+						<view class="subjects-item" v-for="(itemc, indexc) in item.subjects" :key="indexc">
 							<view class="subjects-name">
-								科目
+								{{itemc.subjectName}}
 							</view>
-							<view class="item">
-								<view class="name">
-									考试题目
+							<view class="item" v-for="(itemb, indexb) in itemc.questions" :key="indexb" @click="detailTap(itemb, itemc)">
+								<view class="name u-line-1">
+									{{itemb.title}}
 								</view>
 								<view class="item-b">
 									<view class="text">
-										人物半身像随意创作性别年龄大小种族不限，西方人物室外风景色彩赏析，试的师傅说
+										{{itemb.content}}
 									</view>
 									<view class="time">
 										<view class="t-l">
 											<view class="l">考试时间</view>
-											<view class="r">2019.12.26</view>
+											<view class="r">{{moment(itemb.examDate).format('YYYY.MM.DD')}}</view>
 										</view>
 										<view class="t-r">
 											查看详情<u-icon name="arrow-right" size="24" class="arrow"></u-icon>
@@ -76,7 +76,7 @@
 									 </view>
 									 <view class="line"></view>
 									 <view class="bottom">
-									 	<view class="left">
+									 	<view class="left" v-if="itemb.havePaper">
 									 		<image class="img" src="../../../static/public/examinationPaper_icon.png" mode=""></image>
 											高分试卷
 									 	</view>
@@ -85,13 +85,13 @@
 										</view>
 									 </view>
 								</view>
-								
-								
-								
 							</view>
 						</view>
+						<u-gap height="16" margin-top="28" bg-color="#F7F7F7"></u-gap>
 					</view>
-				</view>
+					
+					<u-loadmore :status="loadStatus" @loadmore="addData"></u-loadmore>
+				</scroll-view>
 			</view>
 		</view>
 	</view>
@@ -99,22 +99,28 @@
 
 <script>
 	import drawingColumn from '@/components/drawingColumn/drawingColumn.vue'
-	import { historyExamMenu, getYearSpecialty } from '@/api/history_exam.js'
+	import { historyExamMenu, getYearSpecialty, questionPageList } from '@/api/history_exam.js'
+	import moment from '@/common/moment.js'
 	export default {
 		components:{
 			drawingColumn	
 		},
 		data() {
 			return {
+				moment,
+				loadStatus: 'loadmore',
 				tabNumber: 'one',
 				leftData: [],
 				leftNum: 0,
-				leftItemNum: null,
+				leftItemNum: 0,
 				leftItemName: null,
 				yearSpecialtyList: [],
 				rightTabList: [],
 				rightTimeNum: 0,
-				rightTabNum: 0
+				rightTabNum: 0,
+				current: 1,
+				size: 10,
+				list: []
 			}
 		},
 		onLoad() {
@@ -122,15 +128,14 @@
 		},
 		methods: {
 			initData(){
-					this.$http.post(historyExamMenu, null,{
+					this.$http.post(historyExamMenu, null, {
 						params: {
 							type: this.tabNumber === 'one' ? 0 : 1	
 						}
 					}).then(res => {
-						console.log(res)
 						this.leftData = res.data
 						this.leftNum = 0;
-						this.leftItemNum = this.leftData[0].childMenus[0].id;
+						this.leftItemNum = 0;
 						this.leftItemName = this.leftData[0].childMenus[0].name;
 						
 						this.getTabList();
@@ -142,26 +147,42 @@
 			getTabList(){
 					this.$http.post(getYearSpecialty, null,{
 						params: {
-							menuId: this.leftItemNum	
+							menuId: this.leftData[this.leftNum].childMenus[this.leftItemNum].id
 						}
 					}).then(res => {
-						console.log(res)
 						this.yearSpecialtyList = res.data
 						this.$refs.DrawingColumn.timeShow(this.yearSpecialtyList)
 						this.rightTabList = this.yearSpecialtyList.length ? this.yearSpecialtyList[0].specialtys : []
+						this.current = 1;
+						this.getList()
 					}).catch(err => {
 						this.$mHelper.toast(err.msg)
 					})
 					
 			},
 			// 获取考试列表
-			getLIST(){
+			getList(){
+				this.loadStatus = 'loading';
 				this.$http.post(questionPageList, {
-					menuId: this.leftItemNum,
-					specialty: this.rightTabList[rightTabNum],
+					menuId: this.leftData[this.leftNum].childMenus[this.leftItemNum].id,
+					current: this.current,
+					size: this.size,
+					specialty: this.rightTabList[this.rightTabNum],
 					year: this.yearSpecialtyList[this.rightTimeNum].year
 				}).then(res => {
-					console.log(res)
+					if(this.current === 1) {
+						this.list = res.data.records;
+					} else {
+						this.list = this.list.concat(res.data.records);
+					}
+					if(res.data.total <= this.list.length) {
+						this.loadStatus = 'nomore';
+					} else {
+						this.loadStatus = 'loadmore';
+					}
+					
+				}).catch(err => {
+					console.log(err)
 				})
 			},
 			handleTab(val){
@@ -170,20 +191,41 @@
 			},
 			handleLeftClick(index){
 				this.leftNum = index
+				this.leftItemNum = 0
+				this.leftItemName = this.leftData[this.leftNum].childMenus[0].name;
+				this.rightTabNum = 0;
+				this.getTabList();
 			},
-			handleItemListClick(item){
-				this.leftItemNum = item.id
+			handleItemListClick(item, index){
+				this.leftItemNum = index
 				this.leftItemName = item.name
+				this.rightTabNum = 0;
 				this.getTabList();
 			},
 			handleRTab(item, index){
 				this.rightTabNum = index
+				this.current = 1;
+				this.getList();
 			},
 			tabChange(e){
-				console.log(e)
 				this.rightTimeNum = e.index
 				this.rightTabNum = 0
 				this.rightTabList = this.yearSpecialtyList[e.index].specialtys
+				this.getList();
+			},
+			detailTap(item,itemc){
+				console.log(itemc)
+				this.$mRouter.push({
+					route: `/pages/public/historyExQuestions/excontent?questionId=${item.id}&subjectName=${itemc.subjectName}`
+				})
+			},
+			lower() {
+				this.loadStatus = 'loading';
+				this.addData();
+			},
+			addData(){
+				this.current ++;
+				this.getList();
 			}
 		}
 	}
@@ -191,6 +233,7 @@
 
 <style lang="scss">
 	.historyExQuestions {
+		height: calc(100vh);
 		.navbar {
 			height: 206rpx;
 			background-image: url('https://ykh-wxapp.oss-cn-hangzhou.aliyuncs.com/wx_applet_img/top_navbar_bg.png');
@@ -229,6 +272,8 @@
 		
 		
 		.content{
+			height: calc(100% - 260rpx);
+			overflow: hidden;
 			display: flex;
 			.c-left{
 				flex: 0 0 174rpx;
@@ -343,9 +388,14 @@
 					border-bottom: 2rpx solid #E9E9E9;
 				}
 				.r-content{
-					padding: 16rpx 34rpx 0 16rpx;
+					height: 100%;
+					box-sizing: border-box;
+					padding-top: 16rpx;
+					padding-bottom: 260rpx;
 					.test-list{
+						margin-bottom: 28rpx;
 						.test-name{
+							padding: 0 34rpx 0 16rpx;
 							text-align: center;
 							font-size: 30rpx;
 							font-family: PingFangSC-Regular, PingFang SC;
@@ -354,6 +404,7 @@
 							line-height: 30rpx
 						}
 						.subjects-item{
+							margin: 0 34rpx 0 16rpx;
 							.subjects-name{
 								text-align: center;
 								font-size: 34rpx;
@@ -365,7 +416,7 @@
 							}
 							.item{
 								// width: 526px;
-								height: 314rpx;
+								// height: 314rpx;
 								background: #FFFFFF;
 								box-shadow: 0px 6rpx 16rpx 6rpx rgba(230, 230, 230, 0.5);
 								border-radius: 16rpx;
@@ -440,6 +491,7 @@
 								.bottom{
 									width: 100%;
 									display: flex;
+									padding-bottom: 28rpx;
 									// background: #DCDFE6;
 									.left{
 										flex: 1;

@@ -15,7 +15,6 @@
 				</template>
 			</u-waterfall>
 			<u-loadmore bg-color="rgb(240, 240, 240)" :status="loadStatus" @loadmore="addRandomData"></u-loadmore>
-
 		</scroll-view>
 	</view>
 </template>
