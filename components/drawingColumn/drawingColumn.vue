@@ -1,7 +1,7 @@
 <template>
 	<view class="container">
 		<scroll-view class="tabs" :scroll-x="true">
-			<view class="tab" :class="type !== 'list' ? 'zero' : '' " v-for="(item, index) in list" :key="index" @click="tabClick(item, index)">
+			<view class="tab" :class="[type !== 'list' ? 'zero' : '', activeIndex === index ? 'active' : '']" v-for="(item, index) in list" :key="index" @click="tabClick(item, index)">
 				<text v-if="type === 'time'">{{item.year}}</text>
 				<text v-else>{{item}}</text>
 				<view class="tab-border" v-if="activeIndex === index">

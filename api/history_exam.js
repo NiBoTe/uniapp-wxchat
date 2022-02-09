@@ -9,8 +9,20 @@ const getYearSpecialty = `${history_exam}getYearSpecialty`;
 // 历年考题分页
 const questionPageList = `${history_exam}questionPageList`;
 
+// 里面考题详情
+const questionDetail = `${history_exam}questionDetail`;
+	
+// 高分试卷
+const examPaperImgList = `${history_exam}examPaperImgList`;
+
+// 高分试卷详情
+const examPaperImgDetail = `${history_exam}examPaperImgDetail`;
+
 export {
 	historyExamMenu,
 	getYearSpecialty,
-	questionPageList
+	questionPageList,
+	questionDetail,
+	examPaperImgList,
+	examPaperImgDetail
 };

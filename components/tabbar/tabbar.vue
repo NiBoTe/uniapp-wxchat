@@ -2,8 +2,39 @@
 	<view class="tab-bar">
 		<view v-for="(item,index) in list" :key="index" class="tab-bar-item" @click="switchTab(item, index)">
 			<image class="tab-center" v-if="index === 2" src="/static/public/center.png"></image>
-			<view class="tab_text" v-else :style="{color: selected === index ? selectedColor : color}">{{item.text}}</view>
+			<view class="tab_text" v-else :style="{color: selected === index ? selectedColor : color}">{{item.text}}
+			</view>
 		</view>
+
+
+		<u-popup v-model="popShow" mode="bottom" border-radius="40">
+			<view class="pop-content">
+				<view class="pop-list">
+					<view class="pop-item">
+						<image src="/static/public/want_painting.png"></image>
+						<text>我要评画</text>
+					</view>
+					
+					<view class="pop-item">
+						<image src="/static/public/my_textbook.png"></image>
+						<text>高分教材</text>
+					</view>
+					
+					<view class="pop-item">
+						<image src="/static/public/dynamic_release.png"></image>
+						<text>发布动态</text>
+					</view>
+					<view class="pop-item">
+						<image src="/static/public/my_application.png"></image>
+						<text>我的报考</text>
+					</view>
+				</view>
+				
+				<view class="pop-close" @click="popShow = false">
+					<image src="/static/public/my_close.png"></image>
+				</view>
+			</view>
+		</u-popup>
 	</view>
 
 </template>
@@ -15,13 +46,15 @@
 		props: {
 			selected: { // 当前选中的tab index
 				type: Number,
-				default: 0
+				default: 0,
+				
 			}
 		},
 		data() {
 			return {
 				color: "#9C9C9C",
 				selectedColor: this.$mConstDataConfig.themeColor,
+				popShow: false,
 				list: [{
 						"pagePath": "/pages/index/index",
 						"text": "首页"
@@ -47,13 +80,16 @@
 		},
 		methods: {
 			switchTab(item, index) {
-				console.log("item", item)
-				console.log("index", index)
 				let url = item.pagePath;
+				if(index === 2) {
+					this.popShow = true
+				} else {
+					this.popShow = false
+					uni.switchTab({
+						url
+					})
+				}
 				
-				uni.switchTab({
-					url
-				})
 
 			}
 		}
@@ -74,6 +110,7 @@
 		align-items: center;
 		padding-bottom: constant(safe-area-inset-bottom);
 		padding-bottom: env(safe-area-inset-bottom);
+
 		.tab-bar-item {
 			flex: 1;
 			text-align: center;
@@ -90,6 +127,38 @@
 			.tab_text {
 				font-size: 34rpx;
 				font-weight: 500;
+			}
+		}
+		
+		
+		.pop-content{
+			.pop-list{
+				padding-top: 72rpx;
+				display: flex;
+				justify-content: space-around;
+				align-items: center;
+				.pop-item{
+					display: flex;
+					flex-direction: column;
+					align-items: center;
+					image{
+						width: 112rpx;
+						height: 86rpx;
+					}
+					text{
+						font-size: 28rpx;
+						color: #333333;
+					}
+				}
+			}
+			
+			.pop-close{
+				margin: 148rpx 0 40rpx 0;
+				text-align: center;
+				image{
+					width: 34rpx;
+					height: 34rpx;
+				}
 			}
 		}
 	}
