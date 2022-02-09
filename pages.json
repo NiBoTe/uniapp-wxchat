@@ -41,7 +41,7 @@
 			}
 
 		}
-	],
+    ],
 	"subPackages": [
 		// 设置
 		{
@@ -61,6 +61,19 @@
 						"enablePullDownRefresh": false
 					}
 
+				}
+			]
+		},
+		// 设置
+		{
+			"root": "pages/teachers",
+			"pages": [
+				// 关于详情
+				{
+					"path": "dynamicHomePage",
+					"style": {
+						"navigationBarTitleText": "动态主页"
+					}
 				}
 			]
 		},
