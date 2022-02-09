@@ -14,7 +14,7 @@
 					<u-input v-model="form.phone" placeholder-style="placeholderStyle" type="number" maxlength="11"
 						:clearable="clearable" placeholder="请输入您的手机号" />
 				</view>
-				<view class="code" @click="getCode()">
+				<view class="code" @click="getCode()" v-if="loginType === 'code'">
 					<text>{{tips}}</text>
 					<u-verification-code :seconds="seconds" change-text="XS后重新获取" @end="end" @start="start" ref="uCode"
 						@change="codeChange">

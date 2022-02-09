@@ -21,15 +21,15 @@
 			},
 			status: {
 				type: String,
-				default: 'nonetwork'
+				default: 'nodata'
 			},
 			title: {
 				type: String,
-				default: '网络已断开'
+				default: '无结果'
 			},
 			text: {
 				type: String,
-				default: '暂时没有XXXX内容'
+				default: '暂时没有内容'
 			}
 		},
 		mixins: [],

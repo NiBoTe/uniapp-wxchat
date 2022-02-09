@@ -1,47 +1,60 @@
 <template>
 	<view class="detail">
-		<scroll-view class="top" scroll-y="true">
+		<view class="navbar">
+			<u-navbar title="试卷详情" back-icon-color="#1B1B1B" :border-bottom="false"
+				title-color="#1B1B1B">
+				
+				<view slot="right">
+					<view class="start" @click.top="favoriteTap">
+						<u-icon name="star" color="#3A3D71" v-show="!item.isFavorite"></u-icon>
+						<u-icon name="star-fill" color="#35CE96" v-show="item.isFavorite"></u-icon>
+					</view>
+				</view>
+			</u-navbar>
+		</view>
+		<view class="top">
 			<view class="img">
-				<image
-					src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic%2F93%2F59%2F5f%2F93595f21e11a1adbe7190294058ad05f.jpg&refer=http%3A%2F%2Fup.enterdesk.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1645435629&t=96d955bb726b23a142c81386c02ca070"
+				<image :src="detail.mosaicImg"
 					mode="widthFix"></image>
 			</view>
 			<view class="content">
 				<view class="title">
-					杭州白塔岭富阳校区
+					{{detail.question.title}}
 				</view>
 				<view class="level">
 					<u-icon name="eye" color="#3A3D71" size="30"></u-icon>
-					<view class="num">8.5万次</view>
+					<view class="num">{{detail.viewCount}}次</view>
 					<view class="price">
-						¥<text>12.99</text>
+						¥<text>{{detail.price}}</text>
 					</view>
 				</view>
 				<view class="des">
-					人物半身像随意创作，性别年龄大小种族不限
+					{{detail.description}}
 				</view>
 				<view class="copyright">
-					版权归XXXX所有
+					版权归{{detail.copyright}}所有
 				</view>
 				<view class="delivery-content">
 					<view class="left">
-						<image src="../../../static/public/delivery_content.png" mode="widthFix"></image>发货内容
+						<image src="/static/public/delivery_content.png" mode="widthFix"></image>发货内容
 					</view>
-
 					<view class="right">试卷一份</view>
 				</view>
 			</view>
-
-		</scroll-view>
-
-		<view class="bottom">
-			<button type="default" class="button">立即购买</button>
 		</view>
+
+		<view class="footer">
+			<view class="footer-btn" @click="submitTap">立即购买</view>
+		</view>
+		
+		<!--页面加载动画-->
+		<rfLoading isFullScreen :active="loading"></rfLoading>
 	</view>
 </template>
 <script>
 	import {
-		questionDetail
+		examPaperImgDetail,
+		addFavorite
 	} from '@/api/history_exam.js'
 	export default {
 		components: {
@@ -50,24 +63,51 @@
 
 		data() {
 			return {
-
+				loading: true,
+				id: null,
+				detail: null,
 			}
 		},
 		onLoad(options) {
-			if (options.questionId) this.questionId = options.questionId;
+			if (options.id) this.id = options.id;
 			this.initData();
 		},
 		methods: {
 			initData() {
-				this.$http.post(questionDetail, null, {
+				this.$http.post(examPaperImgDetail, null, {
 					params: {
-						questionId: this.questionId
+						examPaperImgId: this.id
 					}
 				}).then(res => {
-					console.log(res)
+					this.detail = res.data
+					this.loading = false;
 				}).catch(err => {
 					console.log(err)
 				})
+			},
+			// 收藏
+			favoriteTap() {
+				this.$http.post(addFavorite, null, {
+					params: {
+						examPaperImgId: this.detail.id,
+						addFavorite: !this.detail.isFavorite
+					}
+				}).then(res => {
+					console.log(res)
+					this.initData()
+					this.$mHelper.toast(this.detail.isFavorite ? '收藏成功' : '取消成功')
+				}).catch(err => {
+					console.log(err)
+				})
+			},
+			// 立即购买
+			submitTap(){
+				console.log('=======')
+				
+				this.$mRouter.push({
+					route: `/pages/public/historyExQuestions/sureOrder?id=${this.id}`
+				})
+				
 			}
 		},
 	}
@@ -82,9 +122,8 @@
 		width: 100%;
 
 		.top {
-			height: calc(100vh - 204rpx);
 			width: 100%;
-
+			padding-bottom: 160rpx;
 			.img {
 				width: 100%;
 
@@ -187,23 +226,29 @@
 
 		}
 
-		.bottom {
-			border-top: 1px solid #EDEDED;
-			height: 204rpx;
-
-			.button {
-				margin: 0 auto;
-				margin-top: 26rpx;
-				width: 682rpx;
+		.footer {
+			position: fixed;
+			bottom: 0;
+			left: 0;
+			right: 0;
+			padding: 14rpx 34rpx;
+			padding-bottom: calc(14rpx + constant(safe-area-inset-bottom));
+			padding-bottom: calc(14rpx + env(safe-area-inset-bottom));
+			background-color: #fff;
+			&-btn {
 				height: 88rpx;
-				background: #2C3AFF;
-				box-shadow: 0rpx 6rpx 14rpx 2rpx rgba(235, 235, 235, 0.14);
+				line-height: 88rpx;
+				text-align: center;
+				background: $u-type-primary;
+				box-shadow: 0px 6rpx 14rpx 2rpx rgba(235, 235, 235, 0.14);
 				border-radius: 44rpx;
 				font-size: 32rpx;
-				line-height: 88rpx;
-				font-family: PingFangSC-Regular, PingFang SC;
-				font-weight: 400;
-				color: #FFFFFF;
+				color: #fff;
+				
+				&.disabled{
+					background: #EDEFF2;
+					color: #8F9091;
+				}
 			}
 		}
 	}

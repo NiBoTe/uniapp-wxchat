@@ -20,6 +20,7 @@ import $mRouter from '@/utils/router';
 // 全局组件
 import rfImage from '@/components/rf-image/rf-image';
 import rfLoading from '@/components/rf-loading';
+import nodata from '@/components/nodata'
 // 网络状态监听
 uni.getNetworkType({
 	success: res => {
@@ -44,6 +45,7 @@ Vue.prototype.$mRouter = $mRouter;
 
 Vue.component('rfImage', rfImage);
 Vue.component('rfLoading', rfLoading);
+Vue.component('nodata', nodata);
 
 if (process.env.NODE_ENV === 'production') {
 	Vue.config.productionTip = false;

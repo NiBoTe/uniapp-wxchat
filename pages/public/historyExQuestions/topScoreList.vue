@@ -5,23 +5,22 @@
 				title-color="#ffffff">
 			</u-navbar>
 		</view>
-		<scroll-view scroll-y class="scroll-warper">
+		<scroll-view scroll-y class="scroll-warper" @scrolltolower="lower">
 			<view class="list">
-				<view class="item" v-for="item in 5">
+				<view class="item" v-for="(item, index) in list" :key="index" @click="detailTap(item)">
 					<view class="img">
-						<image
-							src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fpic.jj20.com%2Fup%2Fallimg%2Fmn02%2F091920214K9%2F200919214K9-0.jpg&refer=http%3A%2F%2Fpic.jj20.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1645428610&t=56d0c75b078ec6256e1adda5e2e56c06">
-						</image>
+						<image :src="item.mosaicImg" mode="widthFix"></image>
 					</view>
 					<view class="bottom">
-						<view class="text">
-							杭州白塔岭富阳校区
+						<view class="text u-line-1">
+							{{item.description}}
 						</view>
 						<view class="operation">
 							<u-icon name="eye" color="#3A3D71" size="30"></u-icon>
-							<view class="num">8.5万次</view>
-							<view class="start">
-								<image class="start-img" src="../../../static/public/dynamic_star.png" mode=""></image>
+							<view class="num">{{item.viewCount}}次</view>
+							<view class="start" @click.top="favoriteTap(item, index)">
+								<u-icon name="star" color="#3A3D71" v-show="!item.isFavorite"></u-icon>
+								<u-icon name="star-fill" color="#35CE96" v-show="item.isFavorite"></u-icon>
 							</view>
 						</view>
 					</view>
@@ -33,8 +32,10 @@
 	</view>
 </template>
 <script>
-	
-	import { examPaperImgList } from '@/api/history_exam.js'
+	import {
+		examPaperImgList,
+		addFavorite
+	} from '@/api/history_exam.js'
 	export default {
 		components: {
 
@@ -43,19 +44,67 @@
 			return {
 				questionId: null,
 				loadStatus: 'loadmore',
+				current: 1,
+				size: 10,
+				list: []
 			}
 		},
 		onLoad(options) {
 			if (options.questionId) this.questionId = options.questionId;
-			
+
 			this.initData()
 		},
-		methods:{
-			initData(){
+		methods: {
+			initData() {
+
+				this.loadStatus = 'loading';
 				this.$http.post(examPaperImgList, {
-					questionId: this.questionId
+					questionId: this.questionId,
+					current: this.current,
+					size: this.size,
+				}).then(res => {
+					if (this.current === 1) {
+						this.list = res.data.records;
+					} else {
+						this.list = this.list.concat(res.data.records);
+					}
+					if (res.data.total <= this.list.length) {
+						this.loadStatus = 'nomore';
+					} else {
+						this.loadStatus = 'loadmore';
+					}
+
+				}).catch(err => {
+					console.log(err)
+				})
+			},
+			lower() {
+				this.loadStatus = 'loading';
+				this.addData();
+			},
+			addData() {
+				this.current++;
+				this.initData();
+			},
+			// 收藏
+			favoriteTap(item, index) {
+				this.$http.post(addFavorite, null, {
+					params: {
+						examPaperImgId: item.id,
+						addFavorite: !item.isFavorite
+					}
 				}).then(res => {
 					console.log(res)
+					this.$set(this.list[index], 'isFavorite', !item.isFavorite)
+					this.$mHelper.toast(item.isFavorite ? '收藏成功' : '取消成功')
+				}).catch(err => {
+					console.log(err)
+				})
+			},
+			// 查看详情
+			detailTap(item){
+				this.$mRouter.push({
+					route: `/pages/public/historyExQuestions/detail?id=${item.id}`
 				})
 			}
 		}
