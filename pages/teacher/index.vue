@@ -40,12 +40,11 @@
 				<!-- option end-->
 				<scroll-view scroll-y class="right-box-scroll">
 					<view class="page-view">
-						5555
 						<view class="class-item" v-for="(item , index) in list" :key="index" @click="detailTap(item)">
 							<view class="item-container">
 								<famous-teacher-item :item="item"></famous-teacher-item>
 							</view>
-					</view>
+						</view>
 					</view>
 				</scroll-view>
 			</view>

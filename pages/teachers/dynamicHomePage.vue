@@ -1,155 +1,412 @@
 <template>
-	<view class="dynamic-container">
-		<view class="dynamic-header">
-			<view class="">
-				<image class="dynamic-header-back" src="../../static/public/teacherDynamic/d_icon_back.png" mode=""></image>
-			</view>
-			<view class="">
-				<image class="dynamic-header-fx" src="../../static/public/teacherDynamic/d_icon_fx.png" mode=""></image>
-			</view>
-		</view>
-		<view class="dynamic-main">
-			<view class="main-top main-item">
-				<view class="main-top-item header-img">
-					<image class="headerimg" src="../../static/login_wechat.png" mode=""></image>
-					<image class="header-auth" src="../../static/public/auth.png" mode="" v-show="status == '1'"></image>
-				</view>
-				<view class="main-top-item">
-					<view class="text">关注</view>
-					<view class="num">652</view>
-				</view>
-				<view class="main-top-item ">
-					<view class="text">粉丝</view>
-					<view class="num">865w</view>
-				</view>
-				<view class="gz">已关注</view>
-			</view>
-			<view class="person-name main-item">刘泉海·LQH</view>
-			<view class="lable main-item">
-				<view v-for="(item,index) in lableList">{{item}}</view>
-			</view>
-		</view>
-	</view>
-</template>
+	<view class="container">
 
+		<view class="page">
+			<view class="header">
+				<image
+					src="https://img1.baidu.com/it/u=1319713773,2074606622&fm=253&fmt=auto&app=138&f=JPG?w=889&h=500">
+				</image>
+
+				<view class="settings" :style="{top: StatusBar + 44 + 'px'}" >
+					<image class="settings-back" src="/static/public/teacherDynamic/d_icon_back.png"></image>
+					<image src="/static/public/teacherDynamic/d_icon_fx.png"></image>
+				</view>
+			</view>
+			<view class="content">
+				<view class="content-header u-flex u-row-between">
+					<view class="u-flex">
+						<view class="head">
+							<view class="head-img u-flex u-row-center">
+								<image
+									src="https://img1.baidu.com/it/u=1319713773,2074606622&fm=253&fmt=auto&app=138&f=JPG?w=889&h=500">
+								</image>
+							</view>
+
+							<view class="head-auth">
+								<image src="/static/my/no_auth.png"></image>
+							</view>
+						</view>
+						<view class="header-item">
+							<text>关注</text>
+							<text class="num">652</text>
+						</view>
+						<view class="header-item" style="margin-left: 42rpx;">
+							<text>粉丝</text>
+							<text class="num">865w</text>
+						</view>
+					</view>
+
+					<view class="header-update">
+						<text>已关注</text>
+					</view>
+				</view>
+
+				<view class="content-subheader">
+					<view class="name">刘泉海·LQH</view>
+					<view class="subheader-list">
+						<view class="subheader-item lable main-item">
+							<view v-for="(item,index) in lableList">{{item}}</view>
+						</view>
+					</view>
+
+					<view class="subheader-text u-line-2">
+						文艺复兴是指13世纪末在意大利各城市兴起，以后扩展到西欧各国，于16世纪在欧洲盛行的一场思想文化运动，带来一段科学与艺术革命以后扩绘画领域来艺术革命以后扩…
+						<view class="fold" bindtap="fold" :data-text="foldText" :data-etc="textEtc"></view>
+					</view>
+				</view>
+
+				<view class="content-rate u-flex">
+					<view class="rate-item u-flex u-row-between" style="margin-right: 46rpx;">
+						<view class="left u-flex">
+							<image src="/static/my/book.png"></image>
+							<text>高分教材</text>
+						</view>
+						<view class="right u-flex">
+							<image src="/static/my/star.png"></image>
+							<text>4.8</text>
+						</view>
+					</view>
+					<view class="rate-item u-flex u-row-between">
+						<view class="left u-flex">
+							<image src="/static/my/pen.png"></image>
+							<text>评画评分</text>
+						</view>
+						<view class="right u-flex">
+							<image src="/static/my/star.png"></image>
+							<text>4.8</text>
+						</view>
+					</view>
+				</view>
+
+				<u-gap height="16" bg-color="#F7F7F7" margin-top="40"></u-gap>
+				<u-sticky :offset-top="0" bg-color="#fff" @fixed="fixedTap" @unfixed="unfixedTap">
+					<view class="tabs" :style="{paddingTop: isFixed ? StatusBar + 'px' : '0'}">
+						<u-tabs ref="tabs" :is-scroll="false" :list="tabList" :current="current" bar-width="62"
+							bar-height="8" gutter="40" active-color="#1B1B1B" inactive-color="#9E9E9E" font-size="30"
+							@change="tabChange">
+						</u-tabs>
+					</view>
+				</u-sticky>
+				<view class="borderBottom"></view>
+
+				<view class="subtabs">
+					<drawingColumn></drawingColumn>
+				</view>
+
+				<view class="content-box">
+					<!-- 评画 -->
+					<painting-evaluation></painting-evaluation>
+				</view>
+			</view>
+		</view>
+		<tab-bar :selected="4"></tab-bar>
+	</view>
+
+</template>
 <script>
+	import tabBar from '@/components/tabbar/tabbar.vue'
+	import drawingColumn from '@/components/drawingColumnTeachers/drawingColumn.vue'
+	import PaintingEvaluation from '@/components/paintingEvaluationTechaers/paintingEvaluation.vue'
 	export default {
+		components: {
+			tabBar,
+			drawingColumn,
+			PaintingEvaluation
+		},
 		data() {
 			return {
-				status:1,
+				StatusBar: this.StatusBar,
+				foldText: '展开',
+				textEtc: '...',
+				tabList: [{
+					name: '评画'
+				},{
+					name: '高分教材',
+				},{
+					name: '动态',
+				}],
+				current: 0,
+				swiperCurrent: 0,
+				isFixed: false,
 				// 标签
-				lableList:['色彩','素描','速写']
+				lableList:['色彩','素描','速写'],
 			}
 		},
+		onLoad() {
+
+		},
 		methods: {
-			
+			tabChange(index) {
+				this.current = index
+				this.swiperCurrent = index;
+			},
+			fixedTap(e) {
+				this.isFixed = true
+			},
+			unfixedTap(){
+				this.isFixed = false
+			}
 		}
 	}
 </script>
 
 <style lang="scss" scoped>
-.dynamic-header{
-	background: #ECF5FF;
-	display: flex;
-	justify-content: space-between;
-	padding: 110rpx 34rpx;
-	height: 490rpx;
-	background: rgba(0,0,0,0.4);
-	&-back{
-		width: 20rpx;
-		height: 36rpx;
-	}
-	&-fx{
-		width: 72rpx;
-		height: 72rpx;
-	}
-}
-.dynamic-main{
-	height: 620rpx;
-	background: #FFFFFF;
-	border-radius: 40rpx 40rpx 0rpx 0rpx;
-	margin-top: -306rpx;	
-	padding: 0 34rpx;
-}
-.main-top{
-	display: flex;
-	position: relative;
-	.header-img{
+	.container {
 		position: relative;
-		top: -74rpx;
-		width: 194rpx;
-		margin-right: 44rpx;
-		.headerimg{
-			width: 194rpx;
-			height: 194rpx;
-			background: #FFFFFF;
-			padding: 8rpx;
-			border-radius: 50%;
-		}
-		.header-auth{
-			width:56rpx;
-			height: 56rpx;
-			position: absolute;
-			bottom: 20rpx;
-			right: 5rpx;
+		height: 100vh;
+
+		.page {
+			.header {
+				position: relative;
+				height: 440rpx;
+
+				image {
+					width: 100%;
+					height: 440rpx;
+				}
+
+				.settings {
+					position: absolute;
+					z-index: 9;
+					right: 34rpx;
+					left: 34rpx;
+					display: flex;
+					justify-content: space-between;
+					image {
+						width: 72rpx;
+						height: 72rpx;
+					}
+					&-back{
+						width: 20rpx !important;
+						height: 36rpx !important;;
+					}
+				}
+			}
+
+
+			.content {
+				margin-top: -100rpx;
+				position: relative;
+				background-color: #fff;
+				border-radius: 40rpx 40rpx 0px 0px;
+
+				&-header {
+					padding: 0 34rpx;
+
+					.head {
+						margin-top: -72rpx;
+						margin-right: 42rpx;
+
+						&-img {
+							position: relative;
+							width: 202rpx;
+							height: 202rpx;
+							background-color: #fff;
+							border-radius: 50%;
+							overflow: hidden;
+
+							image {
+								width: 186rpx;
+								height: 186rpx;
+								border-radius: 50%;
+							}
+						}
+
+						&-auth {
+							position: relative;
+							z-index: 9;
+							margin-top: -28rpx;
+							display: flex;
+							justify-content: center;
+
+							image {
+								width: 136rpx;
+								height: 46rpx;
+
+							}
+						}
+					}
+
+
+					.header-item {
+						display: flex;
+						flex-direction: column;
+						align-items: center;
+
+						text {
+							font-size: 24rpx;
+							color: #888C90;
+
+							&.num {
+								display: block;
+								margin-top: 18rpx;
+								font-size: 30rpx;
+								font-weight: 800;
+								color: #3A3D71;
+							}
+						}
+					}
+
+					.header-update {
+						padding: 0 28rpx 0 28rpx;
+						display: flex;
+						justify-content: center;
+						align-items: center;
+						height: 68rpx;
+						background: #F3F3F3;
+						border-radius: 34rpx;
+
+						image {
+							width: 24rpx;
+							height: 24rpx;
+						}
+
+						text {
+							margin-left: 10rpx;
+							font-size: 24rpx;
+							color: #3A3D71;
+						}
+					}
+				}
+
+
+				&-subheader {
+					padding: 42rpx 28rpx 18rpx 34rpx;
+
+					.name {
+						font-size: 40rpx;
+						font-weight: 600;
+						color: #1B1B1B;
+					}
+
+					.subheader-list {
+						margin-top: 18rpx;
+						.lable{
+							display: flex;
+							view{
+								width: 84rpx;
+								height: 42rpx;
+								background: #EFF2FF;
+								border-radius: 21px;
+								margin-right: 30rpx;
+								font-size: 24rpx;
+								font-family: PingFangSC-Regular, PingFang SC;
+								font-weight: 400;
+								color: #676A8B;
+								line-height: 42rpx;
+								margin-bottom: 20rpx;
+								text-align: center;
+							}
+						}
+					}
+
+					.subheader-text {
+						margin-top: 14rpx;
+						position: relative;
+						line-height: 46rpx;
+						font-size: 26rpx;
+						color: #3A3D71;
+
+						.fold::before {
+							//设置在文本下面的展开按钮那一部分，此部分的前面设置——...省略号，并通过绝对定位设置在超出部分的后面
+							content: attr(data-etc);
+							position: absolute;
+							left: 0;
+							transform: translateX(4rpx);
+
+						}
+
+						.fold::after {
+							//设置文本下面的展开按钮的那一部分，此部分的后面设置——展开  展开按钮，并通过绝对定位设置在省略号的后面
+							content: attr(data-text);
+							position: absolute;
+							right: 0;
+							color: $u-type-primary;
+						}
+
+						.fold {
+							//展开按钮的那一部分，同样设置绝对定位，并设置宽高，将通过样式实现的省略号遮住，同时将::before和::after展开的内容设置在里面
+							width: 110rpx;
+							height: 45rpx;
+							position: absolute;
+							right: 0;
+							bottom: 0;
+							background-color: #fff;
+						}
+
+						.foldIntroduct {
+							//出现此样式名时，设置不出现省略号和展开按钮
+							-webkit-line-clamp: inherit !important;
+						}
+					}
+				}
+
+
+
+				&-rate {
+					padding: 0 32rpx 0 36rpx;
+
+					.rate-item {
+						flex: 1;
+						height: 68rpx;
+						background: linear-gradient(270deg, rgba(248, 250, 255, 0) 0%, #EFF2FF 100%);
+						border-radius: 12rpx;
+
+						.left {
+							image {
+								margin-left: 24rpx;
+								width: 30rpx;
+								height: 30rpx;
+							}
+
+							text {
+								margin-left: 14rpx;
+								font-size: 24rpx;
+								color: #3A3D71;
+							}
+						}
+
+						.right {
+
+							image {
+								width: 26rpx;
+								height: 26rpx;
+							}
+
+							text {
+								margin-left: 12rpx;
+								font-size: 28rpx;
+								font-weight: 800;
+								color: #676A8B;
+							}
+						}
+					}
+				}
+
+				.tabs {
+					padding-top: 4rpx;
+					background-color: #fff;
+				}
+
+				.borderBottom {
+					margin-top: -10rpx;
+					height: 2rpx;
+					border: 2rpx solid #E9E9E9;
+				}
+
+				.subtabs {
+					padding: 28rpx 0;
+				}
+			}
 		}
 	}
-	.main-top-item{
-		margin-right: 46rpx;
-		.text{
-			font-size: 24rpx;
-			font-family: PingFangSC-Regular, PingFang SC;
-			font-weight: 400;
-			color: #888C90;
-			margin: 20rpx 0 9rpx 0;
-		}
-		.num{
-			font-size: 30rpx;
-			font-family: PingFang-SC-Heavy, PingFang-SC;
-			font-weight: 800;
-			color: #333333;
-		}
-	}
-	.gz{
-		position: absolute;
-		top: 30rpx;
-		right: 34rpx;
-		width: 190rpx;
-		height: 68rpx;
-		line-height: 68rpx;
-		background: #F3F3F3;
-		text-align: center;
-		border-radius: 34rpx;
-		font-size: 24rpx;
-		font-family: PingFangSC-Medium, PingFang SC;
-		font-weight: 500;
-		color: #888C90;
-	}
-}
-.person-name{
-	font-size: 40rpx;
-	font-family: PingFangSC-Semibold, PingFang SC;
-	font-weight: 600;
-	color: #1B1B1B;
-	line-height: 40rpx;
-	margin-top: 40rpx;
-	margin-bottom: 26rpx;
-}
-.lable{
-	display: flex;
-	view{
-		width: 84rpx;
-		height: 42rpx;
-		background: #EFF2FF;
-		border-radius: 21px;
-		margin-right: 30rpx;
-		font-size: 24rpx;
-		font-family: PingFangSC-Regular, PingFang SC;
+	
+	
+	/deep/ .u-tab-item {
 		font-weight: 400;
-		color: #676A8B;
-		line-height: 42rpx;
-		margin-bottom: 20rpx;
-		text-align: center;
 	}
-}
+
+	/deep/ .u-tab-bar {
+		background-color: $u-type-primary !important;
+	}
 </style>
