@@ -16,6 +16,7 @@
 			"path": "pages/circle/index",
 			"style": {
 				"navigationBarTitleText": "圈子",
+				"navigationStyle": "custom",
 				"enablePullDownRefresh": false
 			}
 
@@ -42,7 +43,7 @@
 			}
 
 		}
-    ],
+	],
 	"subPackages": [
 		// 设置
 		{
@@ -61,7 +62,22 @@
 						"navigationBarTitleText": "用户协议",
 						"enablePullDownRefresh": false
 					}
-
+				},
+				{
+					"path": "address/index",
+					"style": {
+						"navigationBarTitleText": "地址管理",
+						"navigationBarTextStyle": "black",
+						"enablePullDownRefresh": false
+					}
+				},
+				{
+					"path": "address/add",
+					"style": {
+						"navigationBarTitleText": "添加收货地址",
+						"navigationBarTextStyle": "black",
+						"enablePullDownRefresh": false
+					}
 				}
 			]
 		},
@@ -170,6 +186,7 @@
 					"style": {
 						"navigationBarTitleText": "试卷详情",
 						"navigationStyle": "custom",
+						"navigationBarTextStyle": "black",
 						"enablePullDownRefresh": false
 					}
 				},
@@ -177,6 +194,8 @@
 					"path": "historyExQuestions/sureOrder",
 					"style": {
 						"navigationBarTitleText": "确认订单",
+						"navigationStyle": "custom",
+						"navigationBarTextStyle": "black",
 						"enablePullDownRefresh": false
 					}
 				},
@@ -228,31 +247,36 @@
 						"enablePullDownRefresh": false
 					}
 
+				}, {
+					"path": "top/addStudent",
+					"style": {
+						"navigationBarTitleText": "",
+						"navigationStyle": "custom",
+						"enablePullDownRefresh": false
+					}
+
+				}, {
+					"path": "top/paySuccess",
+					"style": {
+						"navigationBarTitleText": "",
+						"navigationStyle": "custom",
+						"enablePullDownRefresh": false
+					}
+
+				}, {
+					"path": "highScore/index",
+					"style": {
+						"navigationBarTitleText": "高分教材",
+						"enablePullDownRefresh": false
+					}
 				}
-				// , {
-				// 	"path": "top/addStudent",
-				// 	"style": {
-				// 		"navigationBarTitleText": "",
-				// 		"navigationStyle": "custom",
-				// 		"enablePullDownRefresh": false
-				// 	}
-
-				// }, {
-				// 	"path": "top/paySuccess",
-				// 	"style": {
-				// 		"navigationBarTitleText": "",
-				// 		"navigationStyle": "custom",
-				// 		"enablePullDownRefresh": false
-				// 	}
-
-				// }
 			]
 		}
 	],
 	"globalStyle": {
 		"navigationBarTitleText": "易考绘",
-		"navigationBarTextStyle": "white"
-		// "navigationBarBackgroundColor": "#4A99F8"
+		"navigationBarTextStyle": "white",
+		"navigationBarBackgroundColor": "#fff"
 	},
 	"tabBar": {
 		"custom": true,

@@ -31,8 +31,7 @@ let requests = [];
 http.interceptor.request(
 	config => {
 		/* 请求之前拦截器 */
-		config.header['X-UserToken'] = uni.getStorageSync('accessToken');
-		config.header['token'] = uni.getStorageSync('accessToken');
+		config.header['APP_TOKEN'] = uni.getStorageSync('accessToken');
 		return config;
 	},
 	error => {

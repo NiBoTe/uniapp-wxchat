@@ -18,11 +18,15 @@ const examPaperImgList = `${history_exam}examPaperImgList`;
 // 高分试卷详情
 const examPaperImgDetail = `${history_exam}examPaperImgDetail`;
 
+// 收藏/高分试卷
+const addFavorite = `${history_exam}addFavorite`;
+
 export {
 	historyExamMenu,
 	getYearSpecialty,
 	questionPageList,
 	questionDetail,
 	examPaperImgList,
-	examPaperImgDetail
+	examPaperImgDetail,
+	addFavorite
 };

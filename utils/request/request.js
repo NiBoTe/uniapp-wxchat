@@ -182,6 +182,12 @@ export default class Request {
 							// 成功
 							resolve(data);
 						} else {
+							console.log(data.code)
+							if(data.code === 401) {
+								uni.navigateTo({
+									url:'/pages/public/logintype'
+								})
+							}
 							reject(data);
 						}
 					

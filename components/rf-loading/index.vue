@@ -11,14 +11,14 @@
 				:style="{ transform: `translate(-50%, -${translateY}%)` }"
 			>
 				<slot>
-					<loop v-if="styleLoadingType === 'loop'" :color="themeColor.color" :size="size" />
-					<shrinkRect v-if="styleLoadingType === 'shrinkRect'" :color="themeColor.color" :size="size" />
-					<bounce v-if="styleLoadingType === 'bounce'" :color="themeColor.color" :size="size" />
-					<doubleBounce v-if="styleLoadingType === 'doubleBounce'" :color="themeColor.color" :size="size" />
-					<doubleCube v-if="styleLoadingType === 'doubleCube'" :color="themeColor.color" :size="size" />
-					<doubleDot v-if="styleLoadingType === 'doubleDot'" :color="themeColor.color" :size="size" />
-					<rotatePlane v-if="styleLoadingType === 'rotatePlane'" :color="themeColor.color" :size="size" />
-					<scaleOut v-if="styleLoadingType === 'scaleOut'" :color="themeColor.color" :size="size" />
+					<loop v-if="styleLoadingType === 'loop'" :color="themeColor" :size="size" />
+					<shrinkRect v-if="styleLoadingType === 'shrinkRect'" :color="themeColor" :size="size" />
+					<bounce v-if="styleLoadingType === 'bounce'" :color="themeColor" :size="size" />
+					<doubleBounce v-if="styleLoadingType === 'doubleBounce'" :color="themeColor" :size="size" />
+					<doubleCube v-if="styleLoadingType === 'doubleCube'" :color="themeColor" :size="size" />
+					<doubleDot v-if="styleLoadingType === 'doubleDot'" :color="themeColor" :size="size" />
+					<rotatePlane v-if="styleLoadingType === 'rotatePlane'" :color="themeColor" :size="size" />
+					<scaleOut v-if="styleLoadingType === 'scaleOut'" :color="themeColor" :size="size" />
 				</slot>
 				<view v-if="text.length" :style="{ color: textColor }">
 					{{ text }}
