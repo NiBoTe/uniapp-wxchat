@@ -8,7 +8,7 @@
 				</image>
 
 				<view class="settings" :style="{top: StatusBar + 44 + 'px'}" >
-					<image class="settings-back" src="/static/public/teacherDynamic/d_icon_back.png"></image>
+					<image class="settings-back" @click="goBack" src="/static/public/teacherDynamic/d_icon_back.png"></image>
 					<image src="/static/public/teacherDynamic/d_icon_fx.png"></image>
 				</view>
 			</view>
@@ -119,19 +119,16 @@
 				</view>
 			</view>
 		</view>
-		<tab-bar :selected="4"></tab-bar>
 	</view>
 
 </template>
 <script>
-	import tabBar from '@/components/tabbar/tabbar.vue'
 	import drawingColumn from '@/components/drawingColumnTeachers/drawingColumn.vue'
 	import PaintingEvaluation from '@/pages/teachers/paintingEvaluationTechaers/paintingEvaluation.vue'
 	import CommentDrawing from '@/pages/teachers/commentDrawing/paintingEvaluation.vue'
 	import Dynamic from '@/pages/teachers/dynamic/dynamic.vue'
 	export default {
 		components: {
-			tabBar,
 			drawingColumn,
 			PaintingEvaluation,
 			CommentDrawing,
@@ -169,6 +166,9 @@
 			},
 			unfixedTap(){
 				this.isFixed = false
+			},
+			goBack(){
+				this.$mRouter.back();
 			}
 		}
 	}

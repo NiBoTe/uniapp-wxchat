@@ -6,15 +6,15 @@
 				
 				<view slot="right">
 					<view class="start" @click.top="favoriteTap">
-						<u-icon name="star" color="#3A3D71" v-show="!item.isFavorite"></u-icon>
-						<u-icon name="star-fill" color="#35CE96" v-show="item.isFavorite"></u-icon>
+						<u-icon name="star" color="#3A3D71" v-show="!detail.isFavorite"></u-icon>
+						<u-icon name="star-fill" color="#35CE96" v-show="detail.isFavorite"></u-icon>
 					</view>
 				</view>
 			</u-navbar>
 		</view>
 		<view class="top">
 			<view class="img">
-				<image :src="detail.mosaicImg"
+				<image :src="detail.hdImg !== '' ? detail.hdImg : detail.mosaicImg"
 					mode="widthFix"></image>
 			</view>
 			<view class="content">
@@ -93,21 +93,17 @@
 						addFavorite: !this.detail.isFavorite
 					}
 				}).then(res => {
-					console.log(res)
 					this.initData()
-					this.$mHelper.toast(this.detail.isFavorite ? '收藏成功' : '取消成功')
+					this.$mHelper.toast(!this.detail.isFavorite ? '收藏成功' : '取消成功')
 				}).catch(err => {
 					console.log(err)
 				})
 			},
 			// 立即购买
 			submitTap(){
-				console.log('=======')
-				
 				this.$mRouter.push({
 					route: `/pages/public/historyExQuestions/sureOrder?id=${this.id}`
 				})
-				
 			}
 		},
 	}

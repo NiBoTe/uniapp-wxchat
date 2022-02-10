@@ -16,6 +16,7 @@
 			"path": "pages/circle/index",
 			"style": {
 				"navigationBarTitleText": "圈子",
+				"navigationBarTextStyle": "black",
 				"navigationStyle": "custom",
 				"enablePullDownRefresh": false
 			}
@@ -24,6 +25,7 @@
 			"path": "pages/teacher/index",
 			"style": {
 				"navigationBarTitleText": "名师",
+				"navigationBarTextStyle": "black",
 				"enablePullDownRefresh": false
 			}
 

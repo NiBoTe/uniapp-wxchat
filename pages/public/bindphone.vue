@@ -83,7 +83,9 @@
 				this.$http.post(loginOrRegisterBySmsCode, data).then(async r => {
 					const data = r.data;
 					await this.$mStore.commit('setToken', data.token);
-					await this.$mStore.commit('login', data.user);
+					await this.$mStore.commit('login', Object.assign(data.user, {
+						openid: data.openid
+					}));
 					this.$mHelper.toast('已为您授权登录');
 					this.$mRouter.reLaunch({
 						route: '/pages/index/index'
