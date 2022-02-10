@@ -16,6 +16,7 @@
 			"path": "pages/circle/index",
 			"style": {
 				"navigationBarTitleText": "圈子",
+				"navigationStyle": "custom",
 				"enablePullDownRefresh": false
 			}
 
