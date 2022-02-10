@@ -254,6 +254,12 @@
 						"enablePullDownRefresh": false
 					}
 
+				}, {
+					"path": "highScore/index",
+					"style": {
+						"navigationBarTitleText": "高分教材",
+						"enablePullDownRefresh": false
+					}
 				}
 			]
 		}
