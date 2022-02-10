@@ -88,14 +88,34 @@
 					</view>
 				</u-sticky>
 				<view class="borderBottom"></view>
-
-				<view class="subtabs">
-					<drawingColumn></drawingColumn>
+				
+				<!-- 评画tabs -->
+				<view class="" v-if="current == 0">
+					<!-- 评画-评论类型 -->
+					<view class="subtabs">
+						<drawingColumn></drawingColumn>
+					</view>
+					<view class="content-box">
+						<!-- 评画-内容 -->
+						<painting-evaluation></painting-evaluation>
+					</view>
 				</view>
-
-				<view class="content-box">
-					<!-- 评画 -->
-					<painting-evaluation></painting-evaluation>
+				<!-- 高分教材 -->
+				<view class="" v-if="current == 1">
+					<!-- 高分教材-评论类型 -->
+					<view class="subtabs">
+						<drawingColumn></drawingColumn>
+					</view>
+					<!-- 高分教材-评论类型 -->
+					<view class="content-box">
+						<comment-drawing></comment-drawing>
+					</view>
+				</view>
+				<!-- 评论 -->
+				<view class="" v-if="current == 2">
+					<view class="content-box">
+						<dynamic></dynamic>
+					</view>
 				</view>
 			</view>
 		</view>
@@ -106,12 +126,16 @@
 <script>
 	import tabBar from '@/components/tabbar/tabbar.vue'
 	import drawingColumn from '@/components/drawingColumnTeachers/drawingColumn.vue'
-	import PaintingEvaluation from '@/components/paintingEvaluationTechaers/paintingEvaluation.vue'
+	import PaintingEvaluation from '@/pages/teachers/paintingEvaluationTechaers/paintingEvaluation.vue'
+	import CommentDrawing from '@/pages/teachers/commentDrawing/paintingEvaluation.vue'
+	import Dynamic from '@/pages/teachers/dynamic/dynamic.vue'
 	export default {
 		components: {
 			tabBar,
 			drawingColumn,
-			PaintingEvaluation
+			PaintingEvaluation,
+			CommentDrawing,
+			Dynamic
 		},
 		data() {
 			return {
@@ -395,7 +419,8 @@
 				}
 
 				.subtabs {
-					padding: 28rpx 0;
+					// padding: 28rpx 0;
+					padding-top: 28rpx;
 				}
 			}
 		}
