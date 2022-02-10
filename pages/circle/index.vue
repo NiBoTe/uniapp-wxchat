@@ -50,7 +50,7 @@
 							</view>
 						</view>
 					</view>
-					<view class="right">
+					<view class="right" @tap="share">
 						<view class="tool-item">
 							<image src="../../static/public/dynamic_praise.png" mode=""></image>
 							<view class="num">
@@ -69,6 +69,33 @@
 		<bubblePopups v-model="popShow" :popData="popData" :isTwoline="true" @tapPopup="tapPopup" :x="344" :y="20" placement="top-end">
 			
 		</bubblePopups>
+		
+		<uni-popup ref="popup" type="bottom" :maskClick="false">
+			<view class="pop-content">
+				<view class="head">
+					请选择分享平台
+				</view>
+				<view class="pop-content-view">
+					<scroll-view scroll-x="true" style="white-space: nowrap; vertical-align: middle;" show-scrollbar="true">
+						<view class="pop-content-item" v-for="(items, indexs) in shareData" :key="indexs">
+							<view class="item-img">
+								<image :src="items.icon"></image>
+							</view>
+							<view class="item-title">
+								{{items.title}}
+							</view>
+						</view>
+					</scroll-view>
+
+				</view>
+				
+				<view class="bottom-button" @tap="cancelShare">
+					取消分享
+				</view>
+				
+		
+			</view>
+		</uni-popup>
 	</view>
 </template>
 
@@ -98,6 +125,28 @@
 						icon:'../../static/public/jinzhi.png'
 					}
 				],
+				shareData:[
+					{
+						title:'微信',
+						icon:'../../static/public/wexin.png',
+					},
+					{
+						title:'朋友圈',
+						icon:'../../static/public/pengyouquan.png'
+					},
+					{
+						title:'微博',
+						icon:'../../static/public/weibo.png'
+					},
+					{
+						title:'QQ',
+						icon:'../../static/public/qq.png'
+					},
+					{
+						title:'QQ空间',
+						icon:'../../static/public/kongjian.png'
+					}
+				],
 				popShow:false,
 				
 			};
@@ -115,6 +164,10 @@
 		},
 		
 		methods: {
+			
+			share(){
+				this.$refs.popup.open();
+			},
 		
 			previewImage(imageList, image_index) {
 				var current = imageList[image_index];
@@ -122,6 +175,12 @@
 					current: current,
 					urls: imageList
 				});
+			},
+			
+
+			
+			cancelShare() {
+				this.$refs.popup.close();
 			},
 	
 		}
@@ -269,20 +328,78 @@
 					}
 				}
 			}
-			
-			
-			
 
-			
-			
-			
-			
-			
-			
-			
-			
 	
 		}
+	}
+	
+	
+	.pop-content {
+		width: 100%;
+		padding: 0 0 82px 0;
+		background-color: #fff;
+		z-index: 999999;
+		background: #F0F4F6;
+		border-radius: 20rpx 20rpx 0px 0px;
+		.head {
+			font-size: 16px;
+			font-family: PingFang-SC-Bold, PingFang-SC;
+			font-weight: bold;
+			color: #3A3D71;
+			text-align: center;
+			padding: 24rpx 0;
+		}
+		.pop-content-view{
+			display: flex;
+			align-items: center;
+			justify-content: space-around;
+			padding: 12rpx 0 34rpx 0;
+	
+			.pop-content-item{
+				display: flex;
+				align-items: center;
+				flex-direction: column;
+				justify-content: center;
+				width: 150rpx;
+				display: inline-block;
+				margin-right: 24rpx;
+				.item-img{
+					text-align: center;
+					width: 98rpx;
+					height: 98rpx;
+					margin-left: 26rpx;
+					image{
+						width: 100%;
+						height: 100%;
+					}
+				}
+				
+				.item-title{
+					margin-top: 20rpx;
+					font-size: 28rpx;
+					font-family: PingFang SC Regular, PingFang SC Regular-Regular;
+					font-weight: 400;
+					color: #333333;
+					text-align: center;
+				}
+			}
+			
+		}
+		
+		.bottom-button{
+			width: 100%;
+			padding: 12rpx 0;
+			border-top: #CCCCCC solid 1rpx;
+			text-align: center;
+			background: #fff;
+			
+			font-size: 15px;
+			font-family: PingFangSC-Medium, PingFang SC;
+			font-weight: 500;
+			color: #3A3D71;
+		}
+		
+	
 	}
 
 </style>
