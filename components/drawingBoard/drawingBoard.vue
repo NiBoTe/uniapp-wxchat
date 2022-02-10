@@ -49,14 +49,14 @@
 			<!-- <view class="drawingBoard-fixed-bottom-item sumbit" @click="sumbit">提交</view> -->
 		</view>
 
-		<cover-view class="drawingBoard-color-main" v-if="colorShow">
+		<!-- <cover-view class="drawingBoard-color-main" v-if="colorShow">
 			<cover-view @click="selColor(index)"
 				:class="index==colorIndex?'drawingBoard-color-item on ':'drawingBoard-color-item '"
 				:style="'background-color:'+item.value" v-for="(item,index) in colorData" :key="index">
 				<cover-image class="drawingBoard-color-item-icon" src="../../static/drawingBoard/on.png">
 				</cover-image>
 			</cover-view>
-		</cover-view>
+		</cover-view> -->
 		<cover-view class="drawingBoard-color-main" v-if="lineWidthShow">
 			<cover-view @click="selLineWidth(index)"
 				:class="index==lineWidthIndex?'drawingBoard-lineWidth-item on':'drawingBoard-lineWidth-item'"
