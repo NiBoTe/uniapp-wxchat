@@ -2,8 +2,7 @@
 	<view class="sureOrder">
 
 		<view class="navbar">
-			<u-navbar title="确认订单" back-icon-color="#1B1B1B" :border-bottom="false"
-				title-color="#1B1B1B">
+			<u-navbar title="确认订单" back-icon-color="#1B1B1B" :border-bottom="false" title-color="#1B1B1B">
 			</u-navbar>
 		</view>
 		<view class="top">
@@ -19,7 +18,8 @@
 					</view>
 				</view>
 				<view class="user" @click="selectTap" v-if="addressDetail">
-					<view class="tag" :class="addressDetail.tag === '家' ? 'home' : addressDetail.tag === '公司' ? 'company' : 'school'">
+					<view class="tag"
+						:class="addressDetail.tag === '家' ? 'home' : addressDetail.tag === '公司' ? 'company' : 'school'">
 						{{addressDetail.tag}}
 					</view>
 					<view class="user-name">
@@ -37,7 +37,7 @@
 				</view>
 
 				<view class="parameter-list">
-					商品名称 ：高分试卷
+					商品名称 ：{{detail.question.title}}
 				</view>
 				<view class="parameter-list">
 					商品数量 ：1张
@@ -48,7 +48,7 @@
 			</view>
 			<u-gap height="16" bg-color="#F7F7F7"></u-gap>
 			<view class="img">
-				<image :src="detail.mosaicImg" mode="widthFix"></image>
+				<image :src="detail.hdImg !== '' ? detail.hdImg : detail.mosaicImg" mode="widthFix"></image>
 			</view>
 			<view class="content">
 				<u-checkbox-group>
@@ -71,16 +71,24 @@
 	import {
 		examPaperImgDetail
 	} from '@/api/history_exam.js'
-	import { addressList } from '@/api/receive-address.js'
+	import {
+		addressList
+	} from '@/api/receive-address.js'
+
+	import {
+		orderLaunch,
+		orderPay
+	} from '@/api/order.js'
 	export default {
 		data() {
 			return {
 				loading: true,
 				id: null,
 				detail: null,
-				checked: true,
+				checked: false,
 				addressList: [],
 				addressDetail: null,
+				productDetail: null,
 			}
 		},
 		onLoad(options) {
@@ -102,21 +110,53 @@
 					this.detail = res.data
 					this.loading = false;
 				}).catch(err => {
-					console.log(err)
+					this.loading = false;
+				})
+			},
+			async createOrder() {
+				this.$http.post(orderLaunch, {
+					productId: this.id,
+					productType: 0,
+					receiveAddressId: this.addressDetail ? this.addressDetail.id : '',
+					total: 1,
+				}).then(res => {
+					this.productDetail = res.data
+					this.goPay();
+					
 				})
 			},
 			// 选择地址
-			selectTap(){
+			selectTap() {
 				this.$mRouter.push({
 					route: '/pages/set/address/index'
 				})
 			},
 			// 获取地址
-			getAddressList(){
+			getAddressList() {
 				this.$http.post(addressList).then(res => {
-					if(res.data.length) {
+					if (res.data.length) {
 						this.addressDetail = res.data[0]
 					}
+				})
+			},
+			// 去支付
+			async submitTap() {
+				if (!this.checked) {
+					return this.$mHelper.toast('请勾选付费内容使用协议')
+				}
+				if (!this.addressDetail) {
+					return this.$mHelper.toast('请选择收货地址')
+				}
+				await this.createOrder();
+			},
+			goPay(){
+				this.$http.post(orderPay, {
+					openid: this.$mStore.state.userInfo.openid,
+					orderId: this.productDetail.id,
+					payType: 1,
+					tradeType: 'JSAPI'
+				}).then(res => {
+					console.log(res)
 				})
 			}
 		}
@@ -139,6 +179,7 @@
 				width: 100%;
 				box-sizing: border-box;
 				padding: 28rpx 34rpx;
+
 				image {
 					width: 100%;
 					border-radius: 16rpx;
@@ -180,17 +221,17 @@
 						border-radius: 23rpx;
 						padding: 10rpx 34rpx;
 						font-weight: 500;
-						
+
 						&.home {
 							background-color: #EFF2FF;
 							color: $u-type-primary;
 						}
-						
+
 						&.school {
 							background-color: #FFF3EA;
 							color: #FF8827;
 						}
-						
+
 						&.company {
 							background-color: rgba(53, 206, 150, 0.08);
 							color: #35CE96;
