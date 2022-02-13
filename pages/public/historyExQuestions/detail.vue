@@ -34,11 +34,11 @@
 				<view class="copyright">
 					版权归{{detail.copyright}}所有
 				</view>
-				<view class="delivery-content">
+				<view class="delivery-content" v-if="detail.isNeedExpress">
 					<view class="left">
 						<image src="/static/public/delivery_content.png" mode="widthFix"></image>发货内容
 					</view>
-					<view class="right">试卷一份</view>
+					<view class="right">{{detail.expressContent}}</view>
 				</view>
 			</view>
 		</view>

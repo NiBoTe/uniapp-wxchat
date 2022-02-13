@@ -22,46 +22,50 @@
 		<view class="subtabs u-flex u-row-between">
 			<view class="left u-flex">
 				<view class="subtab u-flex" @click="statusTap()">
-					<text>考试状态</text>
+					<text v-if="examStatus === ''">全部</text>
+					<text v-else-if="examStatus === 'NO_START'">未开始</text>
+					<text v-else-if="examStatus === 'ONGOING'">正在进行</text>
+					<text v-else-if="examStatus === 'EXAM_END'">考试结束</text>
 					<image src="/static/public/arrow_down.png"></image>
 				</view>
 				<view class="subtab u-flex" @click="timeTap()">
-					<text>2022.08.29</text>
+					<text>{{examDate}}</text>
 					<image src="/static/public/arrow_down.png"></image>
 				</view>
 			</view>
 
-			<view class="right u-flex">
+			<view class="right u-flex" @click="resetTap">
 				<image src="/static/public/reset.png"></image>
 			</view>
 		</view>
 
 		<view class="content">
-			<scroll-view scroll-y scroll-with-animation class="left" :scroll-top="scrollTop" :scroll-into-view="itemId">
-				<view v-for="(item,index) in tabbar" :key="index" class="left-item">
-					<view class="left-item-box u-flex u-row-center" v-if="item.foods.length > 0"
+			<scroll-view scroll-y scroll-with-animation class="left">
+				<view v-for="(item,index) in menuList" :key="index" class="left-item">
+					<view class="left-item-box u-flex u-row-center" v-if="item.childMenus.length > 0"
 						@click.stop="menusTap(index)"
-						:class="[current === index && item.foods.length !== 0  ? 'active' : '']">
+						:class="[menuIndex === index && item.childMenus.length !== 0  ? 'active' : '']">
 						<text>{{item.name}}</text>
-						<view class="left-icon" v-if="item.foods.length !== 0">
-							<image v-if="current !== index" class="right" src="/static/public/arrow_right.png"></image>
+						<view class="left-icon" v-if="item.childMenus.length !== 0">
+							<image v-if="menuIndex !== index" class="right" src="/static/public/arrow_right.png"></image>
 							<image v-else class="down" src="/static/public/arrow_down_blue.png"></image>
 						</view>
 					</view>
 
 					<view class="children" v-else>
 						<view class="u-flex u-row-center left-item-children"
-							:class="[current === index  ? 'children-active' : '']" v-for="(item, index) in item"
+							:class="[menuIndex === index  ? 'children-active' : '']" v-for="(item, index) in item"
 							:key="index">
 							<view class="left-item-children-box">
 								<text>{{item.name}}</text>
 							</view>
 						</view>
 					</view>
-					<view class="children" v-if="item.foods.length > 0 && current === index">
+					<view class="children" v-if="item.childMenus.length > 0 && menuIndex === index">
 						<view class="u-flex u-row-center left-item-children"
 							:class="[childCurrent === index1  ? 'children-active' : '']"
-							v-for="(item1, index1) in item.foods" :key="index1">
+							v-for="(item1, index1) in item.childMenus" :key="index1"
+							@click="childMenusTap(item1, index1)">
 
 							<view class="left-item-children-box">
 								<text>{{item1.name}}</text>
@@ -69,35 +73,38 @@
 						</view>
 					</view>
 				</view>
+
+				<view v-for="(item,index) in proviceData" :key="index" class="left-item">
+					<view class="left-item-box u-flex u-row-center" @click.stop="proviceTap(index)"
+						:class="[proviceCurrent === index ? 'active1' : '']">
+						<text>{{item.areaName}}</text>
+					</view>
+				</view>
 			</scroll-view>
 
-			<scroll-view scroll-y scroll-with-animation class="right">
+			<scroll-view scroll-y scroll-with-animation class="right" @scrolltolower="lower">
 				<view class="list">
-					<view class="item">
-						<view class="item-header u-flex">
+					<view class="item" v-for="(item, index) in list" :key="index">
+						<view class="item-header u-flex" v-if="item.auditState === 'auditing'">
 							<image :src="setSrc('top_review.png')"></image>
 							<text>【审核中】主办方修改考试信息</text>
 						</view>
 						<view class="item-content u-flex">
 							<view class="img">
-								<image
-									src="https://img0.baidu.com/it/u=3904827974,2084857142&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500">
-								</image>
-
+								<image :src="item.url"></image>
 								<view class="img-badge u-flex">
 									<text>¥</text>
-									<text>150</text>
+									<text>{{item.price}}</text>
 								</view>
 							</view>
 
 							<view class="item-content-right">
-								<view class="item-title u-line-1">山东省2022第二次美术…山东省2022第二次美术…</view>
-								<view class="item-subtitle u-line-2">
-									试题内容人物半身像随意创作性别年龄大小种族不限，随…试题内容人物半身像随意创作性别年龄大小种族不限，随…</view>
+								<view class="item-title u-line-1">{{item.name}}</view>
+								<view class="item-subtitle u-line-2">{{item.remark}}</view>
 							</view>
 						</view>
 						<view class="item-subcontent u-flex u-row-between">
-							<view class="item-left">考试日期：2022-08-30至2022-08-31</view>
+							<view class="item-left">考试日期：{{item.examStartTime}}至{{item.examEndTime}}</view>
 							<view class="item-right u-flex">
 								<text>查看详情</text>
 								<image src="/static/public/arrow_right.png"></image>
@@ -107,12 +114,15 @@
 
 						<view class="item-footer u-flex u-row-between">
 							<view class="item-left">
-								报名日期：2022-08-28至2022-08-29
+								报名日期：{{item.enrollStartTime}}至{{item.enrollEndTime}}
 							</view>
-							<view class="item-right u-flex">快捷报名</view>
+							<view class="item-right u-flex" :class="moment(item.enrollEndTime).diff(moment(), 'days') >= 0 ? 'active' : ''">
+								{{moment(item.enrollEndTime).diff(moment(), 'days') >= 0 ? '快捷报名' : '报名截止'}}
+							</view>
 						</view>
 					</view>
 				</view>
+				<u-loadmore margin-top="30" margin-bottom="30" :status="loadStatus" @loadmore="addData"></u-loadmore>
 			</scroll-view>
 		</view>
 
@@ -122,10 +132,10 @@
 			<view class="pop-content">
 
 				<view class="pop-list">
-					<view class="pop-item">全部</view>
-					<view class="pop-item">未开始</view>
-					<view class="pop-item">正在进行</view>
-					<view class="pop-item">考试结束</view>
+					<view class="pop-item" @click="statusItemTap('')">全部</view>
+					<view class="pop-item" @click="statusItemTap('NO_START')">未开始</view>
+					<view class="pop-item" @click="statusItemTap('ONGOING')">正在进行</view>
+					<view class="pop-item" @click="statusItemTap('EXAM_END')">考试结束</view>
 					<u-gap height="14" bg-color="#F9F9F9"></u-gap>
 					<view class="pop-item">取消</view>
 				</view>
@@ -133,20 +143,29 @@
 		</u-popup>
 
 		<!-- 时间 -->
-		<u-picker mode="time" v-model="timeShow" :params="timeParams" :default-time="defaultTime" :safe-area-inset-bottom="true" confirm-color="#2C3AFF"></u-picker>
+		<u-picker mode="time" v-model="timeShow" :params="timeParams" :default-time="examDate"
+			:safe-area-inset-bottom="true" confirm-color="#2C3AFF" @confirm="timeConfirmTap"></u-picker>
 	</view>
 </template>
 
 <script>
 	import moment from '@/common/moment.js'
+
+	import {
+		proviceList,
+		examMenuList,
+		examList,
+		examList2
+	} from '@/api/exam.js'
 	export default {
 		data() {
 			return {
 				moment,
+				loadStatus: 'loadmore',
 				tabIndex: 0,
-				scrollTop: 0, //tab标题的滚动条位置
-				current: 0,
+				menuIndex: 0,
 				childCurrent: 0,
+				proviceCurrent: -1,
 				popShow: false,
 				timeShow: false,
 				timeParams: {
@@ -157,42 +176,121 @@
 					minute: false,
 					second: false
 				},
-				defaultTime: '',
-				tabbar: [{
-					"name": "浙江省",
-					"foods": [{
-						"name": "中国美术学院",
-						"key": "中国美术学院",
-						"icon": "https://cdn.uviewui.com/uview/common/classify/1/1.jpg",
-						"cat": 10
-					}, {
-						"name": "西安电子科技大学",
-						"key": "西安电子科技大学",
-						"icon": "https://cdn.uviewui.com/uview/common/classify/1/1.jpg",
-						"cat": 10
-					}]
-				}, {
-					"name": "陕西省",
-					"foods": []
-				}],
+				examDate: moment().format('YYYY-MM-DD'),
+				examStatus: '',
+				proviceData: [], // 省份列表
+				menuList: [], // 菜单
+				current: 1,
+				size: 10,
+				list: [], // 考试列表
 			};
 		},
-		onReady() {
-				this.defaultTime = moment().format('YYYY-MM-DD')
+		onLoad() {
+			this.getProviceList();
+			this.getMenuList();
+			this.getList()
 		},
 		methods: {
+			
+			getList(){
+				this.loadStatus = 'loading';
+				this.$http.post(examList, {
+					examDate: this.examDate,
+					examStatus: this.examStatus,
+					// firstMenuId: this.firstMenuId
+					province: this.province,
+					// secondMenuId: this.secondMenuId,
+					size: this.size,
+					current: this.current,
+				}).then(res => {
+					if (this.current === 1) {
+						this.list = res.data.list;
+					} else {
+						this.list = this.list.concat(res.data.list);
+					}
+					if (res.data.list.length <= 0) {
+						this.loadStatus = 'nomore';
+					} else {
+						this.loadStatus = 'loadmore';
+					}
+				})
+			},
+			getProviceList() {
+				this.$http.post(proviceList).then(res => {
+					console.log(res)
+					this.proviceData = res.data
+				})
+			},
+			getMenuList() {
+				this.$http.post(examMenuList, {
+					examDate: this.examDate,
+					examStatus: this.examStatus,
+					province: '',
+				}).then(res => {
+					console.log(res)
+					
+					this.menuIndex = 0;
+					this.childCurrent = 0;
+					this.proviceCurrent = -1;
+					this.menuList = res.data.menuList
+				})
+			},
+			lower() {
+				this.loadStatus = 'loading';
+				this.addData();
+			},
+			addData() {
+				this.current++;
+				this.getList();
+			},
 			tabTap(index) {
 				this.tabIndex = index;
 			},
+			// 院校
 			menusTap(index) {
-				this.current = index
+				this.menuIndex = this.menuIndex === index ? -1 : index
+				this.childCurrent = 0;
+				this.proviceCurrent = -1;
+			},
+			// 省份
+			proviceTap(index) {
+				this.menuIndex = -1;
+				this.proviceCurrent = index
+				this.current = 1;
+				this.getList();
+			},
+			childMenusTap(item, index) {
+				this.childCurrent = index
+				this.current = 1;
+				this.getList();
 			},
 			// 选择状态
-			statusTap(){
+			statusTap() {
 				this.popShow = true;
 			},
-			timeTap(){
+			timeTap() {
 				this.timeShow = true;
+				
+			},
+			// 选择状态
+			statusItemTap(status) {
+				this.examStatus = status
+				this.popShow = false;
+				this.getMenuList();
+				this.current = 1;
+				this.getList();
+			},
+			// 确认时间
+			timeConfirmTap(e){
+				this.examDate = `${e.year}-${e.month}-${e.day}`;
+				this.current = 1;
+				this.getList();	
+			},
+			resetTap(){
+				this.examDate = moment().format('YYYY-MM-DD');
+				this.examStatus = '';
+				this.current = 1;
+				this.getList();
 			}
 		}
 	}
@@ -311,6 +409,12 @@
 
 					&.active {
 						color: $u-type-primary;
+
+					}
+
+					&.active1 {
+						color: $u-type-primary;
+						background-color: #fff;
 					}
 
 					.left-icon {

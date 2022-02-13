@@ -7,34 +7,37 @@
 		</view>
 		<view class="top">
 			<view class="top-t">
-				<view class="operation" @click="selectTap">
-					<view class="left">
-						收货地址
+				<view v-if="detail && detail.isNeedExpress">
+					<view class="operation" @click="selectTap">
+						<view class="left">
+							收货地址
+						</view>
+						<view class="right">
+							<text v-if="addressDetail">修改</text>
+							<text v-else>选择地址</text>
+							<u-icon name="arrow-right" color="#8A8A8A" size="28"></u-icon>
+						</view>
 					</view>
-					<view class="right">
-						<text v-if="addressDetail">修改</text>
-						<text v-else>选择地址</text>
-						<u-icon name="arrow-right" color="#8A8A8A" size="28"></u-icon>
+					<view class="user" @click="selectTap" v-if="addressDetail">
+						<view class="tag"
+							:class="addressDetail.tag === '家' ? 'home' : addressDetail.tag === '公司' ? 'company' : 'school'">
+							{{addressDetail.tag}}
+						</view>
+						<view class="user-name">
+							{{addressDetail.realname}}
+						</view>
+						<view class="user-iphone">
+							{{addressDetail.mobile}}
+						</view>
+					</view>
+					<view class="address" @click="selectTap" v-if="addressDetail">
+						{{addressDetail.areaNames.replace(/,/g, ' ')}}{{addressDetail.address}}
+					</view>
+					<view class="line">
+					
 					</view>
 				</view>
-				<view class="user" @click="selectTap" v-if="addressDetail">
-					<view class="tag"
-						:class="addressDetail.tag === '家' ? 'home' : addressDetail.tag === '公司' ? 'company' : 'school'">
-						{{addressDetail.tag}}
-					</view>
-					<view class="user-name">
-						{{addressDetail.realname}}
-					</view>
-					<view class="user-iphone">
-						{{addressDetail.mobile}}
-					</view>
-				</view>
-				<view class="address" @click="selectTap" v-if="addressDetail">
-					{{addressDetail.areaNames.replace(/,/g, ' ')}}{{addressDetail.address}}
-				</view>
-				<view class="line">
-
-				</view>
+				
 
 				<view class="parameter-list">
 					商品名称 ：{{detail.question.title}}
@@ -141,10 +144,13 @@
 			},
 			// 去支付
 			async submitTap() {
+				uni.showLoading({
+					title: '支付中'
+				})
 				if (!this.checked) {
 					return this.$mHelper.toast('请勾选付费内容使用协议')
 				}
-				if (!this.addressDetail) {
+				if (this.detail.isNeedExpress && !this.addressDetail) {
 					return this.$mHelper.toast('请选择收货地址')
 				}
 				await this.createOrder();
@@ -157,6 +163,31 @@
 					tradeType: 'JSAPI'
 				}).then(res => {
 					console.log(res)
+					
+					let params = res.data
+					
+					uni.hideLoading()
+					uni.requestPayment({
+					    provider: 'wxpay',
+					    timeStamp: params.timeStamp,
+					    nonceStr: params.nonceStr,
+					    package: params.packageValue,
+					    signType: params.signType,
+					    paySign: params.paySign,
+					    success: (res) =>  {
+							this.$mHelper.toast('支付成功')
+							setTimeout(() => {
+								uni.navigateBack({
+									delta: 2
+								})
+							}, 1500)
+					    },
+					    fail: (err) => {
+							this.$mHelper.toast('支付失败')
+					    }
+					});
+				}).catch(err => {
+					uni.hideLoading()
 				})
 			}
 		}

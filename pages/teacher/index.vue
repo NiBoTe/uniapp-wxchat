@@ -37,7 +37,7 @@
 					<drawingColumn ref="DrawingColumn" :list="drawList" @change="tabChange"></drawingColumn>
 				</view>
 				<!-- option end-->
-				<scroll-view scroll-y class="right-box-scroll">
+				<scroll-view scroll-y class="right-box-scroll" @scrolltolower="lower">
 					<view class="page-view">
 						<view class="class-item" v-for="(item , index) in list" :key="index" @click="detailTap(item)">
 							<view class="item-container">
@@ -51,15 +51,17 @@
 			</view>
 			
 		</view>
+		<tab-bar :selected="3"></tab-bar>
 	</view>
 </template>
 <script>
-	
+	import tabBar from '@/components/tabbar/tabbar.vue'
 	import { menuList, teacherList } from '@/api/teacher.js';
 	import drawingColumn from '@/components/drawingColumn/drawingColumn.vue';
 	import FamousTeacherItem from '@/components/famousTeacher/famousTeacherItem.vue';
 	export default {
 		components:{
+			tabBar,
 			drawingColumn,
 			FamousTeacherItem
 		},
