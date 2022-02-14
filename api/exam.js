@@ -12,9 +12,13 @@ const examList = `${exam}examList`;
 // 考试列表(我的未考，我的已考)
 const examList2 = `${exam}examList2`;
 
+// 考试详情
+const examDetail = `${exam}examDetail`;
+
 export {
 	proviceList,
 	examMenuList,
 	examList,
-	examList2
+	examList2,
+	examDetail
 };

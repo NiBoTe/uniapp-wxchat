@@ -10,10 +10,10 @@
 			<view class="base">
 				<view class="base-item u-flex u-row-between">
 					<view class="left">
-						<text>机构编码</text>
+						<text>考试编码</text>
 					</view>
 					<view class="right">
-						<text>2786882934234</text>
+						<text>{{detail.no}}</text>
 					</view>
 				</view>
 				<view class="base-item u-flex u-row-between">
@@ -21,7 +21,7 @@
 						<text>考试名称</text>
 					</view>
 					<view class="right">
-						<text>2021第三届模拟考试</text>
+						<text>{{detail.name}}</text>
 					</view>
 				</view>
 				<view class="base-item u-flex u-row-between">
@@ -152,6 +152,9 @@
 </template>
 
 <script>
+	import {
+		examDetail
+	} from '@/api/exam.js'
 	import MenusPops from "@/components/menus-popups/menus-popups.vue";
 	import SortPickerList from '@/components/sortPickerList.vue'
 	export default {
@@ -161,7 +164,9 @@
 		},
 		data() {
 			return {
-
+				id: null,
+				loading: true,
+				detail: {},
 				themeColor: this.$mConstDataConfig.themeColor,
 				showCancelButton: true,
 				cancelStyle: {
@@ -191,7 +196,25 @@
 				studentList: [1, 2, 3, 4],
 			}
 		},
+		onLoad(options) {
+			if (options.id) {
+				this.id = options.id;
+				this.initData();
+			}
+		
+		},
 		methods: {
+			initData() {
+				this.$http.post(examDetail, {
+					id: this.id
+				}).then(res => {
+					console.log(res)
+					this.detail = res.data;
+					this.loading = false;
+				}).catch(err => {
+					console.log(err)
+				})
+			},
 			submitTap() {
 
 			},
@@ -344,29 +367,31 @@
 		padding-bottom: calc(14rpx + constant(safe-area-inset-bottom));
 		padding-bottom: calc(14rpx + env(safe-area-inset-bottom));
 		background-color: #fff;
-		
-		&-num{
+
+		&-num {
 			padding-bottom: 38rpx;
-			.left{
+
+			.left {
 				font-size: 26rpx;
 				color: #9E9E9E;
 			}
-			
-			.right{
-				
-				&-label{
+
+			.right {
+
+				&-label {
 					font-size: 24rpx;
 					color: #3A3D71;
 				}
-				
-				&-price{
+
+				&-price {
 					margin-left: 24rpx;
-					text{
+
+					text {
 						font-size: 34rpx;
 						font-weight: 800;
 						color: #35CE96;
-						
-						&:first-of-type{
+
+						&:first-of-type {
 							font-size: 28rpx;
 							font-weight: bold;
 							color: #35CE96;
@@ -375,7 +400,7 @@
 				}
 			}
 		}
-		
+
 		&-btn {
 			height: 88rpx;
 			line-height: 88rpx;

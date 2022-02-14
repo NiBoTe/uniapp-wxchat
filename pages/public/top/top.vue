@@ -84,7 +84,7 @@
 
 			<scroll-view scroll-y scroll-with-animation class="right" @scrolltolower="lower">
 				<view class="list">
-					<view class="item" v-for="(item, index) in list" :key="index">
+					<view class="item" v-for="(item, index) in list" :key="index" @click="detailTap(item, index)">
 						<view class="item-header u-flex" v-if="item.auditState === 'auditing'">
 							<image :src="setSrc('top_review.png')"></image>
 							<text>【审核中】主办方修改考试信息</text>
@@ -110,7 +110,6 @@
 								<image src="/static/public/arrow_right.png"></image>
 							</view>
 						</view>
-
 
 						<view class="item-footer u-flex u-row-between">
 							<view class="item-left">
@@ -291,6 +290,13 @@
 				this.examStatus = '';
 				this.current = 1;
 				this.getList();
+			},
+			
+			// 查看详情
+			detailTap(item, index){
+				uni.navigateTo({
+					url: `/pages/public/top/detail?id=${item.id}`
+				})
 			}
 		}
 	}
