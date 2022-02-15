@@ -345,23 +345,13 @@ export default class Request {
 				// header: handleRe.header,
 				formData: handleRe.formData,
 				complete: response => {
-					console.log(response)
-					response.config = handleRe;
-					if (typeof response.data === 'string') {
-						response.data = JSON.parse(response.data);
-					}
-					if (this.validateStatus(response.statusCode)) {
-						// 成功
-						response = this.requestComFun(response);
+					if (response.statusCode === 204) {
 						resolve(response);
 					} else {
-						response = this.requestComFail(response);
 						reject(response);
 					}
 				}
 			};
-			
-			console.log(_config)
 			if (!next) return;
 			const requestTask = uni.uploadFile(_config);
 			if (handleRe.getTask) {

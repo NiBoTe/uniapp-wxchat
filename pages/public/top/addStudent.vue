@@ -173,7 +173,7 @@
 						.upload(data.host, {
 							filePath,
 							formData: {
-								key: data.callback,
+								key: data.dir,
 								policy: data.policy,
 								OSSAccessKeyId: data.accessid,
 								signature: data.signature,
