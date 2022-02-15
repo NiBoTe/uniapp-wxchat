@@ -15,10 +15,18 @@ const examList2 = `${exam}examList2`;
 // 考试详情
 const examDetail = `${exam}examDetail`;
 
+// 分页查看某场考试考生列表(报名列表)
+const examineeList = `${exam}examineeList`;
+
+//考试报名下单
+const examOrderCreate = `${exam}examOrderCreate`;
+
 export {
 	proviceList,
 	examMenuList,
 	examList,
 	examList2,
-	examDetail
+	examDetail,
+	examineeList,
+	examOrderCreate
 };

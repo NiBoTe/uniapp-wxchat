@@ -81,7 +81,7 @@
 			<u-gap height="16" bg-color="#F7F7F7"></u-gap>
 
 			<view class="list">
-				<view class="item u-flex u-row-between" v-for="(item, index) in studentList" :key="index">
+				<view class="item u-flex u-row-between" v-for="(item, index) in examineeInfos" :key="index">
 					<u-icon name="minus-circle-fill" color="#FF334D"></u-icon>
 					<view class="item-box u-flex u-row-between">
 						<view class="left-box">
@@ -95,7 +95,7 @@
 				</view>
 			</view>
 
-			<view class="add u-flex">
+			<view class="add u-flex" @click="addStudentTap">
 				<image src="/static/public/add_people.png"></image>
 				<text>添加学生信息</text>
 			</view>
@@ -153,10 +153,14 @@
 
 <script>
 	import {
-		examDetail
+		examDetail,
+		examineeList,
+		examOrderCreate
 	} from '@/api/exam.js'
 	import MenusPops from "@/components/menus-popups/menus-popups.vue";
 	import SortPickerList from '@/components/sortPickerList.vue'
+
+
 	export default {
 		components: {
 			MenusPops,
@@ -193,15 +197,20 @@
 				typeMenus: false,
 				code: '',
 				codeName: '',
-				studentList: [1, 2, 3, 4],
+				examineeInfos: [],
 			}
 		},
 		onLoad(options) {
 			if (options.id) {
 				this.id = options.id;
 				this.initData();
+				this.getPeopleList();
 			}
-		
+		},
+		onShow() {
+			uni.$on('examineeInfoChange',(data) => {
+				console.log(data)
+			})
 		},
 		methods: {
 			initData() {
@@ -210,13 +219,38 @@
 				}).then(res => {
 					console.log(res)
 					this.detail = res.data;
+					console.log(this.detail)
 					this.loading = false;
 				}).catch(err => {
 					console.log(err)
 				})
 			},
-			submitTap() {
 
+			getPeopleList() {
+				this.$http.post(examineeList, {
+					current: 1,
+					examId: this.id,
+					size: 10,
+					state: "untested"
+				}).then(res => {
+					console.log(res)
+				}).catch(err => {
+					console.log(err)
+				})
+			},
+			submitTap() {
+				this.$http.post(examOrderCreate, {
+					address: "杭州1",
+					examId: 279,
+					examineeInfos: this.examineeInfos,
+					receiveAddressId: 1,
+					studioCode: "hdg001",
+					subject: "色彩+素描+速写"
+				}).then(res => {
+					console.log(res)
+				}).catch(err => {
+					console.log(err)
+				})
 			},
 			focus() {
 				this.menusPopShow = true;
@@ -238,6 +272,12 @@
 			},
 			indexListScroll(e) {
 				this.scrollTop = e;
+			},
+			// 添加考生
+			addStudentTap() {
+				uni.navigateTo({
+					url: '/pages/public/top/addStudent'
+				})
 			}
 		},
 
@@ -254,7 +294,7 @@
 
 	.content {
 		height: 100%;
-		// padding-bottom: 140rpx;
+		padding-bottom: 330rpx;
 		overflow: auto;
 
 		.base {

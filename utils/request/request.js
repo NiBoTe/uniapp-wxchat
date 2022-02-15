@@ -178,19 +178,19 @@ export default class Request {
 				complete: response => {
 					if (this.validateStatus(response.statusCode)) {
 						const data = JSON.parse(response.data)
-						if(this.validateStatus(data.code)){
+						if (this.validateStatus(data.code)) {
 							// 成功
 							resolve(data);
 						} else {
 							console.log(data.code)
-							if(data.code === 401) {
+							if (data.code === 401) {
 								uni.navigateTo({
-									url:'/pages/public/logintype'
+									url: '/pages/public/logintype'
 								})
 							}
 							reject(data);
 						}
-					
+
 					} else {
 						// response = this.requestComFail(response);
 						reject(response);
@@ -291,19 +291,11 @@ export default class Request {
 			...options
 		});
 	}
-
 	// #endif
-
 	upload(
 		url, {
-			// #ifdef APP-PLUS
-			files,
-			// #endif
-			// #ifdef MP-ALIPAY
-			fileType,
-			// #endif
 			filePath,
-			name,
+			name = 'file',
 			header,
 			formData = {},
 			custom = {},
@@ -321,9 +313,6 @@ export default class Request {
 			const pubConfig = {
 				baseUrl: this.config.baseUrl,
 				url,
-				// #ifdef MP-ALIPAY
-				fileType,
-				// #endif
 				filePath,
 				method: 'UPLOAD',
 				name,
@@ -336,11 +325,7 @@ export default class Request {
 				},
 				getTask: getTask || this.config.getTask
 			};
-			// #ifdef APP-PLUS
-			if (files) {
-				pubConfig.files = files;
-			}
-			// #endif
+
 			const cancel = (t = 'handle cancel', config = pubConfig) => {
 				const err = {
 					errMsg: t,
@@ -354,15 +339,13 @@ export default class Request {
 				...this.requestBeforeFun(pubConfig, cancel)
 			};
 			const _config = {
-				url: Request.mergeUrl(handleRe.url, handleRe.baseUrl, handleRe.params),
-				// #ifdef MP-ALIPAY
-				fileType: handleRe.fileType,
-				// #endif
+				url,
 				filePath: handleRe.filePath,
 				name: handleRe.name,
-				header: handleRe.header,
+				// header: handleRe.header,
 				formData: handleRe.formData,
 				complete: response => {
+					console.log(response)
 					response.config = handleRe;
 					if (typeof response.data === 'string') {
 						response.data = JSON.parse(response.data);
@@ -377,11 +360,8 @@ export default class Request {
 					}
 				}
 			};
-			// #ifdef APP-PLUS
-			if (handleRe.files) {
-				_config.files = handleRe.files;
-			}
-			// #endif
+			
+			console.log(_config)
 			if (!next) return;
 			const requestTask = uni.uploadFile(_config);
 			if (handleRe.getTask) {

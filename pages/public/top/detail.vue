@@ -51,13 +51,13 @@
 						</view>
 					</view>
 				</view>
-				
+
 				<view class="gaps" v-if="detail.auditState !== 'auditing'"></view>
 				<view class="card-label u-flex" v-if="detail.auditState !== 'auditing'">
 					<image src="/static/public/DELE.png"></image>
 					<text>考试简介</text>
 				</view>
-				
+
 				<view class="card-text" v-if="detail.auditState !== 'auditing'">
 					<text>{{detail.remark}}</text>
 				</view>
@@ -70,7 +70,7 @@
 			</view>
 
 			<!-- 考试简介 -->
-			<view class="card">
+			<view class="card" v-if="detail.auditState === 'auditing'">
 				<view class="card-label u-flex">
 					<image src="/static/public/DELE.png"></image>
 					<text>考试简介</text>
@@ -90,27 +90,15 @@
 				</view>
 
 				<view class="card-list">
-					<view class="card-item u-flex u-row-between">
-						<view class="left">素描</view>
+					<view class="card-item u-flex u-row-between" v-for="(item, index) in detail.examSubjectList"
+						:key="index">
+						<view class="left">{{item.subjectName}}</view>
 						<view class="right">
-							<text>2021-08-10</text>
-							<text>09:00-12:00</text>
+							<text>{{item.subjectDate}}</text>
+							<text>{{item.subjectStarttime}}-{{item.subjectEndtime}}</text>
 						</view>
 					</view>
-					<view class="card-item u-flex u-row-between">
-						<view class="left">色彩</view>
-						<view class="right">
-							<text>2021-08-10</text>
-							<text>09:00-12:00</text>
-						</view>
-					</view>
-					<view class="card-item u-flex u-row-between">
-						<view class="left">速写</view>
-						<view class="right">
-							<text>2021-08-10</text>
-							<text>09:00-12:00</text>
-						</view>
-					</view>
+
 				</view>
 			</view>
 
@@ -123,15 +111,9 @@
 				</view>
 
 				<view class="card-address">
-					<view class="card-address-item">
-						<view class="card-address-code">A</view>
-						<view class="card-address-text">岸尚画室</view>
-						<view class="card-address-text">安克里美术画室</view>
-					</view>
-					<view class="card-address-item">
-						<view class="card-address-code">B</view>
-						<view class="card-address-text">岸尚画室</view>
-						<view class="card-address-text">安克里美术画室</view>
+					<view class="card-address-item" v-for="(item, index) in examAddressList" :key="index">
+						<view class="card-address-code">{{item.letter}}</view>
+						<view class="card-address-text" v-for="(itemc, indexc) in item.data">{{itemc.province}}</view>
 					</view>
 				</view>
 			</view>
@@ -162,6 +144,7 @@
 				id: null,
 				loading: true,
 				detail: {},
+				examAddressList: [],
 				background: {
 					backgroundImage: "url('https://ykh-wxapp.oss-cn-hangzhou.aliyuncs.com/wx_applet_img/top_navbar_bg.png')",
 					backgroundSize: 'cover',
@@ -180,19 +163,28 @@
 				this.$http.post(examDetail, {
 					id: this.id
 				}).then(res => {
-					console.log(res)
 					this.detail = res.data;
+					this.examAddressList = this.$mHelper.segSort(this.detail.examAddressList)
 					this.loading = false;
 				}).catch(err => {
 					console.log(err)
 				})
 			},
 			submitTap() {
-				this.$refs.TopTips.open();
+				const checked = uni.getStorageSync('examChecked')
+				if (checked) {
+					
+					console.log(this.id)
+					this.$mRouter.push({
+						route: `/pages/public/top/signUp?id=${this.id}`
+					})
+				} else {
+					this.$refs.TopTips.open();
+				}
 			},
 			enterClick() {
 				this.$mRouter.push({
-					route: '/pages/public/top/signUp'
+					route: `/pages/public/top/signUp?id=${this.id}`
 				})
 			},
 			// 预览图片
@@ -455,8 +447,9 @@
 			}
 		}
 	}
+
 	// 间隔
-	.gaps{
+	.gaps {
 		height: 2rpx;
 		background: #E9E9E9;
 		margin: 36rpx 0 22rpx 0;
