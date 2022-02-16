@@ -18,7 +18,10 @@
 					</view>
 
 					<view class="right u-flex">
-						<input type="text" v-model="codeName" placeholder="请输入机构名称" />
+						<!-- uploadImage -->
+						<view class="uploadImg u-flex u-row-center" @click="uploadImage">
+							<u-icon name="plus" color="#9E9E9E" size="40"></u-icon>
+						</view>
 					</view>
 				</view>
 
@@ -103,6 +106,9 @@
 </template>
 
 <script>
+	import {
+		generatePostPolicy
+	} from '@/api/basic.js'
 	export default {
 		data() {
 			return {
@@ -125,9 +131,61 @@
 			};
 		},
 		methods: {
+			submitTap() {
+				uni.$emit('examineeInfoChange', {
+					gender: '',
+					identification: '',
+					mobile: '',
+					name: '',
+					province: '',
+					url: '',
+				})
+			},
 			radioGroupChange(e) {
 				console.log(e)
-			}
+			},
+			// 上传头像
+			uploadImage() {
+				// 从相册选择图片
+				const _this = this;
+				uni.chooseImage({
+					count: 1,
+					sizeType: ['original', 'compressed'],
+					sourceType: ['album'],
+					success: function(res) {
+						_this.handleUploadFile(res.tempFilePaths);
+					}
+				});
+			},
+			// 上传头像
+			handleUploadFile(data) {
+				const _this = this;
+				const filePath = data.path || data[0];
+
+
+
+				_this.$http.get(generatePostPolicy, {
+					app_token: uni.getStorageSync('accessToken')
+				}).then(res => {
+					console.log(res)
+					let data = res.data;
+					_this.$http
+						.upload(data.host, {
+							filePath,
+							formData: {
+								key: data.dir,
+								policy: data.policy,
+								OSSAccessKeyId: data.accessid,
+								signature: data.signature,
+							}
+						})
+						.then(r => {
+							_this.profileInfo.head_portrait = r.data.url;
+						});
+				}).catch(err => {
+					console.log(err)
+				})
+			},
 		}
 	}
 </script>
@@ -193,6 +251,12 @@
 						margin-left: 16rpx;
 						width: 16rpx;
 						height: 28rpx;
+					}
+
+					.uploadImg {
+						width: 150rpx;
+						height: 210rpx;
+						background: #EDEFF2;
 					}
 				}
 			}

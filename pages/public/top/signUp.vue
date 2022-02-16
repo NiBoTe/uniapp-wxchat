@@ -10,10 +10,10 @@
 			<view class="base">
 				<view class="base-item u-flex u-row-between">
 					<view class="left">
-						<text>机构编码</text>
+						<text>考试编码</text>
 					</view>
 					<view class="right">
-						<text>2786882934234</text>
+						<text>{{detail.no}}</text>
 					</view>
 				</view>
 				<view class="base-item u-flex u-row-between">
@@ -21,7 +21,7 @@
 						<text>考试名称</text>
 					</view>
 					<view class="right">
-						<text>2021第三届模拟考试</text>
+						<text>{{detail.name}}</text>
 					</view>
 				</view>
 				<view class="base-item u-flex u-row-between">
@@ -81,7 +81,7 @@
 			<u-gap height="16" bg-color="#F7F7F7"></u-gap>
 
 			<view class="list">
-				<view class="item u-flex u-row-between" v-for="(item, index) in studentList" :key="index">
+				<view class="item u-flex u-row-between" v-for="(item, index) in examineeInfos" :key="index">
 					<u-icon name="minus-circle-fill" color="#FF334D"></u-icon>
 					<view class="item-box u-flex u-row-between">
 						<view class="left-box">
@@ -95,7 +95,7 @@
 				</view>
 			</view>
 
-			<view class="add u-flex">
+			<view class="add u-flex" @click="addStudentTap">
 				<image src="/static/public/add_people.png"></image>
 				<text>添加学生信息</text>
 			</view>
@@ -152,8 +152,15 @@
 </template>
 
 <script>
+	import {
+		examDetail,
+		examineeList,
+		examOrderCreate
+	} from '@/api/exam.js'
 	import MenusPops from "@/components/menus-popups/menus-popups.vue";
 	import SortPickerList from '@/components/sortPickerList.vue'
+
+
 	export default {
 		components: {
 			MenusPops,
@@ -161,7 +168,9 @@
 		},
 		data() {
 			return {
-
+				id: null,
+				loading: true,
+				detail: {},
 				themeColor: this.$mConstDataConfig.themeColor,
 				showCancelButton: true,
 				cancelStyle: {
@@ -188,12 +197,60 @@
 				typeMenus: false,
 				code: '',
 				codeName: '',
-				studentList: [1, 2, 3, 4],
+				examineeInfos: [],
 			}
 		},
+		onLoad(options) {
+			if (options.id) {
+				this.id = options.id;
+				this.initData();
+				this.getPeopleList();
+			}
+		},
+		onShow() {
+			uni.$on('examineeInfoChange',(data) => {
+				console.log(data)
+			})
+		},
 		methods: {
-			submitTap() {
+			initData() {
+				this.$http.post(examDetail, {
+					id: this.id
+				}).then(res => {
+					console.log(res)
+					this.detail = res.data;
+					console.log(this.detail)
+					this.loading = false;
+				}).catch(err => {
+					console.log(err)
+				})
+			},
 
+			getPeopleList() {
+				this.$http.post(examineeList, {
+					current: 1,
+					examId: this.id,
+					size: 10,
+					state: "untested"
+				}).then(res => {
+					console.log(res)
+				}).catch(err => {
+					console.log(err)
+				})
+			},
+			submitTap() {
+				this.$http.post(examOrderCreate, {
+					address: "杭州1",
+					examId: 279,
+					examineeInfos: this.examineeInfos,
+					receiveAddressId: 1,
+					studioCode: "hdg001",
+					subject: "色彩+素描+速写"
+				}).then(res => {
+					console.log(res)
+				}).catch(err => {
+					console.log(err)
+				})
 			},
 			focus() {
 				this.menusPopShow = true;
@@ -215,6 +272,12 @@
 			},
 			indexListScroll(e) {
 				this.scrollTop = e;
+			},
+			// 添加考生
+			addStudentTap() {
+				uni.navigateTo({
+					url: '/pages/public/top/addStudent'
+				})
 			}
 		},
 
@@ -231,7 +294,7 @@
 
 	.content {
 		height: 100%;
-		// padding-bottom: 140rpx;
+		padding-bottom: 330rpx;
 		overflow: auto;
 
 		.base {
@@ -344,29 +407,31 @@
 		padding-bottom: calc(14rpx + constant(safe-area-inset-bottom));
 		padding-bottom: calc(14rpx + env(safe-area-inset-bottom));
 		background-color: #fff;
-		
-		&-num{
+
+		&-num {
 			padding-bottom: 38rpx;
-			.left{
+
+			.left {
 				font-size: 26rpx;
 				color: #9E9E9E;
 			}
-			
-			.right{
-				
-				&-label{
+
+			.right {
+
+				&-label {
 					font-size: 24rpx;
 					color: #3A3D71;
 				}
-				
-				&-price{
+
+				&-price {
 					margin-left: 24rpx;
-					text{
+
+					text {
 						font-size: 34rpx;
 						font-weight: 800;
 						color: #35CE96;
-						
-						&:first-of-type{
+
+						&:first-of-type {
 							font-size: 28rpx;
 							font-weight: bold;
 							color: #35CE96;
@@ -375,7 +440,7 @@
 				}
 			}
 		}
-		
+
 		&-btn {
 			height: 88rpx;
 			line-height: 88rpx;

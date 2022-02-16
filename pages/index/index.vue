@@ -35,7 +35,7 @@
 			</view>
 			<!-- top 美考入口 -->
 
-			<view class="top" @click="navTo('/pages/public/top/index')">
+			<view class="top" @click="navTo('/pages/public/top/top')">
 				<image :src="setSrc('home_top_banner.png')"></image>
 			</view>
 
@@ -357,6 +357,8 @@
 				})
 			},
 			navTo(route){
+				
+				console.log(route)
 				this.$mRouter.push({
 					route
 				})

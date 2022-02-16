@@ -48,6 +48,7 @@
 			submitTap(){
 				this.popShow = false;
 				this.$emit('enterClick')
+				if(this.checked) uni.setStorageSync('examChecked', this.checked)
 			},
 			checkboxChange(e){
 				this.checked = e;
