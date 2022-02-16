@@ -67,7 +67,7 @@
 		},
 		created() {
 			console.log('---------')
-			this.addRandomData();
+			// this.addRandomData();
 		},
 
 		methods: {
@@ -75,26 +75,21 @@
 				console.log('=========')
 				this.loadStatus = 'loading';
 				// 模拟数据加载
-				setTimeout(() => {
-					this.addRandomData();
-					this.loadStatus = 'loadmore';
-				}, 1000)
+				// setTimeout(() => {
+				// 	this.addRandomData();
+				// 	this.loadStatus = 'loadmore';
+				// }, 1000)
 			},
-			addRandomData() {
-				for (let i = 0; i < 10; i++) {
-					let index = this.$u.random(0, this.list.length - 1);
-					// 先转成字符串再转成对象，避免数组对象引用导致数据混乱
-					let item = JSON.parse(JSON.stringify(this.list[index]))
-					item.id = this.$u.guid();
-					this.flowList.push(item);
-				}
-			},
-			remove(id) {
-				this.$refs.uWaterfall.remove(id);
-			},
-			clear() {
-				this.$refs.uWaterfall.clear();
-			}
+			// addRandomData() {
+			// 	for (let i = 0; i < 10; i++) {
+			// 		let index = this.$u.random(0, this.list.length - 1);
+			// 		// 先转成字符串再转成对象，避免数组对象引用导致数据混乱
+			// 		let item = JSON.parse(JSON.stringify(this.list[index]))
+			// 		item.id = this.$u.guid();
+			// 		this.flowList.push(item);
+			// 	}
+			// },
+			
 		}
 	}
 </script>

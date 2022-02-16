@@ -1,32 +1,13 @@
 <template>
 	<view class="container">
-		<view class="item">
+		<view class="item" @click="detailClick(item.id)">
 			<view class="item-image">
 				<u-lazy-load threshold="-450" :image="item.image"></u-lazy-load>
 				<voice-playback></voice-playback>
 			</view>
 
 			<view class="footer">
-				<!-- <view class="footer-title u-flex">
-					<view class="image">
-						<u-avatar size="65" :src="item.image"></u-avatar>
-					</view>
-					<view class="text">
-						<text>李琮明</text>
-						<text>评画老师</text>
-					</view>
-				</view> -->
 				<view class="footer-text">色彩-色彩静物基础临色彩-色彩静物基础临,色彩-色彩静物基础临色彩-色彩静物基础临,色彩-色彩静物基础临色彩-色彩静物基础临</view>
-				<!-- <view class="footer-subtitle u-flex u-row-between">
-					<view class="left">
-						<text>89</text>
-						<text class="unit">分</text>
-					</view>
-					<view class="right u-flex">
-						<image src="/static/public/voice_blue.png"></image>
-						<text>8'09"</text>
-					</view>
-				</view> -->
 			</view>
 		</view>
 	</view>
@@ -65,6 +46,17 @@
 						getBox();
 					}
 				}).exec();
+			},
+			
+			// 进入详情
+			detailClick(item){
+				console.log('dianji',item)
+				// this.$mRouter.push({
+				// 	route: `/pages/teachers/commentDrawing/detail`
+				// })
+				uni.navigateTo({
+					url: '/pages/teachers/commentDrawing/detail'
+				})
 			}
 		}
 	}

@@ -119,6 +119,9 @@
 				</view>
 			</view>
 		</view>
+		<view class="footer">
+			<view class="footer-btn" v-if="current == 0" @click="submitTap"><image class="footer-img" src="/static/public/teacherDynamic/d_icon_score.png" mode=""></image>邀请评画</view>
+		</view>
 	</view>
 
 </template>
@@ -169,7 +172,9 @@
 			},
 			goBack(){
 				this.$mRouter.back();
-			}
+			},
+			// 邀请评画
+			submitTap(){}
 		}
 	}
 </script>
@@ -426,6 +431,38 @@
 		}
 	}
 	
+	.footer {
+		position: fixed;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		padding: 14rpx 34rpx;
+		padding-bottom: calc(14rpx + constant(safe-area-inset-bottom));
+		padding-bottom: calc(14rpx + env(safe-area-inset-bottom));
+		background-color: #fff;
+		z-index:9999;
+		&-img{
+			width: 38rpx;
+			height: 38rpx;
+			vertical-align: middle;
+			margin-right: 8rpx;
+		}
+		&-btn {
+			height: 88rpx;
+			line-height: 88rpx;
+			text-align: center;
+			background: $u-type-primary;
+			box-shadow: 0px 6rpx 14rpx 2rpx rgba(235, 235, 235, 0.14);
+			border-radius: 44rpx;
+			font-size: 32rpx;
+			color: #fff;
+			
+			&.disabled{
+				background: #EDEFF2;
+				color: #8F9091;
+			}
+		}
+	}
 	
 	/deep/ .u-tab-item {
 		font-weight: 400;

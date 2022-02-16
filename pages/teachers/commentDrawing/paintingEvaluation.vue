@@ -128,7 +128,8 @@
 			},
 			clear() {
 				this.$refs.uWaterfall.clear();
-			}
+			},
+			
 		}
 	}
 </script>
