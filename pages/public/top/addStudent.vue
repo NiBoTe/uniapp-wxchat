@@ -20,7 +20,8 @@
 					<view class="right u-flex">
 						<!-- uploadImage -->
 						<view class="uploadImg u-flex u-row-center" @click="uploadImage">
-							<u-icon name="plus" color="#9E9E9E" size="40"></u-icon>
+							<u-icon v-if="url === ''" name="plus" color="#9E9E9E" size="40"></u-icon>
+							<image v-else :src="url"></image>
 						</view>
 					</view>
 				</view>
@@ -32,8 +33,8 @@
 						</view>
 					</view>
 
-					<view class="right u-flex">
-						<input type="text" v-model="codeName" placeholder="请输入机构名称" />
+					<view class="right u-flex" @click="provinceShow = true">
+						<input type="text" v-model="province" placeholder="请输入机构名称" />
 						<image src="/static/public/arrow_right.png"></image>
 					</view>
 				</view>
@@ -47,7 +48,7 @@
 					</view>
 
 					<view class="right u-flex">
-						<input type="text" v-model="codeName" placeholder="请输入考生姓名" />
+						<input type="text" v-model="name" placeholder="请输入考生姓名" />
 					</view>
 				</view>
 
@@ -77,7 +78,7 @@
 					</view>
 
 					<view class="right u-flex">
-						<input type="number" maxlength="11" v-model="codeName" placeholder="请输入手机号码" />
+						<input type="number" maxlength="11" v-model="mobile" placeholder="请输入手机号码" />
 					</view>
 				</view>
 
@@ -90,7 +91,7 @@
 					</view>
 
 					<view class="right u-flex">
-						<input type="idcard" maxlength="18" v-model="codeName" placeholder="请输入身份证号码" />
+						<input type="idcard" maxlength="18" v-model="identification" placeholder="请输入身份证号码" />
 					</view>
 				</view>
 
@@ -102,12 +103,15 @@
 		<view class="footer">
 			<view class="footer-btn" @click="submitTap">添加</view>
 		</view>
+
+		<u-picker mode="selector" v-model="provinceShow" :range="provinceList" range-key="name" @confirm="provinceTap"></u-picker>
 	</view>
 </template>
 
 <script>
 	import {
-		generatePostPolicy
+		generatePostPolicy,
+		areaList
 	} from '@/api/basic.js'
 	export default {
 		data() {
@@ -117,29 +121,76 @@
 					backgroundImage: "url('https://ykh-wxapp.oss-cn-hangzhou.aliyuncs.com/wx_applet_img/top_navbar_bg.png')",
 					backgroundSize: 'cover',
 				},
-				codeName: '',
-				sex: '1',
+				index: -1,
+				name: '',
+				province: '',
+				identification: '',
+				mobile: '',
+				url: '',
+				sex: '女',
+				provinceShow: false,
+				provinceList: [],
 				sexList: [{
 						name: '女',
-						value: '1'
+						value: '女'
 					},
 					{
 						name: '男',
-						value: '2'
+						value: '男'
 					}
 				],
 			};
 		},
+		onLoad(options) {
+			if(options.item){
+				let item = JSON.parse(options.item)
+				
+				this.name = item.name;
+				this.province = item.province;
+				this.identification = item.identification;
+				this.mobile = item.mobile;
+				this.url = item.url;
+				this.sex = item.sex;
+				
+				this.index = options.index
+			}
+			this.getAreaList()
+		},
 		methods: {
-			submitTap() {
-				uni.$emit('examineeInfoChange', {
-					gender: '',
-					identification: '',
-					mobile: '',
-					name: '',
-					province: '',
-					url: '',
+			getAreaList() {
+				this.$http.get(areaList).then(res => {
+					console.log(res)
+					this.provinceList = res.data
 				})
+			},
+			submitTap() {
+				if(this.name === ''){
+					return this.$mHelper.toast('请输入考生姓名')
+				}
+				
+				if(this.mobile !== ''){
+					if(!this.$mHelper.checkMobile(this.mobile)) {
+						return this.$mHelper.toast('请输入正确的手机号码')
+					}
+				}
+				if(this.mobile !== ''){
+					if(!this.$mHelper.checkIdCard(this.identification)) {
+						return this.$mHelper.toast('请输入正确的身份证号码')
+					}
+				}
+				uni.$emit('examineeInfoChange', {
+					params: {
+						gender: this.sex,
+						identification: this.identification,
+						mobile: this.mobile,
+						name: this.name,
+						province: this.province,
+						url: this.url,
+					},
+					index: this.index
+				})
+				
+				this.$mRouter.back();
 			},
 			radioGroupChange(e) {
 				console.log(e)
@@ -180,12 +231,21 @@
 							}
 						})
 						.then(r => {
-							_this.profileInfo.head_portrait = r.data.url;
+							console.log(r)
+							_this.url = r;
 						});
 				}).catch(err => {
 					console.log(err)
 				})
 			},
+			// 选择省份
+			provinceTap(e){
+				console.log(e)
+				this.province = this.provinceList[e].name
+			}
+		},
+		onUnload() {
+			uni.$off('examineeInfoChange');
 		}
 	}
 </script>
@@ -257,6 +317,12 @@
 						width: 150rpx;
 						height: 210rpx;
 						background: #EDEFF2;
+
+						image {
+							margin-left: 0;
+							width: 100%;
+							height: 100%;
+						}
 					}
 				}
 			}

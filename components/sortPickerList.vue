@@ -2,25 +2,25 @@
 	<view class="t-index-address">
 		<scroll-view class="t-index-address__scroll-view" :scroll-into-view="scrollview" :scroll-y="true"
 			:enable-flex="true">
-			<view :id="group.initial" v-for="group in cityList" :key="group.initial">
+			<view :id="group.letter" v-for="group in list" :key="group.letter">
 
 				<view class="t-index-address__anchor">
-					<text>{{ group.initial }}</text>
+					<text>{{ group.letter }}</text>
 				</view>
 
 				<view class="t-index-address__list">
-					<view class="t-index-address__cell" v-for="(city, index) in group.list" :key="index"
-						@click="$emit('select', city)">
-						<text>{{ city.name }}</text>
+					<view class="t-index-address__cell" v-for="(item, index) in group.data" :key="index"
+						@click="selectTap(item, index)">
+						<text>{{ item.examAddress }}</text>
 					</view>
 				</view>
 			</view>
 		</scroll-view>
 		<view class="t-index-address__sidebar">
-			<view class="t-index-address__index" v-for="group in cityList" :key="group.initial"
-				@touchstart.stop.prevent="onTouchMove(group.initial)" @touchend.stop.prevent="onTouchStop"
+			<view class="t-index-address__index" v-for="group in list" :key="group.letter"
+				@touchstart.stop.prevent="onTouchMove(group.letter)" @touchend.stop.prevent="onTouchStop"
 				@touchcancel.stop.prevent="onTouchStop">
-				<span>{{ group.initial }}</span>
+				<span>{{ group.letter }}</span>
 			</view>
 		</view>
 		<view class="t-index-address__alert" v-if="touchmove">
@@ -30,13 +30,18 @@
 </template>
 
 <script>
-	import cityList from "./cities.json";
-
 	export default {
+		props: {
+			list: {
+				type: Array,
+				default: function() {
+					return []
+				}
+			}
+		},
 		data() {
 			return {
 				scrollview: "A",
-				cityList: [],
 				activeIndex: "A",
 				touchmove: false,
 			};
@@ -47,9 +52,6 @@
 			},
 		},
 		methods: {
-			initCityList() {
-				this.cityList = cityList;
-			},
 			onTouchMove(index) {
 				this.activeIndex = index;
 				this.touchmove = true;
@@ -57,10 +59,10 @@
 			onTouchStop() {
 				this.touchmove = false;
 			},
-		},
-		mounted() {
-			this.initCityList();
-		},
+			selectTap(item, index) {
+				this.$emit('select', item)
+			}
+		}
 	};
 </script>
 
@@ -99,7 +101,7 @@
 
 		&__sidebar {
 			position: fixed;
-			top: 50%;
+			top: 54%;
 			right: 34rpx;
 			padding: 10rpx 0;
 			transform: translateY(-50%);

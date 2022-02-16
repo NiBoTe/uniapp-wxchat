@@ -303,6 +303,10 @@ export default class Request {
 			getTask
 		}
 	) {
+		if (filePath !== '') {
+			var names = filePath.split("//");
+			formData.key = formData.key + names[names.length - 1]
+		}
 		return new Promise((resolve, reject) => {
 			let next = true;
 			const globalHeader = {
@@ -346,7 +350,7 @@ export default class Request {
 				formData: handleRe.formData,
 				complete: response => {
 					if (response.statusCode === 204) {
-						resolve(response);
+						resolve(`${url}${handleRe.formData.key}`);
 					} else {
 						reject(response);
 					}

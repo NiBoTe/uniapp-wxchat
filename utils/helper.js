@@ -218,6 +218,10 @@ export default {
 	checkMobile(mobile) {
 		return RegExp(/^1[34578]\d{9}$/).test(mobile);
 	},
+	// 验证身份证号码
+	checkIdCard(idcard){
+		return RegExp(/(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/).test(idcard);
+	},
 	// 首字母分组
 	segSort(arr, key = 'province') {
 		if (!String.prototype.localeCompare) return null
@@ -243,5 +247,10 @@ export default {
 		})
 
 		return segs
+	},
+	// 身份证脱敏
+	certificatecode(code){
+		return code.replace(/^(.{4})(?:\d+)(.{3})$/,  "\$1****\$2")
 	}
+	
 };
