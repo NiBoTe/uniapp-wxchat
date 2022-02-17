@@ -209,13 +209,48 @@ export default {
 		return false
 	},
 	// 搜索高亮
-	highlightKeyword(str,key, customClass){
+	highlightKeyword(str, key, customClass) {
 		var reg = new RegExp((`(${key})`), "gm");
 		var replace = '<span style="color:#2C3AFF;font-weight:bold;">$1</span>';
 		return str.replace(reg, replace);
 	},
 	// 验证手机号
-	checkMobile(mobile){
-	    return RegExp(/^1[34578]\d{9}$/).test(mobile);
+	checkMobile(mobile) {
+		return RegExp(/^1[34578]\d{9}$/).test(mobile);
+	},
+	// 验证身份证号码
+	checkIdCard(idcard){
+		return RegExp(/(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/).test(idcard);
+	},
+	// 首字母分组
+	segSort(arr, key = 'province') {
+		if (!String.prototype.localeCompare) return null
+		let letters = 'abcdefghjklmnopqrstwxyz'.split('')
+		let zh = '阿八嚓哒妸发旮哈讥咔垃痳拏噢妑七呥扨它穵夕丫帀'.split('')
+		let segs = []
+		letters.map((item, i) => {
+			let cur = {
+				letter: item.toUpperCase(),
+				data: []
+			}
+			arr.map((item) => {
+				if (item[key].localeCompare(zh[i]) >= 0 && item[key].localeCompare(zh[i + 1]) < 0) {
+					cur.data.push(item)
+				}
+			})
+			if (cur.data.length) {
+				cur.data.sort(function(a, b) {
+					return a.localeCompare(b, 'zh')
+				})
+				segs.push(cur)
+			}
+		})
+
+		return segs
+	},
+	// 身份证脱敏
+	certificatecode(code){
+		return code.replace(/^(.{4})(?:\d+)(.{3})$/,  "\$1****\$2")
 	}
+	
 };

@@ -1,15 +1,11 @@
 <template>
 	<view class="container">
-		<scroll-view class="tabs" :scroll-x="true">
-			<view class="tab" :class="[type !== 'list' ? 'zero' : '', activeIndex === index ? 'active' : '']" v-for="(item, index) in list" :key="index" @click="tabClick(item, index)">
-				<text v-if="type === 'time'">{{item.year}}</text>
-				<text v-else>{{item.name}}</text>
-				<view class="tab-border" v-if="activeIndex === index">
-					<image src="/static/public/home_scroll_style.png"></image>
-				</view>
+		<view class="tabs">
+			<view class="tab" :class="[type !== 'list' ? 'zero' : '']" v-for="(item, index) in list" :key="index" @click="tabClick(item, index)">
+				<text>{{item}}</text>
 			</view>
-			
-		</scroll-view>
+		</view>
+		
 	</view>
 </template>
 
@@ -21,16 +17,11 @@
 			type: {
 				type: String,
 				default:'list'
-			},
-			list: {
-				type: Array,
-				default:function(){
-					return []
-				}
 			}
 		},
 		data() {
 			return {
+				list: ['专业认真99w','专业认真99w','专业认真99w','专业99w'],
 				activeIndex: 0,
 			};
 		},
@@ -62,39 +53,44 @@
 <style lang="scss" scoped>
 	// tabs
 	.tabs {
-		height: 54rpx;
-		white-space: nowrap;
-	
+		// height: 54rpx;
+		// white-space: nowrap;
+		padding-left: 32rpx;
 		.tab {
-			height: 52rpx;
+			height: 50rpx;
+			background: #EFF2FF;
+			border-radius: 30rpx;
 			margin-right: 34rpx;
 			display: inline-block;
 			position: relative;
 			padding: 0 28rpx;
-			background: #F3F3F3;
-			border-radius: 36rpx;
 			border: 4rpx solid transparent;
-			
-			
-			
-			&:first-of-type {
-				margin-left: 32rpx;
+			margin-bottom: 24rpx;
+			text{
+				font-size: 22rpx;
+				font-family: PingFangSC-Regular, PingFang SC;
+				font-weight: 400;
+				color: #2C3AFF;
 			}
-			&.zero{
-				margin-left: 0;
-			}
-			&.active {
-				background: #EFF2FF;
+			
+	// 		&:first-of-type {
+	// 			margin-left: 32rpx;
+	// 		}
+	// 		&.zero{
+	// 			margin-left: 0;
+	// 		}
+	// 		&.active {
+	// 			background: #EFF2FF;
 	
-				text {
-					color: $u-type-primary;
-				}
-			}
+	// 			text {
+	// 				color: $u-type-primary;
+	// 			}
+	// 		}
 	
-			text {
-				font-size: 24rpx;
-				color: #3A3D71;
-			}
+			// text {
+			// 	font-size: 24rpx;
+			// 	color: #3A3D71;
+			// }
 	
 			&-border {
 				position: absolute;

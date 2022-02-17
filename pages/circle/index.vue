@@ -197,7 +197,7 @@
 			display: flex;
 			align-items: center;
 			flex-direction: column;
-			padding: 24rpx 16rpx;
+			padding: 24rpx 32rpx;
 			border-bottom: 16rpx solid #F5F5F5;
 			.item-top {
 				width: 100%;
@@ -209,17 +209,17 @@
 					justify-content: flex-start;
 					align-items: center;
 					.logo {
-						width: 40px;
-						height: 40px;
-						border-radius: 40px;
+						width: 80rpx;
+						height: 80rpx;
+						border-radius: 80rpx;
 						image{
 							width: 100%;
 							height: 100%;
-							border-radius: 40px;
+							border-radius: 80rpx;
 						}
 					}
 					.name {
-						font-size: 16rpx;
+						font-size: 32rpx;
 						font-family: PingFangSC-Semibold, PingFang SC;
 						font-weight: 600;
 						color: #1B1B1B;
@@ -241,7 +241,7 @@
 			.paragraph {
 				width: 100%;
 				margin-top: 12rpx;
-				font-size: 13rpx;
+				font-size: 26rpx;
 				font-family: PingFangSC-Regular, PingFang SC;
 				font-weight: 400;
 				color: #3A3D71;
@@ -260,17 +260,17 @@
 			}
 			
 			.thumbnails .thumbnail {
-				width: 30%;
-				height: 180upx;
-				margin: 4upx;
+				width: 220rpx;
+				height: 220rpx;
+				margin: 4rpx;
 				background: #757575;
 				overflow: hidden;
 			}
 			
 			.my-gallery{
-				width: 250upx;
-				height: 400upx;
-				margin: 4upx;
+				width: 380rpx;
+				height: 554rpx;
+				margin: 4rpx;
 				background: #757575;
 				overflow: hidden
 			}
@@ -298,7 +298,7 @@
 						height: 35rpx;
 					}
 					.num {
-						font-size: 13rpx;
+						font-size: 26rpx;
 						font-family: PingFang-SC-Medium, PingFang-SC;
 						font-weight: 500;
 						color: #3A3D71;
@@ -320,7 +320,7 @@
 						height: 35rpx;
 					}
 					.num {
-						font-size: 13rpx;
+						font-size: 26rpx;
 						font-family: PingFang-SC-Medium, PingFang-SC;
 						font-weight: 500;
 						color: #3A3D71;

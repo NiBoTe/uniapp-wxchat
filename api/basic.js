@@ -2,9 +2,15 @@ import indexConfig from '@/config/index.config';
 
 const common = '/common/'
 
-// 获取省市区街道
+const oss = '/oss/'
 
+// 获取省市区街道
 const areaList = `${common}dict/areaList`;
+
+// 上传文件
+const generatePostPolicy = `${oss}generatePostPolicy`;
+
 export {
-	areaList
+	areaList,
+	generatePostPolicy
 };

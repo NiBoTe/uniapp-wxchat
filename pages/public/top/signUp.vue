@@ -10,10 +10,10 @@
 			<view class="base">
 				<view class="base-item u-flex u-row-between">
 					<view class="left">
-						<text>机构编码</text>
+						<text>考试编码</text>
 					</view>
 					<view class="right">
-						<text>2786882934234</text>
+						<text>{{detail.no}}</text>
 					</view>
 				</view>
 				<view class="base-item u-flex u-row-between">
@@ -21,7 +21,7 @@
 						<text>考试名称</text>
 					</view>
 					<view class="right">
-						<text>2021第三届模拟考试</text>
+						<text>{{detail.name}}</text>
 					</view>
 				</view>
 				<view class="base-item u-flex u-row-between">
@@ -29,7 +29,8 @@
 						<text>考试科目</text>
 					</view>
 					<view class="right">
-						<text>素描、速写、色彩</text>
+						<text v-for="(item, index) in detail.examSubjectList">{{item.subjectName}}</text>
+						<text v-if="index === detail.examSubjectList.length - 1">、</text>
 					</view>
 				</view>
 				<view class="base-item u-flex u-row-between">
@@ -40,7 +41,7 @@
 					<view class="right">
 						<text v-if="!typeMenus" @click="focus"
 							:style="{color: code === '' ? '#999' : '#3A3D71'}">{{code !== '' ? code : '请输入机构编码'}}</text>
-						<input v-else type="text" @focus="focus" v-model="code" placeholder="请输入机构编码" />
+						<input v-else type="text" @focus="focus" v-model="studioCode" placeholder="请输入机构编码" />
 						<menus-pops v-model="menusPopShow" :dynamic="false" :popData="menusData" @tapPopup="tapPopup"
 							:x="344" :y="300" placement="top-end" type="custom"></menus-pops>
 					</view>
@@ -58,22 +59,24 @@
 					</view>
 				</view>
 
-				<view class="base-item u-flex u-row-between">
+				<view class="base-item u-flex u-row-between" @click="selectAddressTap">
 					<view class="left">
 						<text class="tips">*</text>
 						<text>考试地址</text>
 					</view>
 					<view class="right">
-						<input type="text" placeholder="请输入考试地址" />
+						<input type="text" v-model="address" placeholder="请输入考试地址" />
 					</view>
 				</view>
 
-				<view class="base-item u-flex u-row-between">
+				<view class="base-item u-flex u-row-between" @click="receivingTap">
 					<view class="left">
+						
+						<text v-if="detail.isNeedExpress" class="tips">*</text>
 						<text>收货地址</text>
 					</view>
 					<view class="right">
-						<input type="text" placeholder="请输入收货地址" />
+						<input type="text" v-model="addressName" placeholder="请输入收货地址" />
 					</view>
 				</view>
 			</view>
@@ -81,33 +84,36 @@
 			<u-gap height="16" bg-color="#F7F7F7"></u-gap>
 
 			<view class="list">
-				<view class="item u-flex u-row-between" v-for="(item, index) in studentList" :key="index">
-					<u-icon name="minus-circle-fill" color="#FF334D"></u-icon>
+				<view class="item u-flex u-row-between" v-for="(item, index) in examineeInfos" :key="index">
+
+					<view @click="deleteTap(index)">
+						<u-icon name="minus-circle-fill" color="#FF334D"></u-icon>
+					</view>
 					<view class="item-box u-flex u-row-between">
 						<view class="left-box">
-							<text class="left-name">张学良</text>
-							<text class="left-subname">3310***********818</text>
+							<text class="left-name">{{item.name}}</text>
+							<text class="left-subname">{{$mHelper.certificatecode(item.identification)}}</text>
 						</view>
-						<view class="right">
+						<view class="right" @click="updateTap(item, index)">
 							<image src="/static/public/update.png"></image>
 						</view>
 					</view>
 				</view>
 			</view>
 
-			<view class="add u-flex">
+			<view class="add u-flex" @click="addStudentTap">
 				<image src="/static/public/add_people.png"></image>
 				<text>添加学生信息</text>
 			</view>
 		</view>
 		<view class="footer">
 			<view class="footer-num u-flex u-row-between">
-				<view class="left">总人数：5人</view>
+				<view class="left">总人数：{{examineeInfos.length}}人</view>
 				<view class="right u-flex">
 					<view class="right-label">总费用</view>
 					<view class="right-price">
 						<text>¥</text>
-						<text>1495</text>
+						<text>{{totalPrice}}</text>
 					</view>
 				</view>
 			</view>
@@ -118,17 +124,19 @@
 		<u-popup v-model="popShow" mode="bottom" closeable :safe-area-inset-bottom="true" border-radius="40">
 			<view class="pop-header">请选择考试地址</view>
 			<view class="pop-content">
-				<sort-picker-list ref="sortPickerList"></sort-picker-list>
+				<sort-picker-list ref="sortPickerList" :list="examAddressList" @select="addressSelectTap">
+				</sort-picker-list>
 			</view>
 		</u-popup>
 
 
 		<u-modal v-model="modalShow" :show-title="false" border-radius="32" cancel-color="#9E9E9E"
 			:show-cancel-button="showCancelButton" :cancel-style="cancelStyle" :confirm-style="confirmStyle"
-			:cancel-text="cancelText" :confirm-text="confirmText" :confirm-color="themeColor" :mask-close-able="true">
+			:cancel-text="cancelText" :confirm-text="confirmText" :confirm-color="themeColor" :mask-close-able="true"
+			@confirm="confirmTap">
 			<view class="modal-content">
 				<!-- 删除 -->
-				<view class="remove">
+				<view class="remove" v-if="modalType === 'remove'">
 					<image :src="setSrc('signUp_remove_bg.png')"></image>
 					<text>是否删除当前学生信息</text>
 				</view>
@@ -152,8 +160,15 @@
 </template>
 
 <script>
+	import {
+		examDetail,
+		examineeList,
+		examOrderCreate
+	} from '@/api/exam.js'
 	import MenusPops from "@/components/menus-popups/menus-popups.vue";
 	import SortPickerList from '@/components/sortPickerList.vue'
+
+
 	export default {
 		components: {
 			MenusPops,
@@ -161,7 +176,9 @@
 		},
 		data() {
 			return {
-
+				id: null,
+				loading: true,
+				detail: {},
 				themeColor: this.$mConstDataConfig.themeColor,
 				showCancelButton: true,
 				cancelStyle: {
@@ -188,12 +205,105 @@
 				typeMenus: false,
 				code: '',
 				codeName: '',
-				studentList: [1, 2, 3, 4],
+				examAddressList: [],
+				examineeInfos: [],
+				examineeIndex: 0,
+				modalType: 'remove',
+				address: '', // 考试地址
+				addressDetail: {}, // 收货地址
+				addressName: '', // 收货地址名称
+				studioCode: '', // 机构编码
+			}
+		},
+		onLoad(options) {
+			if (options.id) {
+				this.id = options.id;
+				this.initData();
+				this.getPeopleList();
+			}
+
+			uni.$on('examineeInfoChange', (data) => {
+				if (data) {
+					console.log(data)
+					if (data.index < 0) {
+						this.examineeInfos.push(data.params)
+					} else {
+						this.$set(this.examineeInfos, data.index, data.params)
+					}
+				}
+			})
+
+			uni.$on('selectAddress', (data) => {
+				this.addressDetail = data.item
+				this.addressName =
+					`${this.addressDetail.areaNames.replace(/,/g, ' ')}${this.addressDetail.address}`
+				// this.initData();
+			})
+		},
+		computed: {
+			totalPrice() {
+				return (this.examineeInfos.length * (this.detail.price || 0))
 			}
 		},
 		methods: {
+			initData() {
+				this.$http.post(examDetail, {
+					id: this.id
+				}).then(res => {
+					console.log(res)
+					this.detail = res.data;
+					this.examAddressList = this.$mHelper.segSort(this.detail.examAddressList)
+					console.log(this.examAddressList)
+					this.loading = false;
+				}).catch(err => {
+					console.log(err)
+				})
+			},
+
+			getPeopleList() {
+				this.$http.post(examineeList, {
+					current: 1,
+					examId: this.id,
+					size: 10,
+					state: "untested"
+				}).then(res => {
+					console.log(res)
+				}).catch(err => {
+					console.log(err)
+				})
+			},
 			submitTap() {
 
+
+
+				if(this.examineeInfos.length <= 0){
+					return this.$mHelper.toast('请添加学生信息');
+				}
+				if(this.address === ''){
+					return this.$mHelper.toast('请选择考试地址');
+				}
+				
+				if(this.detail.isNeedExpress && this.addressName === ''){
+					return this.$mHelper.toast('请选择收货地址');
+				}
+				
+				let subjects = [];
+				this.detail.examSubjectList.map(item => {
+					subjects.push(item.subjectName);
+				})
+					
+				this.$http.post(examOrderCreate, {
+					address: this.address,
+					examId: this.id,
+					examineeInfos: this.examineeInfos,
+					receiveAddressId: this.addressDetail.id,
+					studioCode: this.studioCode,
+					subject: subjects.join('+')
+				}).then(res => {
+					console.log(res)
+				}).catch(err => {
+					this.$mHelper.toast(err.msg)
+				})
 			},
 			focus() {
 				this.menusPopShow = true;
@@ -215,6 +325,48 @@
 			},
 			indexListScroll(e) {
 				this.scrollTop = e;
+			},
+			// 添加考生
+			addStudentTap() {
+				uni.navigateTo({
+					url: '/pages/public/top/addStudent'
+				})
+			},
+			// 编辑考生信息
+			updateTap(item, index) {
+				uni.navigateTo({
+					url: `/pages/public/top/addStudent?item=${JSON.stringify(item)}&index=${index}`
+				})
+			},
+			// 删除考生信息
+			deleteTap(index) {
+				this.examineeIndex = index;
+				this.modalType = 'remove';
+				this.modalShow = true
+			},
+
+			// 确认
+			confirmTap() {
+				console.log('=======')
+				if (this.modalType === 'remove') {
+					this.examineeInfos.splice(this.examineeIndex, 1);
+				}
+			},
+			// 选择考试地址
+			selectAddressTap() {
+				this.popShow = true;
+			},
+
+			// 确认地址
+			addressSelectTap(item) {
+				this.address = item.examAddress
+				this.popShow = false
+			},
+			// 选择收货地址
+			receivingTap() {
+				this.$mRouter.push({
+					route: '/pages/set/address/index'
+				})
 			}
 		},
 
@@ -231,7 +383,7 @@
 
 	.content {
 		height: 100%;
-		// padding-bottom: 140rpx;
+		padding-bottom: 330rpx;
 		overflow: auto;
 
 		.base {
@@ -344,29 +496,31 @@
 		padding-bottom: calc(14rpx + constant(safe-area-inset-bottom));
 		padding-bottom: calc(14rpx + env(safe-area-inset-bottom));
 		background-color: #fff;
-		
-		&-num{
+
+		&-num {
 			padding-bottom: 38rpx;
-			.left{
+
+			.left {
 				font-size: 26rpx;
 				color: #9E9E9E;
 			}
-			
-			.right{
-				
-				&-label{
+
+			.right {
+
+				&-label {
 					font-size: 24rpx;
 					color: #3A3D71;
 				}
-				
-				&-price{
+
+				&-price {
 					margin-left: 24rpx;
-					text{
+
+					text {
 						font-size: 34rpx;
 						font-weight: 800;
 						color: #35CE96;
-						
-						&:first-of-type{
+
+						&:first-of-type {
 							font-size: 28rpx;
 							font-weight: bold;
 							color: #35CE96;
@@ -375,7 +529,7 @@
 				}
 			}
 		}
-		
+
 		&-btn {
 			height: 88rpx;
 			line-height: 88rpx;

@@ -9,16 +9,18 @@
 			<view class="list">
 				<view class="item" v-for="(item, index) in list" :key="index" @click="detailTap(item)">
 					<view class="img">
-						<image :src="item.mosaicImg" mode="widthFix"></image>
+						<image :src="item.hdImg !== '' ? item.hdImg : item.mosaicImg"></image>
 					</view>
 					<view class="bottom">
 						<view class="text u-line-1">
-							{{item.description}}
+							{{item.copyright}}
 						</view>
-						<view class="operation">
-							<u-icon name="eye" color="#3A3D71" size="30"></u-icon>
-							<view class="num">{{item.viewCount}}次</view>
-							<view class="start" @click.top="favoriteTap(item, index)">
+						<view class="operation u-flex u-row-between">
+							<view class="left u-flex">
+								<u-icon name="eye" color="#3A3D71" size="30"></u-icon>
+								<view class="num">{{item.viewCount}}次</view>
+							</view>
+							<view class="start" @click.stop="favoriteTap(item, index)">
 								<u-icon name="star" color="#3A3D71" v-show="!item.isFavorite"></u-icon>
 								<u-icon name="star-fill" color="#35CE96" v-show="item.isFavorite"></u-icon>
 							</view>
@@ -26,7 +28,6 @@
 					</view>
 				</view>
 			</view>
-
 			<u-loadmore :status="loadStatus" @loadmore="addData"></u-loadmore>
 		</scroll-view>
 	</view>
@@ -167,16 +168,7 @@
 							position: relative;
 
 							.start {
-								position: absolute;
-								right: 24rpx;
-								top: 4rpx;
-								width: 34rpx;
-								height: 34rpx;
-
-								.start-img {
-									width: 100%;
-									height: 100%;
-								}
+								margin-right: 24rpx;
 							}
 
 							.num {

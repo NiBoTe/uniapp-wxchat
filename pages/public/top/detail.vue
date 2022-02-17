@@ -10,23 +10,22 @@
 			<view class="card">
 				<view class="card-header u-flex">
 					<view class="left">
-						<image
-							src="https://img0.baidu.com/it/u=3904827974,2084857142&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500">
+						<image :src="detail.url" mode="scaleToFill">
 						</image>
-						<view class="left-badge u-flex u-row-center">
+						<view class="left-badge u-flex u-row-center" @click="prevViewTap">
 							<image src="/static/public/search_white.png"></image>
 						</view>
 
 					</view>
 
 					<view class="right">
-						<view class="right-title">浙江省2021第一次美术水平测试模拟考试</view>
-						<view class="right-subtitle">考试编码：266899032021</view>
+						<view class="right-title">{{detail.name}}</view>
+						<view class="right-subtitle">考试编码：{{detail.no}}</view>
 						<view class="right-bottom u-flex u-row-between">
 							<view class="right-bottom-left">考试费用</view>
 							<view class="right-bottom-right u-flex">
 								<text>¥</text>
-								<text>299</text>
+								<text>{{detail.price}}</text>
 							</view>
 						</view>
 					</view>
@@ -39,37 +38,46 @@
 							<text>报名日期</text>
 						</view>
 						<view class="right">
-							<text>2021-08-05至2021-08-09</text>
+							<text>{{detail.enrollStartTime}}至{{detail.enrollEndTime}}</text>
 						</view>
 					</view>
 					<view class="card-time u-flex u-row-between">
 						<view class="left u-flex">
 							<image src="/static/public/time.png"></image>
-							<text>报名日期</text>
+							<text>考试日期</text>
 						</view>
 						<view class="right">
-							<text>2021-08-05至2021-08-09</text>
+							<text>{{detail.examStartTime}}至{{detail.examEndTime}}</text>
 						</view>
 					</view>
+				</view>
+
+				<view class="gaps" v-if="detail.auditState !== 'auditing'"></view>
+				<view class="card-label u-flex" v-if="detail.auditState !== 'auditing'">
+					<image src="/static/public/DELE.png"></image>
+					<text>考试简介</text>
+				</view>
+
+				<view class="card-text" v-if="detail.auditState !== 'auditing'">
+					<text>{{detail.remark}}</text>
 				</view>
 			</view>
 
 			<!-- 审核状态 -->
-			<view class="card card-examine u-flex">
+			<view class="card card-examine u-flex" v-if="detail.auditState === 'auditing'">
 				<image :src="setSrc('top_review.png')"></image>
 				<text>【审核中】主办方修改考试信息</text>
 			</view>
 
 			<!-- 考试简介 -->
-			<view class="card">
+			<view class="card" v-if="detail.auditState === 'auditing'">
 				<view class="card-label u-flex">
 					<image src="/static/public/DELE.png"></image>
 					<text>考试简介</text>
 				</view>
 
 				<view class="card-text">
-					<text>试题内容人物半身像随意创作性别年龄大小种族不限，西方人物室外风景色彩赏析，展示了古西方艺术文化史的魅力衍传，印绘着艺术发展的历程试题内容。
-						人物半身像随意创作性别年龄大小种族不限，西方人物室外风景色彩赏析，展示了古西方艺术文化史的魅力衍传，印绘着艺术发展的历程。</text>
+					<text>{{detail.remark}}</text>
 				</view>
 			</view>
 
@@ -82,27 +90,15 @@
 				</view>
 
 				<view class="card-list">
-					<view class="card-item u-flex u-row-between">
-						<view class="left">素描</view>
+					<view class="card-item u-flex u-row-between" v-for="(item, index) in detail.examSubjectList"
+						:key="index">
+						<view class="left">{{item.subjectName}}</view>
 						<view class="right">
-							<text>2021-08-10</text>
-							<text>09:00-12:00</text>
+							<text>{{item.subjectDate}}</text>
+							<text>{{item.subjectStarttime}}-{{item.subjectEndtime}}</text>
 						</view>
 					</view>
-					<view class="card-item u-flex u-row-between">
-						<view class="left">色彩</view>
-						<view class="right">
-							<text>2021-08-10</text>
-							<text>09:00-12:00</text>
-						</view>
-					</view>
-					<view class="card-item u-flex u-row-between">
-						<view class="left">速写</view>
-						<view class="right">
-							<text>2021-08-10</text>
-							<text>09:00-12:00</text>
-						</view>
-					</view>
+
 				</view>
 			</view>
 
@@ -115,15 +111,9 @@
 				</view>
 
 				<view class="card-address">
-					<view class="card-address-item">
-						<view class="card-address-code">A</view>
-						<view class="card-address-text">岸尚画室</view>
-						<view class="card-address-text">安克里美术画室</view>
-					</view>
-					<view class="card-address-item">
-						<view class="card-address-code">B</view>
-						<view class="card-address-text">岸尚画室</view>
-						<view class="card-address-text">安克里美术画室</view>
+					<view class="card-address-item" v-for="(item, index) in examAddressList" :key="index">
+						<view class="card-address-code">{{item.letter}}</view>
+						<view class="card-address-text" v-for="(itemc, indexc) in item.data">{{itemc.province}}</view>
 					</view>
 				</view>
 			</view>
@@ -132,32 +122,76 @@
 		<view class="footer">
 			<view class="footer-btn" @click="submitTap">去考试</view>
 		</view>
-		
+
 		<top-tips ref="TopTips" @enterClick="enterClick"></top-tips>
+
+		<!--页面加载动画-->
+		<rfLoading isFullScreen :active="loading"></rfLoading>
 	</view>
 </template>
 
 <script>
-	import TopTips from './components/top-tips.vue' 
+	import TopTips from './components/top-tips.vue'
+	import {
+		examDetail
+	} from '@/api/exam.js'
 	export default {
 		components: {
-			TopTips	
+			TopTips
 		},
 		data() {
 			return {
+				id: null,
+				loading: true,
+				detail: {},
+				examAddressList: [],
 				background: {
 					backgroundImage: "url('https://ykh-wxapp.oss-cn-hangzhou.aliyuncs.com/wx_applet_img/top_navbar_bg.png')",
 					backgroundSize: 'cover',
 				}
 			};
 		},
-		methods:{
-			submitTap(){
-				this.$refs.TopTips.open();
+		onLoad(options) {
+			if (options.id) {
+				this.id = options.id;
+				this.initData();
+			}
+
+		},
+		methods: {
+			initData() {
+				this.$http.post(examDetail, {
+					id: this.id
+				}).then(res => {
+					this.detail = res.data;
+					this.examAddressList = this.$mHelper.segSort(this.detail.examAddressList)
+					this.loading = false;
+				}).catch(err => {
+					console.log(err)
+				})
 			},
-			enterClick(){
+			submitTap() {
+				const checked = uni.getStorageSync('examChecked')
+				if (checked) {
+					
+					console.log(this.id)
+					this.$mRouter.push({
+						route: `/pages/public/top/signUp?id=${this.id}`
+					})
+				} else {
+					this.$refs.TopTips.open();
+				}
+			},
+			enterClick() {
 				this.$mRouter.push({
-					route: '/pages/public/top/signUp'
+					route: `/pages/public/top/signUp?id=${this.id}`
+				})
+			},
+			// 预览图片
+			prevViewTap() {
+				uni.previewImage({
+					urls: [this.detail.urlHd],
+					current: 0
 				})
 			}
 		}
@@ -181,6 +215,7 @@
 		overflow: auto;
 		padding-bottom: calc(134rpx + constant(safe-area-inset-bottom));
 		padding-bottom: calc(134rpx + env(safe-area-inset-bottom));
+
 		.card {
 			margin: 20rpx 34rpx 0 28rpx;
 			padding: 20rpx 20rpx 34rpx;
@@ -395,6 +430,7 @@
 		padding-bottom: calc(14rpx + constant(safe-area-inset-bottom));
 		padding-bottom: calc(14rpx + env(safe-area-inset-bottom));
 		background-color: #fff;
+
 		&-btn {
 			height: 88rpx;
 			line-height: 88rpx;
@@ -404,11 +440,18 @@
 			border-radius: 44rpx;
 			font-size: 32rpx;
 			color: #fff;
-			
-			&.disabled{
+
+			&.disabled {
 				background: #EDEFF2;
 				color: #8F9091;
 			}
 		}
+	}
+
+	// 间隔
+	.gaps {
+		height: 2rpx;
+		background: #E9E9E9;
+		margin: 36rpx 0 22rpx 0;
 	}
 </style>
