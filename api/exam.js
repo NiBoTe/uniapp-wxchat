@@ -21,6 +21,9 @@ const examineeList = `${exam}examineeList`;
 //考试报名下单
 const examOrderCreate = `${exam}examOrderCreate`;
 
+// 根据机构编码查询名称
+const getStudioNameByStudioCode = `${exam}getStudioNameByStudioCode`;
+
 export {
 	proviceList,
 	examMenuList,
@@ -28,5 +31,6 @@ export {
 	examList2,
 	examDetail,
 	examineeList,
-	examOrderCreate
+	examOrderCreate,
+	getStudioNameByStudioCode
 };

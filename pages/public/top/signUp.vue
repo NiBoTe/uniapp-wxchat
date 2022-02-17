@@ -29,8 +29,8 @@
 						<text>考试科目</text>
 					</view>
 					<view class="right">
-						<text v-for="(item, index) in detail.examSubjectList">{{item.subjectName}}</text>
-						<text v-if="index === detail.examSubjectList.length - 1">、</text>
+						<text v-for="(item, index) in detail.examSubjectList" :key="index">{{item.subjectName}}<text
+								v-if="index !== detail.examSubjectList.length - 1">、</text></text>
 					</view>
 				</view>
 				<view class="base-item u-flex u-row-between">
@@ -41,7 +41,8 @@
 					<view class="right">
 						<text v-if="!typeMenus" @click="focus"
 							:style="{color: code === '' ? '#999' : '#3A3D71'}">{{code !== '' ? code : '请输入机构编码'}}</text>
-						<input v-else type="text" @focus="focus" v-model="studioCode" placeholder="请输入机构编码" />
+						<input v-else type="text" @focus="focus" v-model="studioCode" placeholder="请输入机构编码"
+							@confirm="studioCodeInput" />
 						<menus-pops v-model="menusPopShow" :dynamic="false" :popData="menusData" @tapPopup="tapPopup"
 							:x="344" :y="300" placement="top-end" type="custom"></menus-pops>
 					</view>
@@ -55,7 +56,7 @@
 					<view class="right">
 						<text v-if="!typeMenus"
 							:style="{color: code === '' ? '#999' : '#3A3D71'}">{{code !== '' ? code : '-'}}</text>
-						<input v-else type="text" v-model="codeName" placeholder="请输入机构名称" />
+						<input v-else type="text" v-model="studioName" placeholder="请输入机构名称" />
 					</view>
 				</view>
 
@@ -71,7 +72,7 @@
 
 				<view class="base-item u-flex u-row-between" @click="receivingTap">
 					<view class="left">
-						
+
 						<text v-if="detail.isNeedExpress" class="tips">*</text>
 						<text>收货地址</text>
 					</view>
@@ -163,12 +164,11 @@
 	import {
 		examDetail,
 		examineeList,
-		examOrderCreate
-	} from '@/api/exam.js'
+		examOrderCreate,
+		getStudioNameByStudioCode
+	} from '@/api/exam.js';
 	import MenusPops from "@/components/menus-popups/menus-popups.vue";
-	import SortPickerList from '@/components/sortPickerList.vue'
-
-
+	import SortPickerList from '@/components/sortPickerList.vue';
 	export default {
 		components: {
 			MenusPops,
@@ -213,6 +213,7 @@
 				addressDetail: {}, // 收货地址
 				addressName: '', // 收货地址名称
 				studioCode: '', // 机构编码
+				studioName: '', // 机构名称
 			}
 		},
 		onLoad(options) {
@@ -273,25 +274,22 @@
 				})
 			},
 			submitTap() {
-
-
-
-				if(this.examineeInfos.length <= 0){
+				if (this.examineeInfos.length <= 0) {
 					return this.$mHelper.toast('请添加学生信息');
 				}
-				if(this.address === ''){
+				if (this.address === '') {
 					return this.$mHelper.toast('请选择考试地址');
 				}
-				
-				if(this.detail.isNeedExpress && this.addressName === ''){
+
+				if (this.detail.isNeedExpress && this.addressName === '') {
 					return this.$mHelper.toast('请选择收货地址');
 				}
-				
+
 				let subjects = [];
 				this.detail.examSubjectList.map(item => {
 					subjects.push(item.subjectName);
 				})
-					
+
 				this.$http.post(examOrderCreate, {
 					address: this.address,
 					examId: this.id,
@@ -307,7 +305,6 @@
 			},
 			focus() {
 				this.menusPopShow = true;
-
 			},
 			tapPopup(e) {
 				console.log(e)
@@ -364,8 +361,25 @@
 			},
 			// 选择收货地址
 			receivingTap() {
+				console.log('=========')
 				this.$mRouter.push({
 					route: '/pages/set/address/index'
+				})
+			},
+			studioCodeInput(e) {
+				this.getCodeName()
+			},
+
+			// 获取机构
+			getCodeName() {
+				this.$http.post(getStudioNameByStudioCode, {
+					examId: this.id,
+					studioCode: this.studioCode
+				}).then(res => {
+					console.log(res)
+					this.studioName = res.data
+				}).catch(err => {
+					console.log(err)
 				})
 			}
 		},

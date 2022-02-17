@@ -73,15 +73,15 @@
 <script>
 	import {
 		examPaperImgDetail
-	} from '@/api/history_exam.js'
+	} from '@/api/history_exam.js';
 	import {
 		addressList
-	} from '@/api/receive-address.js'
+	} from '@/api/receive-address.js';
 
 	import {
 		orderLaunch,
 		orderPay
-	} from '@/api/order.js'
+	} from '@/api/order.js';
 	export default {
 		data() {
 			return {
