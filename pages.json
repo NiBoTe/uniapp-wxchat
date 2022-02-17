@@ -42,7 +42,7 @@
 			}
 
 		}
-    ],
+	],
 	"subPackages": [
 		// 设置
 		{
@@ -62,6 +62,22 @@
 						"enablePullDownRefresh": false
 					}
 
+				},
+				{
+					"path": "address/index",
+					"style": {
+						"navigationBarTitleText": "地址管理",
+						"navigationBarTextStyle": "black",
+						"enablePullDownRefresh": false
+					}
+				},
+				{
+					"path": "address/add",
+					"style": {
+						"navigationBarTitleText": "添加收货地址",
+						"navigationBarTextStyle": "black",
+						"enablePullDownRefresh": false
+					}
 				}
 			]
 		},
@@ -76,27 +92,24 @@
 						"navigationBarTitleText": "动态主页",
 						"navigationStyle": "custom"
 					}
+				}, {
+					"path": "dynamic/dynamic",
+					"style": {
+						"navigationBarTitleText": "",
+						"enablePullDownRefresh": false
+					}
+
 				}
-			    ,{
-                    "path" : "dynamic/dynamic",
-                    "style" :                                                                                    
-						{
-							"navigationBarTitleText": "",
-							"enablePullDownRefresh": false
-						}
-                
-                }
-				
-                ,{
-                    "path" : "detail/detail",
-                    "style" :                                                                                    
-                {
-                    "navigationBarTitleText": "",
-                    "enablePullDownRefresh": false
-                }
-                
-                }
-            ]
+
+				, {
+					"path": "detail/detail",
+					"style": {
+						"navigationBarTitleText": "",
+						"enablePullDownRefresh": false
+					}
+
+				}
+			]
 		},
 		// 公共
 		{
@@ -239,24 +252,24 @@
 						"enablePullDownRefresh": false
 					}
 
+				}, {
+					"path": "top/addStudent",
+					"style": {
+						"navigationBarTitleText": "",
+						"navigationStyle": "custom",
+						"enablePullDownRefresh": false
+					}
+
+				}, {
+					"path": "top/paySuccess",
+					"style": {
+						"navigationBarTitleText": "",
+						"navigationBarTextStyle": "black",
+						"navigationStyle": "custom",
+						"enablePullDownRefresh": false
+					}
+
 				}
-				// , {
-				// 	"path": "top/addStudent",
-				// 	"style": {
-				// 		"navigationBarTitleText": "",
-				// 		"navigationStyle": "custom",
-				// 		"enablePullDownRefresh": false
-				// 	}
-
-				// }, {
-				// 	"path": "top/paySuccess",
-				// 	"style": {
-				// 		"navigationBarTitleText": "",
-				// 		"navigationStyle": "custom",
-				// 		"enablePullDownRefresh": false
-				// 	}
-
-				// }
 			]
 		}
 	],

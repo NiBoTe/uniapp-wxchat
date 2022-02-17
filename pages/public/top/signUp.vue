@@ -167,6 +167,7 @@
 		examOrderCreate,
 		getStudioNameByStudioCode
 	} from '@/api/exam.js';
+	import { orderPay } from '@/api/order.js';
 	import MenusPops from "@/components/menus-popups/menus-popups.vue";
 	import SortPickerList from '@/components/sortPickerList.vue';
 	export default {
@@ -295,10 +296,11 @@
 					examId: this.id,
 					examineeInfos: this.examineeInfos,
 					receiveAddressId: this.addressDetail.id,
-					studioCode: this.studioCode,
+					studioCode: this.typeMenus ? this.studioCode : 'A888888',
 					subject: subjects.join('+')
 				}).then(res => {
 					console.log(res)
+					this.goPay(res.data.examOrderId)
 				}).catch(err => {
 					this.$mHelper.toast(err.msg)
 				})
@@ -380,6 +382,46 @@
 					this.studioName = res.data
 				}).catch(err => {
 					console.log(err)
+				})
+			},
+			goPay(orderId){
+				this.$http.post(orderPay, {
+					openid: this.$mStore.state.userInfo.openid,
+					orderId,
+					payType: 1,
+					tradeType: 'JSAPI'
+				}).then(res => {
+					console.log(res)
+					
+					let params = res.data
+					
+					uni.hideLoading()
+					uni.requestPayment({
+					    provider: 'wxpay',
+					    timeStamp: params.timeStamp,
+					    nonceStr: params.nonceStr,
+					    package: params.packageValue,
+					    signType: params.signType,
+					    paySign: params.paySign,
+					    success: (res) =>  {
+							this.$mHelper.toast('支付成功')
+							setTimeout(() => {
+								uni.redirectTo({
+									url: `/pages/public/top/paySuccess?orderId=${orderId}&payStatus=1`
+								})
+							}, 1500)
+					    },
+					    fail: (err) => {
+							this.$mHelper.toast('支付失败')
+							setTimeout(() => {
+								uni.redirectTo({
+									url: `/pages/public/top/paySuccess?orderId=${orderId}&payStatus=0`
+								})
+							}, 1500)
+					    }
+					});
+				}).catch(err => {
+					uni.hideLoading()
 				})
 			}
 		},
