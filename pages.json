@@ -41,8 +41,15 @@
 				"enablePullDownRefresh": false
 			}
 
-		}
-	],
+		},{
+            "path" : "pages/profile/fansList",
+            "style" : {
+                "navigationBarTitleText": "",
+				"navigationStyle": "custom",
+                "enablePullDownRefresh": false
+            }
+        }
+    ],
 	"subPackages": [
 		// 设置
 		{
