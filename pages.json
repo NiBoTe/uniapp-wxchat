@@ -310,6 +310,15 @@
 				// 	}
 
 				// }
+				, {
+					"path": "top/testRecording",
+					"style": {
+						"navigationBarTitleText": "",
+						"navigationStyle": "custom",
+						"enablePullDownRefresh": false
+					}
+
+				}
 			]
 		}
 	],
