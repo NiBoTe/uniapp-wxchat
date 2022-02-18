@@ -8,7 +8,7 @@
 		
 		<view class="contenBox">
 			<view class="content-view">
-				<view class="item">
+				<view class="item" @tap="toAccount">
 					<view class="menu-title">账户与安全</view>
 					<view class="right">
 						<view class="subtitle">
@@ -167,6 +167,11 @@
 
 	  },
 	  methods: {
+		  toAccount:function() {
+			  uni.navigateTo({
+			  	url: '/pages/set/account/index'
+			  })
+		  }
 	
 
 	  },

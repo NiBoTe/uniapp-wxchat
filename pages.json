@@ -82,7 +82,15 @@
 				{
 					"path": "setting/index",
 					"style": {
-						"navigationBarTitleText": "添加收货地址",
+						"navigationBarTitleText": "设置",
+						"navigationBarTextStyle": "black",
+						"enablePullDownRefresh": false
+					}
+				},
+				{
+					"path": "account/index",
+					"style": {
+						"navigationBarTitleText": "账号与安全",
 						"navigationBarTextStyle": "black",
 						"enablePullDownRefresh": false
 					}
