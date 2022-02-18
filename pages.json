@@ -94,6 +94,14 @@
 						"navigationBarTextStyle": "black",
 						"enablePullDownRefresh": false
 					}
+				},
+				{
+					"path": "changePhone/index",
+					"style": {
+						"navigationBarTitleText": "更换手机号码",
+						"navigationBarTextStyle": "black",
+						"enablePullDownRefresh": false
+					}
 				}
 			]
 		},

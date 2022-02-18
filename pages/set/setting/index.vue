@@ -131,8 +131,8 @@
 		</view>
 		
 		<view class="bottom">
-			<view class="sendBtn" @tap="saveRequest">
-				下一步
+			<view class="loginOut" @tap="saveRequest">
+				退出登录
 			</view>
 		</view>
 
@@ -168,8 +168,12 @@
 	  },
 	  methods: {
 		  toAccount:function() {
+			  // uni.navigateTo({
+			  // 	url: '/pages/set/account/index'
+			  // })
+			  
 			  uni.navigateTo({
-			  	url: '/pages/set/account/index'
+			  	url: '/pages/set/changePhone/index'
 			  })
 		  }
 	
@@ -184,7 +188,6 @@
 		background-color: #F3F3F3;
 		height: 100vh;
 		overflow-x: hidden;
-		padding-bottom: 180rpx;
 	}
 	
 	
@@ -244,7 +247,7 @@
 		flex-direction: row;
 		justify-content: center;
 		margin-top: 24rpx;
-		.sendBtn{
+		.loginOut{
 			border-radius: 24rpx;
 			width: 682rpx;
 			height: 112rpx;

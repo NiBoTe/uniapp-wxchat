@@ -75,7 +75,6 @@
 		background-color: #F3F3F3;
 		height: 100vh;
 		overflow-x: hidden;
-		padding-bottom: 180rpx;
 	}
 	
 	
