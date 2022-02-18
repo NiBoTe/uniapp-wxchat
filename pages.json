@@ -293,22 +293,23 @@
 						"enablePullDownRefresh": false
 					}
 
-				}, {
-					"path": "top/studentList",
-					"style": {
-						"navigationBarBackgroundColor": "#FFFFFF",
-						"navigationBarTextStyle": "black",
-						"navigationBarTitleText": "考生列表"
-					}
-				}, {
-					"path": "top/testContent",
-					"style": {
-						"navigationBarTitleText": "",
-						"navigationStyle": "custom",
-						"enablePullDownRefresh": false
-					}
-
 				}
+				// {
+				// 	"path": "top/studentList",
+				// 	"style": {
+				// 		"navigationBarBackgroundColor": "#FFFFFF",
+				// 		"navigationBarTextStyle": "black",
+				// 		"navigationBarTitleText": "考生列表"
+				// 	}
+				// }, {
+				// 	"path": "top/testContent",
+				// 	"style": {
+				// 		"navigationBarTitleText": "",
+				// 		"navigationStyle": "custom",
+				// 		"enablePullDownRefresh": false
+				// 	}
+
+				// }
 			]
 		}
 	],
