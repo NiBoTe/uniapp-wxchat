@@ -1,30 +1,34 @@
 <template>
 	<view class="container">
 		<scroll-view class="tabs" :scroll-x="true">
-			<view class="tab" :class="[type !== 'list' ? 'zero' : '', activeIndex === index ? 'active' : '']" v-for="(item, index) in list" :key="index" @click="tabClick(item, index)">
+			<view class="tab" :class="[type !== 'list' ? 'zero' : '', activeIndex === index ? 'active' : '']"
+				v-for="(item, index) in list" :key="index" @click="tabClick(item, index)">
 				<text v-if="type === 'time'">{{item.year}}</text>
-				<text v-else>{{item.name}}</text>
+				<text v-else>{{item[keyName]}}</text>
 				<view class="tab-border" v-if="activeIndex === index">
 					<image src="/static/public/home_scroll_style.png"></image>
 				</view>
 			</view>
-			
+
 		</scroll-view>
 	</view>
 </template>
 
 <script>
-	
 	export default {
-		name:"drawingColumn",
+		name: "drawingColumn",
 		props: {
 			type: {
 				type: String,
-				default:'list'
+				default: 'list'
+			},
+			keyName: {
+				type: String,
+				default: 'name'
 			},
 			list: {
 				type: Array,
-				default:function(){
+				default: function() {
 					return []
 				}
 			}
@@ -35,10 +39,10 @@
 			};
 		},
 		created() {
-				this.initData()
+			this.initData()
 		},
-		methods:{
-			initData(){
+		methods: {
+			initData() {
 				// if(this.type === 'time') {
 				// 	let times = []
 				// 	for(let i = 0; i< 10; i++){
@@ -46,14 +50,17 @@
 				// 	}
 				// 	this.list = times
 				// }
-				
+
 			},
-			timeShow(list){
+			timeShow(list) {
 				this.list = list
 			},
-			tabClick(item, index){
+			tabClick(item, index) {
 				this.activeIndex = index
-				this.$emit('change', {item, index})
+				this.$emit('change', {
+					item,
+					index
+				})
 			}
 		}
 	}
@@ -64,7 +71,7 @@
 	.tabs {
 		height: 54rpx;
 		white-space: nowrap;
-	
+
 		.tab {
 			height: 52rpx;
 			margin-right: 34rpx;
@@ -74,33 +81,35 @@
 			background: #F3F3F3;
 			border-radius: 36rpx;
 			border: 4rpx solid transparent;
-			
-			
-			
+
+
+
 			&:first-of-type {
 				margin-left: 32rpx;
 			}
-			&.zero{
+
+			&.zero {
 				margin-left: 0;
 			}
+
 			&.active {
 				background: #EFF2FF;
-	
+
 				text {
 					color: $u-type-primary;
 				}
 			}
-	
+
 			text {
 				font-size: 24rpx;
 				color: #3A3D71;
 			}
-	
+
 			&-border {
 				position: absolute;
 				right: -8rpx;
 				bottom: -8rpx;
-	
+
 				image {
 					display: block;
 					width: 36rpx;
