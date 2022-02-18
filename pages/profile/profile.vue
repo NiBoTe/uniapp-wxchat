@@ -7,7 +7,7 @@
 					src="https://img1.baidu.com/it/u=1319713773,2074606622&fm=253&fmt=auto&app=138&f=JPG?w=889&h=500">
 				</image>
 
-				<view class="settings" :style="{top: StatusBar + 44 + 'px'}">
+				<view class="settings" :style="{top: StatusBar + 44 + 'px'}" @tap="toSetting">
 					<image src="/static/my/settings.png"></image>
 				</view>
 			</view>
@@ -148,7 +148,13 @@
 			},
 			unfixedTap(){
 				this.isFixed = false
+			},
+			toSetting:function() {
+				uni.navigateTo({
+					url: '/pages/set/setting/index',
+				});
 			}
+			
 		}
 	}
 </script>

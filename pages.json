@@ -78,6 +78,14 @@
 						"navigationBarTextStyle": "black",
 						"enablePullDownRefresh": false
 					}
+				},
+				{
+					"path": "setting/index",
+					"style": {
+						"navigationBarTitleText": "添加收货地址",
+						"navigationBarTextStyle": "black",
+						"enablePullDownRefresh": false
+					}
 				}
 			]
 		},
