@@ -78,6 +78,30 @@
 						"navigationBarTextStyle": "black",
 						"enablePullDownRefresh": false
 					}
+				},
+				{
+					"path": "setting/index",
+					"style": {
+						"navigationBarTitleText": "设置",
+						"navigationBarTextStyle": "black",
+						"enablePullDownRefresh": false
+					}
+				},
+				{
+					"path": "account/index",
+					"style": {
+						"navigationBarTitleText": "账号与安全",
+						"navigationBarTextStyle": "black",
+						"enablePullDownRefresh": false
+					}
+				},
+				{
+					"path": "changePhone/index",
+					"style": {
+						"navigationBarTitleText": "更换手机号码",
+						"navigationBarTextStyle": "black",
+						"enablePullDownRefresh": false
+					}
 				}
 			]
 		},
