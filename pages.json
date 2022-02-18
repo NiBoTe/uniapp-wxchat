@@ -315,6 +315,23 @@
 					"style": {
 						"navigationBarTitleText": "",
 						"navigationStyle": "custom",
+						"navigationBarTextStyle": "black",
+						"enablePullDownRefresh": false
+					}
+
+				}, {
+					"path": "top/scoreQuery",
+					"style": {
+						"navigationBarTitleText": "成绩查询",
+						"navigationStyle": "custom",
+						"enablePullDownRefresh": false
+					}
+
+				}, {
+					"path": "top/scoreDetail",
+					"style": {
+						"navigationBarTitleText": "成绩详情",
+						"navigationStyle": "custom",
 						"enablePullDownRefresh": false
 					}
 
