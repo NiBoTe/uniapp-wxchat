@@ -2,7 +2,7 @@
 import mRouter from '@/utils/router';
 import mConstDataConfig from '@/config/constData.config';
 import mStore from '@/store';
-
+import moment from '@/common/moment.js'
 //常用方法集合
 export default {
 	/**
@@ -266,5 +266,12 @@ export default {
 		res += `${s}s`;
 		return `${h}:${m}:${s}`;
 	},
+	// 时间段内
+	timeInByDate(start, end) {
+	  if (moment(start).diff(moment()) < 0 && moment(end).diff(moment()) > 0) {
+	    return true
+	  }
+	  return false
+	}
 	
 };

@@ -9,17 +9,17 @@
 			<view class="tab" @click="tabTap(0)" :class="tabIndex === 0 ? 'active' : ''">
 				考试信息
 			</view>
-			<view class="line" v-if="tabIndex === 2"></view>
+			<view class="line" v-show="tabIndex === 2"></view>
 			<view class="tab" @click="tabTap(1)" :class="tabIndex === 1 ? 'active' : ''">
 				我的未考
 			</view>
-			<view class="line" v-if="tabIndex === 0"></view>
+			<view class="line" v-show="tabIndex === 0"></view>
 			<view class="tab" @click="tabTap(2)" :class="tabIndex === 2 ? 'active' : ''">
 				我的已考
 			</view>
 		</view>
 
-		<view class="subtabs u-flex u-row-between">
+		<view class="subtabs u-flex u-row-between" v-show="tabIndex === 0">
 			<view class="left u-flex">
 				<view class="subtab u-flex" @click="statusTap()">
 					<text v-if="examStatus === ''">全部</text>
@@ -40,7 +40,7 @@
 		</view>
 
 		<view class="content">
-			<scroll-view scroll-y scroll-with-animation class="left">
+			<scroll-view scroll-y scroll-with-animation class="left" v-show="tabIndex === 0">
 				<view v-for="(item,index) in menuList" :key="index" class="left-item">
 					<view class="left-item-box u-flex u-row-center" v-if="item.childMenus.length > 0"
 						@click.stop="menusTap(index)"
@@ -115,8 +115,18 @@
 							<view class="item-left">
 								报名日期：{{item.enrollStartTime}}至{{item.enrollEndTime}}
 							</view>
-							<view class="item-right u-flex" :class="moment(item.enrollEndTime).diff(moment(), 'days') >= 0 ? 'active' : ''">
+							<view class="item-right u-flex" v-show="tabIndex === 0" :class="moment(item.enrollEndTime).diff(moment(), 'days') >= 0 ? 'active' : ''">
 								{{moment(item.enrollEndTime).diff(moment(), 'days') >= 0 ? '快捷报名' : '报名截止'}}
+							</view>
+							
+							<view class="item-right u-flex" v-show="tabIndex === 1" :class="moment(item.examEndTime).diff(moment(), 'days') >= 0 ? 'active' : ''">
+								<text v-if="item.errorState === 'delay'">考试延期</text>
+								<text v-else-if="item.errorState === 'cancel'">考试取消</text>
+								<text v-else>快捷考试</text>
+							</view>
+							
+							<view class="item-right u-flex active" v-show="tabIndex === 2">
+								<text>成绩查询</text>
 							</view>
 						</view>
 					</view>
@@ -193,26 +203,45 @@
 			
 			getList(){
 				this.loadStatus = 'loading';
-				this.$http.post(examList, {
-					examDate: this.examDate,
-					examStatus: this.examStatus,
-					// firstMenuId: this.firstMenuId
-					province: this.province,
-					// secondMenuId: this.secondMenuId,
-					size: this.size,
-					current: this.current,
-				}).then(res => {
-					if (this.current === 1) {
-						this.list = res.data.list;
-					} else {
-						this.list = this.list.concat(res.data.list);
-					}
-					if (res.data.list.length <= 0) {
-						this.loadStatus = 'nomore';
-					} else {
-						this.loadStatus = 'loadmore';
-					}
-				})
+				if(this.tabIndex === 0) {
+					this.$http.post(examList, {
+						examDate: this.examDate,
+						examStatus: this.examStatus,
+						// firstMenuId: this.firstMenuId
+						province: this.province,
+						// secondMenuId: this.secondMenuId,
+						size: this.size,
+						current: this.current,
+					}).then(res => {
+						if (this.current === 1) {
+							this.list = res.data.list;
+						} else {
+							this.list = this.list.concat(res.data.list);
+						}
+						if (res.data.list.length <= 0) {
+							this.loadStatus = 'nomore';
+						} else {
+							this.loadStatus = 'loadmore';
+						}
+					})
+				} else {
+					this.$http.post(examList2, {
+						state: this.tabIndex === 1 ? 'untested' : this.tabIndex === 2 ? 'tested' : '',
+						size: this.size,
+						current: this.current,
+					}).then(res => {
+						if (this.current === 1) {
+							this.list = res.data.list;
+						} else {
+							this.list = this.list.concat(res.data.list);
+						}
+						if (res.data.list.length <= 0) {
+							this.loadStatus = 'nomore';
+						} else {
+							this.loadStatus = 'loadmore';
+						}
+					})
+				}
 			},
 			getProviceList() {
 				this.$http.post(proviceList).then(res => {
@@ -244,6 +273,8 @@
 			},
 			tabTap(index) {
 				this.tabIndex = index;
+				this.current = 1;
+				this.getList()
 			},
 			// 院校
 			menusTap(index) {
@@ -295,7 +326,7 @@
 			// 查看详情
 			detailTap(item, index){
 				uni.navigateTo({
-					url: `/pages/public/top/detail?id=${item.id}`
+					url: `/pages/public/top/detail?id=${item.id}&type=${this.tabIndex}`
 				})
 			}
 		}

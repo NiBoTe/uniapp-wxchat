@@ -5,22 +5,22 @@
 				key-name="subjectName" @change="tabChange"></drawingColumn>
 			<view class="tabs u-flex">
 				<view class="tab" :class="faceDetectState === '' ? 'active' : ''" @click="tabClick('')">
-					<view class="tab-num">339</view>
+					<view class="tab-num">{{total}}</view>
 					<view class="tab-name">全部</view>
 					<view class="tab-border"></view>
 				</view>
 				<view class="tab" :class="faceDetectState === 1 ? 'active' : ''" @click="tabClick(1)">
-					<view class="tab-num">339</view>
+					<view class="tab-num">{{successCount}}</view>
 					<view class="tab-name">验证成功</view>
 					<view class="tab-border"></view>
 				</view>
 				<view class="tab" :class="faceDetectState === -1 ? 'active' : ''" @click="tabClick(-1)">
-					<view class="tab-num">339</view>
+					<view class="tab-num">{{failCount}}</view>
 					<view class="tab-name">验证失败</view>
 					<view class="tab-border"></view>
 				</view>
 				<view class="tab" :class="faceDetectState === 0 ? 'active' : ''" @click="tabClick(0)">
-					<view class="tab-num">339</view>
+					<view class="tab-num">{{notDetecteCount}}</view>
 					<view class="tab-name">未验证</view>
 					<view class="tab-border"></view>
 				</view>
@@ -29,39 +29,39 @@
 		</view>
 		<scroll-view scroll-y class="scroll-warper" @scrolltolower="lower">
 			<view class="list">
-				<view class="item">
+				<view class="item" v-for="(item, index) in list" :key="index">
 					<view class="item-header u-flex u-row-between">
 						<view class="left u-flex">
 							<view class="left-style"></view>
-							<view class="left-text">朱明义</view>
+							<view class="left-text">{{item.name}}</view>
 						</view>
 						<view class="right">
-							<text class="success">验证成功</text>
-							<text class="no">未验证</text>
+							<text class="success" v-if="item.faceDetectState === 1">验证成功</text>
+							<text class="no" v-else-if="item.faceDetectState === 0">未验证</text>
 
-							<view class="right-btn u-flex u-row-center">
+							<view class="right-btn u-flex u-row-center" v-else-if="item.faceDetectState === -1">
 								<text>去验证</text>
 							</view>
 						</view>
 					</view>
 
 					<view class="item-subheader u-flex u-row-between error">
-						<view class="left">准考证号 E000002021098</view>
+						<view class="left">准考证号 {{item.admissionTicketCode}}</view>
 						<view class="right u-flex u-row-center">
 							<u-icon name="clock" color="#9E9E9E" size="30"></u-icon>
-							<text>2022-02-11</text>
+							<text>{{item.createTime}}</text>
 						</view>
 					</view>
 
-					<view class="item-footer u-flex u-row-between">
-						<view class="left">失败原因：人脸识别信息有误</view>
+					<view class="item-footer u-flex u-row-between" v-if="item.faceDetectState === -1">
+						<view class="left">失败原因：{{item.faceDetectError}}</view>
 						<view class="right">
 							<text class="error">验证失败</text>
 						</view>
 					</view>
 				</view>
 			</view>
-			<u-loadmore :status="loadStatus" @loadmore="addData"></u-loadmore>
+			<u-loadmore margin-top="30" margin-bottom="30" :status="loadStatus" @loadmore="addData"></u-loadmore>
 		</scroll-view>
 		<view class="footer">
 			<view class="footer-btn" @click="submitTap">去考试</view>
@@ -75,6 +75,8 @@
 		examDetail,
 		faceDetectExamineeList
 	} from '@/api/exam.js'
+	
+	import moment from '@/common/moment.js'
 	export default {
 		components: {
 			drawingColumn
@@ -88,12 +90,20 @@
 				current: 1,
 				size: 10,
 				faceDetectState: '',
-				list: []
+				course: '',
+				examSubjectItem: {},
+				list: [],
+				failCount: 0, // 失败数量
+				notDetecteCount: 0, // 未验证数量
+				successCount: 0, //成功数量
+				total: 0, // 全部
+				type: 0, // 考试状态
 			};
 		},
 		onLoad(options) {
 			if (options.id) {
 				this.id = options.id;
+				this.type = options.type;
 				this.initData()
 			}
 		},
@@ -104,6 +114,10 @@
 				}).then(res => {
 					console.log(res)
 					this.examDetail = res.data
+					
+					this.examSubjectItem = this.examDetail.examSubjectList[0]
+					this.course = this.examDetail.examSubjectList[0].subjectName;
+					this.getList()
 				}).catch(err => {
 					console.log(err)
 				})
@@ -111,10 +125,18 @@
 			getList() {
 				this.loadStatus = 'loading';
 				this.$http.post(faceDetectExamineeList, {
-					questionId: this.questionId,
+					course: this.course,
+					examId: this.id,
 					current: this.current,
 					size: this.size,
 				}).then(res => {
+
+
+					let data = res.data
+					this.failCount = data.failCount;
+					this.notDetecteCount = data.notDetecteCount;
+					this.successCount = data.successCount
+					this.total = data.total;
 					if (this.current === 1) {
 						this.list = res.data.records;
 					} else {
@@ -140,12 +162,30 @@
 			},
 			tabChange(e) {
 				console.log(e)
+				this.course = e.item.subjectName;
+				this.examSubjectItem = e.item;
+				this.current = 1;
+				this.getList()
 			},
 			// tab状态
 			tabClick(tab) {
 				this.faceDetectState = tab;
 				this.current = 1;
 				this.getList();
+			},
+			// 去考试
+			submitTap() {
+				this.$mRouter.push({
+					route: `/pages/public/top/testContent?examId=${this.id}&examSubjectItem=${JSON.stringify(this.examSubjectItem)}&type=${this.type}`
+				})
+				// if(moment(`${this.examDetail.examStartTime} ${this.examSubjectItem.subjectStarttime}`).diff(moment(), 'seconds') > 0) {
+					
+				// } else {
+				// 	this.$mRouter.push({
+				// 		route: `/pages/public/top/testRecording?id=${this.id}&course=${this.course}&type=${this.type}`
+				// 	})
+				// }
+				
 			}
 		},
 	}

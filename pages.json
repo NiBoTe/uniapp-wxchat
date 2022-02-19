@@ -41,15 +41,15 @@
 				"enablePullDownRefresh": false
 			}
 
-		},{
-            "path" : "pages/profile/fansList",
-            "style" : {
-                "navigationBarTitleText": "",
+		}, {
+			"path": "pages/profile/fansList",
+			"style": {
+				"navigationBarTitleText": "",
 				"navigationStyle": "custom",
-                "enablePullDownRefresh": false
-            }
-        }
-    ],
+				"enablePullDownRefresh": false
+			}
+		}
+	],
 	"subPackages": [
 		// 设置
 		{
@@ -300,24 +300,22 @@
 						"enablePullDownRefresh": false
 					}
 
-				}
-				// {
-				// 	"path": "top/studentList",
-				// 	"style": {
-				// 		"navigationBarBackgroundColor": "#FFFFFF",
-				// 		"navigationBarTextStyle": "black",
-				// 		"navigationBarTitleText": "考生列表"
-				// 	}
-				// }, {
-				// 	"path": "top/testContent",
-				// 	"style": {
-				// 		"navigationBarTitleText": "",
-				// 		"navigationStyle": "custom",
-				// 		"enablePullDownRefresh": false
-				// 	}
+				}, {
+					"path": "top/studentList",
+					"style": {
+						"navigationBarBackgroundColor": "#FFFFFF",
+						"navigationBarTextStyle": "black",
+						"navigationBarTitleText": "考生列表"
+					}
+				}, {
+					"path": "top/testContent",
+					"style": {
+						"navigationBarTitleText": "",
+						"navigationStyle": "custom",
+						"enablePullDownRefresh": false
+					}
 
-				// }
-				, {
+				}, {
 					"path": "top/testRecording",
 					"style": {
 						"navigationBarTitleText": "",
@@ -339,6 +337,15 @@
 					"style": {
 						"navigationBarTitleText": "成绩详情",
 						"navigationStyle": "custom",
+						"enablePullDownRefresh": false
+					}
+
+				}, {
+					"path": "top/testUpload",
+					"style": {
+						"navigationBarTitleText": "试卷拍摄",
+						"navigationBarTextStyle": "black",
+						"navigationBarBackgroundColor": "#FFFFFF",
 						"enablePullDownRefresh": false
 					}
 

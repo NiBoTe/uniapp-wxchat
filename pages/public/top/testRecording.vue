@@ -1,36 +1,75 @@
 <template>
 	<view class="top">
-		<camera :device-position="devicePosition" flash="off" @error="error" class="camera"></camera>
-
-		<view class="content">
-			<view class="header" :style="{paddingTop: StatusBar + 'px'}">
-				<view class="header-switch" @click="devicePositionTap">
-					<image src="/static/public/switch_camera.png"></image>
+		<view>
+			<camera :device-position="devicePosition" flash="off" @error="error" class="camera"></camera>
+			
+			<view class="content">
+				<view class="header" :style="{paddingTop: StatusBar + 'px'}">
+					<view class="header-switch" @click="devicePositionTap">
+						<image src="/static/public/switch_camera.png"></image>
+					</view>
+					<view class="header-btn u-flex u-row-center" @click="questionTap">
+						<text v-if="!isQuestions">查看考题</text>
+						<text v-else>隐藏考题</text>
+					</view>
 				</view>
-				<view class="header-btn u-flex u-row-center" @click="questionTap">
-					<text v-if="!isQuestions">查看考题</text>
-					<text v-else>隐藏考题</text>
+			
+				<view class="subheader" v-show="isQuestions">
+					<view class="subheader-wrapper">
+						<view class="subtitle">{{examName}}</view>
+						<view class="title">{{examQuestion.course || ''}}</view>
+			
+						<view class="cells">
+							<view class="cell">
+								<view class="cell-label">考试题目：</view>
+								<view class="cell-content">
+									<text>{{examQuestion.content || ''}}</text>
+								</view>
+							</view>
+							<view class="cell">
+								<view class="cell-label">考试要求：</view>
+								<view class="cell-content">
+									<text>{{examQuestion.rule || ''}}</text>
+								</view>
+							</view>
+			
+							<view class="cell" v-if="examQuestion.url">
+								<view class="cell-label">考试图片：</view>
+								<view class="cell-content">
+									<image :src="examQuestion.url">
+									</image>
+								</view>
+							</view>
+							<view class="cell">
+								<view class="cell-label">备 注：</view>
+								<view class="cell-content">
+									<text>{{examQuestion.remark || ''}}</text>
+								</view>
+							</view>
+						</view>
+					</view>
+				</view>
+			
+				<view class="time u-flex u-row-center" v-show="isBegin">
+					<image src="/static/public/camera_time.png"></image>
+					<text>{{timeText}}</text>
+				</view>
+			
+				<view class="tips u-flex" v-show="isBegin">
+					<image src="/static/public/camera_time.png"></image>
+					<text>考试已经开始，作画过程录制中</text>
 				</view>
 			</view>
-
-			<view class="subheader" v-show="isQuestions">
-				<view class="subheader-wrapper">
-					<view class="">考试题目</view>
-				</view>
-			</view>
-
-			<view class="time u-flex u-row-center" v-show="isBegin">
-				<image src="/static/public/camera_time.png"></image>
-				<text>{{timeText}}</text>
-			</view>
-
-			<view class="tips u-flex" v-show="isBegin">
-				<image src="/static/public/camera_time.png"></image>
-				<text>考试已经开始，作画过程录制中</text>
+			<view class="footer">
+				<view class="footer-btn" @click="submitTap">{{!isBegin ? '请点击开始' : '点击结束'}}</view>
 			</view>
 		</view>
-		<view class="footer">
-			<view class="footer-btn" @click="submitTap">{{!isBegin ? '请点击开始' : '点击结束'}}</view>
+		
+		
+		<view class="nodata">
+			<image :src="setSrc('testContent_nodata.png')"></image>
+			<text class="nodata-title">科目二(色彩)</text>
+			<text class="nodata-subtitle">未开始考试，请在考前2分钟打开此页面考试</text>
 		</view>
 
 		<u-modal v-model="modalShow" ref="uModal" :async-close="true" :show-title="false" border-radius="32"
@@ -52,10 +91,15 @@
 				</view>
 			</view>
 		</u-modal>
+	
 	</view>
 </template>
 
 <script>
+
+	import {
+		examQuestionDetail
+	} from '@/api/exam.js'
 	export default {
 		data() {
 			return {
@@ -76,10 +120,34 @@
 				},
 				cancelText: "取消",
 				confirmText: "确认",
-				isEnd: false
+				isEnd: false,
+				examSubjectItem: {},
+				examId: null,
+				examName: '',
+				examQuestion: {},
+				type: 0
 			};
 		},
+		onLoad(options) {
+			if (options.examId) {
+				this.examSubjectItem = JSON.parse(options.examSubjectItem);
+				this.examId = options.examId;
+				this.type = Number(options.type) || 0;
+				this.initData()
+			}
+		},
 		methods: {
+			initData() {
+				this.$http.post(examQuestionDetail, {
+					course:  this.examSubjectItem.subjectName,
+					examId: this.examId,
+				}).then(res => {
+					this.examName = res.data.examName
+					this.examQuestion = res.data.examQuestion;
+				}).catch(err => {
+					console.log(err)
+				})
+			},
 			submitTap() {
 				if (!this.isBegin) {
 					this.isBegin = true
@@ -182,6 +250,50 @@
 					transform: rotate(90deg);
 					height: 750rpx;
 					overflow: auto;
+
+
+					.subtitle {
+						font-size: 30rpx;
+						text-align: center;
+						color: #3A3D71;
+					}
+
+					.title {
+						margin-top: 14rpx;
+						font-size: 34rpx;
+						font-weight: bold;
+						text-align: center;
+						color: #3A3D71;
+					}
+
+					.cells {
+						.cell {
+							margin-bottom: 30rpx;
+							display: flex;
+
+							&-label {
+								width: 134rpx;
+								font-size: 26rpx;
+								font-weight: bold;
+								color: #3A3D71;
+							}
+
+							&-content {
+								// width: 0;
+								flex: 1;
+
+								text {
+									ont-size: 26rpx;
+									color: #3A3D71;
+									text-align: justify;
+								}
+
+								image {
+									width: 100%;
+								}
+							}
+						}
+					}
 				}
 			}
 		}

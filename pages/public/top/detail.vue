@@ -92,10 +92,18 @@
 				<view class="card-list">
 					<view class="card-item u-flex u-row-between" v-for="(item, index) in detail.examSubjectList"
 						:key="index">
-						<view class="left">{{item.subjectName}}</view>
-						<view class="right">
+						<view class="left">
+							<text>{{item.subjectName}}</text>
+							<text class="time" v-if="type === 2">考试时间：{{item.subjectStarttime}}-{{item.subjectEndtime}}</text>
+						</view>
+						<view class="right" v-if="type !== 2">
 							<text>{{item.subjectDate}}</text>
 							<text>{{item.subjectStarttime}}-{{item.subjectEndtime}}</text>
+						</view>
+
+						<view class="right u-flex" v-else @click="seeTestTap(item)">
+							<text class="see">查看考题</text>
+							<image src="/static/public/arrow_right.png"></image>
 						</view>
 					</view>
 
@@ -104,7 +112,7 @@
 
 
 			<!-- 考试地址 -->
-			<view class="card">
+			<view class="card" v-if="type !== 2">
 				<view class="card-label u-flex">
 					<image src="/static/public/address.png"></image>
 					<text>考试地址</text>
@@ -117,10 +125,28 @@
 					</view>
 				</view>
 			</view>
+
+
+			<!-- 考生信息 -->
+			<view class="card" v-if="type === 2" style="padding-top: 32rpx;" @click="studentTap">
+				<view class="card-label u-flex u-row-between">
+					<view class="left u-flex">
+						<image src="/static/public/exam_people.png"></image>
+						<text>考生信息</text>
+					</view>
+					<view class="right">
+						<image src="/static/public/arrow_right.png"></image>
+					</view>
+				</view>
+			</view>
 		</view>
 
-		<view class="footer">
-			<view class="footer-btn" @click="submitTap">去考试</view>
+
+		<view class="footer" v-if="type === 0">
+			<view class="footer-btn" @click="submitTap">立即报名</view>
+		</view>
+		<view class="footer" v-if="type === 1">
+			<view class="footer-btn" @click="submitNoTap" :class="!detail.errorState ? '' : 'disabled'">去考试</view>
 		</view>
 
 		<top-tips ref="TopTips" @enterClick="enterClick"></top-tips>
@@ -148,12 +174,14 @@
 				background: {
 					backgroundImage: "url('https://ykh-wxapp.oss-cn-hangzhou.aliyuncs.com/wx_applet_img/top_navbar_bg.png')",
 					backgroundSize: 'cover',
-				}
+				},
+				type: 0,
 			};
 		},
 		onLoad(options) {
 			if (options.id) {
 				this.id = options.id;
+				this.type = Number(options.type);
 				this.initData();
 			}
 
@@ -173,8 +201,6 @@
 			submitTap() {
 				const checked = uni.getStorageSync('examChecked')
 				if (checked) {
-					
-					console.log(this.id)
 					this.$mRouter.push({
 						route: `/pages/public/top/signUp?id=${this.id}`
 					})
@@ -192,6 +218,26 @@
 				uni.previewImage({
 					urls: [this.detail.urlHd],
 					current: 0
+				})
+			},
+			// 查看考生
+			studentTap() {
+				// console.log(';========')
+				this.$mRouter.push({
+					route: `/pages/public/top/studentList?id=${this.id}`
+				})
+			},
+			// 查看考试
+			seeTestTap(item) {
+				console.log(item)
+				this.$mRouter.push({
+					route: `/pages/public/top/testContent?examId=${this.id}&examSubjectItem=${JSON.stringify(item)}&type=${this.type}`
+				})
+			},
+			// 去考试
+			submitNoTap(){
+				this.$mRouter.push({
+					route: `/pages/public/top/studentList?id=${this.id}&type=${this.type}`
 				})
 			}
 		}
@@ -345,9 +391,18 @@
 
 
 			&-label {
+
+
 				image {
 					width: 48rpx;
 					height: 48rpx;
+				}
+
+				.right {
+					image {
+						width: 12rpx;
+						height: 22rpx;
+					}
 				}
 
 				text {
@@ -376,9 +431,20 @@
 					border-bottom: 2rpx solid #E9E9E9;
 
 					.left {
-						font-size: 26rpx;
-						font-weight: 500;
-						color: #3A3D71;
+
+
+
+						text {
+							font-size: 26rpx;
+							font-weight: 500;
+							color: #3A3D71;
+
+							&.time {
+								margin-left: 16rpx;
+								font-size: 19rpx;
+								color: #9E9E9E;
+							}
+						}
 					}
 
 					.right {
@@ -390,6 +456,19 @@
 								margin-left: 20rpx;
 								color: #3A3D71;
 							}
+
+							&.see {
+								font-size: 24rpx;
+								color: #9E9E9E;
+							}
+						}
+
+
+						image {
+
+							margin-left: 8rpx;
+							width: 12rpx;
+							height: 22rpx;
 						}
 					}
 				}

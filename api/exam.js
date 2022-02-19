@@ -27,6 +27,21 @@ const getStudioNameByStudioCode = `${exam}getStudioNameByStudioCode`;
 // 去考试(学生列表)
 const faceDetectExamineeList = `${exam}faceDetectExamineeList`;
 
+// 查询成绩(可选是否返回成绩分析)
+const scoreQuery = `${exam}scoreQuery`;
+
+// 查看科目内容详情
+const examQuestionDetail = `${exam}examQuestionDetail`;
+
+// 上传录制的监考视频
+const recordVideoSave = `${exam}recordVideoSave`;
+
+// 试卷拍摄根据准考证号搜索
+const searchByAdmissionTicketCode = `${exam}searchByAdmissionTicketCode`;
+
+// 上传试卷
+const examPaperUpload = `${exam}examPaperUpload`;
+
 export {
 	proviceList,
 	examMenuList,
@@ -36,5 +51,10 @@ export {
 	examineeList,
 	examOrderCreate,
 	getStudioNameByStudioCode,
-	faceDetectExamineeList
+	faceDetectExamineeList,
+	scoreQuery,
+	examQuestionDetail,
+	recordVideoSave,
+	searchByAdmissionTicketCode,
+	examPaperUpload
 };
