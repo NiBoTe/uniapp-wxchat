@@ -25,11 +25,13 @@
 								<image src="/static/my/no_auth.png"></image>
 							</view>
 						</view>
-						<view class="header-item">
+						<!-- 0跳转默认展示关注tab页 -->
+						<view class="header-item" @click="checkfocusList(0)">
 							<text>关注</text>
 							<text class="num">652</text>
 						</view>
-						<view class="header-item" style="margin-left: 42rpx;">
+						<!-- 1跳转默认展示粉丝tab页 -->
+						<view class="header-item" @click="checkfocusList(1)" style="margin-left: 42rpx;">
 							<text>粉丝</text>
 							<text class="num">865w</text>
 						</view>
@@ -152,6 +154,14 @@
 			toSetting:function() {
 				uni.navigateTo({
 					url: '/pages/set/setting/index',
+				});
+			},
+			/**
+			 * @desc 点击关注和粉丝跳转至列表页
+			 */
+			checkfocusList(type){
+				uni.navigateTo({
+					url: `/pages/profile/fansList?type=${type}`,
 				});
 			}
 			
