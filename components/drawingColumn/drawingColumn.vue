@@ -1,7 +1,7 @@
 <template>
 	<view class="container">
 		<scroll-view class="tabs" :scroll-x="true">
-			<view class="tab" :class="[type !== 'list' ? 'zero' : '', activeIndex === index ? 'active' : '']"
+			<view class="tab" :class="[type !== 'list' ? 'zero' : '', activeIndex === index ? 'active' : '']" :style="{backgroundColor: activeIndex === index  ? activeColor : ''}"
 				v-for="(item, index) in list" :key="index" @click="tabClick(item, index)">
 				<text v-if="type === 'time'">{{item.year}}</text>
 				<text v-else>{{item[keyName]}}</text>
@@ -22,6 +22,10 @@
 				type: String,
 				default: 'list'
 			},
+			keys: {
+				type: String,
+				default:'0'
+			},
 			keyName: {
 				type: String,
 				default: 'name'
@@ -31,6 +35,10 @@
 				default: function() {
 					return []
 				}
+			},
+			activeColor:{
+				type: String,
+				default: '#EFF2FF'
 			}
 		},
 		data() {
@@ -53,13 +61,15 @@
 
 			},
 			timeShow(list) {
+				console.log(list)
 				this.list = list
 			},
 			tabClick(item, index) {
 				this.activeIndex = index
 				this.$emit('change', {
 					item,
-					index
+					index,
+					key: this.keys
 				})
 			}
 		}

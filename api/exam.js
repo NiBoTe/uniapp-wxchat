@@ -42,6 +42,12 @@ const searchByAdmissionTicketCode = `${exam}searchByAdmissionTicketCode`;
 // 上传试卷
 const examPaperUpload = `${exam}examPaperUpload`;
 
+// 获取跟这个账户有关的所有考试科目名称
+const scoreExamList = `${exam}scoreExamList`;
+
+// 拍摄记录
+const examPaperList = `${exam}examPaperList`;
+
 export {
 	proviceList,
 	examMenuList,
@@ -56,5 +62,7 @@ export {
 	examQuestionDetail,
 	recordVideoSave,
 	searchByAdmissionTicketCode,
-	examPaperUpload
+	examPaperUpload,
+	scoreExamList,
+	examPaperList
 };

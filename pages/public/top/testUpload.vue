@@ -70,7 +70,7 @@
 
 		<view v-if="!isEnter && Object.keys(this.studentDetail).length" class="submit u-flex u-row-center"
 			@click="enterTap">确认</view>
-		<view class="footer u-flex" v-if="isEnter">
+		<view class="footer u-flex" v-if="isEnter && uploadState === 'not_uploaded'">
 			<view class="footer-btn" @click="submitTap">{{tempFilePath === '' ? '拍摄试卷' : '重新拍摄'}}</view>
 			<view class="footer-btn" style="margin-left: 30rpx;" v-if="tempFilePath !== ''" @click="uploadTap">上传试卷
 			</view>
@@ -107,16 +107,19 @@
 				code: '',
 				studentDetail: {},
 				isEnter: false,
-				tempFilePath: ''
-
+				tempFilePath: '',
+				uploadState: 'not_uploaded'
 			};
 		},
 		onLoad(options) {
 			if (options.id) {
 				this.id = options.id;
 				this.type = options.type;
+				if (options.code) this.code = options.code;
+				if (options.uploadState) this.uploadState = options.uploadState;
 				this.initData()
 			}
+
 		},
 		methods: {
 			initData() {
@@ -125,6 +128,9 @@
 				}).then(res => {
 					this.examDetail = res.data
 					this.examSubjectItem = this.examDetail.examSubjectList[0]
+					if(this.code !== ''){
+						this.searchTap();
+					}
 				}).catch(err => {
 					console.log(err)
 				})

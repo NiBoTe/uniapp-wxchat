@@ -125,7 +125,7 @@
 								<text v-else>快捷考试</text>
 							</view>
 							
-							<view class="item-right u-flex active" v-show="tabIndex === 2">
+							<view class="item-right u-flex active" v-show="tabIndex === 2" @click.stop="queryScoreTap(item, index)">
 								<text>成绩查询</text>
 							</view>
 						</view>
@@ -194,7 +194,8 @@
 				list: [], // 考试列表
 			};
 		},
-		onLoad() {
+		onLoad(options) {
+			this.tabIndex = Number(options.type) || 0;
 			this.getProviceList();
 			this.getMenuList();
 			this.getList()
@@ -327,6 +328,14 @@
 			detailTap(item, index){
 				uni.navigateTo({
 					url: `/pages/public/top/detail?id=${item.id}&type=${this.tabIndex}`
+				})
+			},
+			
+			// 查询成绩
+			queryScoreTap(item, index){
+				console.log('=====')
+				uni.navigateTo({
+					url: `/pages/public/top/scoreQuery?id=${item.id}&type=${this.tabIndex}`
 				})
 			}
 		}

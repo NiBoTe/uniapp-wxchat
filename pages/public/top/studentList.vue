@@ -63,7 +63,7 @@
 			</view>
 			<u-loadmore margin-top="30" margin-bottom="30" :status="loadStatus" @loadmore="addData"></u-loadmore>
 		</scroll-view>
-		<view class="footer">
+		<view class="footer" v-if="type === 1">
 			<view class="footer-btn" @click="submitTap">去考试</view>
 		</view>
 	</view>
@@ -103,7 +103,7 @@
 		onLoad(options) {
 			if (options.id) {
 				this.id = options.id;
-				this.type = options.type;
+				this.type = Number(options.type);
 				this.initData()
 			}
 		},

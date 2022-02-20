@@ -94,7 +94,7 @@
 				loginType: 'code',
 				wxcode: null,
 				form: {
-					phone: '18292658643',
+					phone: '',
 					password: '',
 					code: '',
 				},

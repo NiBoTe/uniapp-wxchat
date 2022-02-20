@@ -15,14 +15,17 @@
 		}, {
 			"path": "pages/circle/index",
 			"style": {
-				"navigationBarTitleText": "圈子",
-				"enablePullDownRefresh": false
+				"navigationBarTitleText": "广场",
+				"navigationBarBackgroundColor": "#FFFFFF",
+				"navigationBarTextStyle": "black"
 			}
 
 		}, {
 			"path": "pages/teacher/index",
 			"style": {
 				"navigationBarTitleText": "名师",
+				"navigationBarTextStyle": "black",
+				"navigationBarBackgroundColor": "#ffffff",
 				"enablePullDownRefresh": false
 			}
 
@@ -75,6 +78,7 @@
 					"style": {
 						"navigationBarTitleText": "地址管理",
 						"navigationBarTextStyle": "black",
+						"navigationBarBackgroundColor": "#ffffff",
 						"enablePullDownRefresh": false
 					}
 				},
@@ -349,6 +353,13 @@
 						"enablePullDownRefresh": false
 					}
 
+				}, {
+					"path": "top/takeRecord",
+					"style": {
+						"navigationBarTitleText": "拍摄记录",
+						"navigationStyle": "custom",
+						"enablePullDownRefresh": false
+					}
 				}
 			]
 		}

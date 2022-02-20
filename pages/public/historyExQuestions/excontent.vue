@@ -7,57 +7,58 @@
 			</u-navbar>
 		</view>
 		<scroll-view class="top" scroll-y="true">
-			<view class="name">
-				{{exam.name || ''}}
-			</view>
-			<view class="subjects">
-				{{subjectName || ''}}
-			</view>
-			<view class="list">
-				<view class="left">
-					考试题目：
+			<view class="content">
+				<view class="name">
+					{{exam.name || ''}}
 				</view>
-				<view class="right">
-					{{question.title || ''}}
+				<view class="subjects">
+					{{subjectName || ''}}
 				</view>
-			</view>
-			<view class="list">
-				<view class="left">
-					考试要求：
-				</view>
-				<view class="right">{{question.content || ''}}</view>
-			</view>
-
-			<view class="list">
-				<view class="left">
-					考试图片：
-				</view>
-				<view class="right img-list" v-if="imgList.length > 1">
-					<view class="img-item" v-for="(item, index) in imgList" :key="index" @click="imgPrevTap(item, index)">
-						<image :src="item.thumbImg">
-						</image>
+				<view class="list">
+					<view class="left">
+						考试题目：
 					</view>
-					<!-- <view class="placeholder"></view> -->
-				</view>
-				<view class="right img-list one" v-else>
-					<view class="img-item">
-						<image :src="imgList[0].thumbImg" mode="widthFix">
-						</image>
+					<view class="right">
+						{{question.title || ''}}
 					</view>
-					<!-- <view class="placeholder"></view> -->
+				</view>
+				<view class="list">
+					<view class="left">
+						考试要求：
+					</view>
+					<view class="right">{{question.content || ''}}</view>
+				</view>
+				
+				<view class="list">
+					<view class="left">
+						考试图片：
+					</view>
+					<view class="right img-list" v-if="imgList.length > 1">
+						<view class="img-item" v-for="(item, index) in imgList" :key="index"
+							@click="imgPrevTap(imgList, index)">
+							<image :src="item.thumbImg">
+							</image>
+						</view>
+						<!-- <view class="placeholder"></view> -->
+					</view>
+					<view class="right img-list one" v-else>
+						<view class="img-item" @click="imgPrevTap(imgList, 0)">
+							<image :src="imgList[0].thumbImg" mode="widthFix">
+							</image>
+						</view>
+						<!-- <view class="placeholder"></view> -->
+					</view>
+				</view>
+				
+				<view class="list">
+					<view class="left">
+						备注：
+					</view>
+					<view class="right">
+						{{question.remark || ''}}
+					</view>
 				</view>
 			</view>
-
-			<view class="list">
-				<view class="left">
-					备注：
-				</view>
-				<view class="right">
-					{{question.remark || ''}}
-				</view>
-			</view>
-
-
 		</scroll-view>
 		<view class="footer">
 			<view class="footer-btn" @click="detailTap">高分试卷</view>
@@ -102,11 +103,18 @@
 				})
 			},
 			// 预览图片
-			imgPrevTap(item, index){
-				console.log(item)
+			imgPrevTap(imgList, current) {
+				let list = []
+				imgList.map(item => {
+					list.push(item.hdImg)
+				})
+				uni.previewImage({
+					current,
+					urls: list
+				});
 			},
 			// 查看高分试卷
-			detailTap(){
+			detailTap() {
 				this.$mRouter.push({
 					route: `/pages/public/historyExQuestions/topScoreList?questionId=${this.questionId}`
 				})
@@ -118,6 +126,7 @@
 	.exdetail {
 		height: 100vh;
 		overflow: hidden;
+
 		.navbar {
 			height: 206rpx;
 			background-image: url('https://ykh-wxapp.oss-cn-hangzhou.aliyuncs.com/wx_applet_img/top_navbar_bg.png');
@@ -126,9 +135,12 @@
 
 		.top {
 			margin-top: -55rpx;
-			height: 100%;
-			padding-bottom: 160rpx;
+			height: calc(100% - 200rpx);
 			background-color: #fff;
+			.content{
+				padding-bottom: calc(108rpx + constant(safe-area-inset-bottom));
+				padding-bottom: calc(108rpx + env(safe-area-inset-bottom));
+			}
 		}
 	}
 
@@ -179,9 +191,9 @@
 			flex-wrap: wrap;
 			flex-direction: row;
 			justify-content: space-between;
-			
-			
-			
+
+
+
 			&:after {
 				display: block;
 				content: "";
@@ -191,14 +203,16 @@
 
 
 
-			&.one{
-				.img-item{
+			&.one {
+				.img-item {
 					width: 100% !important;
-					image{
+
+					image {
 						width: 100% !important;
 					}
 				}
 			}
+
 			.img-item {
 				width: 31%;
 
@@ -220,6 +234,7 @@
 		padding-bottom: calc(14rpx + constant(safe-area-inset-bottom));
 		padding-bottom: calc(14rpx + env(safe-area-inset-bottom));
 		background-color: #fff;
+
 		&-btn {
 			height: 88rpx;
 			line-height: 88rpx;
@@ -229,8 +244,8 @@
 			border-radius: 44rpx;
 			font-size: 32rpx;
 			color: #fff;
-			
-			&.disabled{
+
+			&.disabled {
 				background: #EDEFF2;
 				color: #8F9091;
 			}

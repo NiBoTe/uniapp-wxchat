@@ -13,49 +13,50 @@
 				<text>考试名称</text>
 			</view>
 
-			<view class="item u-flex u-row-between">
+			<view class="item u-flex u-row-between" @click="selectTestTap">
 				<view class="left">
-					<input type="text" v-model="province" placeholder="请选择考试名称" />
+					<input type="text" v-model="testName" placeholder="请选择考试名称" />
 				</view>
 				<view class="right">
 					<image src="/static/public/arrow_right.png"></image>
 				</view>
 			</view>
-			
+
 			<view class="label">
 				<text>准考证号</text>
 			</view>
-			
+
 			<view class="item u-flex u-row-between">
 				<view class="left">
-					<input type="text" v-model="province" placeholder="请输入准考证号" />
+					<input type="text" v-model="admissionTicketCode" placeholder="请输入准考证号" />
 				</view>
 				<view class="right">
 					<image src="/static/public/arrow_right.png"></image>
 				</view>
 			</view>
-			
-			
+
+
 			<view class="label">
+				<text class="required">*</text>
 				<text>学生姓名</text>
 			</view>
-			
+
 			<view class="item u-flex u-row-between">
 				<view class="left">
-					<input type="text" v-model="province" placeholder="请输入学生姓名" />
+					<input type="text" v-model="name" placeholder="请输入学生姓名" />
 				</view>
 				<view class="right">
 					<image src="/static/public/arrow_right.png"></image>
 				</view>
 			</view>
-			
+
 			<view class="label">
 				<text>身份证号</text>
 			</view>
-			
+
 			<view class="item u-flex u-row-between">
 				<view class="left">
-					<input type="text" v-model="province" placeholder="请输入身份证号" />
+					<input type="text" v-model="identification" placeholder="请输入身份证号" />
 				</view>
 				<view class="right">
 					<image src="/static/public/arrow_right.png"></image>
@@ -63,14 +64,18 @@
 			</view>
 		</view>
 		<view class="footer">
-			<view class="footer-btn" @click="submitTap">查询</view>
+			<view class="footer-btn" :class="testName === '' ? 'disabled' : ''" @click="submitTap">查询</view>
 		</view>
-		
+
 		<u-picker mode="selector" v-model="testShow" :range="testList" range-key="name" @confirm="testTap"></u-picker>
 	</view>
 </template>
 
 <script>
+	import {
+		examDetail,
+		scoreExamList
+	} from '@/api/exam.js'
 	export default {
 		data() {
 			return {
@@ -80,15 +85,78 @@
 				},
 				testShow: false,
 				testList: [],
+				id: null,
+				loading: true,
+				detail: {},
+				testItem: null,
+				testName: "",
+				admissionTicketCode: '',
+				identification: '',
+				name: '',
 			};
 		},
-		methods:{
-			submitTap(){
+		onLoad(options) {
+			if (options.id) {
+				this.id = options.id;
+				this.type = Number(options.type);
+
+				this.getList();
+				this.initData();
+			}
+
+		},
+		methods: {
+			initData() {
+				this.$http.post(examDetail, {
+					id: this.id
+				}).then(res => {
+					this.detail = res.data;
+					this.loading = false;
+				}).catch(err => {
+					console.log(err)
+				})
+			},
+			getList() {
+				this.$http.post(scoreExamList).then(res => {
+					this.testList = res.data.records;
+				}).catch(err => {
+					console.log(err)
+				})
+			},
+			submitTap() {
+
+				if (this.testName === '') {
+					return this.$mHelper.toast('请选择考试名称')
+				}
 				
+				if (this.name === '') {
+					return this.$mHelper.toast('请选择学生姓名')
+				}
+
+				if (this.identification !== '') {
+					if (!this.$mHelper.checkIdCard(this.identification)) {
+						return this.$mHelper.toast('请输入正确的身份证号码')
+					}
+				}
+
+				let params = {
+					admissionTicketCode: this.admissionTicketCode,
+					identification: this.identification,
+					name: this.name,
+					queryKey: this.testItem.queryKey,
+				}
+				uni.navigateTo({
+					url: `/pages/public/top/scoreDetail?scoreItem=${JSON.stringify(params)}`
+				})
+			},
+			// 选择考试
+			selectTestTap() {
+				this.testShow = true;
 			},
 			// 确认选择
-			testTap(){
-				
+			testTap(e) {
+				this.testItem = this.testList[e]
+				this.testName = this.testList[e].name
 			}
 		}
 	}
@@ -96,9 +164,6 @@
 
 <style lang="scss" scoped>
 	.top {
-
-
-
 		.content {
 			padding: 0 34rpx;
 

@@ -10,16 +10,16 @@
 
 			<view class="table">
 				<view class="tr t-head">
-					<view class="td">浙江省第三次美术模拟考试成绩查询</view>
+					<view class="td">{{newestScoreQuery.examName || ''}}</view>
 				</view>
 
 				<view class="tr">
 					<view class="td">准考证号</view>
-					<view class="td">E0000066989</view>
+					<view class="td">{{newestScoreQuery.admissionTicketCode || ''}}</view>
 				</view>
 				<view class="tr">
 					<view class="td">姓名</view>
-					<view class="td">朱明一</view>
+					<view class="td">{{newestScoreQuery.name || ''}}</view>
 				</view>
 
 
@@ -30,11 +30,11 @@
 					<view class="td">总排名</view>
 				</view>
 
-				<view class="tr">
-					<view class="td">素描</view>
-					<view class="td">97</view>
-					<view class="td">xx</view>
-					<view class="td">xx</view>
+				<view class="tr" v-for="(item, index) in newestScoreQuery.subjects" :key="index">
+					<view class="td">{{item.course}}</view>
+					<view class="td">{{item.score}}</view>
+					<view class="td">{{item.rankInStudio}}</view>
+					<view class="td">{{item.rankInProvince}}</view>
 				</view>
 
 
@@ -46,14 +46,12 @@
 					</view>
 
 					<view class="detail-content" v-if="isMore">
-
 						<u-row gutter="16">
-							<u-col span="4">
-								<view class="detail-item" @click="previewTap(0)">
-									<image
-										src="https://img0.baidu.com/it/u=1721391133,702358773&fm=253&fmt=auto&app=120&f=JPEG?w=500&h=625">
+							<u-col span="4" v-for="(item,index) in newestScoreQuery.subjects">
+								<view class="detail-item" @click="previewTap(item)">
+									<image :src="item.thumb">
 									</image>
-									<text>素描</text>
+									<text>{{item.course}}</text>
 								</view>
 							</u-col>
 							<u-col span="4">
@@ -83,23 +81,17 @@
 			<!-- 考试成绩分析 -->
 			<view class="card">
 				<view class="card-header">考试成绩分析</view>
-				<view class="card-item">
-					<view class="card-style"></view>
-					<view class="card-text">浙江省第一次美术模拟考试</view>
-				</view>
-				<view class="card-item">
-					<view class="card-style"></view>
-					<view class="card-text">浙江省第二次美术模拟考试</view>
+				<view class="card-item" v-for="(item, index) in examNameList" :key="index">
+					<view class="card-style" :style="{backgroundColor: colorsList[index%4]}"></view>
+					<view class="card-text">{{item}}</view>
 				</view>
 			</view>
 
 			<!-- 科目 -->
-
-
-			<view class="card">
-				<view class="card-title">科目：速写</view>
+			<view class="card" v-for="(item, index) in courseList" :key="index">
+				<view class="card-title">科目：{{item.course}}</view>
 				<view class="card-content">
-					<qiun-data-charts type="column" :opts="opts" :chartData="chartsDataColumn" />
+					<qiun-data-charts type="column" :opts="opts" :chartData="chartsDataColumns[index]" />
 				</view>
 			</view>
 
@@ -112,6 +104,9 @@
 </template>
 
 <script>
+	import {
+		scoreQuery
+	} from '@/api/exam.js'
 	export default {
 		data() {
 			return {
@@ -119,6 +114,7 @@
 					backgroundImage: "url('https://ykh-wxapp.oss-cn-hangzhou.aliyuncs.com/wx_applet_img/top_navbar_bg.png')",
 					backgroundSize: 'cover',
 				},
+				colorsList: ['#2C3AFF', '#35CE96', '#FD8626', '#FF334D'],
 				opts: {
 					fontSize: 14,
 					color: '#3A3D71',
@@ -145,40 +141,63 @@
 							linearType: 'custom',
 							linearOpacity: 0.5,
 							barBorderCircle: false,
-							customColor: ['#FA7D8D', '#EB88E2']
+							customColor: ['#2C3AFF', '#35CE96', '#FD8626', '#FF334D', '#2C3AFF', '#35CE96', '#FD8626',
+								'#FF334D', '#2C3AFF', '#35CE96', '#FD8626', '#FF334D'
+							]
 						}
 					}
 				},
-				chartsDataColumn: {
-					"categories": [
-						"2016",
-						"2017",
-						"2018",
-						"2019",
-						"2020",
-						"2021"
-					],
-					"series": [{
-						"name": "目标值",
-						textOffset: -4,
-						"data": [{
-							value: 35,
-							color: '#ffffff'
-						}, {
-							value: 35,
-							color: '#ffffff'
-						}]
-					}]
-				},
+				chartsDataColumns: [],
+
 				isMore: false,
+				scoreItem: null,
+				newestScoreQuery: {},
+				courseList: [],
+				examNameList: [],
+
 			};
 		},
+		onLoad(options) {
+			if (options.scoreItem) {
+				this.scoreItem = JSON.parse(options.scoreItem)
+				this.initData();
+			}
+		},
 		methods: {
+			initData() {
+
+				this.chartsDataColumns = []
+				this.$http.post(scoreQuery, this.scoreItem).then(res => {
+					this.newestScoreQuery = res.data.newestScoreQuery;
+					this.courseList = res.data.courseList;
+					this.examNameList = res.data.examNameList;
+					subjects.map((item, index) => {
+						let scoreList = item.scoreList;
+						let arr = []
+						scoreList.map((a, b) => {
+							arr.push({
+								value: a,
+								color: '#ffffff'
+							})
+						})
+						this.chartsDataColumns.push({
+							"categories": item.scoreList,
+							"series": [{
+								"name": imte.course,
+								textOffset: -4,
+								"data": arr
+							}]
+						})
+					})
+				}).catch(err => {
+					this.$mHelper.toast(err.msg)
+				})
+			},
 			// 预览
-			previewTap(index) {
+			previewTap(item) {
 				uni.previewImage({
-					current: index, //预览图片的下标
-					urls: i //预览图片的地址，必须要数组形式，如果不是数组形式就转换成数组形式就可以
+					current: 0,
+					urls: [item.img]
 				})
 			}
 		}

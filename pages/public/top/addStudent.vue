@@ -173,7 +173,7 @@
 						return this.$mHelper.toast('请输入正确的手机号码')
 					}
 				}
-				if(this.mobile !== ''){
+				if(this.identification !== ''){
 					if(!this.$mHelper.checkIdCard(this.identification)) {
 						return this.$mHelper.toast('请输入正确的身份证号码')
 					}

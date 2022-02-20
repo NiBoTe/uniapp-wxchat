@@ -2,29 +2,29 @@
 	<view class="container">
 		<view class="item">
 			<view class="item-image">
-				<u-lazy-load threshold="-450" :image="item.image"></u-lazy-load>
+				<u-lazy-load threshold="-450" :image="item.evaluateUrl"></u-lazy-load>
 				<voice-playback></voice-playback>
 			</view>
 
 			<view class="footer">
 				<view class="footer-title u-flex">
 					<view class="image">
-						<u-avatar size="65" :src="item.image"></u-avatar>
+						<u-avatar size="65" :src="item.teacherHeadUrl"></u-avatar>
 					</view>
 					<view class="text">
-						<text>李琮明</text>
+						<text>{{item.teacherFullName}}</text>
 						<text>评画老师</text>
 					</view>
 				</view>
-				<view class="footer-text">色彩-色彩静物基础临色彩-色彩静物基础临…</view>
+				<view class="footer-text">{{item.title}}</view>
 				<view class="footer-subtitle u-flex u-row-between">
 					<view class="left">
-						<text>89</text>
+						<text>{{item.score}}</text>
 						<text class="unit">分</text>
 					</view>
 					<view class="right u-flex">
 						<image src="/static/public/voice_blue.png"></image>
-						<text>8'09"</text>
+						<text>{{$mHelper.formatMinutes(item.voiceCommentDuration)}}</text>
 					</view>
 				</view>
 			</view>

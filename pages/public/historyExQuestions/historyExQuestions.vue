@@ -16,17 +16,20 @@
 		<view class="content">
 			<view class="c-left">
 				<view class="item" v-for="(item, index) in leftData" :key="item.id">
-					<view class="item-title" :class="leftNum === index?'item-title-active':''" @click="handleLeftClick(index)">
+					<view class="item-title" :class="leftNum === index?'item-title-active':''"
+						@click="handleLeftClick(index)">
 						{{ item.name }}
 						<u-icon v-if="leftNum === index" name="arrow-down" size="24" class="arrow"></u-icon>
 						<u-icon v-else name="arrow-right" size="24" class="arrow"></u-icon>
-						
+
 					</view>
-				
-					<view class="item-list" @click="handleItemListClick(items, indexs)" :class="leftItemNum === indexs ? 'item-list-active':''" v-show="leftNum === index" v-for="(items, indexs) in item.childMenus" :key="items.id">
-						 {{ items.name }}
+
+					<view class="item-list" @click="handleItemListClick(items, indexs)"
+						:class="leftItemNum === indexs ? 'item-list-active':''" v-show="leftNum === index"
+						v-for="(items, indexs) in item.childMenus" :key="items.id">
+						{{ items.name }}
 					</view>
-				
+
 				</view>
 			</view>
 			<view class="c-right">
@@ -34,22 +37,20 @@
 					{{leftItemName || ''}}
 				</view>
 				<view class="date">
-				<!-- 	<view class="date-list">
-						<view class="date-item" v-for="item in 20">
-							2020
-						</view>
-					</view> -->
-					<drawingColumn ref="DrawingColumn" type="time" @change="tabChange"></drawingColumn>
+					<drawingColumn ref="DrawingColumn" :list="yearSpecialtyList" type="time" @change="tabChange">
+					</drawingColumn>
 				</view>
 
 				<scroll-view class="r-tab" :scroll-x="true">
 					<view class="tab-list">
-						<view class="tab-item" @click="handleRTab(item,index)" :class="rightTabNum === index ? 'tab-item-active':''" v-for="(item, index) in rightTabList" :key="index">
+						<view class="tab-item" @click="handleRTab(item,index)"
+							:class="rightTabNum === index ? 'tab-item-active':''" v-for="(item, index) in rightTabList"
+							:key="index">
 							{{ item }}
 						</view>
 					</view>
 				</scroll-view>
-				
+
 				<scroll-view scroll-y class="r-content" @scrolltolower="lower">
 					<view class="test-list" v-for="(item, index) in list" :key="index">
 						<view class="test-name">{{item.name}}</view>
@@ -57,7 +58,8 @@
 							<view class="subjects-name">
 								{{itemc.subjectName}}
 							</view>
-							<view class="item" v-for="(itemb, indexb) in itemc.questions" :key="indexb" @click="detailTap(itemb, itemc)">
+							<view class="item" v-for="(itemb, indexb) in itemc.questions" :key="indexb"
+								@click="detailTap(itemb, itemc)">
 								<view class="name u-line-1">
 									{{itemb.title}}
 								</view>
@@ -73,23 +75,24 @@
 										<view class="t-r">
 											查看详情<u-icon name="arrow-right" size="24" class="arrow"></u-icon>
 										</view>
-									 </view>
-									 <view class="line"></view>
-									 <view class="bottom">
-									 	<view class="left" v-if="itemb.havePaper">
-									 		<image class="img" src="../../../static/public/examinationPaper_icon.png" mode=""></image>
+									</view>
+									<view class="line"></view>
+									<view class="bottom">
+										<view class="left" v-if="itemb.havePaper">
+											<image class="img" src="../../../static/public/examinationPaper_icon.png"
+												mode=""></image>
 											高分试卷
-									 	</view>
+										</view>
 										<view class="right">
 											<image class="route" src="../../../static/public/route.png" mode=""></image>
 										</view>
-									 </view>
+									</view>
 								</view>
 							</view>
 						</view>
 						<u-gap height="16" margin-top="28" bg-color="#F7F7F7"></u-gap>
 					</view>
-					
+
 					<u-loadmore :status="loadStatus" @loadmore="addData"></u-loadmore>
 				</scroll-view>
 			</view>
@@ -99,11 +102,15 @@
 
 <script>
 	import drawingColumn from '@/components/drawingColumn/drawingColumn.vue'
-	import { historyExamMenu, getYearSpecialty, questionPageList } from '@/api/history_exam.js'
+	import {
+		historyExamMenu,
+		getYearSpecialty,
+		questionPageList
+	} from '@/api/history_exam.js'
 	import moment from '@/common/moment.js'
 	export default {
-		components:{
-			drawingColumn	
+		components: {
+			drawingColumn
 		},
 		data() {
 			return {
@@ -127,41 +134,41 @@
 			this.initData();
 		},
 		methods: {
-			initData(){
-					this.$http.post(historyExamMenu, null, {
-						params: {
-							type: this.tabNumber === 'one' ? 0 : 1	
-						}
-					}).then(res => {
-						this.leftData = res.data
-						this.leftNum = 0;
-						this.leftItemNum = 0;
-						this.leftItemName = this.leftData[0].childMenus[0].name;
-						
-						this.getTabList();
-					}).catch(err => {
-						this.$mHelper.toast(err.msg)
-					})
+			initData() {
+				this.$http.post(historyExamMenu, null, {
+					params: {
+						type: this.tabNumber === 'one' ? 0 : 1
+					}
+				}).then(res => {
+					this.leftData = res.data
+					this.leftNum = 0;
+					this.leftItemNum = 0;
+					this.leftItemName = this.leftData[0].childMenus[0].name;
+
+					this.getTabList();
+				}).catch(err => {
+					this.$mHelper.toast(err.msg)
+				})
 			},
-			
-			getTabList(){
-					this.$http.post(getYearSpecialty, null,{
-						params: {
-							menuId: this.leftData[this.leftNum].childMenus[this.leftItemNum].id
-						}
-					}).then(res => {
-						this.yearSpecialtyList = res.data
-						this.$refs.DrawingColumn.timeShow(this.yearSpecialtyList)
-						this.rightTabList = this.yearSpecialtyList.length ? this.yearSpecialtyList[0].specialtys : []
-						this.current = 1;
-						this.getList()
-					}).catch(err => {
-						this.$mHelper.toast(err.msg)
-					})
-					
+
+			getTabList() {
+				this.$http.post(getYearSpecialty, null, {
+					params: {
+						menuId: this.leftData[this.leftNum].childMenus[this.leftItemNum].id
+					}
+				}).then(res => {
+					this.yearSpecialtyList = res.data
+					// this.$refs.DrawingColumn.timeShow(this.yearSpecialtyList)
+					this.rightTabList = this.yearSpecialtyList.length ? this.yearSpecialtyList[0].specialtys : []
+					this.current = 1;
+					this.getList()
+				}).catch(err => {
+					this.$mHelper.toast(err.msg)
+				})
+
 			},
 			// 获取考试列表
-			getList(){
+			getList() {
 				this.loadStatus = 'loading';
 				this.$http.post(questionPageList, {
 					menuId: this.leftData[this.leftNum].childMenus[this.leftItemNum].id,
@@ -170,50 +177,50 @@
 					specialty: this.rightTabList[this.rightTabNum],
 					year: this.yearSpecialtyList[this.rightTimeNum].year
 				}).then(res => {
-					if(this.current === 1) {
+					if (this.current === 1) {
 						this.list = res.data.records;
 					} else {
 						this.list = this.list.concat(res.data.records);
 					}
-					if(res.data.total <= this.list.length) {
+					if (res.data.total <= this.list.length) {
 						this.loadStatus = 'nomore';
 					} else {
 						this.loadStatus = 'loadmore';
 					}
-					
+
 				}).catch(err => {
 					console.log(err)
 				})
 			},
-			handleTab(val){
+			handleTab(val) {
 				this.tabNumber = val
 				this.initData();
 			},
-			handleLeftClick(index){
+			handleLeftClick(index) {
 				this.leftNum = index
 				this.leftItemNum = 0
 				this.leftItemName = this.leftData[this.leftNum].childMenus[0].name;
 				this.rightTabNum = 0;
 				this.getTabList();
 			},
-			handleItemListClick(item, index){
+			handleItemListClick(item, index) {
 				this.leftItemNum = index
 				this.leftItemName = item.name
 				this.rightTabNum = 0;
 				this.getTabList();
 			},
-			handleRTab(item, index){
+			handleRTab(item, index) {
 				this.rightTabNum = index
 				this.current = 1;
 				this.getList();
 			},
-			tabChange(e){
+			tabChange(e) {
 				this.rightTimeNum = e.index
 				this.rightTabNum = 0
 				this.rightTabList = this.yearSpecialtyList[e.index].specialtys
 				this.getList();
 			},
-			detailTap(item,itemc){
+			detailTap(item, itemc) {
 				console.log(itemc)
 				this.$mRouter.push({
 					route: `/pages/public/historyExQuestions/excontent?questionId=${item.id}&subjectName=${itemc.subjectName}`
@@ -223,8 +230,8 @@
 				this.loadStatus = 'loading';
 				this.addData();
 			},
-			addData(){
-				this.current ++;
+			addData() {
+				this.current++;
 				this.getList();
 			}
 		}
@@ -234,11 +241,13 @@
 <style lang="scss">
 	.historyExQuestions {
 		height: calc(100vh);
+
 		.navbar {
 			height: 206rpx;
 			background-image: url('https://ykh-wxapp.oss-cn-hangzhou.aliyuncs.com/wx_applet_img/top_navbar_bg.png');
 			background-size: cover;
 		}
+
 		.tab-bar {
 			margin-top: -55rpx;
 			width: 100%;
@@ -249,37 +258,45 @@
 			font-family: PingFangSC-Regular, PingFang SC;
 			font-weight: 400;
 			color: #FFFFFF;
-			.left{
+
+			.left {
 				flex: 1;
 				line-height: 126rpx;
 			}
-			.right{
+
+			.right {
 				flex: 1;
 				line-height: 126rpx;
 			}
-			.active{
+
+			.active {
 				color: #2C3AFF;
 			}
 		}
-		.background-one{
+
+		.background-one {
 			background: url(img/tabOne.png) no-repeat center;
 			background-size: 100%;
 		}
-		.background-two{
+
+		.background-two {
 			background: url(img/tabTwo.png) no-repeat center;
 			background-size: 100%;
 		}
-		
-		
-		.content{
+
+
+		.content {
 			height: calc(100% - 260rpx);
 			overflow: hidden;
 			display: flex;
-			.c-left{
+
+			.c-left {
 				flex: 0 0 174rpx;
 				border-right: 1rpx solid #E9E9E9;
-				.item{
-					.item-title{
+
+				.item {
+
+					.item-title {
 						width: 174rpx;
 						height: 80rpx;
 						line-height: 80rpx;
@@ -289,21 +306,25 @@
 						font-weight: 400;
 						color: #9E9E9E;
 						background: #F2F2F2;
-						.arrow{
+
+						.arrow {
 							margin-left: 10rpx;
 							font-size: 18rpx;
 						}
 					}
-					.item-title-active{
+
+					.item-title-active {
 						color: #2C3AFF;
-						.arrow{
+
+						.arrow {
 							color: #2C3AFF;
 						}
 					}
+
 					// border-top: 1px solid #D2D5DE;
 					border-bottom: 1px solid #D2D5DE;
-					
-					.item-list{
+
+					.item-list {
 						// padding: 0 20rpx;
 						height: 74rpx;
 						font-size: 22rpx;
@@ -313,7 +334,8 @@
 						line-height: 74rpx;
 						text-align: center;
 						position: relative;
-						&:before{
+
+						&:before {
 							position: absolute;
 							bottom: 0;
 							left: 20rpx;
@@ -323,16 +345,19 @@
 							background: #D2D5DE;
 						}
 					}
-					.item-list-active{
+
+					.item-list-active {
 						background: #8EA7F7;
 						color: #FFFFFF;
 					}
 				}
 			}
-			.c-right{
+
+			.c-right {
 				flex: 1;
 				width: 0;
-				.title{
+
+				.title {
 					width: 100%;
 					height: 80rpx;
 					font-size: 26rpx;
@@ -344,16 +369,19 @@
 					border-top: 1rpx solid #E9E9E9;
 					border-bottom: 1rpx solid #E9E9E9;
 				}
-				.date{
+
+				.date {
 					width: 100%;
 					overflow: auto;
 					margin: 24rpx 0 0 0;
 					padding-bottom: 20rpx;
 					padding-left: 12rpx;
-					.date-list{
+
+					.date-list {
 						// position: absolute;
 						display: flex;
-						.date-item{
+
+						.date-item {
 							padding: 0 24rpx;
 							width: 100rpx;
 							height: 52rpx;
@@ -368,33 +396,40 @@
 						}
 					}
 				}
-				
-				.r-tab{
+
+				.r-tab {
 					// display: flex;
 					// overflow-x: scroll;
 					width: 100%;
 					padding-left: 16rpx;
 					padding-bottom: 16rpx;
-					.tab-list{
+
+					.tab-list {
 						white-space: nowrap;
-						.tab-item{
+
+						.tab-item {
 							display: inline-block;
 							margin-right: 50rpx;
 						}
-						.tab-item-active{
+
+						.tab-item-active {
 							color: #2C3AFF;
 						}
 					}
+
 					border-bottom: 2rpx solid #E9E9E9;
 				}
-				.r-content{
+
+				.r-content {
 					height: 100%;
 					box-sizing: border-box;
 					padding-top: 16rpx;
 					padding-bottom: 260rpx;
-					.test-list{
+
+					.test-list {
 						margin-bottom: 28rpx;
-						.test-name{
+
+						.test-name {
 							padding: 0 34rpx 0 16rpx;
 							text-align: center;
 							font-size: 30rpx;
@@ -403,9 +438,11 @@
 							color: #3A3D71;
 							line-height: 30rpx
 						}
-						.subjects-item{
+
+						.subjects-item {
 							margin: 0 34rpx 0 16rpx;
-							.subjects-name{
+
+							.subjects-name {
 								text-align: center;
 								font-size: 34rpx;
 								font-family: PingFang-SC-Bold, PingFang-SC;
@@ -414,13 +451,16 @@
 								line-height: 34rpx;
 								margin: 16rpx 0;
 							}
-							.item{
+
+							.item {
 								// width: 526px;
 								// height: 314rpx;
+								margin-bottom: 28rpx;
 								background: #FFFFFF;
 								box-shadow: 0px 6rpx 16rpx 6rpx rgba(230, 230, 230, 0.5);
 								border-radius: 16rpx;
-								.name{
+
+								.name {
 									width: 100%;
 									height: 56rpx;
 									background: linear-gradient(90deg, #FFFFFF 0%, #EFF2FF 100%);
@@ -432,37 +472,43 @@
 									line-height: 56rpx;
 									padding-left: 24rpx
 								}
-								.item-b{
+
+								.item-b {
 									padding: 0 24rpx 0 24rpx;
 								}
-								.text{
+
+								.text {
 									margin-top: 14rpx;
 									font-size: 26rpx;
 									font-family: PingFang-SC-Regular, PingFang-SC;
 									font-weight: 400;
 									color: #3A3D71;
 									line-height: 36rpx;
-									 text-overflow: -o-ellipsis-lastline;
-									  overflow: hidden;
-									  text-overflow: ellipsis;
-									  display: -webkit-box;
-									  -webkit-line-clamp: 2;
-									  line-clamp: 2;
-									  -webkit-box-orient: vertical;
+									text-overflow: -o-ellipsis-lastline;
+									overflow: hidden;
+									text-overflow: ellipsis;
+									display: -webkit-box;
+									-webkit-line-clamp: 2;
+									line-clamp: 2;
+									-webkit-box-orient: vertical;
 								}
-								.time{
+
+								.time {
 									margin-top: 14rpx;
 									display: flex;
-									.t-l{
+
+									.t-l {
 										flex: 1;
-										.l{
+
+										.l {
 											display: inline;
 											font-size: 24rpx;
 											font-family: PingFang-SC-Regular, PingFang-SC;
 											font-weight: 400;
 											color: #888C90;
 										}
-										.r{
+
+										.r {
 											margin-left: 20rpx;
 											display: inline;
 											font-size: 24rpx;
@@ -472,7 +518,8 @@
 											line-height: 24rpx;
 										}
 									}
-									.t-r{
+
+									.t-r {
 										flex: 1;
 										text-align: right;
 										font-size: 24rpx;
@@ -481,31 +528,37 @@
 										color: #9E9E9E;
 									}
 								}
-								.line{
+
+								.line {
 									width: 100%;
 									height: 2rpx;
 									background: #E9E9E9;
 									margin-top: 26rpx;
 									margin-bottom: 24rpx;
 								}
-								.bottom{
+
+								.bottom {
 									width: 100%;
 									display: flex;
 									padding-bottom: 28rpx;
+
 									// background: #DCDFE6;
-									.left{
+									.left {
 										flex: 1;
-										.img{
+
+										.img {
 											width: 44rpx;
 											height: 44rpx;
 											vertical-align: bottom;
 											margin-right: 24rpx;
 										}
 									}
-									.right{
+
+									.right {
 										text-align: right;
 										flex: 1;
-										.route{
+
+										.route {
 											width: 34rpx;
 											height: 14rpx;
 										}
@@ -518,5 +571,4 @@
 			}
 		}
 	}
-
 </style>

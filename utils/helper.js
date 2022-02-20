@@ -266,12 +266,23 @@ export default {
 		res += `${s}s`;
 		return `${h}:${m}:${s}`;
 	},
+	// 格式化时长
+	formatMinutes(value) {
+		let result = parseInt(value)
+		let m = Math.floor((result / 60 % 60));
+		let s = Math.floor((result % 60));
+		return `${m}'${s}"`;
+	},
 	// 时间段内
 	timeInByDate(start, end) {
 	  if (moment(start).diff(moment()) < 0 && moment(end).diff(moment()) > 0) {
 	    return true
 	  }
 	  return false
-	}
+	},
+	// 类型筛选
+	listFilters(id, list){
+		return list.filter(item => item.firstMenuId === id)
+	},
 	
 };

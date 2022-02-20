@@ -2,7 +2,7 @@
 	<view class="top">
 		<view>
 			<camera :device-position="devicePosition" flash="off" @error="error" class="camera"></camera>
-			
+
 			<view class="content">
 				<view class="header" :style="{paddingTop: StatusBar + 'px'}">
 					<view class="header-switch" @click="devicePositionTap">
@@ -13,12 +13,12 @@
 						<text v-else>隐藏考题</text>
 					</view>
 				</view>
-			
+
 				<view class="subheader" v-show="isQuestions">
 					<view class="subheader-wrapper">
 						<view class="subtitle">{{examName}}</view>
 						<view class="title">{{examQuestion.course || ''}}</view>
-			
+
 						<view class="cells">
 							<view class="cell">
 								<view class="cell-label">考试题目：</view>
@@ -32,7 +32,7 @@
 									<text>{{examQuestion.rule || ''}}</text>
 								</view>
 							</view>
-			
+
 							<view class="cell" v-if="examQuestion.url">
 								<view class="cell-label">考试图片：</view>
 								<view class="cell-content">
@@ -49,12 +49,12 @@
 						</view>
 					</view>
 				</view>
-			
+
 				<view class="time u-flex u-row-center" v-show="isBegin">
 					<image src="/static/public/camera_time.png"></image>
 					<text>{{timeText}}</text>
 				</view>
-			
+
 				<view class="tips u-flex" v-show="isBegin">
 					<image src="/static/public/camera_time.png"></image>
 					<text>考试已经开始，作画过程录制中</text>
@@ -63,13 +63,6 @@
 			<view class="footer">
 				<view class="footer-btn" @click="submitTap">{{!isBegin ? '请点击开始' : '点击结束'}}</view>
 			</view>
-		</view>
-		
-		
-		<view class="nodata">
-			<image :src="setSrc('testContent_nodata.png')"></image>
-			<text class="nodata-title">科目二(色彩)</text>
-			<text class="nodata-subtitle">未开始考试，请在考前2分钟打开此页面考试</text>
 		</view>
 
 		<u-modal v-model="modalShow" ref="uModal" :async-close="true" :show-title="false" border-radius="32"
@@ -91,15 +84,19 @@
 				</view>
 			</view>
 		</u-modal>
-	
+
 	</view>
 </template>
 
 <script>
+	import {
+		examQuestionDetail,
+		recordVideoSave
+	} from '@/api/exam.js'
 
 	import {
-		examQuestionDetail
-	} from '@/api/exam.js'
+		generatePostPolicy
+	} from '@/api/basic.js'
 	export default {
 		data() {
 			return {
@@ -139,7 +136,7 @@
 		methods: {
 			initData() {
 				this.$http.post(examQuestionDetail, {
-					course:  this.examSubjectItem.subjectName,
+					course: this.examSubjectItem.subjectName,
 					examId: this.examId,
 				}).then(res => {
 					this.examName = res.data.examName
@@ -152,8 +149,16 @@
 				if (!this.isBegin) {
 					this.isBegin = true
 					this.settingTimer();
+					const ctx = wx.createCameraContext()
+					ctx.startRecord({
+						timeout: 10000,
+						success(e) {
+							console.log(e)
+						}
+					})
 				} else {
 					this.modalShow = true;
+
 				}
 			},
 			// 切换摄像头 
@@ -174,16 +179,61 @@
 			},
 			// 弹窗确认
 			confirmTap() {
-				console.log('=====')
-
+				const _this = this;
 				if (!this.isEnd) {
 					clearInterval(this.timer)
+					const ctx = wx.createCameraContext()
+					ctx.stopRecord({
+						compressed: true,
+						success(e) {
+							_this.enterClick(e.tempVideoPath)
+						}
+					})
+				} else {
+					this.$refs.uModal.clearLoading();
+					uni.redirectTo({
+						url: `/pages/public/top/testContent?examId=${this.examId}&examSubjectItem=${JSON.stringify(this.examSubjectItem)}&type=${this.type}`
+					})
+				}
+
+			},
+			enterClick(tempFilePath) {
+				const _this = this
+				_this.$http.get(generatePostPolicy, {
+					app_token: uni.getStorageSync('accessToken')
+				}).then(res => {
+					console.log(res)
+					let data = res.data;
+					_this.$http
+						.upload(data.host, {
+							filePath: tempFilePath,
+							formData: {
+								key: data.dir,
+								policy: data.policy,
+								OSSAccessKeyId: data.accessid,
+								signature: data.signature,
+							}
+						})
+						.then(r => {
+							_this.recordVideoUpload(r)
+						});
+				}).catch(err => {
+					console.log(err)
+				})
+			},
+			recordVideoUpload(url) {
+				this.$http.post(recordVideoSave, {
+					course: this.examSubjectItem.subjectName,
+					examId: this.examId,
+					url
+				}).then(res => {
 					this.isEnd = true
 					this.showCancelButton = false
 					this.$refs.uModal.clearLoading();
-				}
-
-			}
+				}).catch(err => {
+					this.$mHelper.toast(err.msg)
+				})
+			},
 		},
 		onUnload() {
 			if (this.timer) clearInterval(this.timer)
@@ -247,10 +297,10 @@
 				background-color: #fff;
 
 				&-wrapper {
+					padding: 30rpx;
 					transform: rotate(90deg);
 					height: 750rpx;
 					overflow: auto;
-
 
 					.subtitle {
 						font-size: 30rpx;

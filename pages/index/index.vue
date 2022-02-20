@@ -10,7 +10,7 @@
 					<view class="search-btn">搜索</view>
 				</view>
 				<view class="swipers">
-					<u-swiper :list="bannerList" height="240" border-radius="16"></u-swiper>
+					<u-swiper name="imgUrl" :list="bannerList" height="240" border-radius="16"></u-swiper>
 				</view>
 			</view>
 
@@ -45,25 +45,27 @@
 				<u-row gutter="16" justify="space-between">
 					<u-col span="6">
 						<view class="left">
-							<view class="left-item">
+							<view class="left-item" @click="testTap(2)">
 								<view class="left-item-label u-flex">
 									<image src="/static/public/home_tested_style.png"></image>
 									<text>我的已考</text>
 								</view>
 
-								<swiper class="left-item-sublabel u-line-1" :circular="true" :autoplay="true" :disable-touch="true">
+								<swiper class="left-item-sublabel u-line-1" :circular="true" :autoplay="true"
+									:disable-touch="true">
 									<swiper-item class="u-line-1" v-for="(item, index) in recentExam" :key="index">
 										<text>{{item.name}}</text>
 									</swiper-item>
 								</swiper>
 							</view>
-							<view class="left-item">
+							<view class="left-item" @click="testTap(1)">
 								<view class="left-item-label u-flex">
 									<image src="/static/public/home_nottested_style.png"></image>
 									<text>我的未考</text>
 								</view>
 
-								<swiper class="left-item-sublabel u-line-1" :circular="true" :autoplay="true" :disable-touch="true">
+								<swiper class="left-item-sublabel u-line-1" :circular="true" :autoplay="true"
+									:disable-touch="true">
 									<swiper-item class="u-line-1" v-for="(item, index) in untestedExam" :key="index">
 										<text>{{item.name}}</text>
 									</swiper-item>
@@ -72,16 +74,16 @@
 						</view>
 					</u-col>
 					<u-col span="6">
-						
-						
-						<view class="right">
+						<view class="right" @click="testTap(0)">
 							<view class="right-item">
 								<view class="right-item-label u-flex">
 									<image :src="setSrc('home_ecent_exam_label.png')"></image>
 									<text>近期考试</text>
 								</view>
-								<swiper class="right-item-sublabel" :circular="true" :autoplay="true" :disable-touch="true">
-									<swiper-item class="right-item-sublabel-item" v-for="(item, index) in recentExam" :key="index">
+								<swiper class="right-item-sublabel" :circular="true" :autoplay="true"
+									:disable-touch="true">
+									<swiper-item class="right-item-sublabel-item" v-for="(item, index) in recentExam"
+										:key="index">
 										<view class="title u-line-2">{{item.name}}</view>
 										<view class="line"></view>
 										<view class="subtitle u-flex u-row-between">
@@ -109,13 +111,13 @@
 								</view>
 							</swiper-item>
 						</swiper> -->
-					
+
 					</u-col>
 				</u-row>
 			</view>
 
 			<!-- 高分素材 -->
-			<view class="page-wrapper">
+			<view class="page-wrapper" v-if="materialList.length">
 				<view class="gap"></view>
 				<view class="column u-flex">
 					<image :src="setSrc('home_high_score.png')"></image>
@@ -123,22 +125,21 @@
 					<view class="line"></view>
 					<view class="column-label">学习名师画作</view>
 				</view>
-
-				<drawing-column></drawing-column>
-
+				<drawing-column keys="0" :list="materialList" key-name="firstMenuName" @change="tabChange">
+				</drawing-column>
 				<scroll-view class="highScore" :scroll-x="true">
-					<view class="highScore-item" v-for="(item, index) in highScoreList" :key="index">
+					<view class="highScore-item" v-for="(item, index) in materialList[materialIndex].list" :key="index">
 						<textbook-item :item="item" imgHeight="440"></textbook-item>
 					</view>
 				</scroll-view>
 
-				<view class="more">
+				<view class="more" @click="moreTap(0)">
 					<text>更多</text>
 				</view>
 			</view>
 
 			<!-- 名师推荐 -->
-			<view class="page-wrapper">
+			<view class="page-wrapper" v-if="teachersList.length">
 				<view class="gap"></view>
 				<view class="column u-flex">
 					<image :src="setSrc('home_famous_teacher.png')"></image>
@@ -147,60 +148,29 @@
 					<view class="column-label">借鉴名师经验</view>
 				</view>
 
-				<drawing-column></drawing-column>
+				<drawing-column keys="1" :list="teachersList" key-name="skilledMajorName" @change="tabChange">
+				</drawing-column>
 
 				<view class="teacher">
 					<u-row gutter="42">
-						<u-col span="4">
+						<u-col span="4" v-for="(item,index) in teachersList[teachersIndex].list" :key="index">
 							<view class="teacher-item">
 								<view class="teacher-head">
-									<image
-										src="https://img1.baidu.com/it/u=1597761366,2823600315&fm=253&fmt=auto&app=138&f=JPEG?w=889&h=500"
-										mode="aspectFill"></image>
-									<view class="teacher-name">刘泉海</view>
+									<image :src="item.headUrl" mode="aspectFill"></image>
+									<view class="teacher-name">{{item.fullName}}</view>
 								</view>
-								<view class="teacher-text u-line-2">
-									中国美术学院雕塑系研究生全国第…中国美术学院雕塑系研究生全国第…
-								</view>
-							</view>
-						</u-col>
-						<u-col span="4">
-							<view class="teacher-item">
-								<view class="teacher-head">
-									<image
-										src="https://img1.baidu.com/it/u=1597761366,2823600315&fm=253&fmt=auto&app=138&f=JPEG?w=889&h=500"
-										mode="aspectFill"></image>
-									<view class="teacher-name">刘泉海</view>
-								</view>
-								<view class="teacher-text u-line-2">
-									中国美术学院雕塑系研究生全国第…中国美术学院雕塑系研究生全国第…
-								</view>
-							</view>
-						</u-col>
-						<u-col span="4">
-							<view class="teacher-item">
-								<view class="teacher-head">
-									<image
-										src="https://img1.baidu.com/it/u=1597761366,2823600315&fm=253&fmt=auto&app=138&f=JPEG?w=889&h=500"
-										mode="aspectFill"></image>
-									<view class="teacher-name">刘泉海</view>
-								</view>
-								<view class="teacher-text u-line-2">
-									中国美术学院雕塑系研究生全国第…中国美术学院雕塑系研究生全国第…
-								</view>
+								<view class="teacher-text u-line-2">{{item.introduce}}</view>
 							</view>
 						</u-col>
 					</u-row>
-
 				</view>
-
-				<view class="more">
+				<view class="more" @click="moreTap(1)">
 					<text>更多</text>
 				</view>
 			</view>
 
 			<!-- 热门评画 -->
-			<view class="page-wrapper">
+			<view class="page-wrapper" v-if="hotList.length">
 				<view class="gap"></view>
 				<view class="column u-flex">
 					<image :src="setSrc('home_evaluation.png')"></image>
@@ -208,13 +178,14 @@
 					<view class="line"></view>
 					<view class="column-label">名师点评速提升</view>
 				</view>
-				
+
 				<div style="margin-bottom: 30rpx;">
-					<drawing-column></drawing-column>
+					<drawing-column keys="2" :list="hotList" key-name="skilledMajorName" @change="tabChange">
+					</drawing-column>
 				</div>
 
 				<view class="evaluation">
-					<u-waterfall v-model="flowList" ref="uWaterfall">
+					<u-waterfall v-model="hotList[hotIndex].list" ref="uWaterfall">
 						<template v-slot:left="{leftList}">
 							<view class="item" v-for="(item, index) in leftList" :key="index">
 								<painting-evaluation-item :item="item"></painting-evaluation-item>
@@ -240,8 +211,15 @@
 	import DrawingColumn from '@/components/drawingColumn/drawingColumn.vue'
 	import TextbookItem from '@/components/textbook/textbookItem.vue'
 	import PaintingEvaluationItem from '@/components/paintingEvaluation/paintingEvaluationItem.vue'
-	
-	import { banner, exam, moduleConfigure } from '@/api/homepage.js'
+
+	import {
+		banner,
+		exam,
+		moduleConfigure,
+		paintEvaluateList,
+		teachingMaterialList,
+		teacherList
+	} from '@/api/homepage.js'
 	export default {
 		components: {
 			tabBar,
@@ -257,110 +235,117 @@
 				testedExam: [], // 我的已考
 				untestedExam: [], // 我的未考
 				moduleMap: {},
-				highScoreList: [{
-						price: 35,
-						title: '北国风光，千里冰封，万里雪飘',
-						shop: '李白杜甫白居易旗舰店',
-						image: 'http://pic.sc.chinaz.com/Files/pic/pic9/202002/zzpic23327_s.jpg',
-					},
-					{
-						price: 75,
-						title: '望长城内外，惟余莽莽',
-						shop: '李白杜甫白居易旗舰店',
-						image: 'https://img1.baidu.com/it/u=2716398045,2043787292&fm=253&fmt=auto&app=120&f=JPEG?w=800&h=800',
-					},
-					{
-						price: 385,
-						title: '大河上下，顿失滔滔',
-						shop: '李白杜甫白居易旗舰店',
-						image: 'https://img2.baidu.com/it/u=2013499784,686759970&fm=253&fmt=auto&app=120&f=JPEG?w=800&h=1333',
-					},
-					{
-						price: 784,
-						title: '欲与天公试比高',
-						shop: '李白杜甫白居易旗舰店',
-						image: 'http://pic2.sc.chinaz.com/Files/pic/pic9/202002/zzpic23369_s.jpg',
-					},
-					{
-						price: 7891,
-						title: '须晴日，看红装素裹，分外妖娆',
-						shop: '李白杜甫白居易旗舰店',
-						image: 'http://pic2.sc.chinaz.com/Files/pic/pic9/202002/hpic2130_s.jpg',
-					},
-					{
-						price: 2341,
-						shop: '李白杜甫白居易旗舰店',
-						title: '江山如此多娇，引无数英雄竞折腰',
-						image: 'http://pic1.sc.chinaz.com/Files/pic/pic9/202002/zzpic23346_s.jpg',
-					},
-					{
-						price: 661,
-						shop: '李白杜甫白居易旗舰店',
-						title: '惜秦皇汉武，略输文采',
-						image: 'http://pic1.sc.chinaz.com/Files/pic/pic9/202002/zzpic23344_s.jpg',
-					},
-					{
-						price: 1654,
-						title: '唐宗宋祖，稍逊风骚',
-						shop: '李白杜甫白居易旗舰店',
-						image: 'http://pic1.sc.chinaz.com/Files/pic/pic9/202002/zzpic23343_s.jpg',
-					},
-					{
-						price: 1678,
-						title: '一代天骄，成吉思汗',
-						shop: '李白杜甫白居易旗舰店',
-						image: 'http://pic1.sc.chinaz.com/Files/pic/pic9/202002/zzpic23343_s.jpg',
-					},
-					{
-						price: 924,
-						title: '只识弯弓射大雕',
-						shop: '李白杜甫白居易旗舰店',
-						image: 'http://pic1.sc.chinaz.com/Files/pic/pic9/202002/zzpic23343_s.jpg',
-					},
-					{
-						price: 8243,
-						title: '俱往矣，数风流人物，还看今朝',
-						shop: '李白杜甫白居易旗舰店',
-						image: 'http://pic1.sc.chinaz.com/Files/pic/pic9/202002/zzpic23343_s.jpg',
-					},
-				],
-				flowList: []
+				materialList: [], // 高分教材
+				materialIndex: 0,
+				teachersList: [], // 名师推荐
+				teachersIndex: 0,
+				hotList: [], // 热门评画
+				hotIndex: 0,
 			}
 		},
 		onLoad() {
-			this.flowList = this.highScoreList;
-			
 			this.initData();
+			this.getMaterialList();
+			this.getTeacherList();
+			this.getHotList();
 		},
 		methods: {
-			initData(){
+			initData() {
 				this.$http.get(banner, {
 					crowed: 0
 				}).then(res => {
 					console.log(res)
 					this.bannerList = res.data ?? []
 				})
-				
+
 				this.$http.get(exam).then(res => {
 					console.log(res.data)
 					const data = res.data;
-					
+
 					this.recentExam = data.recentExam;
 					this.testedExam = data.testedExam;
 					this.untestedExam = data.untestedExam;
 				})
-				
-				this.$http.get(moduleConfigure).then(res => {
-					console.log(res.data)
-					this.moduleMap = res.data
-					console.log(this.moduleMap)
+				// this.$http.get(moduleConfigure).then(res => {
+				// 	console.log(res.data)
+				// 	this.moduleMap = res.data
+				// 	console.log(this.moduleMap)
+				// })
+			},
+			// 高分教材
+			getMaterialList() {
+				this.$http.get(teachingMaterialList).then(res => {
+					console.log(res)
+					this.materialList = res.data
+				}).catch(err => {
+					console.log(err)
 				})
 			},
-			navTo(route){
-				
+			// 名师推荐
+			getTeacherList() {
+				this.$http.get(teacherList).then(res => {
+					console.log(res)
+					this.teachersList = res.data
+				}).catch(err => {
+					console.log(err)
+				})
+			},
+
+			// 热门评画
+			getHotList() {
+				this.$http.get(paintEvaluateList).then(res => {
+					console.log(res)
+				}).catch(err => {
+					console.log(err)
+				})
+			},
+			navTo(route) {
+
 				console.log(route)
 				this.$mRouter.push({
 					route
+				})
+			},
+			// 筛选
+			tabChange(e) {
+				console.log(e)
+
+				let key = e.key
+
+				switch (key) {
+					case '0':
+						this.materialIndex = e.index;
+						break;
+					case '1':
+						this.teachersIndex = e.index;
+						break;
+					case '2':
+						this.hotIndex = e.index;
+						break;
+
+				}
+			},
+			// 更多
+			moreTap(index) {
+				switch (index) {
+					case 0:
+						uni.navigateTo({
+							url: '/pages/public/highScore/index'
+						})
+						break;
+
+					case 1:
+						uni.switchTab({
+							url: '/pages/teacher/index'
+						})
+						break;
+				}
+			},
+			// 近期考试
+			testTap(index){
+				console.log(index)
+				uni.navigateTo({
+					url: `/pages/public/top/top?type=${index}`
 				})
 			}
 		}

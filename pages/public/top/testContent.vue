@@ -5,45 +5,48 @@
 				title-color="#ffffff">
 			</u-navbar>
 		</view>
-			<scroll-view scroll-y class="content" v-if="!isBegin">
-				<view class="subtitle">{{examName}}</view>
-				<view class="title">{{examQuestion.course || ''}}</view>
+		<scroll-view scroll-y class="content" v-if="!isBegin">
+			<view class="subtitle">{{examName}}</view>
+			<view class="title">{{examQuestion.course || ''}}</view>
 
-				<view class="cells">
-					<view class="cell">
-						<view class="cell-label">考试题目：</view>
-						<view class="cell-content">
-							<text>{{examQuestion.content || ''}}</text>
-						</view>
-					</view>
-					<view class="cell">
-						<view class="cell-label">考试要求：</view>
-						<view class="cell-content">
-							<text>{{examQuestion.rule || ''}}</text>
-						</view>
-					</view>
-
-					<view class="cell" v-if="examQuestion.url">
-						<view class="cell-label">考试图片：</view>
-						<view class="cell-content">
-							<image :src="examQuestion.url">
-							</image>
-						</view>
-					</view>
-					<view class="cell">
-						<view class="cell-label">备 注：</view>
-						<view class="cell-content">
-							<text>{{examQuestion.remark || ''}}</text>
-						</view>
+			<view class="cells">
+				<view class="cell">
+					<view class="cell-label">考试题目：</view>
+					<view class="cell-content">
+						<text>{{examQuestion.content || ''}}</text>
 					</view>
 				</view>
-			</scroll-view>
+				<view class="cell">
+					<view class="cell-label">考试要求：</view>
+					<view class="cell-content">
+						<text>{{examQuestion.rule || ''}}</text>
+					</view>
+				</view>
 
-			<view class="footer u-flex u-row-center" v-if="type !== 2">
-				<view class="footer-btn disabled" v-if="!isUpload()">考试时间未到</view>
-				<view class="footer-btn" v-if="isUpload() && examDetail.isRecordVideo" style="margin-right: 24rpx;" @click="submitTap">录制作画步骤</view>
-				<view class="footer-btn" v-if="isUpload()" :class="!isUpload ? 'disabled' : '' " @click="uploadTap">上传试卷图片</view>
+				<view class="cell" v-if="examQuestion.url">
+					<view class="cell-label">考试图片：</view>
+					<view class="cell-content">
+						<image :src="examQuestion.url">
+						</image>
+					</view>
+				</view>
+				<view class="cell">
+					<view class="cell-label">备 注：</view>
+					<view class="cell-content">
+						<text>{{examQuestion.remark || ''}}</text>
+					</view>
+				</view>
 			</view>
+		</scroll-view>
+
+		<view class="footer u-flex u-row-center" v-if="type !== 2">
+			<view class="footer-btn disabled" v-if="!isUpload">考试时间未到</view>
+			<view class="footer-btn" v-if="isUpload && examDetail.isRecordVideo" style="margin-right: 24rpx;"
+				@click="submitTap">录制作画步骤</view>
+			<view class="footer-btn" v-if="isUpload" :class="!isUpload ? 'disabled' : '' " @click="uploadTap">上传试卷图片
+			</view>
+			<view class="footer-btn" v-if="isHours" :class="isHours ? 'disabled' : '' ">该科目考试已经结束</view>
+		</view>
 
 		<view class="nodata" v-if="isBegin">
 			<image :src="setSrc('testContent_nodata.png')"></image>
@@ -79,16 +82,24 @@
 				isBegin: false,
 				examDetail: {},
 				examSubjectItem: {},
-				timer: null
+				timer: null,
+				isHours: false,
+				isUpload: false,
 			};
 		},
 		onLoad(options) {
 			if (options.examId) {
 				this.examSubjectItem = JSON.parse(options.examSubjectItem);
+
+				console.log(this.examSubjectItem)
 				this.examId = options.examId;
 				this.type = Number(options.type) || 0;
-				
-				console.log(this.$mHelper.timeInByDate(this.examSubjectItem.uploadPaperStarttime, this.examSubjectItem.uploadPaperEndtime))
+
+				console.log(this.$mHelper.timeInByDate(this.examSubjectItem.uploadPaperStarttime, this.examSubjectItem
+					.uploadPaperEndtime))
+					
+				this.isHours = this.diffHours();
+				this.isUpload = this.diffUpload();
 				this.getData()
 			} else {
 				this.loading = false;
@@ -139,16 +150,29 @@
 				}, 1000)
 			},
 			// 是否可以上传试卷
-			isUpload(){
-				return this.$mHelper.timeInByDate(this.examSubjectItem.uploadPaperStarttime, this.examSubjectItem.uploadPaperEndtime)
+			diffUpload() {
+				return this.$mHelper.timeInByDate(this.examSubjectItem.uploadPaperStarttime, this.examSubjectItem
+					.uploadPaperEndtime)
 			},
 			// 录制视频
 			submitTap() {
-				
+				uni.redirectTo({
+					url: `/pages/public/top/testRecording?examId=${this.examId}&examSubjectItem=${JSON.stringify(this.examSubjectItem)}&type=${this.type}`
+				})
 			},
 			// 上传试卷图片
-			uploadTap(){
-				
+			uploadTap() {
+				uni.navigateTo({
+					url: `/pages/public/top/testRecording?examId=${this.examId}&examSubjectItem=${JSON.stringify(this.examSubjectItem)}&type=${this.type}`
+				})
+			},
+			// 一个小时后
+			diffHours() {
+				console.log(moment(`${this.examSubjectItem.subjectDate} ${this.examSubjectItem.subjectEndtime}`).add(1, "hours").diff(moment(), 'seconds'))
+				if (moment(`${this.examSubjectItem.subjectDate} ${this.examSubjectItem.subjectEndtime}`).add(1, "hours").diff(moment(), 'seconds') > 0) {
+					return true
+				}
+				return false
 			}
 		},
 		onUnload() {
