@@ -13,7 +13,7 @@
 						</view>
 
 					</view>
-					<view class="right" @tap="popShow =! popShow">
+					<view class="right" @click="handleTap">
 						<image src="/static/public/dynamic_menu.png"></image>
 					</view>
 				</view>
@@ -48,14 +48,14 @@
 							</view>
 						</view>
 					</view>
-					<view class="right" @tap="share">
+					<button open-type="share" class="right" @tap="share(item)">
 						<view class="tool-item">
 							<image src="/static/public/dynamic_share.png"></image>
 							<view class="num">
 								分享
 							</view>
 						</view>
-					</view>
+					</button>
 
 				</view>
 
@@ -64,7 +64,7 @@
 
 		</view>
 
-		<bubblePopups v-model="popShow" :popData="popData" :isTwoline="true" @tapPopup="tapPopup" :x="344" :y="20"
+		<bubblePopups v-model="popShow" :popData="popData" :isTwoline="true" @tapPopup="tapPopup" :x="344" :y="positionY"
 			placement="top-end">
 		</bubblePopups>
 
@@ -144,6 +144,8 @@
 						icon: '../../static/public/kongjian.png'
 					}
 				],
+				scrollTop: 0,
+				positionY: 20,
 				popShow: false,
 				current: 1,
 				size: 10,
@@ -195,8 +197,9 @@
 				this.current++;
 				this.getList();
 			},
-			share() {
-				this.$refs.popup.open();
+			share(e) {
+				console.log(e)
+				// this.$refs.popup.open();
 			},
 
 			previewImage(imageList, current) {
@@ -209,17 +212,29 @@
 					urls: list
 				});
 			},
-
-
-
 			cancelShare() {
 				this.$refs.popup.close();
 			},
+			// 操作面板
+			handleTap(e){
+				this.positionY = e.detail.y - this.scrollTop
+				this.popShow = true;
+			}
 
+		},
+		onPageScroll(e) {
+			console.log(e)
+			this.scrollTop = e.scrollTop
 		},
 		onReachBottom() {
 			this.loadStatus = 'loading';
 			this.addData();
+		},
+		onShareAppMessage(e) {
+			
+		},
+		onShareTimeline(e) {
+			
 		}
 	}
 </script>
@@ -358,7 +373,12 @@
 				display: flex;
 				justify-content: space-between;
 				align-items: center;
-
+				background-color: transparent;
+				border: none;
+				
+				&::after{
+					border: none;
+				}
 				.tool-item {
 					display: flex;
 					justify-content: flex-start;
@@ -377,6 +397,7 @@
 						margin-left: 6px;
 					}
 				}
+				
 			}
 
 

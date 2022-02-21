@@ -20,7 +20,7 @@
 						<text>高分教材</text>
 					</view>
 					
-					<view class="pop-item">
+					<view class="pop-item" @click="itemTap(2)">
 						<image src="/static/public/dynamic_release.png"></image>
 						<text>发布动态</text>
 					</view>
@@ -83,6 +83,8 @@
 				let url = item.pagePath;
 				if(index === 2) {
 					this.popShow = true
+					
+					
 				} else {
 					this.popShow = false
 					uni.switchTab({
@@ -91,6 +93,23 @@
 				}
 				
 
+			},
+			
+			itemTap(index){
+				this.popShow = false
+				switch(index){
+					case 0:
+					break;
+					case 2:
+					this.navTo('/pages/centers/dynamicRelease')
+					break;
+				}
+			},
+			navTo(url){
+				console.log(url)
+				uni.navigateTo({
+					url
+				})
 			}
 		}
 	}

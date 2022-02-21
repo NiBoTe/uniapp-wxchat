@@ -213,8 +213,6 @@
 				const _this = this;
 				const filePath = data.path || data[0];
 
-
-
 				_this.$http.get(generatePostPolicy, {
 					app_token: uni.getStorageSync('accessToken')
 				}).then(res => {

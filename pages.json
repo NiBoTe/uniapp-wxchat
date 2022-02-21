@@ -146,6 +146,20 @@
 				}
 			]
 		},
+		// 动态
+		{
+			"root": "pages/centers",
+			"pages": [{
+				"path": "dynamicRelease",
+				"style": {
+					"navigationBarTitleText": "发布动态",
+					"navigationBarBackgroundColor": "#ffffff",
+					"navigationBarTextStyle": "black",
+					"enablePullDownRefresh": false
+				}
+
+			}]
+		},
 		// 公共
 		{
 			"root": "pages/public",

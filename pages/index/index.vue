@@ -294,7 +294,7 @@
 			// 热门评画
 			getHotList() {
 				this.$http.get(paintEvaluateList).then(res => {
-					console.log(res)
+					this.hotList = res.data
 				}).catch(err => {
 					console.log(err)
 				})
