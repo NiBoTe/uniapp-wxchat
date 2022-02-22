@@ -14,12 +14,12 @@
 						<image src="/static/public/want_painting.png"></image>
 						<text>我要评画</text>
 					</view>
-					
-					<view class="pop-item">
+
+					<view class="pop-item" @click="itemTap(1)">
 						<image src="/static/public/my_textbook.png"></image>
 						<text>高分教材</text>
 					</view>
-					
+
 					<view class="pop-item" @click="itemTap(2)">
 						<image src="/static/public/dynamic_release.png"></image>
 						<text>发布动态</text>
@@ -29,7 +29,7 @@
 						<text>我的报考</text>
 					</view>
 				</view>
-				
+
 				<view class="pop-close" @click="popShow = false">
 					<image src="/static/public/my_close.png"></image>
 				</view>
@@ -47,7 +47,7 @@
 			selected: { // 当前选中的tab index
 				type: Number,
 				default: 0,
-				
+
 			}
 		},
 		data() {
@@ -81,31 +81,34 @@
 		methods: {
 			switchTab(item, index) {
 				let url = item.pagePath;
-				if(index === 2) {
+				if (index === 2) {
 					this.popShow = true
-					
-					
+
+
 				} else {
 					this.popShow = false
 					uni.switchTab({
 						url
 					})
 				}
-				
+
 
 			},
-			
-			itemTap(index){
+
+			itemTap(index) {
 				this.popShow = false
-				switch(index){
+				switch (index) {
 					case 0:
-					break;
+						break;
+					case 1:
+						this.navTo('/pages/centers/highScoreRelease')
+						break;
 					case 2:
-					this.navTo('/pages/centers/dynamicRelease')
-					break;
+						this.navTo('/pages/centers/dynamicRelease')
+						break;
 				}
 			},
-			navTo(url){
+			navTo(url) {
 				console.log(url)
 				uni.navigateTo({
 					url
@@ -148,33 +151,37 @@
 				font-weight: 500;
 			}
 		}
-		
-		
-		.pop-content{
-			.pop-list{
+
+
+		.pop-content {
+			.pop-list {
 				padding-top: 72rpx;
 				display: flex;
 				justify-content: space-around;
 				align-items: center;
-				.pop-item{
+
+				.pop-item {
 					display: flex;
 					flex-direction: column;
 					align-items: center;
-					image{
+
+					image {
 						width: 112rpx;
 						height: 86rpx;
 					}
-					text{
+
+					text {
 						font-size: 28rpx;
 						color: #333333;
 					}
 				}
 			}
-			
-			.pop-close{
+
+			.pop-close {
 				margin: 148rpx 0 40rpx 0;
 				text-align: center;
-				image{
+
+				image {
 					width: 34rpx;
 					height: 34rpx;
 				}

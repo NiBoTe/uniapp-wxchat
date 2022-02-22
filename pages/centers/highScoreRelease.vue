@@ -4,15 +4,8 @@
 			<input v-model="title" type="text" placeholder="输入标题" maxlength="25" />
 		</view>
 		<view class="header">
-			<textarea v-model="content" placeholder="此刻你的想法…" maxlength="150" />
-			<view class="header-length">{{content.length}}/150</view>
-		</view>
-
-		<view class="subheader u-flex u-row-between">
-			<view class="left">禁止评论</view>
-			<view class="right">
-				<u-switch v-model="checked" :active-color="themeColor" inactive-color="#E8E9EB"></u-switch>
-			</view>
+			<textarea v-model="content" placeholder="输入详情内容…" maxlength="200" />
+			<view class="header-length">{{content.length}}/200</view>
 		</view>
 
 		<view class="upload">
@@ -53,7 +46,6 @@
 			return {
 				title: '',
 				content: '',
-				checked: true,
 				themeColor: this.$mConstDataConfig.themeColor,
 				imgsList: []
 			};
@@ -62,11 +54,15 @@
 			addTap() {
 				// 从相册选择图片
 				const _this = this;
-				uni.chooseImage({
+				uni.chooseMedia({
 					count: 9,
+					mediaType: ['image', 'video'],
+					sourceType: ['album', 'camera'],
 					sizeType: ['original', 'compressed'],
-					sourceType: ['album'],
+					maxDuration: 60,
 					success: function(res) {
+						
+						console.log(res)
 						_this.handleUploadFile(res.tempFilePaths, 0);
 					}
 				});
@@ -178,18 +174,8 @@
 			}
 		}
 
-		.subheader {
-			margin: 40rpx 32rpx;
-
-			.left {
-				font-size: 24rpx;
-				font-weight: bold;
-				color: #3A3D71;
-			}
-		}
-
 		.upload {
-			margin: 0 34rpx;
+			margin: 38rpx 34rpx;
 
 			.item {
 				position: relative;
@@ -218,7 +204,7 @@
 				&-tips {
 					position: absolute;
 					bottom: -40rpx;
-					font-size: 24rpx;
+					font-size: 20rpx;
 					color: #B0B3BF;
 				}
 			}

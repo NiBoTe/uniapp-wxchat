@@ -28,7 +28,6 @@
 						<view class="add-tips" v-show="!imgsList.length">仅支持.jpg格式</view>
 					</view>
 				</u-col>
-
 			</u-row>
 		</view>
 
