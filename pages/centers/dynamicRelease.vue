@@ -204,7 +204,7 @@
 
 				&-tips {
 					position: absolute;
-					bottom: -60rpx;
+					bottom: -40rpx;
 					font-size: 24rpx;
 					color: #B0B3BF;
 				}

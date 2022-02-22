@@ -158,6 +158,15 @@
 					"enablePullDownRefresh": false
 				}
 
+			}, {
+				"path": "highScoreRelease",
+				"style": {
+					"navigationBarTitleText": "发布高分教材",
+					"navigationBarBackgroundColor": "#ffffff",
+					"navigationBarTextStyle": "black",
+					"enablePullDownRefresh": false
+				}
+
 			}]
 		},
 		// 公共
@@ -250,6 +259,8 @@
 					"path": "historyExQuestions/sureOrder",
 					"style": {
 						"navigationBarTitleText": "确认订单",
+						"navigationBarBackgroundColor": "#ffffff",
+						"navigationBarTextStyle": "black",
 						"enablePullDownRefresh": false
 					}
 				},
