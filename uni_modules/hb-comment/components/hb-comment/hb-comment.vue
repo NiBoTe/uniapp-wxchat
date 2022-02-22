@@ -423,7 +423,10 @@
 	}
 
 	.nick-name {
-		color: #2d8cf0;
+		font-size: 28rpx;
+		font-family: PingFang-SC-Bold, PingFang-SC;
+		font-weight: bold;
+		color: #3A3D71;
 	}
 
 	.isLike {
