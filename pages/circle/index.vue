@@ -2,7 +2,7 @@
 	<view>
 		<tab-bar :selected="1"></tab-bar>
 		<view class="list-view">
-			<view class="item" v-for="(item,index) in list" :key="index">
+			<view class="item" v-for="(item,index) in list" :key="index" @tap="goDetail">
 				<view class="item-top">
 					<view class="userInfo">
 						<view class="logo">
@@ -219,9 +219,15 @@
 			handleTap(e){
 				this.positionY = e.detail.y - this.scrollTop
 				this.popShow = true;
-			}
+			},
+			goDetail:function() {
+				uni.navigateTo({
+					url: "/pages/module/circleDetail/index"
+				})
+			},
 
 		},
+		
 		onPageScroll(e) {
 			console.log(e)
 			this.scrollTop = e.scrollTop

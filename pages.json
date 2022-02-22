@@ -160,6 +160,20 @@
 
 			}]
 		},
+		// 公共模块
+		{
+			"root": "pages/module",
+			"pages": [
+				// 关于详情
+				{
+					"path": "circleDetail/index",
+					"style": {
+						"navigationBarTitleText": "动态详情",
+						"navigationStyle": "custom"
+					}
+				}
+			]
+		},
 		// 公共
 		{
 			"root": "pages/public",
