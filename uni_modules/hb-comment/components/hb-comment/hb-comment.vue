@@ -1,7 +1,7 @@
 <template>
 	<view class="hb-comment">
 		<!-- 阅读数-start -->
-		<view>
+		<view class="totalView">
 			<span class="top-read">396条评论</span>
 		</view>
 		<!-- 阅读数-end -->
@@ -328,6 +328,13 @@
 	.hb-comment {
 		padding: 10rpx;
 	}
+	
+	.totalView {
+		width: 100%;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
 
 	.top-read {
 		font-size: 32rpx;
@@ -471,7 +478,10 @@
 
 	.foot-btn {
 		padding-left: 10rpx;
-		color: #007AFF;
+		font-size: 26rpx;
+		font-family: PingFangSC-Regular, PingFang SC;
+		font-weight: 400;
+		color: #9E9E9E;
 	}
 
 	.comment-sub-box {
