@@ -3,7 +3,7 @@
 
 		<view class="handle u-flex" v-if="!isEnter">
 			<view class="scan u-flex u-row-center" @click="scanCodeTap">扫码识别学生信息</view>
-			<view class="scan u-flex u-row-center">上传记录</view>
+			<view class="scan u-flex u-row-center" @click="testRecordTap">上传记录</view>
 		</view>
 
 		<view class="search u-flex" v-if="!isEnter">
@@ -128,7 +128,7 @@
 				}).then(res => {
 					this.examDetail = res.data
 					this.examSubjectItem = this.examDetail.examSubjectList[0]
-					if(this.code !== ''){
+					if (this.code !== '') {
 						this.searchTap();
 					}
 				}).catch(err => {
@@ -144,8 +144,7 @@
 					admissionTicketCode: this.code,
 					course: this.examSubjectItem.subjectName
 				}).then(res => {
-					console.log(res)
-					this.studentDetail = res.data
+					this.studentDetail = res.data ? res.data[0] : {}
 				}).catch(err => {
 					this.$mHelper.toast(err.msg)
 				})
@@ -176,9 +175,7 @@
 					sizeType: ['original', 'compressed'], //可以指定是原图还是压缩图，默认二者都有
 					sourceType: ['album'], //从相册选择
 					success: function(res) {
-						console.log(res)
 						_this.tempFilePath = res.tempFilePaths[0]
-						console.log(JSON.stringify(res.tempFilePaths));
 					}
 				});
 			},
@@ -190,6 +187,12 @@
 				} else {
 					this.$refs.TopTips.open();
 				}
+			},
+			// 上传记录
+			testRecordTap() {
+				uni.navigateTo({
+					url: `/pages/public/top/takeRecord?id=${this.id}&type=${this.type}`
+				})
 			},
 			enterClick() {
 				const _this = this
@@ -399,7 +402,8 @@
 				margin-top: 28rpx;
 				border-radius: 16rpx;
 				border: 2rpx solid #EDEFF2;
-
+				text-align: center;
+				
 				.badge {
 					position: absolute;
 					right: 0;

@@ -29,7 +29,7 @@
 		</view>
 		<scroll-view scroll-y class="scroll-warper" @scrolltolower="lower">
 			<view class="list">
-				<view class="item" v-for="(item, index) in list" :key="index">
+				<view class="item" v-for="(item, index) in list" :key="index" @click="detailTap(item)">
 					<view class="item-header u-flex u-row-between">
 						<view class="left u-flex">
 							<view class="left-style"></view>
@@ -73,10 +73,16 @@
 	import drawingColumn from '@/components/drawingColumn/drawingColumn.vue'
 	import {
 		examDetail,
-		faceDetectExamineeList
+		faceDetectExamineeList,
+		faceDetectGetEidToken,
+		faceDetectGetEidResult
 	} from '@/api/exam.js'
-	
+
 	import moment from '@/common/moment.js'
+
+	import {
+		startEid
+	} from '@/mp_ecard_sdk/main';
 	export default {
 		components: {
 			drawingColumn
@@ -114,7 +120,7 @@
 				}).then(res => {
 					console.log(res)
 					this.examDetail = res.data
-					
+
 					this.examSubjectItem = this.examDetail.examSubjectList[0]
 					this.course = this.examDetail.examSubjectList[0].subjectName;
 					this.getList()
@@ -175,17 +181,65 @@
 			},
 			// 去考试
 			submitTap() {
+
 				this.$mRouter.push({
 					route: `/pages/public/top/testContent?examId=${this.id}&examSubjectItem=${JSON.stringify(this.examSubjectItem)}&type=${this.type}`
 				})
 				// if(moment(`${this.examDetail.examStartTime} ${this.examSubjectItem.subjectStarttime}`).diff(moment(), 'seconds') > 0) {
-					
+
 				// } else {
 				// 	this.$mRouter.push({
 				// 		route: `/pages/public/top/testRecording?id=${this.id}&course=${this.course}&type=${this.type}`
 				// 	})
 				// }
-				
+
+			},
+			// 验证
+			detailTap(item) {
+				if (item.faceDetectState !== 1) {
+					this.faceVerify(item.id)
+				}
+			},
+			faceVerify(id) {
+				this.$http.post(faceDetectGetEidToken, {
+					course: this.course,
+					id
+				}).then(res => {
+					this.goSDK(res.data)
+				}).catch(err => {
+					this.$mHelper.toast(err.msg)
+				})
+			},
+			// 示例方法
+			goSDK(token) {
+				const _this = this
+				startEid({
+					data: {
+						token,
+					},
+					verifyDoneCallback(res) {
+						const {
+							token,
+							verifyDone
+						} = res;
+						console.log('收到核身完成的res:', res);
+						console.log('核身的token是:', token);
+						console.log('是否完成核身:', verifyDone);
+						_this.isVerifyDone(token);
+					},
+				});
+			},
+			// 验证是否成功
+			isVerifyDone(token) {
+				this.$http.get(faceDetectGetEidResult, {
+					token
+				}).then(res => {
+					console.log('是否验证成功============',res)
+					this.current = 1;
+					this.getList();
+				}).catch(err => {
+					this.$mHelper.toast(err.msg)
+				})
 			}
 		},
 	}

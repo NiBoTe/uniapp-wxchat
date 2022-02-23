@@ -90,14 +90,8 @@
 		onLoad(options) {
 			if (options.examId) {
 				this.examSubjectItem = JSON.parse(options.examSubjectItem);
-
-				console.log(this.examSubjectItem)
 				this.examId = options.examId;
 				this.type = Number(options.type) || 0;
-
-				console.log(this.$mHelper.timeInByDate(this.examSubjectItem.uploadPaperStarttime, this.examSubjectItem
-					.uploadPaperEndtime))
-					
 				this.isHours = this.diffHours();
 				this.isUpload = this.diffUpload();
 				this.getData()
@@ -151,8 +145,11 @@
 			},
 			// 是否可以上传试卷
 			diffUpload() {
+				console.log(this.examSubjectItem.uploadPaperStarttime)
+				console.log(this.examSubjectItem.uploadPaperEndtime)
+				
 				return this.$mHelper.timeInByDate(this.examSubjectItem.uploadPaperStarttime, this.examSubjectItem
-					.uploadPaperEndtime)
+					.uploadPaperEndtime) > 0
 			},
 			// 录制视频
 			submitTap() {
@@ -163,16 +160,15 @@
 			// 上传试卷图片
 			uploadTap() {
 				uni.navigateTo({
-					url: `/pages/public/top/testRecording?examId=${this.examId}&examSubjectItem=${JSON.stringify(this.examSubjectItem)}&type=${this.type}`
+					url: `/pages/public/top/testUpload?id=${this.examId}&examSubjectItem=${JSON.stringify(this.examSubjectItem)}&type=${this.type}`
 				})
 			},
 			// 一个小时后
 			diffHours() {
-				console.log(moment(`${this.examSubjectItem.subjectDate} ${this.examSubjectItem.subjectEndtime}`).add(1, "hours").diff(moment(), 'seconds'))
 				if (moment(`${this.examSubjectItem.subjectDate} ${this.examSubjectItem.subjectEndtime}`).add(1, "hours").diff(moment(), 'seconds') > 0) {
-					return true
+					return false
 				}
-				return false
+				return true
 			}
 		},
 		onUnload() {

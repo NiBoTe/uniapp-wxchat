@@ -3,6 +3,11 @@
 		"^u-(.*)": "uview-ui/components/u-$1/u-$1.vue"
 	},
 	"pages": [
+		// "mp_ecard_sdk/index/index",
+		// "mp_ecard_sdk/protocol/service/index",
+		// "mp_ecard_sdk/protocol/privacy/index",
+		// "mp_ecard_sdk/protocol/userAccredit/index",
+		// "mp_ecard_sdk/protocol/eid/index",
 		// 主页
 		{
 			"path": "pages/index/index",
@@ -162,6 +167,15 @@
 				"path": "highScoreRelease",
 				"style": {
 					"navigationBarTitleText": "发布高分教材",
+					"navigationBarBackgroundColor": "#ffffff",
+					"navigationBarTextStyle": "black",
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "selectAccount",
+				"style": {
+					"navigationBarTitleText": "选择科目",
 					"navigationBarBackgroundColor": "#ffffff",
 					"navigationBarTextStyle": "black",
 					"enablePullDownRefresh": false

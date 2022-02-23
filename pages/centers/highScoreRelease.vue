@@ -1,33 +1,77 @@
 <template>
 	<view class="center">
-		<view class="title u-flex u-row-center">
-			<input v-model="title" type="text" placeholder="输入标题" maxlength="25" />
-		</view>
-		<view class="header">
-			<textarea v-model="content" placeholder="输入详情内容…" maxlength="200" />
-			<view class="header-length">{{content.length}}/200</view>
-		</view>
+		<view class="content">
+			<view class="title u-flex u-row-center">
+				<input v-model="title" type="text" placeholder="输入标题" maxlength="25" />
+			</view>
+			<view class="header">
+				<textarea v-model="content" placeholder="输入详情内容…" maxlength="200" />
+				<view class="header-length">{{content.length}}/200</view>
+			</view>
 
-		<view class="upload">
-			<u-row gutter="12">
-				<u-col span="4" v-for="(item, index) in imgsList" :key="index">
-					<view class="item" @click="prevTap(index)">
-						<image :src="item"></image>
-						<view class="close" @click.stop="deleteTap(index)">
-							<u-icon name="minus-circle-fill" :color="themeColor" size="28"></u-icon>
+			<view class="upload">
+				<u-row gutter="12">
+					<u-col span="4" v-for="(item, index) in imgsList" :key="index">
+						<view class="item" @click="prevTap(index)">
+							<image :src="item"></image>
+							<view class="close" @click.stop="deleteTap(index)">
+								<u-icon name="minus-circle-fill" :color="themeColor" size="28"></u-icon>
+							</view>
 						</view>
-					</view>
-				</u-col>
-				<u-col span="4">
-					<view class="add u-flex u-row-center" @click="addTap()">
-						<u-icon name="plus" color="#9E9E9E" size="80"></u-icon>
-						<view class="add-tips" v-show="!imgsList.length">仅支持.JPG、MP4格式</view>
-					</view>
-				</u-col>
+					</u-col>
+					<u-col span="4">
+						<view class="add u-flex u-row-center" @click="addTap()">
+							<u-icon name="plus" color="#9E9E9E" size="80"></u-icon>
+							<view class="add-tips" v-show="!imgsList.length">仅支持.JPG、MP4格式</view>
+						</view>
+					</u-col>
 
-			</u-row>
+				</u-row>
+			</view>
+
+			<u-gap height="16" bg-color="#F7F7F7" margin-top="40"></u-gap>
+
+
+
+			<view class="list">
+				<view class="item u-flex u-row-between">
+					<view class="left">商品价格</view>
+					<view class="right u-flex">
+						<input type="digit" placeholder="输入商品价格" maxlength="10" />
+						<text class="unit">元</text>
+					</view>
+				</view>
+
+				<view class="item u-flex u-row-between" @click="selectTap">
+					<view class="left">选择科目</view>
+					<view class="right u-flex u-row-center">
+						<input type="text" v-model="subjectName" disabled placeholder="科目/内容" />
+						<image src="/static/public/arrow_right.png"></image>
+					</view>
+				</view>
+
+				<view class="item u-flex u-row-between">
+					<view class="left">允许查看高清图数量</view>
+					<view class="right u-flex u-row-center">
+						<input type="number" placeholder="请输入张数" maxlength="10" />
+					</view>
+				</view>
+
+				<view class="item u-flex u-row-between">
+					<view class="left">是否需要发货</view>
+					<view class="right u-flex u-row-center">
+						<u-switch v-model="checked" :active-color="themeColor" inactive-color="#E8E9EB"></u-switch>
+					</view>
+				</view>
+
+				<view class="item u-flex u-row-between">
+					<view class="left">发货内容说明</view>
+					<view class="right u-flex u-row-center">
+						<input type="text" placeholder="请输入发货内容说明" />
+					</view>
+				</view>
+			</view>
 		</view>
-
 		<view class="footer">
 			<view class="footer-btn" :class="content === '' ? 'disabled' : ''" @click="submitTap">发布</view>
 		</view>
@@ -47,7 +91,10 @@
 				title: '',
 				content: '',
 				themeColor: this.$mConstDataConfig.themeColor,
-				imgsList: []
+				imgsList: [],
+				checked: true,
+				subjectName: '',
+				subject: {}
 			};
 		},
 		methods: {
@@ -61,7 +108,7 @@
 					sizeType: ['original', 'compressed'],
 					maxDuration: 60,
 					success: function(res) {
-						
+
 						console.log(res)
 						_this.handleUploadFile(res.tempFilePaths, 0);
 					}
@@ -130,6 +177,15 @@
 				}).catch(err => {
 					this.$mHelper.toast(err.msg);
 				})
+			},
+			selectTap() {
+				uni.$on('selectAccount', (data) => {
+					this.subjectName = `${data.subject.name}/${data.subjectType.name}`
+					this.subject = data
+				})
+				uni.navigateTo({
+					url: '/pages/centers/selectAccount'
+				})
 			}
 		}
 	}
@@ -139,6 +195,10 @@
 	.center {
 		min-height: 100vh;
 		background-color: #fff;
+
+		.content {
+			padding-bottom: 160rpx;
+		}
 
 		.title {
 			margin: 0 32rpx;
@@ -176,6 +236,7 @@
 
 		.upload {
 			margin: 38rpx 34rpx;
+			padding-bottom: 40rpx;
 
 			.item {
 				position: relative;
@@ -211,6 +272,51 @@
 		}
 	}
 
+
+
+	.list {
+		.item {
+			margin: 0 32rpx;
+			padding: 38rpx 0;
+			border-bottom: 2rpx solid #D8D8D8;
+
+			&:last-of-type {
+				border-bottom: none;
+			}
+
+			.left {
+				font-size: 24rpx;
+				font-weight: bold;
+				color: #3A3D71;
+			}
+
+			.right {
+				flex: 1;
+				text-align: right;
+				justify-content: flex-end;
+
+				input,
+				textarea {
+					flex: 1;
+					font-size: 26rpx;
+					color: #3A3D71;
+				}
+
+				text {
+					margin-left: 20rpx;
+					font-size: 24rpx;
+					font-weight: bold;
+					color: #3A3D71;
+				}
+
+				image {
+					margin-left: 24rpx;
+					width: 16rpx;
+					height: 28rpx;
+				}
+			}
+		}
+	}
 
 	.footer {
 		position: fixed;

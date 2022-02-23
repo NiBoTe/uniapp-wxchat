@@ -48,6 +48,12 @@ const scoreExamList = `${exam}scoreExamList`;
 // 拍摄记录
 const examPaperList = `${exam}examPaperList`;
 
+// 小程序人脸核身-GetEidToken-获取E证通Token
+const faceDetectGetEidToken = `${exam}faceDetectGetEidToken`;
+
+// 小程序人脸核身-GetEidResult-获取E证通结果信息
+const faceDetectGetEidResult = `${exam}faceDetectGetEidResult`;
+
 export {
 	proviceList,
 	examMenuList,
@@ -64,5 +70,7 @@ export {
 	searchByAdmissionTicketCode,
 	examPaperUpload,
 	scoreExamList,
-	examPaperList
+	examPaperList,
+	faceDetectGetEidToken,
+	faceDetectGetEidResult
 };

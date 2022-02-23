@@ -116,11 +116,11 @@
 				}).then(res => {
 					this.total = res.data.total;
 					if (this.current === 1) {
-						this.list = res.data.list;
+						this.list = res.data.records;
 					} else {
-						this.list = this.list.concat(res.data.list);
+						this.list = this.list.concat(res.data.records);
 					}
-					if (res.data.list.length <= 0) {
+					if (res.data.records.length <= 0) {
 						this.loadStatus = 'nomore';
 					} else {
 						this.loadStatus = 'loadmore';

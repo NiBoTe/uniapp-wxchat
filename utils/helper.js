@@ -275,7 +275,9 @@ export default {
 	},
 	// 时间段内
 	timeInByDate(start, end) {
-	  if (moment(start).diff(moment()) < 0 && moment(end).diff(moment()) > 0) {
+	console.log(moment().diff(moment(start)))
+	console.log(moment(end).diff(moment()))
+	  if (moment().diff(moment(start)) > 0 && moment(end).diff(moment()) > 0) {
 	    return true
 	  }
 	  return false

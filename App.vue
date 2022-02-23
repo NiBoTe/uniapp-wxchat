@@ -7,8 +7,12 @@
 	import {
 		mapMutations
 	} from 'vuex';
+	import {
+		initEid
+	} from './mp_ecard_sdk/main';
 	export default {
 		async onLaunch(options) {
+			 initEid();
 			// #ifdef MP-WEIXIN
 			if (wx.canIUse('getUpdateManager')) {
 				const updateManager = wx.getUpdateManager()
