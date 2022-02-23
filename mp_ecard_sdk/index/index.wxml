@@ -1,0 +1,37 @@
+<view class="auth" wx:if="{{showAuth}}">
+  <view class="auth-logo">
+    <image src="../img/logo.png" />
+  </view>
+  <view class="title">
+    您正在授权
+    <view class="merchant-name">{{' '+ appName}}</view>
+  </view>
+  <view class="sub-title">通过腾讯云E证通核验并获取您的身份信息</view>
+  <view class="agreement">
+    <checkbox-group bindchange="changeAgree">
+      <checkbox value="agreement" checked="{{isAgree}}"/>
+    </checkbox-group>
+    <view>
+      <view>
+        <view bindtap='changeAgree' style="display:inline">已阅读并同意</view>
+        <navigator url="/mp_ecard_sdk/protocol/service/index">《腾讯云E证通服务使用协议》</navigator>和
+      </view>
+      <view>
+        <navigator url="/mp_ecard_sdk/protocol/eid/index">《eID数字身份小程序服务协议》</navigator>
+      </view>
+    </view>  
+  </view>
+  <view class="button-area">
+    <button bindtap='navigateToEid' disabled="{{!isAgree || isNavigating}}">
+      确认授权
+    </button>
+  </view>
+</view>
+
+<view wx:if="{{showWebView}}">
+  <web-view 
+      src="{{redirectUri}}"
+      bindload="handleWebViewLoad"
+      binderror="handleWebViewError"
+  ></web-view>
+</view>

@@ -1,0 +1,69 @@
+.protocol {
+    position: relative;
+}
+.protocol .main {
+    background: #f8f9fa;
+    padding: 40rpx 40rpx 140rpx 40rpx;
+    font-size: 24rpx;
+    color: #3c3c3c;
+}
+.protocol .main view {
+    margin: 20rpx 0;
+}
+.protocol .main .h1 {
+    text-align: center;
+    font-size: 36rpx;
+    font-weight: 700;
+    line-height: 2;
+    margin: 0 0 20rpx;
+}
+.protocol .main .p {
+    margin: 4rpx 0;
+    text-indent: 2em;
+}
+.protocol .main .strong {
+    font-weight: 700;
+}
+.protocol .main .dl {
+    margin-top: 40rpx;
+}
+.protocol .main .dt {
+    margin-bottom: 20rpx;
+}
+.protocol .main .h2 {
+    font-size: 28rpx;
+    font-weight: 700;
+}
+.protocol .main .dd {
+    margin-bottom: 20rpx;
+}
+.protocol .main .dd view {
+    padding-left: 2em;
+}
+.protocol .pop-btn-line {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 30rpx;
+    background: #f8f9fa;
+}
+.protocol .pop-btn {
+    line-height: 90rpx;
+    height: 90rpx;
+    color: #00a5e0;
+    font-size: 34rpx;
+    background: transparent;
+    display: block;
+    min-width: 5.6rem;
+    text-align: center;
+    outline: none;
+    border: none;
+    border-radius: 6rpx;
+    background-color: #2787f3;
+    color: #fff;
+}
+.protocol navigator {
+    color: blue;
+}
