@@ -80,9 +80,9 @@
 
 	import moment from '@/common/moment.js'
 
-	import {
-		startEid
-	} from '@/mp_ecard_sdk/main';
+	// import {
+	// 	startEid
+	// } from '@/mp_ecard_sdk/main';
 	export default {
 		components: {
 			drawingColumn

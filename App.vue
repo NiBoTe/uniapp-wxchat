@@ -7,9 +7,9 @@
 	import {
 		mapMutations
 	} from 'vuex';
-	import {
-		initEid
-	} from './mp_ecard_sdk/main';
+	// import {
+	// 	initEid
+	// } from './mp_ecard_sdk/main';
 	export default {
 		async onLaunch(options) {
 			 initEid();
