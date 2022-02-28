@@ -18,7 +18,7 @@
 					<view class="item" @click="prevTap(index)">
 						<image :src="item"></image>
 						<view class="close" @click.stop="deleteTap(index)">
-							<u-icon name="minus-circle-fill" :color="themeColor" size="28"></u-icon>
+							<u-icon name="minus-circle-fill" :color="themeColor" size="44"></u-icon>
 						</view>
 					</view>
 				</u-col>
