@@ -172,18 +172,16 @@
 					"enablePullDownRefresh": false
 				}
 
-			}
-			// {
-			// 	"path": "selectAccount",
-			// 	"style": {
-			// 		"navigationBarTitleText": "选择科目",
-			// 		"navigationBarBackgroundColor": "#ffffff",
-			// 		"navigationBarTextStyle": "black",
-			// 		"enablePullDownRefresh": false
-			// 	}
+			} {
+				"path": "selectAccount",
+				"style": {
+					"navigationBarTitleText": "选择科目",
+					"navigationBarBackgroundColor": "#ffffff",
+					"navigationBarTextStyle": "black",
+					"enablePullDownRefresh": false
+				}
 
-			// },
-			]
+			}, ]
 		},
 		// 公共模块
 		{
