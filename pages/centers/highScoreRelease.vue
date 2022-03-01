@@ -5,41 +5,53 @@
 				<input v-model="title" type="text" placeholder="输入标题" maxlength="20" />
 			</view>
 			<view class="header">
-				<textarea v-model="content" placeholder="输入详情内容…" maxlength="200" />
-				<view class="header-length">{{content.length}}/200</view>
+				<textarea v-model="description" placeholder="输入详情内容…" maxlength="200" />
+				<view class="header-length" :class="description.length ? 'active' : ''">{{description.length}}/200
+				</view>
 			</view>
 
 			<view class="upload">
 				<u-row gutter="12">
 					<u-col span="4" v-for="(item, index) in imgsList" :key="index">
 						<view class="item" @click="prevTap(index)">
-							<image :src="item"></image>
-							<view class="cover u-flex u-row-center">封面</view>
+							<image :src="type === 'image' ? item.url : item.cover"></image>
+							<view class="cover u-flex u-row-center" v-if="type === 'image' && index === 0">封面</view>
 							<view class="close" @click.stop="deleteTap(index)">
 								<u-icon name="minus-circle-fill" :color="themeColor" size="44"></u-icon>
 							</view>
-							<view class="remark u-flex u-row-center">添加描述</view>
+							<view class="video-play" v-if="type === 'video'" @click="prevVideoTap(index)">
+								<u-icon name="play-circle-fill" color="#E8E9EB" size="108"></u-icon>
+							</view>
+							<view class="remark u-flex u-row-center" @click="imgDecTap(index)">
+								{{item.description === '' ? '添加描述' : '查看描述'  }}
+							</view>
 						</view>
 					</u-col>
-					<u-col span="4">
+					<u-col span="4" v-if="type === 'video' && cover !== ''">
+						<view class="item" @click="prevTap(-1)">
+							<image :src="cover"></image>
+							<view class="close" @click.stop="deleteTap(-1)">
+								<u-icon name="minus-circle-fill" :color="themeColor" size="44"></u-icon>
+							</view>
+						</view>
+					</u-col>
+
+					<u-col span="4" v-if="cover === '' || !imgsList.length">
 						<view class="add u-flex u-row-center" @click="addTap()">
 							<u-icon name="plus" color="#9E9E9E" size="80"></u-icon>
-							<view class="add-tips" v-show="!imgsList.length">仅支持.JPG、MP4格式</view>
+							<view class="add-tips" v-if="!imgsList.length">仅支持.JPG、MP4格式</view>
+							<view class="add-tips-copy" v-if="type === 'video' && cover === ''">请上传视频封面</view>
 						</view>
 					</u-col>
 
 				</u-row>
 			</view>
-
 			<u-gap height="16" bg-color="#F7F7F7" margin-top="40"></u-gap>
-
-
-
 			<view class="list">
 				<view class="item u-flex u-row-between">
 					<view class="left">商品价格</view>
 					<view class="right u-flex">
-						<input class="price" type="digit" placeholder="输入商品价格" maxlength="10"
+						<input class="price" v-model="price" type="digit" placeholder="输入商品价格" maxlength="10"
 							placeholder-style="font-size:26rpx;font-weight: 400;" />
 						<text class="unit">元</text>
 					</view>
@@ -53,49 +65,66 @@
 					</view>
 				</view>
 
-				<view class="item u-flex u-row-between">
+				<view class="item u-flex u-row-between" v-if="type === 'image'">
 					<view class="left">允许查看高清图数量</view>
 					<view class="right u-flex u-row-center">
-						<input type="number" placeholder="请输入张数" maxlength="10" />
+						<input type="number" v-model="hdImgViewCount" placeholder="请输入张数" maxlength="2" />
 					</view>
 				</view>
-
+				<view class="item u-flex u-row-between" v-else>
+					<view class="left">视频试看时长</view>
+					<view class="right u-flex u-row-center">
+						<input type="number" v-model="videoTrialDuration" placeholder="分钟，输入1-20的整数" maxlength="2" />
+					</view>
+				</view>
 				<view class="item u-flex u-row-between">
 					<view class="left">是否需要发货</view>
 					<view class="right u-flex u-row-center">
-						<u-switch v-model="checked" :active-color="themeColor" inactive-color="#E8E9EB"></u-switch>
+						<u-switch @change="switchChange" v-model="isNeedExpress" :active-color="themeColor"
+							inactive-color="#E8E9EB">
+						</u-switch>
 					</view>
 				</view>
 
-				<view class="item u-flex u-row-between" v-if="checked">
+				<view class="item u-flex u-row-between" v-if="isNeedExpress">
 					<view class="left">发货内容说明</view>
 					<view class="right u-flex u-row-center">
-						<input type="text" placeholder="请输入发货内容说明" />
+						<input type="text" v-model="expressContent" placeholder="请输入发货内容说明" />
 					</view>
 				</view>
 			</view>
 		</view>
 		<view class="footer">
-			<view class="footer-btn" :class="content === '' ? 'disabled' : ''" @click="submitTap">发布</view>
+			<view class="footer-btn" :class="title === '' ? 'disabled' : ''" @click="submitTap">发布</view>
 		</view>
 
 		<!-- 添加描述 -->
 		<u-popup v-model="popShow" mode="bottom" :safe-area-inset-bottom="true" border-radius="24" closeable>
 			<view class="pop-content">
 				<view class="pop-header">
-					<image :src="list[selectIndex]"></image>
+					<image :src="imgsList[selectIndex].url"></image>
 				</view>
 
 				<view class="pop-textarea">
-					<textarea placeholder="请输入作品描述…" maxlength="120"
+					<textarea v-model="remark" placeholder="请输入作品描述…" maxlength="120"
 						placeholder-style="font-size:24rpx;font-weight: 400;color: #B0B3BF;" />
 					<view class="pop-textarea-length">{{remark.length}}/120</view>
 				</view>
 			</view>
 			<view class="pop-footer">
-				<view class="btn u-flex u-row-center">确认提交</view>
+				<view class="btn u-flex u-row-center" @click="addDecTap">确认提交</view>
 			</view>
 		</u-popup>
+
+
+		<!-- 预览视频 -->
+		<u-mask :show="maskShow" @click="maskShow = false">
+			<view class="video u-flex u-row-center">
+				<view class="video-box" @click.stop="">
+					<video :src="imgsList[selectIndex].url" controls :poster="imgsList[selectIndex].cover"></video>
+				</view>
+			</view>
+		</u-mask>
 	</view>
 </template>
 
@@ -104,21 +133,30 @@
 		generatePostPolicy
 	} from '@/api/basic.js'
 	import {
-		snsSave
-	} from '@/api/sns.js'
+		myAddTeachingMaterial
+	} from '@/api/teaching_material.js'
 	export default {
 		data() {
 			return {
 				title: '',
-				content: '',
+				description: '', // 详细内容
+				expressContent: '', // 发货内容
+				cover: '', // 封面
+				price: '', // 价格
+				type: 'image', // 内容类型 video-视频 image-图片
+				hdImgViewCount: '', // 允许查看高清图数量
+				videoTrialDuration: '', // 视频试看时长
 				themeColor: this.$mConstDataConfig.themeColor,
 				imgsList: [],
-				checked: true,
+				isNeedExpress: true,
 				subjectName: '',
 				subject: {},
-				popShow: true,
+				popShow: false,
 				selectIndex: 0,
-				remark: ''
+				remark: '',
+				mediaType: ['image', 'video'],
+				videoCover: '',
+				maskShow: false,
 			};
 		},
 		methods: {
@@ -126,24 +164,20 @@
 				// 从相册选择图片
 				const _this = this;
 				uni.chooseMedia({
-					count: 9,
-					mediaType: ['image', 'video'],
+					count: 1,
+					mediaType: _this.type === 'video' && _this.cover === '' ? ['image'] : _this.mediaType,
 					sourceType: ['album', 'camera'],
 					sizeType: ['original', 'compressed'],
 					maxDuration: 60,
 					success: function(res) {
-
-						console.log(res)
-						_this.handleUploadFile(res.tempFiles, 0);
+						_this.handleUploadFile(res.tempFiles, 0, res.type);
 					}
 				});
 			},
 			// 上传头像
-			handleUploadFile(list, i) {
-				console.log(list)
+			handleUploadFile(list, i, type) {
 				const _this = this;
 				let filePath = list[i].tempFilePath;
-				console.log(filePath)
 				_this.$http.get(generatePostPolicy, {
 					app_token: uni.getStorageSync('accessToken')
 				}).then(res => {
@@ -159,9 +193,21 @@
 							}
 						})
 						.then(r => {
-							_this.imgsList.push(r);
+							if (!_this.imgsList.length) {
+								_this.type = type
+							}
+							if (_this.imgsList.length && _this.type === 'video') {
+								_this.cover = r
+							} else {
+								_this.imgsList.push({
+									url: r,
+									cover: list[i].thumbTempFilePath,
+									description: ''
+								});
+							}
+							_this.mediaType = [_this.type]
 							if (list.length - 1 > i) {
-								_this.handleUploadFile(list, i + 1);
+								_this.handleUploadFile(list, i + 1, type);
 							}
 						});
 				}).catch(err => {
@@ -170,47 +216,129 @@
 			},
 			// 删除
 			deleteTap(index) {
-				this.imgsList.slice(index, 1);
+				if (index === -1) {
+					this.cover = ''
+				} else {
+					this.imgsList.splice(index, 1);
+					if (!this.imgsList.length) {
+						this.mediaType = ['image', 'video']
+					}
+				}
 			},
 			// 预览
 			prevTap(current) {
-				uni.previewImage({
-					current,
-					urls: this.imgsList
-				})
+				let imgs = []
+				if (this.type === 'image') {
+					this.imgsList.map(item => {
+						imgs.push(item.url)
+					})
+					uni.previewImage({
+						current,
+						urls: imgs
+					})
+				} else {
+					if (current === -1) {
+						uni.previewImage({
+							current,
+							urls: [this.cover]
+						})
+					}
+				}
 			},
 			// 提交
 			submitTap() {
-				if (this.content === '') {
-					return this.$mHelper.toast('请输入此刻你的想法')
+				if (this.description === '') {
+					return this.$mHelper.toast('请输入详细内容')
 				}
-				let imgs = []
-				this.imgsList.map(item => imgs.push({
-					hdImg: item
-				}));
-				this.$http.post(snsSave, {
-					content: this.content,
-					noComment: this.checked,
-					snsImgs: imgs
-				}).then(res => {
-					this.$mHelper.toast('发布成功')
-					setTimeout(() => {
-						uni.switchTab({
-							url: '/pages/circle/index'
-						})
-					}, 1500)
-				}).catch(err => {
-					this.$mHelper.toast(err.msg);
-				})
+
+				if (this.imgsList.length === 0) {
+					return this.$mHelper.toast('请上传图片或视频')
+				}
+
+				if (this.type === 'video' && this.cover === '') {
+					return this.$mHelper.toast('请上传视频封面')
+				}
+
+				const params = {
+					title: this.title,
+					type: this.type,
+					cover: this.cover,
+					description: this.description,
+					isNeedExpress: this.isNeedExpress,
+					items: this.imgsList,
+					price: this.price,
+					firstMenuId: this.subject.subject.id,
+					secondMenuId: this.subject.subjectType.id,
+					hdImgViewCount: this.hdImgViewCount,
+					videoTrialDuration: this.videoTrialDuration,
+					expressContent: this.expressContent
+				}
+				if (this.type === 'image') {
+					uni.navigateTo({
+						url: `/pages/centers/highScoreConfirm?params=${JSON.stringify(params)}`
+					})
+				} else {
+					this.$http.post(myAddTeachingMaterial, params).then(res => {
+						console.log(res)
+						this.$mHelper.toast('发布成功')
+						// setTimeout(() => {
+						// 	uni.switchTab({
+						// 		url: '/pages/circle/index'
+						// 	})
+						// }, 1500)
+					}).catch(err => {
+						this.$mHelper.toast(err.msg);
+					})
+				}
+
 			},
 			selectTap() {
 				uni.$on('selectAccount', (data) => {
-					this.subjectName = `${data.subject.name}/${data.subjectType.name}`
+					this.subjectName = `${data.subject.name}-${data.subjectType.name}`
 					this.subject = data
 				})
 				uni.navigateTo({
 					url: '/pages/centers/selectAccount'
 				})
+			},
+
+			// 添加描述
+			imgDecTap(index) {
+				this.selectIndex = index
+				this.remark = this.imgsList[this.selectIndex].description
+				this.popShow = true
+			},
+
+			// 确认添加描述
+			addDecTap() {
+				if (this.remark === '') {
+					return this.$mHelper.toast('请输入作品描述')
+				}
+				this.$set(this.imgsList[this.selectIndex], 'description', this.remark)
+				this.popShow = false;
+			},
+			// 是否需要发货
+			switchChange(e) {
+				if (e) {
+					uni.showModal({
+						title: '提示',
+						confirmText: '确认',
+						content: '当前设置为需要发货，若有用户下单购买，需要在2天内发货，否则会超时取消订单，请务必真实发货',
+						success: (res) => {
+							if (res.confirm) {
+								this.isNeedExpress = true
+							} else if (res.cancel) {
+								this.isNeedExpress = false
+							}
+						}
+					});
+				}
+
+			},
+			// 视频预览
+			prevVideoTap(index) {
+				this.selectIndex = index
+				this.maskShow = true
 			}
 		}
 	}
@@ -256,6 +384,10 @@
 				font-size: 28rpx;
 				font-weight: 300;
 				color: #8F9091;
+
+				&.active {
+					color: #1B1B1B;
+				}
 			}
 		}
 
@@ -292,6 +424,14 @@
 					right: 10rpx;
 				}
 
+				.video-play {
+					position: absolute;
+					top: 50%;
+					left: 50%;
+					margin-left: -54rpx;
+					margin-top: -54rpx;
+				}
+
 				.remark {
 					position: absolute;
 					width: 100%;
@@ -308,6 +448,13 @@
 				background: #F3F3F3;
 				width: 220rpx;
 				height: 220rpx;
+
+				&-tips-copy {
+					position: absolute;
+					bottom: 10rpx;
+					font-size: 20rpx;
+					color: #B0B3BF;
+				}
 
 				&-tips {
 					position: absolute;
@@ -402,7 +549,7 @@
 
 	.pop-content {
 		padding: 0 32rpx 28rpx 36rpx;
-		
+
 		.pop-header {
 			margin: 46rpx 0 28rpx 0;
 
@@ -424,9 +571,9 @@
 				font-size: 24rpx;
 				color: #3A3D71;
 			}
-			
-			
-			&-length{
+
+
+			&-length {
 				position: absolute;
 				right: 22rpx;
 				bottom: 18rpx;
@@ -443,14 +590,28 @@
 		padding-bottom: calc(14rpx + constant(safe-area-inset-bottom));
 		padding-bottom: calc(14rpx + env(safe-area-inset-bottom));
 		background-color: #fff;
-		
-		.btn{
+
+		.btn {
 			height: 88rpx;
 			background: #EFF2FF;
 			box-shadow: 0px 6rpx 14rpx 2px rgba(235, 235, 235, 0.14);
 			border-radius: 44rpx;
 			font-size: 32rpx;
 			color: $u-type-primary;
+		}
+	}
+
+	.video {
+		width: 100%;
+		height: 100%;
+		background-color: rgba($color: #000000, $alpha: .4);
+
+		&-box {
+			width: 100%;
+		}
+
+		video {
+			width: 100%;
 		}
 	}
 </style>
