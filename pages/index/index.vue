@@ -20,7 +20,7 @@
 					<image src="/static/public/home_tab01.png"></image>
 					<text>专业评画</text>
 				</view>
-				<view class="menus-item">
+				<view class="menus-item" @click="navTo('/pages/public/highScore/index')">
 					<image src="/static/public/home_tab02.png"></image>
 					<text>高分教材</text>
 				</view>
