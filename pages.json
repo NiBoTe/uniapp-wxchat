@@ -190,6 +190,15 @@
 					"enablePullDownRefresh": false
 				}
 
+			}, {
+				"path": "paintingEvaluation/index",
+				"style": {
+					"navigationBarTitleText": "",
+					"navigationStyle": "custom",
+					"navigationBarTextStyle": "black",
+					"enablePullDownRefresh": false
+				}
+
 			}]
 		},
 		// 公共模块

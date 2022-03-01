@@ -16,7 +16,7 @@
 
 			<!-- menus -->
 			<view class="menus u-flex">
-				<view class="menus-item">
+				<view class="menus-item" @click="navTo('/pages/centers/paintingEvaluation/index')">
 					<image src="/static/public/home_tab01.png"></image>
 					<text>专业评画</text>
 				</view>
