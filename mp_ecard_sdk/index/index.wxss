@@ -1,0 +1,106 @@
+.auth {
+  margin-top: 128rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.auth-logo {
+  width: 200rpx;
+  height: 200rpx;
+}
+
+.auth-logo image {
+  height: 100%;
+  width: 100%;
+}
+
+.title {
+  margin-top: 20rpx;
+  font-size: 36rpx;
+  line-height: 56rpx;
+}
+
+.merchant-name {
+  display: inline;
+  font-weight: 700;
+}
+
+.sub-title {
+  margin-top: 8rpx;
+  font-size: 34rpx;
+  line-height: 52rpx;
+}
+
+.agreement {
+  margin-top: 96rpx;
+  font-size: 28rpx;
+  line-height: 40rpx;
+  color: #888888;
+  display: flex;
+  justify-content: center;
+}
+
+checkbox .wx-checkbox-input {
+  width: 24rpx;
+  height: 24rpx;
+  border-radius: 50%;
+}
+
+/*checkbox选中后样式  */
+checkbox .wx-checkbox-input.wx-checkbox-input-checked {
+  background: #006EFF ;
+}
+/*checkbox选中后图标样式  */
+checkbox .wx-checkbox-input.wx-checkbox-input-checked::before {
+  width: 28rpx;
+  height: 28rpx;
+  line-height: 28rpx;
+  text-align: center;
+  font-size: 22rpx;
+  color: #fff;
+  background: transparent;
+}
+
+navigator {
+  display: inline;
+  color: #006DFF;
+}
+
+.button-area {
+  margin-top: 48rpx;
+}
+
+button {
+  width: 622rpx !important;
+  height: 96rpx !important;
+  background: #FFFFFF;
+  border: 2rpx solid #DDDDDD;
+  font-size: 32rpx;
+  font-weight: normal !important;
+  line-height: 64rpx !important;
+}
+
+
+.redirect {
+  margin-top: 272rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.loading {
+  height: 160rpx;
+  width: 160rpx;
+  margin-bottom: 32rpx;
+}
+
+.loading image {
+  height: 100%;
+  width: 100%;
+}
+
+.title {
+  font-size: 34rpx;
+  line-height: 52rpx;
+}

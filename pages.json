@@ -172,18 +172,34 @@
 					"enablePullDownRefresh": false
 				}
 
-			}
-			// , {
-			// 	"path": "selectAccount",
-			// 	"style": {
-			// 		"navigationBarTitleText": "选择科目",
-			// 		"navigationBarBackgroundColor": "#ffffff",
-			// 		"navigationBarTextStyle": "black",
-			// 		"enablePullDownRefresh": false
-			// 	}
+			}, {
+				"path": "selectAccount",
+				"style": {
+					"navigationBarTitleText": "选择科目",
+					"navigationBarBackgroundColor": "#ffffff",
+					"navigationBarTextStyle": "black",
+					"enablePullDownRefresh": false
+				}
 
-			// },
-			]
+			}, {
+				"path": "highScoreConfirm",
+				"style": {
+					"navigationBarTitleText": "1/5",
+					"navigationBarBackgroundColor": "#ffffff",
+					"navigationBarTextStyle": "black",
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "paintingEvaluation/index",
+				"style": {
+					"navigationBarTitleText": "",
+					"navigationStyle": "custom",
+					"navigationBarTextStyle": "black",
+					"enablePullDownRefresh": false
+				}
+
+			}]
 		},
 		// 公共模块
 		{
@@ -289,15 +305,6 @@
 					"path": "historyExQuestions/sureOrder",
 					"style": {
 						"navigationBarTitleText": "确认订单",
-						"navigationBarBackgroundColor": "#ffffff",
-						"navigationBarTextStyle": "black",
-						"enablePullDownRefresh": false
-					}
-				},
-				{
-					"path": "highScore/teachingMaterialDetail",
-					"style": {
-						"navigationBarTitleText": "教材详情",
 						"navigationBarBackgroundColor": "#ffffff",
 						"navigationBarTextStyle": "black",
 						"enablePullDownRefresh": false

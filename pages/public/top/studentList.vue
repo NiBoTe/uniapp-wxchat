@@ -80,9 +80,9 @@
 
 	import moment from '@/common/moment.js'
 
-	// import {
-	// 	startEid
-	// } from '@/mp_ecard_sdk/main';
+	import {
+		startEid
+	} from '@/mp_ecard_sdk/main';
 	export default {
 		components: {
 			drawingColumn
@@ -234,7 +234,7 @@
 				this.$http.get(faceDetectGetEidResult, {
 					token
 				}).then(res => {
-					console.log('是否验证成功============',res)
+					console.log('是否验证成功============', res)
 					this.current = 1;
 					this.getList();
 				}).catch(err => {

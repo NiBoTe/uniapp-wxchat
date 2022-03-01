@@ -2,7 +2,7 @@
 	<view class="center">
 		<view class="header">
 			<textarea v-model="content" placeholder="此刻你的想法…" maxlength="150" />
-			<view class="header-length">{{content.length}}/150</view>
+			<view class="header-length" :class="description.length ? 'active' : ''">{{content.length}}/150</view>
 		</view>
 
 		<view class="subheader u-flex u-row-between">
@@ -18,7 +18,7 @@
 					<view class="item" @click="prevTap(index)">
 						<image :src="item"></image>
 						<view class="close" @click.stop="deleteTap(index)">
-							<u-icon name="minus-circle-fill" :color="themeColor" size="28"></u-icon>
+							<u-icon name="minus-circle-fill" :color="themeColor" size="44"></u-icon>
 						</view>
 					</view>
 				</u-col>
@@ -100,7 +100,7 @@
 			},
 			// 删除
 			deleteTap(index) {
-				this.imgsList.slice(index, 1);
+				this.imgsList.splice(index, 1);
 			},
 			// 预览
 			prevTap(current) {
@@ -161,6 +161,10 @@
 				font-size: 28rpx;
 				font-weight: 300;
 				color: #8F9091;
+
+				&.active {
+					color: #1B1B1B;
+				}
 			}
 		}
 
