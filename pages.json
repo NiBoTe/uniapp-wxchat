@@ -173,7 +173,7 @@
 				}
 
 			}
-			// {
+			// , {
 			// 	"path": "selectAccount",
 			// 	"style": {
 			// 		"navigationBarTitleText": "选择科目",
@@ -289,6 +289,15 @@
 					"path": "historyExQuestions/sureOrder",
 					"style": {
 						"navigationBarTitleText": "确认订单",
+						"navigationBarBackgroundColor": "#ffffff",
+						"navigationBarTextStyle": "black",
+						"enablePullDownRefresh": false
+					}
+				},
+				{
+					"path": "highScore/teachingMaterialDetail",
+					"style": {
+						"navigationBarTitleText": "教材详情",
 						"navigationBarBackgroundColor": "#ffffff",
 						"navigationBarTextStyle": "black",
 						"enablePullDownRefresh": false
