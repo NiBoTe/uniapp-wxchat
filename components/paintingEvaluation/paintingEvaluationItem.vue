@@ -7,12 +7,21 @@
 			</view>
 
 			<view class="footer">
-				<view class="footer-title u-flex">
+				<view class="footer-title u-flex" v-if="type === 'default'">
 					<view class="image">
 						<u-avatar size="65" :src="item.teacherHeadUrl"></u-avatar>
 					</view>
 					<view class="text">
 						<text>{{item.teacherFullName}}</text>
+						<text>评画老师</text>
+					</view>
+				</view>
+				<view class="footer-title u-flex" v-else-if="type === 'teacherInfo'">
+					<view class="image">
+						<u-avatar size="65" :src="item.teacherInfo.headUrl"></u-avatar>
+					</view>
+					<view class="text">
+						<text>{{item.teacherInfo.fullName}}</text>
 						<text>评画老师</text>
 					</view>
 				</view>
@@ -28,16 +37,17 @@
 					</view>
 				</view>
 			</view>
+
+			<view class="status u-flex u-row-center" v-if="item.state === 'wait_confirm'">待确认</view>
 		</view>
 	</view>
 </template>
 
 <script>
-	
 	import VoicePlayback from '@/components/voicePlayback/voicePlayback.vue'
 	export default {
 		name: "PaintingEvaluationItem",
-		components:{
+		components: {
 			VoicePlayback
 		},
 		props: {
@@ -46,6 +56,10 @@
 				default: function() {
 					return {}
 				}
+			},
+			type: {
+				type: String,
+				default: 'default'
 			}
 		},
 		data() {
@@ -56,7 +70,7 @@
 		mounted() {
 			this.getBox()
 		},
-		methods:{
+		methods: {
 			getBox() {
 				uni.createSelectorQuery().in(this).select('.container').boundingClientRect(result => {
 					if (result) {
@@ -76,6 +90,7 @@
 		width: 100%;
 
 		.item {
+			position: relative;
 			margin: 10rpx;
 			margin-bottom: 24rpx;
 			background: #FFFFFF;
@@ -117,7 +132,7 @@
 						color: #3A3D71;
 						display: flex;
 						flex-direction: column;
-						
+
 
 						text {
 							&:last-of-type {
@@ -140,7 +155,7 @@
 					-webkit-box-orient: vertical;
 					font-size: 26rpx;
 					color: #3A3D71;
-					
+
 				}
 
 				&-subtitle {
@@ -149,11 +164,12 @@
 					padding: 10rpx 20rpx 0;
 
 					.left {
-						
+
 						font-size: 50rpx;
 						font-weight: 600;
 						color: $u-type-primary;
-						text.unit{
+
+						text.unit {
 							margin-left: 4rpx;
 							font-size: 28rpx;
 							font-weight: 400;
@@ -178,6 +194,20 @@
 				}
 			}
 
+
+			.status {
+				position: absolute;
+				top: 0;
+				right: 0;
+				padding: 0 6rpx 0 10rpx;
+				height: 34rpx;
+				background: #35CE96;
+				border-radius: 0px 12rpx 0px 12rpx;
+				font-size: 20rpx;
+				color: #FFFFFF;
+				
+				
+			}
 
 		}
 	}

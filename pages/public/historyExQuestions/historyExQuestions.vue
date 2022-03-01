@@ -275,12 +275,12 @@
 		}
 
 		.background-one {
-			background: url(img/tabOne.png) no-repeat center;
+			background: url(/static/public/tabOne.png) no-repeat center;
 			background-size: 100%;
 		}
 
 		.background-two {
-			background: url(img/tabTwo.png) no-repeat center;
+			background: url(/static/public/tabOne.png) no-repeat center;
 			background-size: 100%;
 		}
 

@@ -2,7 +2,7 @@
 	<view class="center">
 		<view class="header">
 			<textarea v-model="content" placeholder="此刻你的想法…" maxlength="150" />
-			<view class="header-length" :class="description.length ? 'active' : ''">{{content.length}}/150</view>
+			<view class="header-length" :class="content.length ? 'active' : ''">{{content.length}}/150</view>
 		</view>
 
 		<view class="subheader u-flex u-row-between">

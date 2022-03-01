@@ -342,7 +342,7 @@
 				}
 			},
 			// 近期考试
-			testTap(index){
+			testTap(index) {
 				console.log(index)
 				uni.navigateTo({
 					url: `/pages/public/top/top?type=${index}`

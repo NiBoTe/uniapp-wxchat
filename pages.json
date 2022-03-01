@@ -195,10 +195,27 @@
 				"style": {
 					"navigationBarTitleText": "",
 					"navigationStyle": "custom",
-					"navigationBarTextStyle": "black",
+					"navigationBarTextStyle": "white",
 					"enablePullDownRefresh": false
 				}
 
+			}, {
+				"path": "paintingEvaluation/detail",
+				"style": {
+					"navigationBarTitleText": "评画详情",
+					"navigationBarTextStyle": "black",
+					"navigationBarBackgroundColor": "#FFFFFF",
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "paintingEvaluation/evaluate",
+				"style": {
+					"navigationBarTitleText": "发表评价",
+					"navigationBarTextStyle": "black",
+					"navigationBarBackgroundColor": "#FFFFFF",
+					"enablePullDownRefresh": false
+				}
 			}]
 		},
 		// 公共模块
