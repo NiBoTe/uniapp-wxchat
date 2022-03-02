@@ -1,11 +1,15 @@
-const business = '/business-service/api/'
+const user = '/user/'
 
 // 个人信息
-const memberInfo = `${business}weChatController/weChatPersonCenter`;
+const memberInfo = `${user}weChatController/weChatPersonCenter`;
 // 个人信息修改
-const memberUpdate = `${business}weChatController/updateWeChatPersonCenter`;
+const memberUpdate = `${user}weChatController/updateWeChatPersonCenter`;
+
+// 选择角色
+const updateRoleSelect = `${user}updateRoleSelect`;
 
 export {
 	memberInfo,
-	memberUpdate
+	memberUpdate,
+	updateRoleSelect
 };
