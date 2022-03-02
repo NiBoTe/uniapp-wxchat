@@ -11,7 +11,7 @@
 				</view>
 				<view class="drawingBoard-text" v-if="selectActive === 2">
 					<view class="drawingBoard-color">
-						<color-picker ref="colorPicker" :color="colorValue" @confirm="colorConfirm"></color-picker>
+						<color-picker ref="colorPicker" :color="colorRgb" @confirm="colorConfirm"></color-picker>
 					</view>
 				</view>
 			</view>
@@ -92,6 +92,7 @@
 				height: 0,
 				colorShow: false,
 				colorIndex: 0,
+				colorRgb: {r: 255,g: 0,b: 0,a: 0.6},
 				colorValue: {r: 255,g: 0,b: 0,a: 0.6},
 				lineColor: '#000000',
 				colorData: [{
@@ -314,6 +315,7 @@
 			// 选择颜色
 			colorConfirm(e){
 				console.log(e)
+				this.colorRgb = e.rgba
 				this.colorValue = e.hex
 			}
 		}

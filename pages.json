@@ -448,6 +448,38 @@
 						"navigationStyle": "custom",
 						"enablePullDownRefresh": false
 					}
+				}, {
+					"path": "highScore/index",
+					"style": {
+						"navigationBarTitleText": "拍摄记录",
+						"navigationBarTextStyle": "black",
+						"navigationStyle": "custom",
+						"enablePullDownRefresh": false
+					}
+				}, {
+					"path": "highScore/teachingMaterialDetail",
+					"style": {
+						"navigationBarTitleText": "教材详情",
+						"navigationBarTextStyle": "black",
+						"navigationBarBackgroundColor": "#FFFFFF",
+						"enablePullDownRefresh": false
+					}
+				}, {
+					"path": "highScore/videoDetail",
+					"style": {
+						"navigationBarTitleText": "",
+						"navigationBarTextStyle": "white",
+						"navigationStyle": "custom",
+						"enablePullDownRefresh": false
+					}
+				}, {
+					"path": "highScore/evaluate",
+					"style": {
+						"navigationBarTitleText": "发表评价",
+						"navigationBarTextStyle": "black",
+						"navigationBarBackgroundColor": "#FFFFFF",
+						"enablePullDownRefresh": false
+					}
 				}
 			]
 		}

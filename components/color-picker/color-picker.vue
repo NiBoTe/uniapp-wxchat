@@ -1,10 +1,13 @@
 <template>
 	<view class="t-wrapper" @touchmove.stop.prevent="moveHandle">
 		<view class="t-box" :class="{active:active}">
-			<view class="t-color__box" :style="{ background: 'rgb(' + bgcolor.r + ',' + bgcolor.g + ',' + bgcolor.b + ')'}">
-				<view class="t-background boxs" @touchstart="touchstart($event, 0)" @touchmove="touchmove($event, 0)" @touchend="touchend($event, 0)">
+			<view class="t-color__box"
+				:style="{ background: 'rgb(' + bgcolor.r + ',' + bgcolor.g + ',' + bgcolor.b + ')'}">
+				<view class="t-background boxs" @touchstart="touchstart($event, 0)" @touchmove="touchmove($event, 0)"
+					@touchend="touchend($event, 0)">
 					<view class="t-color-mask"></view>
-					<view class="t-pointer" :style="{ top: site[0].top - 8 + 'px', left: site[0].left - 8 + 'px' }"></view>
+					<view class="t-pointer" :style="{ top: site[0].top - 8 + 'px', left: site[0].left - 8 + 'px' }">
+					</view>
 				</view>
 			</view>
 			<view class="t-control__box">
@@ -12,7 +15,8 @@
 					<view class="t-control__color-content" :style="{ background: 'rgba(' + rgba.r + ',' + rgba.g + ',' + rgba.b + ',' + rgba.a + ')' }"></view>
 				</view> -->
 				<view class="t-control-box__item">
-					<view class="t-controller boxs" @touchstart="touchstart($event, 1)" @touchmove="touchmove($event, 1)" @touchend="touchend($event, 1)">
+					<view class="t-controller boxs" @touchstart="touchstart($event, 1)"
+						@touchmove="touchmove($event, 1)" @touchend="touchend($event, 1)">
 						<view class="t-hue">
 							<view class="t-circle" :style="{ left: site[1].left - 12 + 'px' }"></view>
 						</view>
@@ -513,7 +517,7 @@
 	.t-wrapper {
 		width: 100%;
 		position: relative;
-		
+
 		/* top: 0;
 		bottom: 0;
 		left: 0;
