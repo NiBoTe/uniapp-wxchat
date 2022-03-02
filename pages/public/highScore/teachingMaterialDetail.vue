@@ -87,6 +87,50 @@
 			</view>
 		</view>
 		
+		<!-- 查看评论 -->
+		<view class="comment">
+			<view class="title">
+				3条评论
+			</view>
+			<view class="list" v-for="item in 3">
+				<view class="left">
+					<image src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fexp-picture.cdn.bcebos.com%2F4e168d5653bbf820b3d559b8ba21056105a36e86.jpg%3Fx-bce-process%3Dimage%2Fresize%2Cm_lfit%2Cw_500%2Climit_1&refer=http%3A%2F%2Fexp-picture.cdn.bcebos.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1648823704&t=fe16818e6a56567aadbde4a73fd7c50e" mode=""></image>
+				</view>
+				<view class="right">
+					<view class="name">
+						王维同学
+					</view>
+					<view class="text">
+						大超老师的色彩画得真吊，
+						我也想画这种风格我也想画这种风格
+					</view>
+					<view class="time">
+						12-20 <text>回复</text>
+					</view>
+					
+					<view class="child">
+						<view class="c-l">
+							<image src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fexp-picture.cdn.bcebos.com%2F4e168d5653bbf820b3d559b8ba21056105a36e86.jpg%3Fx-bce-process%3Dimage%2Fresize%2Cm_lfit%2Cw_500%2Climit_1&refer=http%3A%2F%2Fexp-picture.cdn.bcebos.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1648823704&t=fe16818e6a56567aadbde4a73fd7c50e" mode=""></image>
+						</view>
+						<view class="c-r">
+							<view class="name">
+								程超老师
+							</view>
+							<view class="text">
+								跟大神你比我还是差远了😂
+							</view>
+							<view class="time">
+								12-20
+							</view>
+						</view>
+					</view>
+					
+				</view>
+			</view>
+		</view>
+		
+		
+		
 		</scroll-view >
 		<view class="footer">
 			<view class="footer-btn">立即购买</view>
@@ -353,6 +397,101 @@
 			.right{
 					flex: 1;
 					text-align: right;
+			}
+		}
+		
+		
+		.comment{
+			.title{
+				text-align: center;
+				font-size: 40rpx;
+				font-family: PingFang-SC-Bold, PingFang-SC;
+				font-weight: bold;
+				color: #3A3D71;
+				line-height: 56rpx;
+				margin-bottom: 20rpx;
+			}
+			.list{
+				margin-top: 40rpx;
+				display: flex;
+				.left{
+					flex: 0 0 126rpx;
+					padding-left: 46rpx;
+					image{
+						width: 80rpx;
+						height: 80rpx;
+						border-radius: 50%;
+					}
+				}
+				.right{
+					padding-left: 18rpx;
+					padding-right: 20rpx;
+					width: 0;
+					flex: 1;
+					.name{
+						font-size: 28rpx;
+						font-family: PingFang-SC-Bold, PingFang-SC;
+						font-weight: bold;
+						color: #3A3D71;
+						line-height: 28rpx;
+					}
+					.text{
+						font-size: 28rpx;
+						font-family: PingFangSC-Light, PingFang SC;
+						font-weight: 300;
+						color: #3A3D71;
+						line-height: 40rpx;
+						margin-top: 16rpx;
+					}
+					.time{
+						font-size: 26rpx;
+						font-family: PingFangSC-Regular, PingFang SC;
+						font-weight: 400;
+						color: #9E9E9E;
+						line-height: 26rpx;
+						margin-top: 14rpx;
+						text{
+							margin-left: 24rpx;
+						}
+					}
+					.child{
+						padding-top: 20rpx;
+						display: flex;
+						.c-l{
+							image{
+								width: 60rpx;
+								height: 60rpx;
+								border-radius: 50%;
+							}
+						}
+						.c-r{
+							padding-left: 18rpx;
+							
+							.name{
+								font-size: 28rpx;
+								font-family: PingFang-SC-Bold, PingFang-SC;
+								font-weight: bold;
+								color: #3A3D71;
+								line-height: 60rpx;
+							}
+							.text{
+								font-size: 28rpx;
+								font-family: PingFangSC-Light, PingFang SC;
+								font-weight: 300;
+								color: #3A3D71;
+								margin-top: 2rpx;
+								// line-height: 40rpx;
+							}
+							.time{
+								ont-size: 26rpx;
+								font-family: PingFangSC-Regular, PingFang SC;
+								font-weight: 400;
+								color: #9E9E9E;
+								line-height: 26rpx;
+							}
+						}
+					}
+				}
 			}
 		}
 	}
