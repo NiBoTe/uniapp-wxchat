@@ -87,9 +87,15 @@
 						openid: data.openid
 					}));
 					this.$mHelper.toast('已为您授权登录');
-					this.$mRouter.reLaunch({
-						route: '/pages/index/index'
-					});
+					if(data.roleSelect) {
+						this.$mRouter.reLaunch({
+							route: '/pages/index/index'
+						});
+					} else {
+						this.$mRouter.push({
+							route: '/pages/public/roleSelection'
+						});
+					}
 					this.btnLoading = false;
 				}).catch(e => {
 					this.$mHelper.toast(e.msg)

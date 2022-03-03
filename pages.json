@@ -464,23 +464,24 @@
 						"navigationBarBackgroundColor": "#FFFFFF",
 						"enablePullDownRefresh": false
 					}
-				}, {
-					"path": "highScore/videoDetail",
-					"style": {
-						"navigationBarTitleText": "",
-						"navigationBarTextStyle": "white",
-						"navigationStyle": "custom",
-						"enablePullDownRefresh": false
-					}
-				}, {
-					"path": "highScore/evaluate",
-					"style": {
-						"navigationBarTitleText": "发表评价",
-						"navigationBarTextStyle": "black",
-						"navigationBarBackgroundColor": "#FFFFFF",
-						"enablePullDownRefresh": false
-					}
 				}
+				// , {
+				// 	"path": "highScore/videoDetail",
+				// 	"style": {
+				// 		"navigationBarTitleText": "",
+				// 		"navigationBarTextStyle": "white",
+				// 		"navigationStyle": "custom",
+				// 		"enablePullDownRefresh": false
+				// 	}
+				// }, {
+				// 	"path": "highScore/evaluate",
+				// 	"style": {
+				// 		"navigationBarTitleText": "发表评价",
+				// 		"navigationBarTextStyle": "black",
+				// 		"navigationBarBackgroundColor": "#FFFFFF",
+				// 		"enablePullDownRefresh": false
+				// 	}
+				// }
 			]
 		}
 	],
