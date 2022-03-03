@@ -1,86 +1,237 @@
 <template>
-	<view>
-		<tab-bar :selected="1"></tab-bar>
+	<view class="detail">
 		<view class="list-view">
 			<view class="item">
 				<view class="item-top">
 					<view class="userInfo">
 						<view class="logo">
-							<image src="../../../static/public/home_tab01.png"></image>
+							<image v-if="detail.user" :src="detail.user.headUrl"></image>
 						</view>
 						<view class="name">
-							双色球
+							{{detail.user.fullName || ''}}
 						</view>
 
 					</view>
-					<view class="right" @click="handleTap">
+					<view class="right u-flex" @click.stop="handleTap($event)">
 						<image src="/static/public/dynamic_menu.png"></image>
 					</view>
 				</view>
-				<view class="paragraph">i精华粉底i if hi额IE挂号费i返回个i合肥i额接口设备不好不喝酒不急不急不急不急不急不急急不急不</view>
+				<view class="paragraph">{{detail.content}}</view>
 				<!-- 照片 -->
 				<view class="thumbnails">
-					<view :class="snsImgs.length === 1?'my-gallery':'thumbnail'"
-						v-for="(image, index_images) in snsImgs" :key="index_images">
-						<image class="gallery_img" lazy-load mode="aspectFill" :src="image.thumbImg" :data-src="image.thumbImg"
-							@tap="previewImage(snsImgs,index_images)"></image>
+					<view :class="detail.snsImgs.length === 1?'my-gallery':'thumbnail'"
+						v-for="(image, index_images) in detail.snsImgs" :key="index_images">
+						<image class="gallery_img" lazy-load mode="aspectFill" :src="image.thumbImg"
+							:data-src="image.thumbImg" @tap="previewImage(detail.snsImgs,index_images)"></image>
 					</view>
 				</view>
-
 			</view>
-
-
 		</view>
-		
-		<hb-comment ref="hbComment" @add="add" @del="del" @like="like" @focusOn="focusOn" :deleteTip="'确认删除？'"
-		    :cmData="commentData" v-if="commentData"></hb-comment>
+
+		<!-- 查看评论 -->
+		<view class="comment">
+			<view class="title">
+				{{total}}条评论
+			</view>
+			<view class="list" v-for="(item, index) in list" :key="index">
+				<view class="left">
+					<u-avatar size="80" :src="item.user.headUrl"></u-avatar>
+				</view>
+				<view class="right">
+					<view class="name">
+						{{item.user.fullName}}
+					</view>
+					<view class="text">{{item.content}}</view>
+					<view class="time">
+						{{(moment(item.createTime).format('MM-DD'))}} <text @click="replyTap(item, index)">回复</text>
+					</view>
+
+					<view class="child" v-for="(itemc, indexc) in item.replyList" :key="indexc">
+						<view class="c-l">
+							<u-avatar size="80" :src="itemc.user.headUrl"></u-avatar>
+						</view>
+						<view class="c-r">
+							<view class="name">
+								{{itemc.user.fullName}}
+							</view>
+							<view class="text">
+								{{itemc.content}}
+							</view>
+							<view class="time">
+								{{(moment(itemc.createTime).format('MM-DD'))}}
+							</view>
+						</view>
+					</view>
+
+					<view class="child">
+						<view class="c-l">
+							<image
+								src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fexp-picture.cdn.bcebos.com%2F4e168d5653bbf820b3d559b8ba21056105a36e86.jpg%3Fx-bce-process%3Dimage%2Fresize%2Cm_lfit%2Cw_500%2Climit_1&refer=http%3A%2F%2Fexp-picture.cdn.bcebos.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1648823704&t=fe16818e6a56567aadbde4a73fd7c50e"
+								mode=""></image>
+						</view>
+						<view class="c-r">
+							<view class="name">
+								程超老师
+							</view>
+							<view class="text">
+								跟大神你比我还是差远了😂
+							</view>
+							<view class="time">
+								12-20
+							</view>
+						</view>
+					</view>
+
+				</view>
+			</view>
+		</view>
+
+		<view class="footer">
+			<view class="footer-box u-flex u-row-between">
+				<view class="left u-flex">写评论…</view>
+
+				<view class="right u-flex">
+					<view @click.stop="favoriteTap()">
+						<image v-if="detail.isFavorite" src="/static/public/dynamic_star.png"></image>
+						<image v-else src="/static/public/dynamic_star_fill.png"></image>
+					</view>
+
+					<view style="margin-top: 12rpx;" @click.stop="commentTap()">
+						<image src="/static/public/dynamic_comment.png"></image>
+					</view>
+
+					<view @click.stop="likeTap()">
+						<image v-if="detail.isLike" src="/static/public/dynamic_praise.png"></image>
+						<image v-else src="/static/public/dynamic_praise_fill.png"></image>
+					</view>
+
+					<button open-type="share" class="right" @tap="share()">
+						<image src="/static/public/dynamic_share.png"></image>
+					</button>
+
+				</view>
+			</view>
+		</view>
+		<u-loadmore margin-top="30" margin-bottom="30" :status="loadStatus" @loadmore="addData"></u-loadmore>
+
+		<bubblePopups ref="bubblePopups" v-model="popShow" :popData="popData" :isTwoline="true" @tapPopup="tapPopup"
+			:x="344" :y="positionY" placement="top-end">
+		</bubblePopups>
+
+		<bubblePopups ref="bubblePopups2" v-model="popShow2" :dynamic="true" :popData="popData2" :isTwoline="true"
+			@tapPopup="tapPopup2" :x="224" :y="positionY" placement="top-end">
+		</bubblePopups>
 
 	</view>
 </template>
 
 <script>
-	import tabBar from '@/components/tabbar/tabbar.vue'
 	import {
-		snsList
+		snsDetail,
+		commentList,
+		addFavorite,
+		addLike,
+		snsBlackSave,
+		snsReportSave,
+		addComment
 	} from '@/api/sns.js'
-	
+	import moment from '@/common/moment.js'
+	import bubblePopups from "@/components/bubblePopups/bubblePopups";
 	export default {
 		components: {
-			tabBar
+			bubblePopups
 		},
 		data() {
 			return {
-				posts: [],
-				snsImgs: [
+				moment,
+				loadStatus: 'loadmore',
+				id: null,
+				detail: {},
+				total: 0,
+				current: 1,
+				size: 10,
+				list: [], // 考试列表
+				popData: [{
+						title: '举报',
+						subTitle: '标题夸张，内容质量差、图片包含不良色情…',
+						icon: '../../static/public/gantanhao.png',
+					},
 					{
-						thumbImg: 'https://top-face-detect.oss-cn-shanghai.aliyuncs.com/19720734.jpg'
+						title: '不看：大超导师',
+						icon: '../../static/public/jinzhi.png'
 					}
 				],
-				// data: postData,//模拟数据
-				commentData: {}
-
-
+				popData2: [{
+						title: '标题夸张',
+					},
+					{
+						title: '旧闻重复',
+					},
+					{
+						title: '封面反感',
+					},
+					{
+						title: '内容质量差',
+					},
+					{
+						title: '其他',
+					}
+				],
+				positionY: 40,
+				popShow: false,
+				popShow2: false,
+				itemIndex: 0,
 			};
 		},
-		onLoad() {
+		onLoad(options) {
+			if (options.id) {
+				this.id = options.id
+				this.initData();
+			}
 			this.getComment();
 		},
-		mounted() {
-
-			uni.getStorage({
-				key: 'posts',
-				success: function(res) {
-					console.log(res.data);
-					this.posts = res.data;
-				}
-			});
-
-		},
-
 		methods: {
-			
+			initData() {
+				this.$http.post(snsDetail, null, {
+					params: {
+						id: this.id
+					}
+				}).then(res => {
+					console.log(res)
+					this.detail = res.data;
+				}).catch(err => {
+					console.log(err)
+				})
+			},
+			getComment() {
+				this.loadStatus = 'loading';
+				this.$http.post(commentList, {
+					current: this.current,
+					size: this.size,
+					targetId: this.id
+				}).then(res => {
+					console.log(res)
+					this.total = res.data.total
+					if (this.current === 1) {
+						this.list = res.data.records;
+					} else {
+						this.list = this.list.concat(res.data.records);
+					}
+					if (res.data.records.length <= 0) {
+						this.loadStatus = 'nomore';
+					} else {
+						this.loadStatus = 'loadmore';
+					}
 
 
+				}).catch(err => {
+					console.log(err)
+				})
+			},
+			addData() {
+				this.current++;
+				this.getComment();
+			},
 			previewImage(imageList, current) {
 				let list = []
 				imageList.map(item => {
@@ -91,111 +242,117 @@
 					urls: list
 				});
 			},
-			
-			getComment() {
-				let res = {
-					"readNumer": 193,
-					"commentList": [{
-							"id": 1,
-							"owner": false,
-							"hasLike": false,
-							"likeNum": 2,
-							"avatarUrl": "https://inews.gtimg.com/newsapp_ls/0/13797755537/0",
-							"nickName": "超长昵称超长...",
-							"content": "啦啦啦啦",
-							"parentId": null,
-							"createTime": "2021-07-02 16:32:07"
-						},
-						{
-							"id": 2,
-							"owner": false,
-							"hasLike": false,
-							"likeNum": 2,
-							"avatarUrl": "https://inews.gtimg.com/newsapp_ls/0/13797761970/0",
-							"nickName": "寂寞无敌",
-							"content": "我是评论的评论我是评论的评论我是评论的评论我是评论的评论我是评论的评论我是评论的评论我是评论的评论我是评论的评论我是评论的评论我是评论的评论我是评论的评论我是评论的评论我是评论的评论我是评论的评论我是评论的评论我是评论的评论我是评论的评论我是评论的评论",
-							"parentId": 1,
-							"createTime": "2021-07-02 17:05:50"
-						},
-						{
-							"id": 4,
-							"owner": true,
-							"hasLike": true,
-							"likeNum": 1,
-							"avatarUrl": "https://inews.gtimg.com/newsapp_ls/0/13797763270/0",
-							"nickName": "name111",
-							"content": "评论啦啦啦啦啦啦啦啦啦啦",
-							"parentId": null,
-							"createTime": "2021-07-13 09:37:50"
-						},
-						{
-							"id": 5,
-							"owner": false,
-							"hasLike": false,
-							"likeNum": 0,
-							"avatarUrl": "https://inews.gtimg.com/newsapp_ls/0/13797755537/0",
-							"nickName": "超长昵称超长...",
-							"content": "超长评论超长评论超长评论超长评论超长评论超长评论超长评论超长评论超长评论超长评论超长评论超长评论超长评论超长评论超长评论超长评论超长评论超长评论超长评论超长评论超长评论超长评论超长评论超长评论超长评论超长评论超长评论超长评论超长评论超长评论超长评论超长评论超长评论超长评论超长评论超长评论超长评论超长评论超长评论超长评论超长评论超长评论超长评论超长评论超长评论超长评论超长评论超长评论超长评论超长评论超长评论超长评论超长评论超长评论超长评论超长评论超长评论超长评论超长评论超长评论超长评论超长评论超长评论超长评论超长评论超长评论超长评论超长评论超长评论超长评论超长评论超长评论超长评论超长评论超长评论超长评论超长评论超长评论超长评论超长评论超长评论超长评论超长评论超长评论超长评论超长评论超长评论超长评论",
-							"parentId": null,
-							"createTime": "2021-07-13 16:04:35"
-						},
-						{
-							"id": 13,
-							"owner": false,
-							"hasLike": false,
-							"likeNum": 0,
-							"avatarUrl": "https://inews.gtimg.com/newsapp_ls/0/13797755537/0",
-							"nickName": "超长昵称超长...",
-							"content": "@寂寞无敌 你怕不是个大聪明",
-							"parentId": 1,
-							"createTime": "2021-07-14 11:01:23"
-						}
-					]
-				};
-				this.commentData = {
-					"readNumer": res.readNumer,
-					"commentSize": res.commentList.length,
-					"comment": this.getTree(res.commentList)
-				};
-			},
-			
-			getTree(data) {
-				let result = [];
-				let map = {};
-				data.forEach(item => {
-					map[item.id] = item;
-				});
-				data.forEach(item => {
-					let parent = map[item.parentId];
-					if (parent) {
-						(parent.children || (parent.children = [])).push(item);
-					} else {
-						result.push(item);
+			// 收藏
+			favoriteTap() {
+				this.$http.post(addFavorite, null, {
+					params: {
+						snsId: this.detail.id,
+						isFavorite: !this.detail.isFavorite
 					}
-				});
-				return result;
-			}
-			
+				}).then(res => {
+					this.detail.isFavorite = !this.detail.isFavorite
+					this.$mHelper.toast(this.detail.isFavorite ? '收藏成功' : '取消收藏成功');
+				})
+			},
+			// 点赞
+			likeTap() {
+				this.$http.post(addLike, null, {
+					params: {
+						snsId: this.detail.id,
+						isLike: !this.detail.isLike
+					}
+				}).then(res => {
+					this.detail.isLike = !this.detail.isLike
+					this.$mHelper.toast(this.detail.isLike ? '点赞成功' : '取消点赞成功');
+				})
+			},
+			// 操作面板
+			handleTap(e) {
+				this.$set(this.popData[1], 'title', `不看：${this.detail.user ? this.detail.user['fullName'] : ''}`)
+				this.popShow = true;
+			},
 
-		},
-		onPageScroll(e) {
-			console.log(e)
-			this.scrollTop = e.scrollTop
+			tapPopup(e) {
+				if (e.index === 0) {
+					this.popShow = false;
+					this.$nextTick(() => {
+						this.popShow2 = true;
+					})
+				} else {
+					this.$http.post(snsBlackSave, {
+						isLike: true,
+						targetUserId: this.list[this.itemIndex].user.id,
+					}).then(res => {
+						this.current = 1;
+						this.get()
+					}).catch(err => {
+						this.$mHelper.toast(err.msg)
+					})
+				}
+			},
+			tapPopup2(e) {
+				this.$http.post(snsReportSave, {
+					snsId: this.list[this.itemIndex].id,
+					content: e.item.title
+				}).then(res => {
+					this.popShow2 = false;
+					this.$mHelper.toast('举报成功')
+				}).catch(err => {
+					this.$mHelper.toast(err.msg)
+				})
+			},
+			tapPopup(e) {
+				if (e.index === 0) {
+					this.popShow = false;
+					this.$nextTick(() => {
+						this.popShow2 = true;
+					})
+				} else {
+					this.$http.post(snsBlackSave, {
+						isLike: true,
+						targetUserId: this.detail.user.id,
+					}).then(res => {
+						this.$mHelper.toast('操作成功')
+					}).catch(err => {
+						this.$mHelper.toast(err.msg)
+					})
+				}
+			},
+			tapPopup2(e) {
+				this.$http.post(snsReportSave, {
+					snsId: this.id,
+					content: e.item.title
+				}).then(res => {
+					this.popShow2 = false;
+					this.$mHelper.toast('举报成功')
+				}).catch(err => {
+					this.$mHelper.toast(err.msg)
+				})
+			},
+			// 回复
+			replyTap() {
+
+			}
 		},
 		onReachBottom() {
 			this.loadStatus = 'loading';
 			this.addData();
 		},
 		onShareAppMessage(e) {
-			
+
 		},
 		onShareTimeline(e) {
-			
+
 		}
 	}
 </script>
 
 <style lang="scss" scoped>
+	
+	
+	.detail{
+		padding-bottom: 160rpx;
+	}
 	.list-view {
 		margin-bottom: 24rpx;
 		position: relative;
@@ -242,7 +399,7 @@
 
 				.right {
 					width: 40rpx;
-					height: 30rpx;
+					height: 45rpx;
 
 					image {
 						width: 100%;
@@ -290,11 +447,168 @@
 				overflow: hidden
 			}
 
-			
-
 		}
 	}
 
 
-	
+	.comment {
+		padding-top: 38rpx;
+		.title {
+			text-align: center;
+			font-size: 32rpx;
+			font-weight: 600;
+			color: #3A3D71;
+			line-height: 56rpx;
+			margin-bottom: 20rpx;
+		}
+
+		.list {
+			margin-top: 40rpx;
+			display: flex;
+
+			.left {
+				flex: 0 0 126rpx;
+				padding-left: 46rpx;
+
+				image {
+					width: 80rpx;
+					height: 80rpx;
+					border-radius: 50%;
+				}
+			}
+
+			.right {
+				padding-left: 18rpx;
+				padding-right: 20rpx;
+				width: 0;
+				flex: 1;
+
+				.name {
+					font-size: 28rpx;
+					font-family: PingFang-SC-Bold, PingFang-SC;
+					font-weight: bold;
+					color: #3A3D71;
+					line-height: 28rpx;
+				}
+
+				.text {
+					font-size: 28rpx;
+					font-family: PingFangSC-Light, PingFang SC;
+					font-weight: 300;
+					color: #3A3D71;
+					line-height: 40rpx;
+					margin-top: 16rpx;
+				}
+
+				.time {
+					font-size: 26rpx;
+					font-family: PingFangSC-Regular, PingFang SC;
+					font-weight: 400;
+					color: #9E9E9E;
+					line-height: 26rpx;
+					margin-top: 14rpx;
+
+					text {
+						margin-left: 24rpx;
+					}
+				}
+
+				.child {
+					padding-top: 20rpx;
+					display: flex;
+
+					.c-l {
+						image {
+							width: 60rpx;
+							height: 60rpx;
+							border-radius: 50%;
+						}
+					}
+
+					.c-r {
+						padding-left: 18rpx;
+
+						.name {
+							font-size: 28rpx;
+							font-family: PingFang-SC-Bold, PingFang-SC;
+							font-weight: bold;
+							color: #3A3D71;
+							line-height: 60rpx;
+						}
+
+						.text {
+							font-size: 28rpx;
+							font-family: PingFangSC-Light, PingFang SC;
+							font-weight: 300;
+							color: #3A3D71;
+							margin-top: 2rpx;
+							// line-height: 40rpx;
+						}
+
+						.time {
+							ont-size: 26rpx;
+							color: #9E9E9E;
+							line-height: 26rpx;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	.footer {
+		position: fixed;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		z-index: 999;
+		padding: 14rpx 34rpx;
+		padding-bottom: calc(14rpx + constant(safe-area-inset-bottom));
+		padding-bottom: calc(14rpx + env(safe-area-inset-bottom));
+		background-color: #fff;
+
+
+		&-box {
+			height: 88rpx;
+
+			.left {
+				padding-left: 30rpx;
+				flex: 1;
+				height: 64rpx;
+				background: #F0F1F2;
+				border-radius: 32rpx;
+				font-size: 26rpx;
+				font-weight: 500;
+				color: #959595;
+			}
+
+			.right {
+				flex: 1;
+				
+				& > view{
+					display: flex;
+					justify-content: center;
+					align-items: center;
+				}
+				image {
+					margin-left: 44rpx;
+					width: 35rpx;
+					height: 35rpx;
+				}
+
+				button {
+					padding: 0;
+					width: 35rpx;
+					height: 35rpx;
+					line-height: 1;
+					background-color: transparent;
+
+					&::after {
+						border: none;
+					}
+				}
+			}
+		}
+
+	}
 </style>

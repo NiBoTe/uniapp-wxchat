@@ -2,18 +2,18 @@
 	<view>
 		<tab-bar :selected="1"></tab-bar>
 		<view class="list-view">
-			<view class="item" v-for="(item,index) in list" :key="index" @tap="goDetail">
+			<view class="item" v-for="(item,index) in list" :key="index" @click="goDetail(item, index)">
 				<view class="item-top">
 					<view class="userInfo">
 						<view class="logo">
 							<image :src="item.user.headUrl"></image>
 						</view>
 						<view class="name">
-							{{item.user.fullName}}
+							{{item.user.fullName || ''}}
 						</view>
 
 					</view>
-					<view class="right" @click="handleTap">
+					<view class="right" @click.stop="handleTap(index, $event)">
 						<image src="/static/public/dynamic_menu.png"></image>
 					</view>
 				</view>
@@ -22,27 +22,29 @@
 				<view class="thumbnails">
 					<view :class="item.snsImgs.length === 1?'my-gallery':'thumbnail'"
 						v-for="(image, index_images) in item.snsImgs" :key="index_images">
-						<image class="gallery_img" lazy-load mode="aspectFill" :src="image.thumbImg" :data-src="image.thumbImg"
-							@tap="previewImage(item.snsImgs,index_images)"></image>
+						<image class="gallery_img" lazy-load mode="aspectFill" :src="image.thumbImg"
+							:data-src="image.thumbImg" @click.stop="previewImage(item.snsImgs,index_images)"></image>
 					</view>
 				</view>
 				<!-- 点赞、收藏 分享 -->
 				<view class="toolbar">
 					<view class="left">
-						<view class="tool-item">
-							<image src="/static/public/dynamic_star.png"></image>
+						<view class="tool-item" @click.stop="favoriteTap(item, index)">
+							<image v-if="item.isFavorite" src="/static/public/dynamic_star.png"></image>
+							<image v-else src="/static/public/dynamic_star_fill.png"></image>
 							<view class="num">
 								{{item.favoriteCount}}
 							</view>
 						</view>
-						<view class="tool-item" v-if="!item.noComment">
+						<view class="tool-item" v-if="!item.noComment" @click.stop="commentTap(index)">
 							<image src="/static/public/dynamic_comment.png"></image>
 							<view class="num">
 								{{item.commentCount}}
 							</view>
 						</view>
-						<view class="tool-item">
-							<image src="/static/public/dynamic_praise.png"></image>
+						<view class="tool-item" @click.stop="likeTap(item, index)">
+							<image v-if="item.isLike" src="/static/public/dynamic_praise.png"></image>
+							<image v-else src="/static/public/dynamic_praise_fill.png"></image>
 							<view class="num">
 								{{item.likeCount}}
 							</view>
@@ -59,13 +61,30 @@
 
 				</view>
 
-
+				<view class="comment u-flex u-row-between" v-if="!item.noComment" @click.stop="commentTap(index)">
+					<view class="left">
+						<text v-if="commentIndex !== index">说一下你的想法...</text>
+						<input v-else type="text" :adjust-position="false" v-model="content" placeholder="说一下你的想法..." focus @confirm="confirmTap(item, index)" />
+					</view>
+					<view class="right u-flex">
+						<image src="/static/public/applause.png"></image>
+						<image src="/static/public/laugh.png"></image>
+						<image src="/static/public/cool.png"></image>
+					</view>
+				</view>
 			</view>
-
+			
+			<u-loadmore margin-top="30" margin-bottom="30" :status="loadStatus" @loadmore="addData"></u-loadmore>
 		</view>
+		
+		
 
-		<bubblePopups v-model="popShow" :popData="popData" :isTwoline="true" @tapPopup="tapPopup" :x="344" :y="positionY"
-			placement="top-end">
+		<bubblePopups ref="bubblePopups" v-model="popShow" :popData="popData" :isTwoline="true" @tapPopup="tapPopup"
+			:x="344" :y="positionY" placement="top-end">
+		</bubblePopups>
+
+		<bubblePopups ref="bubblePopups2" v-model="popShow2" :dynamic="true" :popData="popData2" :isTwoline="true"
+			@tapPopup="tapPopup2" :x="224" :y="positionY" placement="top-end">
 		</bubblePopups>
 
 		<uni-popup ref="popup" type="bottom" :maskClick="false">
@@ -103,7 +122,12 @@
 	import bubblePopups from "@/components/bubblePopups/bubblePopups";
 
 	import {
-		snsList
+		snsList,
+		addFavorite,
+		addLike,
+		snsBlackSave,
+		snsReportSave,
+		addComment
 	} from '@/api/sns.js'
 	export default {
 		components: {
@@ -112,7 +136,7 @@
 		},
 		data() {
 			return {
-				posts: [],
+				loadStatus: 'loadmore',
 				popData: [{
 						title: '举报',
 						subTitle: '标题夸张，内容质量差、图片包含不良色情…',
@@ -121,6 +145,22 @@
 					{
 						title: '不看：大超导师',
 						icon: '../../static/public/jinzhi.png'
+					}
+				],
+				popData2: [{
+						title: '标题夸张',
+					},
+					{
+						title: '旧闻重复',
+					},
+					{
+						title: '封面反感',
+					},
+					{
+						title: '内容质量差',
+					},
+					{
+						title: '其他',
 					}
 				],
 				shareData: [{
@@ -147,28 +187,55 @@
 				scrollTop: 0,
 				positionY: 20,
 				popShow: false,
+				popShow2: false,
 				current: 1,
 				size: 10,
 				list: [], // 考试列表
+				itemIndex: 0,
+				reportIndex: 0,
+				commentIndex: -1,
+				content: ''
 
 			};
 		},
 		onLoad() {
 			this.getList();
 		},
-		mounted() {
-
-			uni.getStorage({
-				key: 'posts',
-				success: function(res) {
-					console.log(res.data);
-					this.posts = res.data;
-				}
-			});
-
-		},
 
 		methods: {
+
+			// 收藏
+			favoriteTap(item, index) {
+				this.$http.post(addFavorite, null, {
+					params: {
+						snsId: item.id,
+						isFavorite: !item.isFavorite
+					}
+				}).then(res => {
+					this.$set(this.list[index], 'isFavorite', !item.isFavorite)
+					this.$set(this.list[index], 'favoriteCount', item.isFavorite ? Number(item.favoriteCount) + 1 :
+						item.favoriteCount - 1)
+
+					this.$mHelper.toast(item.isFavorite ? '收藏成功' : '取消收藏成功');
+				})
+			},
+			// 点赞
+			likeTap(item, index) {
+				this.$http.post(addLike, null, {
+					params: {
+						snsId: item.id,
+						isLike: !item.isLike
+					}
+				}).then(res => {
+					this.$set(this.list[index], 'isLike', !item.isLike)
+					this.$set(this.list[index], 'likeCount', item.isLike ? Number(item.likeCount) + 1 :
+						item.likeCount - 1)
+
+					this.$mHelper.toast(item.isLike ? '点赞成功' : '取消点赞成功');
+				})
+			},
+			// 获取列表
+
 			getList() {
 				this.loadStatus = 'loading';
 				this.$http.post(snsList, {
@@ -216,20 +283,68 @@
 				this.$refs.popup.close();
 			},
 			// 操作面板
-			handleTap(e){
+			handleTap(index, e) {
+				this.itemIndex = index
 				this.positionY = e.detail.y - this.scrollTop
+				this.$set(this.popData[1], 'title', `不看：${this.list[index].user['fullName']}`)
 				this.popShow = true;
 			},
-			goDetail:function() {
+			goDetail(item, index) {
 				uni.navigateTo({
-					url: "/pages/module/circleDetail/index"
+					url: `/pages/module/circleDetail/index?id=${item.id}`
 				})
 			},
+			tapPopup(e) {
+				if (e.index === 0) {
+					this.popShow = false;
+					this.$nextTick(() => {
+						this.popShow2 = true;
+					})
+				} else {
+					this.$http.post(snsBlackSave, {
+						isLike: true,
+						targetUserId: this.list[this.itemIndex].user.id,
+					}).then(res => {
+						this.current = 1;
+						this.getList()
+					}).catch(err => {
+						this.$mHelper.toast(err.msg)
+					})
+				}
+			},
+			tapPopup2(e) {
+				this.$http.post(snsReportSave, {
+					snsId: this.list[this.itemIndex].id,
+					content: e.item.title
+				}).then(res => {
+					this.popShow2 = false;
+					this.$mHelper.toast('举报成功')
+				}).catch(err => {
+					this.$mHelper.toast(err.msg)
+				})
+			},
+			// 评论
+			commentTap(index){
+				this.commentIndex = index
+			},
+			confirmTap(item, index){
+				this.$http.post(addComment, {
+					replyId: 0,
+					content: this.content,
+					targetId: item.id
+				}).then(res => {
+					this.$mHelper.toast('评论成功')
+					this.commentIndex = -1;
+					this.$set(this.list[index], 'commentCount', Number(item.commentCount) + 1)
+					this.content = ''
+				}).catch(err => {
+					this.$mHelper.toast(err.msg)
+				})
+			}
 
 		},
-		
+
 		onPageScroll(e) {
-			console.log(e)
 			this.scrollTop = e.scrollTop
 		},
 		onReachBottom() {
@@ -237,17 +352,17 @@
 			this.addData();
 		},
 		onShareAppMessage(e) {
-			
+
 		},
 		onShareTimeline(e) {
-			
+
 		}
 	}
 </script>
 
 <style lang="scss" scoped>
 	.list-view {
-		margin-bottom: 24rpx;
+		padding-bottom: 160rpx;
 		position: relative;
 
 		.item {
@@ -292,7 +407,7 @@
 
 				.right {
 					width: 40rpx;
-					height: 30rpx;
+					height: 45rpx;
 
 					image {
 						width: 100%;
@@ -350,12 +465,13 @@
 			}
 
 			.toolbar .left {
-				width: 400rpx;
+				flex: 1;
 				display: flex;
 				justify-content: space-between;
 				align-items: center;
 
 				.tool-item {
+					flex: 0 0 33%;
 					display: flex;
 					justify-content: flex-start;
 					align-items: center;
@@ -381,10 +497,11 @@
 				align-items: center;
 				background-color: transparent;
 				border: none;
-				
-				&::after{
+
+				&::after {
 					border: none;
 				}
+
 				.tool-item {
 					display: flex;
 					justify-content: flex-start;
@@ -403,9 +520,38 @@
 						margin-left: 6px;
 					}
 				}
-				
+
 			}
 
+
+
+			.comment {
+				padding: 0 24rpx 0 26rpx;
+				width: 100%;
+				height: 80rpx;
+				background: #F7F7F7;
+				border-radius: 16rpx;
+				
+				.left{
+					font-size: 24rpx;
+					font-weight: 500;
+					color: #959595;
+					
+					input{
+						font-size: 24rpx;
+						font-weight: 500;
+						color: #3A3D71;
+					}
+				}
+				
+				.right{
+					image{
+						margin-left: 30rpx;
+						width: 32rpx;
+						height: 32rpx;
+					}
+				}
+			}
 
 		}
 	}

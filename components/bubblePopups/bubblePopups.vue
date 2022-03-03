@@ -1,118 +1,121 @@
 <template>
-	<view class="mask" :class="!show?'':'mask-show'" :style="{backgroundColor:show?maskBg:'rgba(0,0,0,0)'}" @tap="tapMask">
-		<view class="popups" :class="[theme]"
-			:style="{top: popupsTop ,left: popupsLeft,flexDirection:direction}" v-if="isTwoline == false">
+	<view class="mask" :class="!show?'':'mask-show'" :style="{backgroundColor:show?maskBg:'rgba(0,0,0,0)'}"
+		@tap="tapMask">
+		<view class="popups" :class="[theme]" :style="{top: popupsTop ,left: popupsLeft,flexDirection:direction}"
+			v-if="isTwoline == false">
 			<text :class="dynPlace" :style="{width:'0px',height:'0px'}" v-if="triangle"></text>
-			<view v-for="(item,index) in popData" :key="index" @tap.stop="tapItem(item)"
-				class="itemChild view" :class="[direction=='row'?'solid-right':'solid-bottom',item.disabled?'disabledColor':'']">
+			<view v-for="(item,index) in popData" :key="index" @tap.stop="tapItem(item,index)" class="itemChild view"
+				:class="[direction=='row'?'solid-right':'solid-bottom',item.disabled?'disabledColor':'']">
 				<image class="image" :src="item.icon" v-if="item.icon"></image>{{item.title}}
 			</view>
-			
+
 			<slot></slot>
 		</view>
-		<view class="popups" :class="[theme]"
-			:style="{top: popupsTop ,left: popupsLeft,flexDirection:direction}" v-else>
+		<view class="popups" :class="[theme]" :style="{top: popupsTop ,left: popupsLeft,flexDirection:direction}"
+			v-else>
 			<text :class="dynPlace" :style="{width:'0px',height:'0px'}" v-if="triangle"></text>
-			<view v-for="(item,index) in popData" :key="index" @tap.stop="tapItem(item)" 
-				class="itemChild view" :class="[direction=='row'?'solid-right':'solid-bottom',item.disabled?'disabledColor':'']">
+			<view v-for="(item,index) in popData" :key="index" @tap.stop="tapItem(item,index)" class="itemChild view"
+				:class="[direction=='row'?'solid-right':'solid-bottom',item.disabled?'disabledColor':'']">
 				<image class="image" :src="item.icon" v-if="item.icon"></image>
 				<view class="content">
 					<view class="title">
 						{{item.title}}
 					</view>
-					<view class="subTitle">
+					<view class="subTitle" v-if="item.subTitle">
 						{{item.subTitle}}
 					</view>
 				</view>
-				
+
 			</view>
-			
+
 			<slot></slot>
 		</view>
 	</view>
 </template>
 
 <script>
-	export default{
-		props:{
-			maskBg:{
-				type:String,
-				default:'rgba(0,0,0,0.6)'
+	export default {
+		props: {
+			maskBg: {
+				type: String,
+				default: 'rgba(0,0,0,0.6)'
 			},
-			placement:{
-				type:String,
-				default:'default' //default top-start top-end bottom-start bottom-end 
+			placement: {
+				type: String,
+				default: 'default' //default top-start top-end bottom-start bottom-end 
 			},
-			direction:{
-				type:String,
-				default:'column' //column row
+			direction: {
+				type: String,
+				default: 'column' //column row
 			},
-			x:{
-				type:Number,
-				default:0
+			x: {
+				type: Number,
+				default: 0
 			},
-			y:{
-				type:Number,
-				default:0
+			y: {
+				type: Number,
+				default: 0
 			},
-			value:{
-				type:Boolean,
-				default:false
+			value: {
+				type: Boolean,
+				default: false
 			},
-			popData:{
-				type:Array,
-				default:()=>[]
+			popData: {
+				type: Array,
+				default: () => []
 			},
-			theme:{
-				type:String,
-				default:'light' //light dark
+			theme: {
+				type: String,
+				default: 'light' //light dark
 			},
-			dynamic:{
-				type:Boolean,
-				default:false
+			dynamic: {
+				type: Boolean,
+				default: false
 			},
-			gap:{
-				type:Number,
-				default:20
+			gap: {
+				type: Number,
+				default: 20
 			},
-			triangle:{
-				type:Boolean,
-				default:true
+			triangle: {
+				type: Boolean,
+				default: true
 			},
-			isTwoline:{
-				type:Boolean,
-				default:false
+			isTwoline: {
+				type: Boolean,
+				default: false
 			}
 		},
-		data(){
-			return{
-				popupsTop:'0px',
-				popupsLeft:'0px',
-				show:false,
-				dynPlace:''
+		data() {
+			return {
+				popupsTop: '0px',
+				popupsLeft: '0px',
+				show: false,
+				dynPlace: ''
 			}
 		},
 		mounted() {
 			this.popupsPosition()
 		},
-		methods:{
-			tapMask(){
-				
-				this.$emit('input',!this.value)
+		methods: {
+			tapMask() {
+				this.$emit('input', !this.value)
 			},
-			tapItem(item){
-				if(item.disabled) return
-				this.$emit('tapPopup',item)
-				this.$emit('input',!this.value)
+			tapItem(item, index) {
+				if (item.disabled) return
+				this.$emit('tapPopup', {
+					item,
+					index
+				})
+				this.$emit('input', !this.value)
 			},
-			getStatusBar(){
-				let promise = new Promise((resolve,reject)=>{
+			getStatusBar() {
+				let promise = new Promise((resolve, reject) => {
 					uni.getSystemInfo({
 						success: function(e) {
-							
+
 							let customBar
 							// #ifdef H5
-					
+
 							customBar = e.statusBarHeight + e.windowTop;
 
 							// #endif
@@ -122,28 +125,34 @@
 				})
 				return promise
 			},
-			async popupsPosition(){
+			async popupsPosition() {
+
+				console.log(this.dynamic)
 				let statusBar = await this.getStatusBar()
-				let promise = new Promise((resolve,reject)=>{
+				let promise = new Promise((resolve, reject) => {
 					let popupsDom = uni.createSelectorQuery().in(this).select(".popups")
 					popupsDom.fields({
-					    size: true,  
+						size: true,
 					}, (data) => {
 						let width = data.width
 						let height = data.height
-						
-						let y = this.dynamic?this.dynamicGetY(this.y,this.gap):this.transformRpx(this.y)
-						
-						let x = this.dynamic?this.dynamicGetX(this.x,this.gap):this.transformRpx(this.x)
-					
-						
+
+						let y = this.dynamic ? this.dynamicGetY(this.y, this.gap) : this.transformRpx(
+							this.y)
+
+						let x = this.dynamic ? this.dynamicGetX(this.x, this.gap) : this.transformRpx(
+							this.x)
+
+
 						// #ifdef H5
-						y = this.dynamic?(this.y+statusBar): this.transformRpx(this.y+statusBar)
+						y = this.dynamic ? (this.y + statusBar) : this.transformRpx(this.y + statusBar)
 						// #endif 
-						
-						this.dynPlace = this.placement=='default'?this.getPlacement(x,y):this.placement
-						
-						switch(this.dynPlace){
+
+						this.dynPlace = this.placement == 'default' ? this.getPlacement(x, y) : this
+							.placement
+
+						console.log(x, width)
+						switch (this.dynPlace) {
 							case 'top-start':
 								this.popupsTop = `${y+9}px`
 								this.popupsLeft = `${x-15}px`
@@ -163,58 +172,61 @@
 						}
 						resolve()
 					}).exec();
-					
+
 				})
 				return promise
-				
+
 			},
-			getPlacement(x,y){
+			getPlacement(x, y) {
 				let width = uni.getSystemInfoSync().windowWidth
 				let height = uni.getSystemInfoSync().windowHeight
-				if(x>width/2&&y>height/2){
+				if (x > width / 2 && y > height / 2) {
 					return 'bottom-end'
-				}else if(x<width/2&&y<height/2){
+				} else if (x < width / 2 && y < height / 2) {
 					return 'top-start'
-				}else if(x>width/2&&y<height/2){
+				} else if (x > width / 2 && y < height / 2) {
 					return 'top-end'
-				}else if(x<width/2&&y>height/2){
+				} else if (x < width / 2 && y > height / 2) {
 					return 'bottom-start'
-				}else if(x>width/2){
+				} else if (x > width / 2) {
 					return 'top-end'
-				}else{
+				} else {
 					return 'top-start'
 				}
 			},
-			dynamicGetY(y,gap){
-				
+			dynamicGetY(y, gap) {
+
 				let height = uni.getSystemInfoSync().windowHeight
-				y = y<gap?gap:y
-				y = height - y <gap? (height - gap) : y
-				
+				y = y < gap ? gap : y
+				y = height - y < gap ? (height - gap) : y
+
 				return y
 			},
-			dynamicGetX(x,gap){
+			dynamicGetX(x, gap) {
 				let width = uni.getSystemInfoSync().windowWidth
-				x = x< gap?gap:x
-				x = width - x <gap? (width - gap) : x
-				return x
+				x = x < gap ? gap : x
+				x = width - x > gap ? (width - gap) : x
+				return width - gap
 			},
-			transformRpx(params){
-				
-				return params*uni.getSystemInfoSync().screenWidth/375
+			transformRpx(params) {
+
+				return params * uni.getSystemInfoSync().screenWidth / 375
+			},
+			async refreshPosition() {
+				await this.popupsPosition()
 			}
 		},
-		watch:{
-			value:{
-				immediate:true,
-				handler:async function (newVal,oldVal){
-					if(newVal) await this.popupsPosition()
+		watch: {
+			value: {
+				immediate: true,
+				handler: async function(newVal, oldVal) {
+					if (newVal) await this.popupsPosition()
 					this.show = newVal
 				}
 			},
-			placement:{
-				immediate:true,
-				handler(newVal,oldVal){
+			placement: {
+				immediate: true,
+				handler(newVal, oldVal) {
 					this.dynPlace = newVal
 				}
 			}
@@ -223,7 +235,7 @@
 </script>
 
 <style lang="scss" scoped>
-	.mask{
+	.mask {
 		position: fixed;
 		top: 0;
 		right: 0;
@@ -232,19 +244,23 @@
 		z-index: 9999;
 		transition: background 0.3s ease-in-out;
 		visibility: hidden;
-		&.mask-show{
+
+		&.mask-show {
 			visibility: visible;
 		}
 	}
-	.popups{
+
+	.popups {
 		position: absolute;
 		padding: 20rpx;
-		border-radius: 5px;
-		display:flex;
-		.view{
+		border-radius: 10rpx;
+		display: flex;
+
+		.view {
 			padding: 10rpx;
 		}
-		.image{
+
+		.image {
 			display: inline-block;
 			vertical-align: middle;
 			width: 40rpx;
@@ -252,9 +268,11 @@
 			margin-right: 20rpx;
 		}
 	}
-	.dark{
+
+	.dark {
 		background-color: #4C4C4C;
 		color: #fff;
+
 		.top-start:after {
 			content: "";
 			position: absolute;
@@ -264,6 +282,7 @@
 			border-style: solid;
 			border-color: transparent transparent #4C4C4C;
 		}
+
 		.top-end:after {
 			content: "";
 			position: absolute;
@@ -273,33 +292,38 @@
 			border-style: solid;
 			border-color: transparent transparent #4C4C4C;
 		}
+
 		.bottom-start:after {
 			content: "";
 			position: absolute;
 			bottom: -18rpx;
 			left: 10rpx;
-			border-width: 20rpx 20rpx 0 ;
+			border-width: 20rpx 20rpx 0;
 			border-style: solid;
-			border-color: #4C4C4C transparent transparent ;
-			
+			border-color: #4C4C4C transparent transparent;
+
 		}
+
 		.bottom-end:after {
 			content: "";
 			position: absolute;
 			bottom: -18rpx;
 			right: 10rpx;
-			border-width: 20rpx 20rpx 0 ;
+			border-width: 20rpx 20rpx 0;
 			border-style: solid;
-			border-color: #4C4C4C transparent transparent ;
+			border-color: #4C4C4C transparent transparent;
 		}
-		.disabledColor{
+
+		.disabledColor {
 			color: #c5c8ce;
 		}
 	}
-	.light{
+
+	.light {
 		color: #515a6e;
-		box-shadow: 0upx 0upx 30upx rgba(0,0,0,0.2);
+		box-shadow: 0upx 0upx 30upx rgba(0, 0, 0, 0.2);
 		background: #fff;
+
 		.top-start:after {
 			content: "";
 			position: absolute;
@@ -309,6 +333,7 @@
 			border-style: solid;
 			border-color: transparent transparent #fff;
 		}
+
 		.top-end:after {
 			content: "";
 			position: absolute;
@@ -318,79 +343,80 @@
 			border-style: solid;
 			border-color: transparent transparent #fff;
 		}
+
 		.bottom-start:after {
 			content: "";
 			position: absolute;
 			bottom: -18rpx;
 			left: 10rpx;
-			border-width: 20rpx 20rpx 0 ;
+			border-width: 20rpx 20rpx 0;
 			border-style: solid;
-			border-color: #fff transparent transparent ;
-			
+			border-color: #fff transparent transparent;
+
 		}
+
 		.bottom-end:after {
 			content: "";
 			position: absolute;
 			bottom: -18rpx;
 			right: 10rpx;
-			border-width: 20rpx 20rpx 0 ;
+			border-width: 20rpx 20rpx 0;
 			border-style: solid;
-			border-color: #fff transparent transparent ;
+			border-color: #fff transparent transparent;
 		}
-		.disabledColor{
+
+		.disabledColor {
 			color: #c5c8ce;
 		}
 	}
-	.solid-bottom{
+
+	.solid-bottom {
 		// border-bottom: 1px solid #ccc;
 		border-bottom: none;
-		
+
 	}
-	.solid-right{
-		
+
+	.solid-right {
+
 		border-right: 1px solid #ccc;
 	}
-	.popups .itemChild:last-child{
+
+	.popups .itemChild:last-child {
 		border: none;
 		font-size: 14rpx;
-		font-family: PingFang-SC-Regular, PingFang-SC;
-		font-weight: 400;
 		color: #8F9091;
 	}
-	
-	.popups .itemChild:last-child{
+
+	.popups .itemChild:last-child {
 		border: none;
 		font-size: 14rpx;
-		font-family: PingFang-SC-Regular, PingFang-SC;
-		font-weight: 400;
 		color: #8F9091;
 	}
-	
-	
-	
+
+
+
 	.popups .itemChild {
 		width: 100%;
 		display: flex;
 		justify-content: flex-start;
 		align-items: center;
+
 		.content {
 			display: flex;
 			flex-direction: column;
 			justify-content: center;
 			align-items: flex-start;
+
 			.title {
-				font-size: 14px;
-				font-family: PingFangSC-Medium, PingFang SC;
+				font-size: 28rpx;
 				font-weight: 500;
 				color: #3A3D71;
 			}
+
 			.subTitle {
-				font-size: 14rpx;
-				font-family: PingFang-SC-Regular, PingFang-SC;
-				font-weight: 400;
+				font-size: 28rpx;
 				color: #8F9091;
 			}
 		}
 	}
-	
 </style>

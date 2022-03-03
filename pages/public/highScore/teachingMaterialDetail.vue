@@ -1,137 +1,145 @@
 <template>
 	<view class="teaching-material-detail">
 		<scroll-view scroll-y class="content">
-		<view class="head">
-			<view class="img">
-				<image src="https://img1.baidu.com/it/u=137044454,4224140026&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500" mode=""></image>
-			</view>
-			<text class="name">刘泉海·LHQ</text>
-			<image class="like" src="../../../static/public/like_start.png" alt="">
-		</view>
-		<view class="parameter">
-			<view class="com hot">
-				<image class="icon" src="../../../static/public/highScore/hot.png" mode=""></image>
-				<view class="com-in">
-					<text class="name">
-						热度值
-					</text>
-					<text class="content">
-						809万
-					</text>
+			<view class="head">
+				<view class="img">
+					<image
+						src="https://img1.baidu.com/it/u=137044454,4224140026&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500"
+						mode=""></image>
 				</view>
-				
-			
+				<text class="name">刘泉海·LHQ</text>
+				<image class="like" src="../../../static/public/like_start.png" alt="">
 			</view>
-			<view class="com num">
-				<image class="icon" src="../../../static/public/highScore/shopCat.png" mode=""></image>
-				<view class="com-in">
-					<text class="name">
-						热度值
-					</text>
-					<text class="content">
-						809万
-					</text>
+			<view class="parameter">
+				<view class="com hot">
+					<image class="icon" src="../../../static/public/highScore/hot.png" mode=""></image>
+					<view class="com-in">
+						<text class="name">
+							热度值
+						</text>
+						<text class="content">
+							809万
+						</text>
+					</view>
+
+
 				</view>
-			</view>
-			
-			<view class="price"><text>¥</text>299</view>
-		</view>
-		<view class="line"></view>
-		<view class="tro">
-			<view class="title">西方人物色彩赏析</view>
-			<text class="pre">西方人物/室外风景色彩赏析，展示了古西方西方人物/室外风景色彩赏析，展示了古西方西方人物/室外风景色彩赏析，展示了古西方</text>
-		</view>
-		<view class="swiper">
-			<view class="swiper-item" :class="{'active':activeIndex === index}" v-for="(item, index) in 10" @click="handleClick(index)">
-				<image src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fimg.jj20.com%2Fup%2Fallimg%2F4k%2Fs%2F02%2F2109242332225H9-0-lp.jpg&refer=http%3A%2F%2Fimg.jj20.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1648733409&t=90c4ab51cbe0340472155652f1dc5b26" mode=""></image>
-			</view>
-		</view>
-		
-		
-		<view class="works">
-			<image src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fimg.jj20.com%2Fup%2Fallimg%2F4k%2Fs%2F02%2F2109242332225H9-0-lp.jpg&refer=http%3A%2F%2Fimg.jj20.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1648733409&t=90c4ab51cbe0340472155652f1dc5b26" mode=""></image>
-		</view>
-		
-		<view class="tabs">
-			特效可编辑画面效果 
-			<view class="tabs-in">
-				<view class="left coms tabs-active">
-					原图
+				<view class="com num">
+					<image class="icon" src="../../../static/public/highScore/shopCat.png" mode=""></image>
+					<view class="com-in">
+						<text class="name">
+							热度值
+						</text>
+						<text class="content">
+							809万
+						</text>
+					</view>
 				</view>
-				<view class="right coms">
-					特效
+
+				<view class="price"><text>¥</text>299</view>
+			</view>
+			<view class="line"></view>
+			<view class="tro">
+				<view class="title">西方人物色彩赏析</view>
+				<text class="pre">西方人物/室外风景色彩赏析，展示了古西方西方人物/室外风景色彩赏析，展示了古西方西方人物/室外风景色彩赏析，展示了古西方</text>
+			</view>
+			<view class="swiper">
+				<view class="swiper-item" :class="{'active':activeIndex === index}" v-for="(item, index) in 10"
+					@click="handleClick(index)">
+					<image
+						src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fimg.jj20.com%2Fup%2Fallimg%2F4k%2Fs%2F02%2F2109242332225H9-0-lp.jpg&refer=http%3A%2F%2Fimg.jj20.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1648733409&t=90c4ab51cbe0340472155652f1dc5b26"
+						mode=""></image>
 				</view>
 			</view>
-		</view>
-		
-		<view class="line"></view>
-		
-		<view class="description">
-			<view class="title">
-				<image src="../../../static/public/examinationPaper_icon.png" mode=""></image>作品描述
+
+
+			<view class="works">
+				<image
+					src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fimg.jj20.com%2Fup%2Fallimg%2F4k%2Fs%2F02%2F2109242332225H9-0-lp.jpg&refer=http%3A%2F%2Fimg.jj20.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1648733409&t=90c4ab51cbe0340472155652f1dc5b26"
+					mode=""></image>
 			</view>
-			<view class="d-c">
-				西方人物/室外风景色彩赏析，展示了古西方西方人物/室外风景色彩赏析，展示了古西方西方人物/室外风景色彩赏析，展示了古西方西方人物/室外风景色彩赏析，展示了古西方
+
+			<view class="tabs">
+				特效可编辑画面效果
+				<view class="tabs-in">
+					<view class="left coms tabs-active">
+						原图
+					</view>
+					<view class="right coms">
+						特效
+					</view>
+				</view>
 			</view>
-		</view>
-		
-		
-		<view class="line"></view>
-		
-		<view class="delivery-content">
-			<view class="left">
-				<image src="../../../static/public/highScore/deliveryContent.png" mode=""></image>发货内容
+
+			<view class="line"></view>
+
+			<view class="description">
+				<view class="title">
+					<image src="../../../static/public/examinationPaper_icon.png" mode=""></image>作品描述
+				</view>
+				<view class="d-c">
+					西方人物/室外风景色彩赏析，展示了古西方西方人物/室外风景色彩赏析，展示了古西方西方人物/室外风景色彩赏析，展示了古西方西方人物/室外风景色彩赏析，展示了古西方
+				</view>
 			</view>
-			<view class="right">
-				教材一本
-			</view>
-		</view>
-		
-		<!-- 查看评论 -->
-		<view class="comment">
-			<view class="title">
-				3条评论
-			</view>
-			<view class="list" v-for="item in 3">
+
+
+			<view class="line"></view>
+
+			<view class="delivery-content">
 				<view class="left">
-					<image src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fexp-picture.cdn.bcebos.com%2F4e168d5653bbf820b3d559b8ba21056105a36e86.jpg%3Fx-bce-process%3Dimage%2Fresize%2Cm_lfit%2Cw_500%2Climit_1&refer=http%3A%2F%2Fexp-picture.cdn.bcebos.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1648823704&t=fe16818e6a56567aadbde4a73fd7c50e" mode=""></image>
+					<image src="../../../static/public/highScore/deliveryContent.png" mode=""></image>发货内容
 				</view>
 				<view class="right">
-					<view class="name">
-						王维同学
-					</view>
-					<view class="text">
-						大超老师的色彩画得真吊，
-						我也想画这种风格我也想画这种风格
-					</view>
-					<view class="time">
-						12-20 <text>回复</text>
-					</view>
-					
-					<view class="child">
-						<view class="c-l">
-							<image src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fexp-picture.cdn.bcebos.com%2F4e168d5653bbf820b3d559b8ba21056105a36e86.jpg%3Fx-bce-process%3Dimage%2Fresize%2Cm_lfit%2Cw_500%2Climit_1&refer=http%3A%2F%2Fexp-picture.cdn.bcebos.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1648823704&t=fe16818e6a56567aadbde4a73fd7c50e" mode=""></image>
-						</view>
-						<view class="c-r">
-							<view class="name">
-								程超老师
-							</view>
-							<view class="text">
-								跟大神你比我还是差远了😂
-							</view>
-							<view class="time">
-								12-20
-							</view>
-						</view>
-					</view>
-					
+					教材一本
 				</view>
 			</view>
-		</view>
-		
-		
-		
-		</scroll-view >
+
+			<!-- 查看评论 -->
+			<view class="comment">
+				<view class="title">
+					3条评论
+				</view>
+				<view class="list" v-for="item in 3">
+					<view class="left">
+						<image
+							src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fexp-picture.cdn.bcebos.com%2F4e168d5653bbf820b3d559b8ba21056105a36e86.jpg%3Fx-bce-process%3Dimage%2Fresize%2Cm_lfit%2Cw_500%2Climit_1&refer=http%3A%2F%2Fexp-picture.cdn.bcebos.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1648823704&t=fe16818e6a56567aadbde4a73fd7c50e"
+							mode=""></image>
+					</view>
+					<view class="right">
+						<view class="name">
+							王维同学
+						</view>
+						<view class="text">
+							大超老师的色彩画得真吊，
+							我也想画这种风格我也想画这种风格
+						</view>
+						<view class="time">
+							12-20 <text>回复</text>
+						</view>
+
+						<view class="child">
+							<view class="c-l">
+								<image
+									src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fexp-picture.cdn.bcebos.com%2F4e168d5653bbf820b3d559b8ba21056105a36e86.jpg%3Fx-bce-process%3Dimage%2Fresize%2Cm_lfit%2Cw_500%2Climit_1&refer=http%3A%2F%2Fexp-picture.cdn.bcebos.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1648823704&t=fe16818e6a56567aadbde4a73fd7c50e"
+									mode=""></image>
+							</view>
+							<view class="c-r">
+								<view class="name">
+									程超老师
+								</view>
+								<view class="text">
+									跟大神你比我还是差远了😂
+								</view>
+								<view class="time">
+									12-20
+								</view>
+							</view>
+						</view>
+
+					</view>
+				</view>
+			</view>
+		</scroll-view>
 		<view class="footer">
 			<view class="footer-btn">立即购买</view>
 		</view>
@@ -142,11 +150,11 @@
 	export default {
 		data() {
 			return {
-				activeIndex: 0 
+				activeIndex: 0
 			};
 		},
-		methods:{
-			handleClick(index){
+		methods: {
+			handleClick(index) {
 				this.activeIndex = index
 			}
 		}
@@ -154,34 +162,41 @@
 </script>
 
 <style lang="scss">
-	.teaching-material-detail{
+	.teaching-material-detail {
 		display: flex;
 		flex-direction: column;
 		height: 100vh;
-		.parameter{
+
+		.parameter {
 			position: relative;
 			margin-top: 32rpx;
-			.com{
+
+			.com {
 				display: inline-block;
-				.icon{
-					width:80rpx;
+
+				.icon {
+					width: 80rpx;
 					height: 74rpx;
 					display: inline-block;
 					vertical-align: sub;
 				}
-				.com-in{
+
+				.com-in {
 					display: inline-block;
-					text{
+
+					text {
 						display: block;
 					}
-					.name{
+
+					.name {
 						font-size: 24rpx;
 						font-family: PingFangSC-Regular, PingFang SC;
 						font-weight: 400;
 						color: #9E9E9E;
 						line-height: 28rpx;
 					}
-					.content{
+
+					.content {
 						margin-top: 6rpx;
 						font-size: 28rpx;
 						font-family: Helvetica;
@@ -190,13 +205,16 @@
 					}
 				}
 			}
-			.hot{
+
+			.hot {
 				margin-left: 34rpx;
 			}
-			.num{
+
+			.num {
 				margin-left: 40rpx;
 			}
-			.price{
+
+			.price {
 				position: absolute;
 				right: 32rpx;
 				bottom: 0;
@@ -204,7 +222,8 @@
 				font-family: PingFang-SC-Heavy, PingFang-SC;
 				font-weight: 800;
 				color: #EF2E3B;
-				text{
+
+				text {
 					font-size: 34rpx;
 					font-family: PingFang-SC-Bold, PingFang-SC;
 					font-weight: bold;
@@ -212,34 +231,41 @@
 				}
 			}
 		}
+
 		.line {
 			width: calc(100% - 68rpx);
 			height: 2rpx;
 			background: #E9E9E9;
 			margin: 34rpx auto 22rpx;
 		}
-		.content{
+
+		.content {
 			flex: 1;
 			overflow: auto;
-			.head{
+
+			.head {
 				position: relative;
-				.img{
+
+				.img {
 					margin: 0 32rpx;
 					display: inline-block;
 					vertical-align: middle;
-					image{
+
+					image {
 						border-radius: 50%;
 						width: 132rpx;
 						height: 132rpx;
 					}
 				}
-				.name{
+
+				.name {
 					font-size: 36rpx;
 					font-family: PingFang-SC-Bold, PingFang-SC;
 					font-weight: bold;
 					color: #1B1B1B;
 				}
-				.like{
+
+				.like {
 					position: absolute;
 					right: 34rpx;
 					top: 46rpx;
@@ -248,10 +274,12 @@
 				}
 			}
 		}
-		.footer{
+
+		.footer {
 			flex: 0 0 240rpx;
 			border-top: 1rpx solid #EDEDED;
-			.footer-btn{
+
+			.footer-btn {
 				width: 682rpx;
 				height: 88rpx;
 				background: #2C3AFF;
@@ -266,57 +294,66 @@
 				line-height: 88rpx;
 			}
 		}
-		.tro{
+
+		.tro {
 			padding: 0 34rpx;
-			.title{
+
+			.title {
 				font-size: 28rpx;
 				font-family: Helvetica;
 				color: #3A3D71;
 			}
-			.pre{
+
+			.pre {
 				font-size: 26rpx;
 				font-family: PingFangSC-Regular, PingFang SC;
 				font-weight: 400;
 				color: #3A3D71;
 				line-height: 36rpx;
-				 text-overflow: -o-ellipsis-lastline;
-				  overflow: hidden;
-				  text-overflow: ellipsis;
-				  display: -webkit-box;
-				  -webkit-line-clamp: 2;
-				  line-clamp: 2;
-				  -webkit-box-orient: vertical;
+				text-overflow: -o-ellipsis-lastline;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				display: -webkit-box;
+				-webkit-line-clamp: 2;
+				line-clamp: 2;
+				-webkit-box-orient: vertical;
 			}
 		}
-		.swiper{
+
+		.swiper {
 			margin-top: 10rpx;
 			width: 100vw;
 			padding: 40rpx 34rpx;
 			overflow-x: scroll;
-			white-space:nowrap;
-	
-			.swiper-item{
+			white-space: nowrap;
+
+			.swiper-item {
 				margin-right: 26rpx;
 				display: inline-block;
-				image{
+
+				image {
 					width: 134rpx;
 					height: 158rpx;
 					border-radius: 5px;
 				}
 			}
-			.active{
-				image{
-					transform:scale(1.2)
+
+			.active {
+				image {
+					transform: scale(1.2)
 				}
 			}
 		}
-		.works{
+
+		.works {
 			padding: 0 34rpx;
-			image{
+
+			image {
 				width: 100%;
 			}
 		}
-		.tabs{
+
+		.tabs {
 			padding: 0 34rpx;
 			width: 100%;
 			height: 76rpx;
@@ -327,7 +364,8 @@
 			line-height: 76rpx;
 			position: relative;
 			margin: 28rpx 0;
-			.tabs-in{
+
+			.tabs-in {
 				width: 216rpx;
 				height: 76rpx;
 				background: #F3F3F3;
@@ -337,40 +375,48 @@
 				top: 0;
 				display: flex;
 				padding: 8rpx;
-				.left{
-				  flex: 1;
-				}
-				.right{
+
+				.left {
 					flex: 1;
-					
 				}
-				.coms{
+
+				.right {
+					flex: 1;
+
+				}
+
+				.coms {
 					width: 100rpx;
 					height: 60rpx;
 					line-height: 60rpx;
 					text-align: center;
 				}
-				.tabs-active{
+
+				.tabs-active {
 					background: #FFFFFF;
 					border-radius: 36rpx;
 				}
 			}
 		}
-		.description{
+
+		.description {
 			padding: 0 34rpx;
-			.title{
-				image{
+
+			.title {
+				image {
 					width: 48rpx;
 					height: 48rpx;
 					vertical-align: bottom;
 					margin-right: 20rpx;
 				}
+
 				font-size: 32rpx;
 				font-family: Helvetica;
 				color: #3A3D71;
 				margin-bottom: 28rpx;
 			}
-			.d-c{
+
+			.d-c {
 				font-size: 26rpx;
 				font-family: PingFangSC-Regular, PingFang SC;
 				font-weight: 400;
@@ -378,31 +424,36 @@
 				line-height: 36rpx;
 			}
 		}
-		.delivery-content{
+
+		.delivery-content {
 			padding: 0 34rpx;
 			display: flex;
-			.left{
+
+			.left {
 				flex: 1;
-				image{
+
+				image {
 					width: 48rpx;
 					height: 48rpx;
 					vertical-align: bottom;
 					margin-right: 20rpx;
 				}
+
 				font-size: 32rpx;
 				font-family: Helvetica;
 				color: #3A3D71;
 				margin-bottom: 28rpx;
 			}
-			.right{
-					flex: 1;
-					text-align: right;
+
+			.right {
+				flex: 1;
+				text-align: right;
 			}
 		}
-		
-		
-		.comment{
-			.title{
+
+
+		.comment {
+			.title {
 				text-align: center;
 				font-size: 40rpx;
 				font-family: PingFang-SC-Bold, PingFang-SC;
@@ -411,31 +462,37 @@
 				line-height: 56rpx;
 				margin-bottom: 20rpx;
 			}
-			.list{
+
+			.list {
 				margin-top: 40rpx;
 				display: flex;
-				.left{
+
+				.left {
 					flex: 0 0 126rpx;
 					padding-left: 46rpx;
-					image{
+
+					image {
 						width: 80rpx;
 						height: 80rpx;
 						border-radius: 50%;
 					}
 				}
-				.right{
+
+				.right {
 					padding-left: 18rpx;
 					padding-right: 20rpx;
 					width: 0;
 					flex: 1;
-					.name{
+
+					.name {
 						font-size: 28rpx;
 						font-family: PingFang-SC-Bold, PingFang-SC;
 						font-weight: bold;
 						color: #3A3D71;
 						line-height: 28rpx;
 					}
-					.text{
+
+					.text {
 						font-size: 28rpx;
 						font-family: PingFangSC-Light, PingFang SC;
 						font-weight: 300;
@@ -443,38 +500,44 @@
 						line-height: 40rpx;
 						margin-top: 16rpx;
 					}
-					.time{
+
+					.time {
 						font-size: 26rpx;
 						font-family: PingFangSC-Regular, PingFang SC;
 						font-weight: 400;
 						color: #9E9E9E;
 						line-height: 26rpx;
 						margin-top: 14rpx;
-						text{
+
+						text {
 							margin-left: 24rpx;
 						}
 					}
-					.child{
+
+					.child {
 						padding-top: 20rpx;
 						display: flex;
-						.c-l{
-							image{
+
+						.c-l {
+							image {
 								width: 60rpx;
 								height: 60rpx;
 								border-radius: 50%;
 							}
 						}
-						.c-r{
+
+						.c-r {
 							padding-left: 18rpx;
-							
-							.name{
+
+							.name {
 								font-size: 28rpx;
 								font-family: PingFang-SC-Bold, PingFang-SC;
 								font-weight: bold;
 								color: #3A3D71;
 								line-height: 60rpx;
 							}
-							.text{
+
+							.text {
 								font-size: 28rpx;
 								font-family: PingFangSC-Light, PingFang SC;
 								font-weight: 300;
@@ -482,7 +545,8 @@
 								margin-top: 2rpx;
 								// line-height: 40rpx;
 							}
-							.time{
+
+							.time {
 								ont-size: 26rpx;
 								font-family: PingFangSC-Regular, PingFang SC;
 								font-weight: 400;

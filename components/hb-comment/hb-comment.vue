@@ -2,7 +2,7 @@
 	<view class="hb-comment">
 		<!-- 阅读数-start -->
 		<view class="totalView">
-			<span class="top-read">396条评论</span>
+			<span class="top-read">{{commentData.commentSize}}条评论</span>
 		</view>
 		<!-- 阅读数-end -->
 		<!-- 阅读数下边那条线-start -->

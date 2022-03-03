@@ -171,7 +171,6 @@
 					"navigationBarTextStyle": "black",
 					"enablePullDownRefresh": false
 				}
-
 			}, {
 				"path": "selectAccount",
 				"style": {
@@ -227,7 +226,9 @@
 					"path": "circleDetail/index",
 					"style": {
 						"navigationBarTitleText": "动态详情",
-						"navigationStyle": "custom"
+						"enablePullDownRefresh": false,
+						"navigationBarTextStyle": "black",
+						"navigationBarBackgroundColor": "#ffffff"
 					}
 				}
 			]
@@ -464,24 +465,23 @@
 						"navigationBarBackgroundColor": "#FFFFFF",
 						"enablePullDownRefresh": false
 					}
+				}, {
+					"path": "highScore/videoDetail",
+					"style": {
+						"navigationBarTitleText": "",
+						"navigationBarTextStyle": "white",
+						"navigationStyle": "custom",
+						"enablePullDownRefresh": false
+					}
+				}, {
+					"path": "highScore/evaluate",
+					"style": {
+						"navigationBarTitleText": "发表评价",
+						"navigationBarTextStyle": "black",
+						"navigationBarBackgroundColor": "#FFFFFF",
+						"enablePullDownRefresh": false
+					}
 				}
-				// , {
-				// 	"path": "highScore/videoDetail",
-				// 	"style": {
-				// 		"navigationBarTitleText": "",
-				// 		"navigationBarTextStyle": "white",
-				// 		"navigationStyle": "custom",
-				// 		"enablePullDownRefresh": false
-				// 	}
-				// }, {
-				// 	"path": "highScore/evaluate",
-				// 	"style": {
-				// 		"navigationBarTitleText": "发表评价",
-				// 		"navigationBarTextStyle": "black",
-				// 		"navigationBarBackgroundColor": "#FFFFFF",
-				// 		"enablePullDownRefresh": false
-				// 	}
-				// }
 			]
 		}
 	],

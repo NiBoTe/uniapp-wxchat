@@ -161,6 +161,9 @@
 		},
 		methods: {
 			addTap() {
+				if(this.imgsList.length >= 9){
+					return this.$mHelper.toast('最多只能上传9张')
+				}
 				// 从相册选择图片
 				const _this = this;
 				uni.chooseMedia({
@@ -348,7 +351,8 @@
 	.center {
 		min-height: 100vh;
 		background-color: #fff;
-
+		padding-bottom: 200rpx;
+		
 		.content {
 			padding-bottom: 160rpx;
 		}
@@ -396,6 +400,7 @@
 			padding-bottom: 40rpx;
 
 			.item {
+				margin-bottom: 24rpx;
 				position: relative;
 				text-align: center;
 				width: 220rpx;

@@ -1,8 +1,8 @@
 <template>
 	<view class="center">
 		<view class="header">
-			<textarea v-model="content" placeholder="此刻你的想法…" maxlength="150" />
-			<view class="header-length" :class="content.length ? 'active' : ''">{{content.length}}/150</view>
+			<textarea v-model="content" placeholder="此刻你的想法…" maxlength="120" />
+			<view class="header-length" :class="content.length ? 'active' : ''">{{content.length}}/120</view>
 		</view>
 
 		<view class="subheader u-flex u-row-between">
@@ -55,6 +55,10 @@
 		},
 		methods: {
 			addTap() {
+				
+				if(this.imgsList.length >= 9){
+					return this.$mHelper.toast('最多只能上传9张')
+				}
 				// 从相册选择图片
 				const _this = this;
 				uni.chooseImage({
@@ -91,7 +95,14 @@
 							console.log(i)
 							if (list.length - 1 > i) {
 								console.log('=========')
-								_this.handleUploadFile(list, i + 1);
+								
+								
+								if(_this.imgsList.length < 9) {
+									_this.handleUploadFile(list, i + 1);
+								} else {
+									return _this.$mHelper.toast('最多只能上传9张图片')
+								}
+								
 							}
 						});
 				}).catch(err => {
@@ -141,7 +152,7 @@
 	.center {
 		min-height: 100vh;
 		background-color: #fff;
-
+		padding-bottom: 200rpx;
 		.header {
 			height: 240rpx;
 			margin: 48rpx 34rpx 0;
@@ -182,6 +193,7 @@
 			margin: 0 34rpx;
 
 			.item {
+				margin-bottom: 24rpx;
 				position: relative;
 				text-align: center;
 				width: 220rpx;
