@@ -22,7 +22,6 @@
 			"style": {
 				"navigationBarTitleText": "广场",
 				"navigationStyle": "custom", // 隐藏系统导航栏
-				"navigationBarBackgroundColor": "#FFFFFF",
 				"navigationBarTextStyle": "black"
 			}
 
@@ -31,7 +30,6 @@
 			"style": {
 				"navigationBarTitleText": "名师",
 				"navigationBarTextStyle": "black",
-				"navigationBarBackgroundColor": "#ffffff",
 				"enablePullDownRefresh": false
 			}
 
@@ -85,7 +83,6 @@
 					"style": {
 						"navigationBarTitleText": "地址管理",
 						"navigationBarTextStyle": "black",
-						"navigationBarBackgroundColor": "#ffffff",
 						"enablePullDownRefresh": false
 					}
 				},
@@ -120,6 +117,14 @@
 						"navigationBarTextStyle": "black",
 						"enablePullDownRefresh": false
 					}
+				}, {
+					"path": "roleSelection",
+					"style": {
+						"navigationBarTitleText": "切换角色",
+						"navigationBarTextStyle": "black",
+						"enablePullDownRefresh": false
+					}
+
 				}
 			]
 		},
@@ -160,7 +165,6 @@
 				"path": "dynamicRelease",
 				"style": {
 					"navigationBarTitleText": "发布动态",
-					"navigationBarBackgroundColor": "#ffffff",
 					"navigationBarTextStyle": "black",
 					"enablePullDownRefresh": false
 				}
@@ -169,7 +173,6 @@
 				"path": "highScoreRelease",
 				"style": {
 					"navigationBarTitleText": "发布高分教材",
-					"navigationBarBackgroundColor": "#ffffff",
 					"navigationBarTextStyle": "black",
 					"enablePullDownRefresh": false
 				}
@@ -177,7 +180,6 @@
 				"path": "selectAccount",
 				"style": {
 					"navigationBarTitleText": "选择科目",
-					"navigationBarBackgroundColor": "#ffffff",
 					"navigationBarTextStyle": "black",
 					"enablePullDownRefresh": false
 				}
@@ -186,7 +188,6 @@
 				"path": "highScoreConfirm",
 				"style": {
 					"navigationBarTitleText": "1/5",
-					"navigationBarBackgroundColor": "#ffffff",
 					"navigationBarTextStyle": "black",
 					"enablePullDownRefresh": false
 				}
@@ -205,7 +206,6 @@
 				"style": {
 					"navigationBarTitleText": "评画详情",
 					"navigationBarTextStyle": "black",
-					"navigationBarBackgroundColor": "#FFFFFF",
 					"enablePullDownRefresh": false
 				}
 
@@ -214,7 +214,6 @@
 				"style": {
 					"navigationBarTitleText": "发表评价",
 					"navigationBarTextStyle": "black",
-					"navigationBarBackgroundColor": "#FFFFFF",
 					"enablePullDownRefresh": false
 				}
 			}]
@@ -229,8 +228,7 @@
 					"style": {
 						"navigationBarTitleText": "动态详情",
 						"enablePullDownRefresh": false,
-						"navigationBarTextStyle": "black",
-						"navigationBarBackgroundColor": "#ffffff"
+						"navigationBarTextStyle": "black"
 					}
 				}
 			]
@@ -242,24 +240,21 @@
 					"path": "logintype",
 					"style": {
 						"navigationBarTitleText": "",
-						"navigationBarTextStyle": "black",
-						"navigationBarBackgroundColor": "#ffffff"
+						"navigationBarTextStyle": "black"
 					}
 				}, {
 					"path": "register",
 					"style": {
 						"navigationBarTitleText": "注册账号",
 						"enablePullDownRefresh": false,
-						"navigationBarTextStyle": "black",
-						"navigationBarBackgroundColor": "#ffffff"
+						"navigationBarTextStyle": "black"
 					}
 				}, {
 					"path": "forgotPassword",
 					"style": {
 						"navigationBarTitleText": "找回密码",
 						"enablePullDownRefresh": false,
-						"navigationBarTextStyle": "black",
-						"navigationBarBackgroundColor": "#ffffff"
+						"navigationBarTextStyle": "black"
 					}
 
 				}, {
@@ -267,8 +262,7 @@
 					"style": {
 						"navigationBarTitleText": "角色选择",
 						"enablePullDownRefresh": false,
-						"navigationBarTextStyle": "black",
-						"navigationBarBackgroundColor": "#ffffff"
+						"navigationBarTextStyle": "black"
 					}
 
 				}, {
@@ -276,8 +270,7 @@
 					"style": {
 						"navigationBarTitleText": "",
 						"enablePullDownRefresh": false,
-						"navigationBarTextStyle": "black",
-						"navigationBarBackgroundColor": "#ffffff"
+						"navigationBarTextStyle": "black"
 					}
 
 				}, {
@@ -285,8 +278,7 @@
 					"style": {
 						"navigationBarTitleText": "",
 						"enablePullDownRefresh": false,
-						"navigationBarTextStyle": "black",
-						"navigationBarBackgroundColor": "#ffffff"
+						"navigationBarTextStyle": "black"
 					}
 
 				}, {
@@ -325,7 +317,6 @@
 					"path": "historyExQuestions/sureOrder",
 					"style": {
 						"navigationBarTitleText": "确认订单",
-						"navigationBarBackgroundColor": "#ffffff",
 						"navigationBarTextStyle": "black",
 						"enablePullDownRefresh": false
 					}
@@ -342,8 +333,7 @@
 					"style": {
 						"navigationBarTitleText": "名牌高校",
 						"enablePullDownRefresh": false,
-						"navigationBarTextStyle": "black",
-						"navigationBarBackgroundColor": "#FFFFFF"
+						"navigationBarTextStyle": "black"
 					}
 
 				}, {
@@ -351,8 +341,7 @@
 					"style": {
 						"navigationBarTitleText": "",
 						"enablePullDownRefresh": false,
-						"navigationBarTextStyle": "black",
-						"navigationBarBackgroundColor": "#FFFFFF"
+						"navigationBarTextStyle": "black"
 					}
 
 				}, {
@@ -398,7 +387,6 @@
 				}, {
 					"path": "top/studentList",
 					"style": {
-						"navigationBarBackgroundColor": "#FFFFFF",
 						"navigationBarTextStyle": "black",
 						"navigationBarTitleText": "考生列表"
 					}
@@ -440,7 +428,6 @@
 					"style": {
 						"navigationBarTitleText": "试卷拍摄",
 						"navigationBarTextStyle": "black",
-						"navigationBarBackgroundColor": "#FFFFFF",
 						"enablePullDownRefresh": false
 					}
 
@@ -464,7 +451,6 @@
 					"style": {
 						"navigationBarTitleText": "教材详情",
 						"navigationBarTextStyle": "black",
-						"navigationBarBackgroundColor": "#FFFFFF",
 						"enablePullDownRefresh": false
 					}
 				}, {
@@ -480,7 +466,6 @@
 					"style": {
 						"navigationBarTitleText": "发表评价",
 						"navigationBarTextStyle": "black",
-						"navigationBarBackgroundColor": "#FFFFFF",
 						"enablePullDownRefresh": false
 					}
 				}
@@ -489,8 +474,8 @@
 	],
 	"globalStyle": {
 		"navigationBarTitleText": "易考绘",
-		"navigationBarTextStyle": "white"
-		// "navigationBarBackgroundColor": "#4A99F8"
+		"navigationBarTextStyle": "white",
+		"navigationBarBackgroundColor": "#ffffff"
 	},
 	"tabBar": {
 		"custom": true,

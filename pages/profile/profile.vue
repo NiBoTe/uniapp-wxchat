@@ -60,7 +60,7 @@
 						</view>
 						<view class="right u-flex">
 							<image src="/static/my/star.png"></image>
-							<text>4.8</text>
+							<text>{{userInfo.publishScore || 0}}</text>
 						</view>
 					</view>
 					<view class="rate-item u-flex u-row-between">
@@ -70,7 +70,7 @@
 						</view>
 						<view class="right u-flex">
 							<image src="/static/my/star.png"></image>
-							<text>4.8</text>
+							<text>{{userInfo.paintEvaluateScore || 0}}</text>
 						</view>
 					</view>
 				</view>
@@ -93,7 +93,7 @@
 
 				<view class="content-box">
 					<!-- 评画 -->
-					<painting-evaluation></painting-evaluation>
+					<painting-evaluation :isFixed="isFixed"></painting-evaluation>
 				</view>
 			</view>
 		</view>
@@ -162,14 +162,11 @@
 				await this.$http
 					.post(getMyInfo)
 					.then(async r => {
-
-						console.log(r)
 						this.loading = false;
-						// var reg = /^(\d{3})\d*(\d{4})$/;
-						// r.telephone = r.telephone ? r.telephone.replace(reg, '$1****$2') : null
 						let user = r.data.user;
 						user.skilledMajor = user.skilledMajor ? user.skilledMajor.split(",") : []
 						this.userInfo = r.data.user;
+						this.$mStore.commit('login', this.userInfo);
 					})
 					.catch((err) => {
 						console.log(err)

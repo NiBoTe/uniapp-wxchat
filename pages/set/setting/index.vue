@@ -1,11 +1,6 @@
 <template>
-	
+
 	<view class="page-index">
-		
-		<u-navbar title="设置" titleColor="#1B1B1B" :background="background" :border-bottom="false">
-			
-		</u-navbar>
-		
 		<view class="contenBox">
 			<view class="content-view">
 				<view class="item" @tap="toAccount">
@@ -15,14 +10,14 @@
 						</view>
 						<image src="../../../static/public/arrow_right.png" mode=""></image>
 					</view>
-					
+
 				</view>
 			</view>
 		</view>
-		
+
 		<view class="contenBox">
 			<view class="content-view">
-				<view class="item">
+				<view class="item" @click="navTo('/pages/set/address/index')">
 					<view class="menu-title">我的收货地址</view>
 					<view class="right">
 						<view class="subtitle">
@@ -32,7 +27,7 @@
 				</view>
 			</view>
 		</view>
-		
+
 		<view class="contenBox">
 			<view class="content-view">
 				<view class="item">
@@ -51,7 +46,7 @@
 						<image src="../../../static/public/arrow_right.png" mode=""></image>
 					</view>
 				</view>
-				<view class="item">
+				<view class="item" @click="navTo('/pages/set/roleSelection')">
 					<view class="menu-title">切换角色</view>
 					<view class="right">
 						<view class="subtitle">
@@ -60,7 +55,7 @@
 					</view>
 				</view>
 			</view>
-	
+
 		</view>
 		<view class="contenBox">
 			<view class="content-view">
@@ -89,7 +84,7 @@
 					</view>
 				</view>
 			</view>
-			
+
 		</view>
 		<view class="contenBox">
 			<view class="content-view">
@@ -127,9 +122,9 @@
 					</view>
 				</view>
 			</view>
-			
+
 		</view>
-		
+
 		<view class="bottom">
 			<view class="loginOut" @tap="saveRequest">
 				退出登录
@@ -137,73 +132,68 @@
 		</view>
 
 
-	
-		
-		
-		
+
+
+
+
 	</view>
 </template>
 
 <script>
 	export default {
-		components: {
-		    },
-	  data() {
-	    return {
-			background: {
-				background: "#0680FD",
+		components: {},
+		data() {
+			return {
+				background: {
+					background: "#0680FD",
+				},
+			}
+		},
+		onLoad: function(options) {
+
+		},
+
+		methods: {
+			toAccount: function() {
+				// uni.navigateTo({
+				// 	url: '/pages/set/account/index'
+				// })
+
+				uni.navigateTo({
+					url: '/pages/set/changePhone/index'
+				})
 			},
-	    }
-	  },
-	  onUnload() {
-	
-	  },
+			navTo(url) {
+				uni.navigateTo({
+					url
+				})
+			}
 
-	  onLoad: function(options) {
-
-	  },
-	  
-	  computed:{
-
-	  },
-	  methods: {
-		  toAccount:function() {
-			  // uni.navigateTo({
-			  // 	url: '/pages/set/account/index'
-			  // })
-			  
-			  uni.navigateTo({
-			  	url: '/pages/set/changePhone/index'
-			  })
-		  }
-	
-
-	  },
+		},
 	}
 </script>
 
 <style lang="scss" scoped>
-
 	.page-index {
 		background-color: #F3F3F3;
 		height: 100vh;
 		overflow-x: hidden;
 	}
-	
-	
+
+
 	.contenBox {
 		padding: 0 30rpx;
 		margin-top: 28rpx;
-		
+
 	}
-	
+
 	.content-view {
 		border-radius: 24rpx;
 		width: 100%;
 		background: #fff;
 	}
-	
-	
+
+
 	.item {
 		width: 100%;
 		display: flex;
@@ -211,6 +201,7 @@
 		align-items: center;
 		padding: 0 28rpx;
 		height: 112rpx;
+
 		.menu-title {
 			font-size: 26rpx;
 			font-family: PingFang-SC-Bold, PingFang-SC;
@@ -220,10 +211,11 @@
 
 	}
 
-	.item .right{
+	.item .right {
 		display: flex;
 		justify-content: flex-start;
 		align-items: center;
+
 		.subtitle {
 			font-size: 26rpx;
 			font-family: PingFang-SC-Regular, PingFang-SC;
@@ -231,15 +223,16 @@
 			color: #8F9091;
 			margin-right: 24rpx;
 		}
-		image{
+
+		image {
 			width: 15rpx;
 			height: 28rpx;
 		}
-		
-	} 
-	
-	
-	.bottom{
+
+	}
+
+
+	.bottom {
 		width: 100%;
 		height: 112rpx;
 		display: flex;
@@ -247,7 +240,8 @@
 		flex-direction: row;
 		justify-content: center;
 		margin-top: 24rpx;
-		.loginOut{
+
+		.loginOut {
 			border-radius: 24rpx;
 			width: 682rpx;
 			height: 112rpx;
@@ -260,6 +254,4 @@
 			line-height: 112rpx;
 		}
 	}
-	
-
 </style>

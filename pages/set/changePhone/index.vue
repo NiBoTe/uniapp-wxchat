@@ -1,12 +1,6 @@
 <template>
 	
 	<view class="page-index">
-		
-		<u-navbar title="设置" titleColor="#1B1B1B" :background="background" :border-bottom="false">
-			
-		</u-navbar>
-		
-		
 		<view class="login-body">
 			<view class="login-view">
 				
