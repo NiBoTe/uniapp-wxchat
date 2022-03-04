@@ -1,12 +1,27 @@
 <template>
 	<view>
 		<tab-bar :selected="1"></tab-bar>
+
+		<view class="navbar">
+			<u-navbar :is-back="false" :title="!hasLogin ? '广场' : ' '" :border-bottom="hasLogin">
+				<view class="navbar-tabs" v-if="hasLogin">
+					<view class="navbar-tab" :class="tabCurrent === 0 ? 'active' : ''" @click="tabChange(0)">
+						<text>广场</text>
+						<view class="line"></view>
+					</view>
+					<view class="navbar-tab" :class="tabCurrent === 1 ? 'active' : ''" @click="tabChange(1)">
+						<text>关注</text>
+						<view class="line"></view>
+					</view>
+				</view>
+			</u-navbar>
+		</view>
 		<view class="list-view">
 			<view class="item" v-for="(item,index) in list" :key="index" @click="goDetail(item, index)">
 				<view class="item-top">
 					<view class="userInfo">
 						<view class="logo">
-							<image :src="item.user.headUrl"></image>
+							<u-avatar size="80" :src="item.user.headUrl"></u-avatar>
 						</view>
 						<view class="name">
 							{{item.user.fullName || ''}}
@@ -126,7 +141,8 @@
 		addLike,
 		snsBlackSave,
 		snsReportSave,
-		addComment
+		addComment,
+		followSnsList
 	} from '@/api/sns.js'
 	export default {
 		components: {
@@ -135,7 +151,14 @@
 		},
 		data() {
 			return {
+				hasLogin: false,
 				loadStatus: 'loadmore',
+				tabList: [{
+					name: '广场'
+				}, {
+					name: '关注'
+				}],
+				tabCurrent: 0,
 				popData: [{
 						title: '举报',
 						subTitle: '标题夸张，内容质量差、图片包含不良色情…',
@@ -200,9 +223,17 @@
 		onLoad() {
 			this.getList();
 		},
-
+		
+		onShow() {
+			this.hasLogin = this.$mStore.getters.hasLogin
+		},
 		methods: {
-
+			// tab
+			tabChange(e) {
+				this.tabCurrent = e;
+				this.current = 1;
+				this.getList()
+			},
 			// 收藏
 			favoriteTap(item, index) {
 				this.$http.post(addFavorite, null, {
@@ -237,12 +268,10 @@
 
 			getList() {
 				this.loadStatus = 'loading';
-				this.$http.post(snsList, {
+				this.$http.post(this.tabCurrent === 0 ? snsList : followSnsList, {
 					examDate: this.examDate,
 					examStatus: this.examStatus,
-					// firstMenuId: this.firstMenuId
 					province: this.province,
-					// secondMenuId: this.secondMenuId,
 					size: this.size,
 					current: this.current,
 				}).then(res => {
@@ -327,11 +356,9 @@
 				this.commentIndex = index
 			},
 			confirmTap(item, index) {
-
 				if (this.content.replace(/ /g, '') === '') {
 					return this.$mHelper.toast('请输入评论内容')
 				}
-
 				this.$http.post(addComment, {
 					replyId: 0,
 					content: this.content,
@@ -628,7 +655,49 @@
 			font-weight: 500;
 			color: #3A3D71;
 		}
+	}
 
+	.navbar-tabs {
+		position: relative;
+		top: 4rpx;
+		z-index: 999;
+		padding-left: 176rpx;
+		width: 100%;
+		display: flex;
+		justify-content: center;
+		align-items: center;
 
+		.navbar-tab {
+			margin: 0 50rpx;
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			align-items: center;
+
+			text {
+				font-size: 34rpx;
+				color: #9E9E9E;
+			}
+
+			.line {
+				margin-top: 20rpx;
+				width: 66rpx;
+				height: 6rpx;
+				background-color: transparent;
+				border-radius: 6rpx;
+			}
+
+			&.active {
+				text {
+					font-weight: bold;
+					color: #1B1B1B;
+				}
+
+				.line {
+					background-color: $u-type-primary;
+					border-radius: 6rpx;
+				}
+			}
+		}
 	}
 </style>

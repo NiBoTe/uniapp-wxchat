@@ -21,6 +21,7 @@
 			"path": "pages/circle/index",
 			"style": {
 				"navigationBarTitleText": "广场",
+				"navigationStyle": "custom", // 隐藏系统导航栏
 				"navigationBarBackgroundColor": "#FFFFFF",
 				"navigationBarTextStyle": "black"
 			}
@@ -54,6 +55,7 @@
 			"style": {
 				"navigationBarTitleText": "",
 				"navigationStyle": "custom",
+				"navigationBarTextStyle": "black",
 				"enablePullDownRefresh": false
 			}
 		}

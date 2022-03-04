@@ -3,10 +3,7 @@
 
 		<view class="page">
 			<view class="header">
-				<image
-					src="https://img1.baidu.com/it/u=1319713773,2074606622&fm=253&fmt=auto&app=138&f=JPG?w=889&h=500">
-				</image>
-
+				<image :src="userInfo.bgUrl"></image>
 				<view class="settings" :style="{top: StatusBar + 44 + 'px'}" @tap="toSetting">
 					<image src="/static/my/settings.png"></image>
 				</view>
@@ -16,9 +13,7 @@
 					<view class="u-flex">
 						<view class="head">
 							<view class="head-img u-flex u-row-center">
-								<image
-									src="https://img1.baidu.com/it/u=1319713773,2074606622&fm=253&fmt=auto&app=138&f=JPG?w=889&h=500">
-								</image>
+								<u-avatar size="186" :src="userInfo.headUrl"></u-avatar>
 							</view>
 
 							<view class="head-auth">
@@ -28,12 +23,12 @@
 						<!-- 0跳转默认展示关注tab页 -->
 						<view class="header-item" @click="checkfocusList(0)">
 							<text>关注</text>
-							<text class="num">652</text>
+							<text class="num">{{userInfo.followCount || 0}}</text>
 						</view>
 						<!-- 1跳转默认展示粉丝tab页 -->
 						<view class="header-item" @click="checkfocusList(1)" style="margin-left: 42rpx;">
 							<text>粉丝</text>
-							<text class="num">865w</text>
+							<text class="num">{{userInfo.fansCount || 0}}</text>
 						</view>
 					</view>
 
@@ -44,13 +39,15 @@
 				</view>
 
 				<view class="content-subheader">
-					<view class="name">程超老师</view>
+					<view class="name">{{userInfo.fullName}}</view>
 					<view class="subheader-list">
-						<view class="subheader-item">色彩</view>
+						<view class="subheader-item" v-for="(item, index) in userInfo.skilledMajor" :key="index">
+							{{item}}
+						</view>
 					</view>
 
 					<view class="subheader-text u-line-2">
-						文艺复兴是指13世纪末在意大利各城市兴起，以后扩展到西欧各国，于16世纪在欧洲盛行的一场思想文化运动，带来一段科学与艺术革命以后扩绘画领域来艺术革命以后扩…
+						{{userInfo.introduce || ''}}
 						<view class="fold" bindtap="fold" :data-text="foldText" :data-etc="textEtc"></view>
 					</view>
 				</view>
@@ -108,6 +105,10 @@
 	import tabBar from '@/components/tabbar/tabbar.vue'
 	import drawingColumn from '@/components/drawingColumn/drawingColumn.vue'
 	import PaintingEvaluation from '@/components/paintingEvaluation/paintingEvaluation.vue'
+
+	import {
+		getMyInfo
+	} from '@/api/userInfo.js'
 	export default {
 		components: {
 			tabBar,
@@ -117,6 +118,9 @@
 		data() {
 			return {
 				StatusBar: this.StatusBar,
+				loading: true,
+				hasLogin: false,
+				userInfo: {},
 				foldText: '展开',
 				textEtc: '...',
 				tabList: [{
@@ -140,7 +144,41 @@
 		onLoad() {
 
 		},
+
+		async onShow() {
+			await this.initData();
+		},
 		methods: {
+			async initData() {
+				this.hasLogin = this.$mStore.getters.hasLogin;
+				if (this.hasLogin) {
+					await this.getMemberInfo();
+				} else {
+					this.loading = false;
+				}
+			},
+			// 获取用户信息
+			async getMemberInfo() {
+				await this.$http
+					.post(getMyInfo)
+					.then(async r => {
+
+						console.log(r)
+						this.loading = false;
+						// var reg = /^(\d{3})\d*(\d{4})$/;
+						// r.telephone = r.telephone ? r.telephone.replace(reg, '$1****$2') : null
+						let user = r.data.user;
+						user.skilledMajor = user.skilledMajor ? user.skilledMajor.split(",") : []
+						this.userInfo = r.data.user;
+					})
+					.catch((err) => {
+						console.log(err)
+						this.hasLogin = false;
+						this.userInfo = {};
+						this.loading = false;
+						uni.stopPullDownRefresh();
+					});
+			},
 			tabChange(index) {
 				this.current = index
 				this.swiperCurrent = index;
@@ -148,10 +186,10 @@
 			fixedTap(e) {
 				this.isFixed = true
 			},
-			unfixedTap(){
+			unfixedTap() {
 				this.isFixed = false
 			},
-			toSetting:function() {
+			toSetting: function() {
 				uni.navigateTo({
 					url: '/pages/set/setting/index',
 				});
@@ -159,12 +197,12 @@
 			/**
 			 * @desc 点击关注和粉丝跳转至列表页
 			 */
-			checkfocusList(type){
+			checkfocusList(type) {
 				uni.navigateTo({
 					url: `/pages/profile/fansList?type=${type}`,
 				});
 			}
-			
+
 		}
 	}
 </script>

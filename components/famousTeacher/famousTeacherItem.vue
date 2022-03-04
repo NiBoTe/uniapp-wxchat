@@ -52,7 +52,7 @@
 						isFollow: !this.detail.isFollow
 					}
 				}).then(res => {
-					this.$mHelper.toast(!this.detail.isFollow ? '关注成功' : '取消成功');
+					this.$mHelper.toast(!this.detail.isFollow ? '关注成功' : '取消关注成功');
 					this.$set(this.detail, 'isFollow', !this.detail.isFollow)
 				}).catch(err => {
 					this.$mHelper.toast(err.msg)

@@ -5,7 +5,7 @@
 				<view class="item-top">
 					<view class="userInfo">
 						<view class="logo">
-							<image v-if="detail.user" :src="detail.user.headUrl"></image>
+							<u-avatar size="80" :src="detail.user.headUrl"></u-avatar>
 						</view>
 						<view class="name">
 							{{detail.user.fullName || ''}}
@@ -39,60 +39,59 @@
 				</view>
 				<view class="right">
 					<view class="name">
-						{{item.user.fullName}}
+						<text>{{item.user.fullName}}</text>
 					</view>
 					<view class="text">{{item.content}}</view>
 					<view class="time">
 						{{(moment(item.createTime).format('MM-DD'))}} <text @click="replyTap(item, index)">回复</text>
 					</view>
 
-					<view class="child" v-for="(itemc, indexc) in item.replyList" :key="indexc">
+					<view class="child" v-for="(itemc, indexc) in item.moreList" :key="indexc">
 						<view class="c-l">
 							<u-avatar size="80" :src="itemc.user.headUrl"></u-avatar>
 						</view>
 						<view class="c-r">
 							<view class="name">
-								{{itemc.user.fullName}}
+								<text>{{itemc.user.fullName}}</text>
+								<view class="author" v-if="itemc.appUserId === detail.user.id">作品作者</view>
+								<view class="to" v-if="itemc.replyUser">
+									<u-icon name="play-right-fill" color="#9E9E9E" size="26"></u-icon>
+								</view>
+								<view class="form" v-if="itemc.replyUser">{{itemc.replyUser.fullName}}</view>
 							</view>
 							<view class="text">
 								{{itemc.content}}
 							</view>
 							<view class="time">
-								{{(moment(itemc.createTime).format('MM-DD'))}}
+								{{(moment(itemc.createTime).format('MM-DD'))}} <text
+									@click="replyTap(itemc, indexc)">回复</text>
 							</view>
 						</view>
 					</view>
 
-					<view class="child">
-						<view class="c-l">
-							<image
-								src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fexp-picture.cdn.bcebos.com%2F4e168d5653bbf820b3d559b8ba21056105a36e86.jpg%3Fx-bce-process%3Dimage%2Fresize%2Cm_lfit%2Cw_500%2Climit_1&refer=http%3A%2F%2Fexp-picture.cdn.bcebos.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1648823704&t=fe16818e6a56567aadbde4a73fd7c50e"
-								mode=""></image>
+					<view class="more u-flex u-row-between" v-if="item.replyList.length">
+						<view class="left" @click="moreTap(item, index, true)">
+							<text v-if="!item.isMore">展开{{item.replyList.length}}条回复</text>
+							<text v-else>查看更多回复</text>
+							<image src="/static/public/arrow_down_text.png"></image>
 						</view>
-						<view class="c-r">
-							<view class="name">
-								程超老师
-							</view>
-							<view class="text">
-								跟大神你比我还是差远了😂
-							</view>
-							<view class="time">
-								12-20
-							</view>
+
+						<view class="right" v-if="item.isMore" @click="moreTap(item, index)">
+							<text>收起</text>
+							<image src="/static/public/arrow_down_text.png"></image>
 						</view>
 					</view>
-
 				</view>
 			</view>
 		</view>
 
 		<view class="footer">
 			<view class="footer-box u-flex u-row-between">
-				<view class="left u-flex" v-if="!isFocus" @click="isFocus = true">
+				<view class="left u-flex" v-if="!isFocus" @click="commentTap">
 					<text>写评论…</text>
 				</view>
 				<view class="left u-flex" v-else>
-					<input v-else type="text" :cursor-spacing="20" v-model="content" placeholder="写评论…" focus
+					<input type="text" :cursor-spacing="20" v-model="content" placeholder="写评论…" focus
 						@confirm="confirmTap()" @blur="isFocus = false" />
 				</view>
 
@@ -188,7 +187,8 @@
 				popShow2: false,
 				itemIndex: 0,
 				isFocus: false,
-				content: ''
+				content: '',
+				replyId: 0
 			};
 		},
 		onLoad(options) {
@@ -220,12 +220,17 @@
 				}).then(res => {
 					console.log(res)
 					this.total = res.data.total
+					let data = res.data.records
+					data.map(item => {
+						item['isMore'] = false;
+						item['moreList'] = []
+					})
 					if (this.current === 1) {
-						this.list = res.data.records;
+						this.list = data;
 					} else {
-						this.list = this.list.concat(res.data.records);
+						this.list = this.list.concat(data);
 					}
-					if (res.data.records.length <= 0) {
+					if (data.length <= 0) {
 						this.loadStatus = 'nomore';
 					} else {
 						this.loadStatus = 'loadmore';
@@ -274,7 +279,22 @@
 					this.$mHelper.toast(this.detail.isLike ? '点赞成功' : '取消点赞成功');
 				})
 			},
-			
+
+			// 更多
+			moreTap(item, index, type) {
+				if (item.isMore && type) {
+
+				} else {
+					if (!item.isMore) {
+						item.moreList = item.replyList
+					} else {
+						item.moreList = []
+					}
+
+					item.isMore = !item.isMore
+				}
+
+			},
 			// 操作面板
 			handleTap(e) {
 				this.$set(this.popData[1], 'title', `不看：${this.detail.user ? this.detail.user['fullName'] : ''}`)
@@ -308,8 +328,38 @@
 					this.$mHelper.toast(err.msg)
 				})
 			},
+
+			// 评论
+			commentTap() {
+				this.isFocus = true
+				this.replyId = 0;
+			},
 			// 回复
-			replyTap() {
+			replyTap(item, index) {
+				console.log(item)
+				// if(item.appUserId === this.detail.user.id) {
+				// 	return this.$mHelper.toast('不能自己回复自己哦！')
+				// }
+				this.isFocus = true;
+				this.replyId = item.id
+			},
+			confirmTap() {
+				if (this.content.replace(/ /g, '') === '') {
+					return this.$mHelper.toast('请输入评论内容')
+				}
+				this.$http.post(addComment, {
+					replyId: this.replyId,
+					content: this.content,
+					targetId: this.id
+				}).then(res => {
+					this.$mHelper.toast('评论成功')
+					this.content = ''
+					this.isFocus = false
+					this.current = 1;
+					this.getComment();
+				}).catch(err => {
+					this.$mHelper.toast(err.msg)
+				})
 
 			}
 		},
@@ -509,10 +559,33 @@
 
 						.name {
 							font-size: 28rpx;
-							font-family: PingFang-SC-Bold, PingFang-SC;
 							font-weight: bold;
 							color: #3A3D71;
-							line-height: 60rpx;
+							display: flex;
+							align-items: center;
+
+							.author {
+								margin-left: 12rpx;
+								padding: 0 10rpx;
+								height: 32rpx;
+								display: flex;
+								justify-content: center;
+								align-items: center;
+								background: #EFF2FF;
+								border-radius: 16rpx;
+								font-size: 22rpx;
+								color: #8D90B8;
+							}
+
+							.to {
+								margin: 0 16rpx 0 14rpx;
+							}
+
+							.form {
+								font-size: 28rpx;
+								font-weight: bold;
+								color: #9E9E9E;
+							}
 						}
 
 						.text {
@@ -528,6 +601,40 @@
 							ont-size: 26rpx;
 							color: #9E9E9E;
 							line-height: 26rpx;
+						}
+					}
+				}
+
+				.more {
+					margin-top: 40rpx;
+
+					.left {
+						padding-left: 0;
+						flex: 1;
+						display: flex;
+						align-items: center;
+						font-size: 28rpx;
+						color: #3A3D71;
+
+						image {
+							margin-left: 12rpx;
+							width: 24rpx;
+							height: 14rpx;
+						}
+					}
+
+					.right {
+						display: flex;
+						justify-content: flex-end;
+						align-items: center;
+						font-size: 28rpx;
+						color: #3A3D71;
+
+						image {
+							transform: rotate(180deg);
+							margin-left: 14rpx;
+							width: 24rpx;
+							height: 14rpx;
 						}
 					}
 				}

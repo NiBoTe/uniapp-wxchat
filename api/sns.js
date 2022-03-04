@@ -29,6 +29,9 @@ const snsDetail = `${sns}snsDetail`;
 // 评论列表
 const commentList = `${sns}commentList`;
 
+// 关注
+const followSnsList = `${sns}followSnsList`;
+
 export {
 	snsList,
 	snsSave,
@@ -38,5 +41,6 @@ export {
 	snsReportSave,
 	snsBlackSave,
 	snsDetail,
-	commentList
+	commentList,
+	followSnsList
 };
