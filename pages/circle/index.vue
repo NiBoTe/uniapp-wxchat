@@ -64,7 +64,8 @@
 				<view class="comment u-flex u-row-between" v-if="!item.noComment" @click.stop="commentTap(index)">
 					<view class="left">
 						<text v-if="commentIndex !== index">说一下你的想法...</text>
-						<input v-else type="text" :adjust-position="false" v-model="content" placeholder="说一下你的想法..." focus @confirm="confirmTap(item, index)" />
+						<input v-else type="text" :cursor-spacing="20" v-model="content" placeholder="说一下你的想法..." focus
+							@confirm="confirmTap(item, index)" />
 					</view>
 					<view class="right u-flex">
 						<image src="/static/public/applause.png"></image>
@@ -73,11 +74,9 @@
 					</view>
 				</view>
 			</view>
-			
+
 			<u-loadmore margin-top="30" margin-bottom="30" :status="loadStatus" @loadmore="addData"></u-loadmore>
 		</view>
-		
-		
 
 		<bubblePopups ref="bubblePopups" v-model="popShow" :popData="popData" :isTwoline="true" @tapPopup="tapPopup"
 			:x="344" :y="positionY" placement="top-end">
@@ -324,10 +323,15 @@
 				})
 			},
 			// 评论
-			commentTap(index){
+			commentTap(index) {
 				this.commentIndex = index
 			},
-			confirmTap(item, index){
+			confirmTap(item, index) {
+
+				if (this.content.replace(/ /g, '') === '') {
+					return this.$mHelper.toast('请输入评论内容')
+				}
+
 				this.$http.post(addComment, {
 					replyId: 0,
 					content: this.content,
@@ -467,7 +471,6 @@
 			.toolbar .left {
 				flex: 1;
 				display: flex;
-				justify-content: space-between;
 				align-items: center;
 
 				.tool-item {
@@ -531,21 +534,21 @@
 				height: 80rpx;
 				background: #F7F7F7;
 				border-radius: 16rpx;
-				
-				.left{
+
+				.left {
 					font-size: 24rpx;
 					font-weight: 500;
 					color: #959595;
-					
-					input{
+
+					input {
 						font-size: 24rpx;
 						font-weight: 500;
 						color: #3A3D71;
 					}
 				}
-				
-				.right{
-					image{
+
+				.right {
+					image {
 						margin-left: 30rpx;
 						width: 32rpx;
 						height: 32rpx;

@@ -88,7 +88,13 @@
 
 		<view class="footer">
 			<view class="footer-box u-flex u-row-between">
-				<view class="left u-flex">写评论…</view>
+				<view class="left u-flex" v-if="!isFocus" @click="isFocus = true">
+					<text>写评论…</text>
+				</view>
+				<view class="left u-flex" v-else>
+					<input v-else type="text" :cursor-spacing="20" v-model="content" placeholder="写评论…" focus
+						@confirm="confirmTap()" @blur="isFocus = false" />
+				</view>
 
 				<view class="right u-flex">
 					<view @click.stop="favoriteTap()">
@@ -181,6 +187,8 @@
 				popShow: false,
 				popShow2: false,
 				itemIndex: 0,
+				isFocus: false,
+				content: ''
 			};
 		},
 		onLoad(options) {
@@ -266,40 +274,11 @@
 					this.$mHelper.toast(this.detail.isLike ? '点赞成功' : '取消点赞成功');
 				})
 			},
+			
 			// 操作面板
 			handleTap(e) {
 				this.$set(this.popData[1], 'title', `不看：${this.detail.user ? this.detail.user['fullName'] : ''}`)
 				this.popShow = true;
-			},
-
-			tapPopup(e) {
-				if (e.index === 0) {
-					this.popShow = false;
-					this.$nextTick(() => {
-						this.popShow2 = true;
-					})
-				} else {
-					this.$http.post(snsBlackSave, {
-						isLike: true,
-						targetUserId: this.list[this.itemIndex].user.id,
-					}).then(res => {
-						this.current = 1;
-						this.get()
-					}).catch(err => {
-						this.$mHelper.toast(err.msg)
-					})
-				}
-			},
-			tapPopup2(e) {
-				this.$http.post(snsReportSave, {
-					snsId: this.list[this.itemIndex].id,
-					content: e.item.title
-				}).then(res => {
-					this.popShow2 = false;
-					this.$mHelper.toast('举报成功')
-				}).catch(err => {
-					this.$mHelper.toast(err.msg)
-				})
 			},
 			tapPopup(e) {
 				if (e.index === 0) {
@@ -348,11 +327,10 @@
 </script>
 
 <style lang="scss" scoped>
-	
-	
-	.detail{
+	.detail {
 		padding-bottom: 160rpx;
 	}
+
 	.list-view {
 		margin-bottom: 24rpx;
 		position: relative;
@@ -453,6 +431,7 @@
 
 	.comment {
 		padding-top: 38rpx;
+
 		.title {
 			text-align: center;
 			font-size: 32rpx;
@@ -584,12 +563,13 @@
 
 			.right {
 				flex: 1;
-				
-				& > view{
+
+				&>view {
 					display: flex;
 					justify-content: center;
 					align-items: center;
 				}
+
 				image {
 					margin-left: 44rpx;
 					width: 35rpx;

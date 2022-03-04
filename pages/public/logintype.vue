@@ -223,7 +223,7 @@
 					}));
 					this.$mHelper.toast('已为您授权登录');
 					
-					if(data.roleSelect) {
+					if(data.user.roleSelect) {
 						this.$mRouter.reLaunch({
 							route: '/pages/index/index'
 						});
@@ -250,7 +250,7 @@
 						openid: data.openid
 					}));
 					this.$mHelper.toast('已为您授权登录');
-					if(data.roleSelect) {
+					if(data.user.roleSelect) {
 						this.$mRouter.reLaunch({
 							route: '/pages/index/index'
 						});
