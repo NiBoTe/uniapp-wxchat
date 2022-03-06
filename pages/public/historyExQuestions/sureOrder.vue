@@ -1,10 +1,5 @@
 <template>
 	<view class="sureOrder">
-
-		<view class="navbar">
-			<u-navbar title="确认订单" back-icon-color="#1B1B1B" :border-bottom="false" title-color="#1B1B1B">
-			</u-navbar>
-		</view>
 		<view class="top">
 			<view class="top-t">
 				<view v-if="detail && detail.isNeedExpress">

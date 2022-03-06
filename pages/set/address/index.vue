@@ -19,7 +19,7 @@
 							<view class="address">{{item.areaNames.replace(/,/g, ' ')}}{{item.address}}</view>
 						</view>
 
-						<view class="update" @click="updateTap(item)">
+						<view class="update" @click.stop="updateTap(item)">
 							<image src="/static/public/update.png"></image>
 						</view>
 					</view>

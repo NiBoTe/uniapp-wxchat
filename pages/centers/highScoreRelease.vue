@@ -5,8 +5,8 @@
 				<input v-model="title" type="text" placeholder="输入标题" maxlength="20" />
 			</view>
 			<view class="header">
-				<textarea v-model="description" placeholder="输入详情内容…" maxlength="200" />
-				<view class="header-length" :class="description.length ? 'active' : ''">{{description.length}}/200
+				<textarea v-model="description" placeholder="输入详情内容…" maxlength="120" />
+				<view class="header-length" :class="description.length ? 'active' : ''">{{description.length}}/120
 				</view>
 			</view>
 
@@ -74,7 +74,8 @@
 				<view class="item u-flex u-row-between" v-else>
 					<view class="left">视频试看时长</view>
 					<view class="right u-flex u-row-center">
-						<input type="number" v-model="videoTrialDuration" placeholder="分钟，输入1-20的整数" maxlength="2" />
+						<input type="number" v-model="videoTrialDuration" @input="onInput" placeholder="分钟，输入1-20的整数"
+							maxlength="2" />
 					</view>
 				</view>
 				<view class="item u-flex u-row-between">
@@ -102,7 +103,7 @@
 		<u-popup v-model="popShow" mode="bottom" :safe-area-inset-bottom="true" border-radius="24" closeable>
 			<view class="pop-content">
 				<view class="pop-header">
-					<image :src="imgsList[selectIndex].url"></image>
+					<image :src="type === 'image' ? imgsList[selectIndex].url : imgsList[selectIndex].cover"></image>
 				</view>
 
 				<view class="pop-textarea">
@@ -121,7 +122,8 @@
 		<u-mask :show="maskShow" @click="maskShow = false">
 			<view class="video u-flex u-row-center">
 				<view class="video-box" @click.stop="">
-					<video :src="imgsList[selectIndex].url" controls :poster="imgsList[selectIndex].cover"></video>
+					<video id="videoContext" :src="imgsList[selectIndex].url" controls
+						:poster="imgsList[selectIndex].cover"></video>
 				</view>
 			</view>
 		</u-mask>
@@ -157,11 +159,24 @@
 				mediaType: ['image', 'video'],
 				videoCover: '',
 				maskShow: false,
+				videoContext: null
 			};
+		},
+		watch: {
+			maskShow(val) {
+
+				if (!val) {
+					this.videoContext.stop()
+				}
+
+			}
+		},
+		onReady() {
+			this.videoContext = uni.createVideoContext('videoContext')
 		},
 		methods: {
 			addTap() {
-				if(this.imgsList.length >= 9){
+				if (this.imgsList.length >= 9) {
 					return this.$mHelper.toast('最多只能上传9张')
 				}
 				// 从相册选择图片
@@ -219,11 +234,14 @@
 			},
 			// 删除
 			deleteTap(index) {
+
+				console.log(index)
 				if (index === -1) {
 					this.cover = ''
 				} else {
 					this.imgsList.splice(index, 1);
 					if (!this.imgsList.length) {
+						this.type = 'image';
 						this.mediaType = ['image', 'video']
 					}
 				}
@@ -342,6 +360,11 @@
 			prevVideoTap(index) {
 				this.selectIndex = index
 				this.maskShow = true
+			},
+			onInput(e) {
+				if (e.detail.value > 20) {
+					this.videoTrialDuration = 20
+				}
 			}
 		}
 	}
@@ -352,7 +375,7 @@
 		min-height: 100vh;
 		background-color: #fff;
 		padding-bottom: 200rpx;
-		
+
 		.content {
 			padding-bottom: 160rpx;
 		}

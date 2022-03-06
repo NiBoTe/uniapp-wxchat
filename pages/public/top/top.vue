@@ -94,7 +94,7 @@
 								<image :src="item.url"></image>
 								<view class="img-badge u-flex">
 									<text>¥</text>
-									<text>{{item.price}}</text>
+									<text>{{((item.price || 0) / 100).toFixed(2)}}</text>
 								</view>
 							</view>
 
@@ -146,7 +146,7 @@
 					<view class="pop-item" @click="statusItemTap('ONGOING')">正在进行</view>
 					<view class="pop-item" @click="statusItemTap('EXAM_END')">考试结束</view>
 					<u-gap height="14" bg-color="#F9F9F9"></u-gap>
-					<view class="pop-item">取消</view>
+					<view class="pop-item" @click="popShow = false">取消</view>
 				</view>
 			</view>
 		</u-popup>

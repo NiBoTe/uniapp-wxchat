@@ -40,10 +40,10 @@
 		</scroll-view>
 
 		<view class="footer u-flex u-row-center" v-if="type !== 2">
-			<view class="footer-btn disabled" v-if="!isUpload">考试时间未到</view>
-			<view class="footer-btn" v-if="isUpload && examDetail.isRecordVideo" style="margin-right: 24rpx;"
+			<view class="footer-btn disabled" v-if="!isStart">考试时间未到</view>
+			<view class="footer-btn" v-if="isStart && examDetail.isRecordVideo" style="margin-right: 24rpx;"
 				@click="submitTap">录制作画步骤</view>
-			<view class="footer-btn" v-if="isUpload" :class="!isUpload ? 'disabled' : '' " @click="uploadTap">上传试卷图片
+			<view class="footer-btn" v-if="isStart" :class="!isUpload ? 'disabled' : '' " @click="uploadTap">上传试卷图片
 			</view>
 			<view class="footer-btn" v-if="isHours" :class="isHours ? 'disabled' : '' ">该科目考试已经结束</view>
 		</view>
@@ -51,7 +51,7 @@
 		<view class="nodata" v-if="isBegin">
 			<image :src="setSrc('testContent_nodata.png')"></image>
 			<text class="nodata-title">{{examSubjectItem.subjectName}}</text>
-			<text class="nodata-subtitle">未开始考试，请在考前2分钟打开此页面考试</text>
+			<text class="nodata-subtitle">未开始考试，请在考前{{examSubjectItem.seenQuestionBeforeMinute}}分钟打开此页面考试</text>
 		</view>
 
 		<!--页面加载动画-->
@@ -84,6 +84,7 @@
 				examSubjectItem: {},
 				timer: null,
 				isHours: false,
+				isStart: false,
 				isUpload: false,
 			};
 		},
@@ -93,6 +94,7 @@
 				this.examId = options.examId;
 				this.type = Number(options.type) || 0;
 				this.isHours = this.diffHours();
+				this.isStart = this.isStartExam();
 				this.isUpload = this.diffUpload();
 				this.getData()
 			} else {
@@ -143,11 +145,15 @@
 					}
 				}, 1000)
 			},
+			
+			// 是否可以开始考试
+			isStartExam() {
+				let start= moment(`${this.examSubjectItem.subjectDate} ${this.examSubjectItem.subjectStarttime}`).subtract(this.examSubjectItem.seenQuestionBeforeMinute, 'm').format('YYYY-MM-DD HH:mm:ss')
+				let end = `${this.examSubjectItem.subjectDate} ${this.examSubjectItem.subjectEndtime}`
+				return this.$mHelper.timeInByDate(start, end) > 0
+			},
 			// 是否可以上传试卷
 			diffUpload() {
-				console.log(this.examSubjectItem.uploadPaperStarttime)
-				console.log(this.examSubjectItem.uploadPaperEndtime)
-				
 				return this.$mHelper.timeInByDate(this.examSubjectItem.uploadPaperStarttime, this.examSubjectItem
 					.uploadPaperEndtime) > 0
 			},
@@ -159,9 +165,11 @@
 			},
 			// 上传试卷图片
 			uploadTap() {
-				uni.navigateTo({
-					url: `/pages/public/top/testUpload?id=${this.examId}&examSubjectItem=${JSON.stringify(this.examSubjectItem)}&type=${this.type}`
-				})
+				if(this.isUpload){
+					uni.navigateTo({
+						url: `/pages/public/top/testUpload?id=${this.examId}&examSubjectItem=${JSON.stringify(this.examSubjectItem)}&type=${this.type}`
+					})
+				}
 			},
 			// 一个小时后
 			diffHours() {

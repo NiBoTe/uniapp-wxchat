@@ -277,6 +277,11 @@
 				}).then(res => {
 					this.detail.isLike = !this.detail.isLike
 					this.$mHelper.toast(this.detail.isLike ? '点赞成功' : '取消点赞成功');
+					
+					uni.$emit('selectHandle', {
+						key: 'isLike',
+						status:!this.detail.isLike
+					})
 				})
 			},
 

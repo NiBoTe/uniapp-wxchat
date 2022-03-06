@@ -35,7 +35,7 @@
 			</view>
 			<!-- top 美考入口 -->
 
-			<view class="top" @click="navTo('/pages/public/top/top')">
+			<view class="top" @click="navTo('/pages/public/top/top', true)">
 				<image :src="setSrc('home_top_banner.png')"></image>
 			</view>
 
@@ -229,6 +229,7 @@
 		},
 		data() {
 			return {
+				hasLogin: false,
 				StatusBar: this.StatusBar,
 				bannerList: [], // banner,
 				recentExam: [], // 近期考试
@@ -248,6 +249,9 @@
 			this.getMaterialList();
 			this.getTeacherList();
 			this.getHotList();
+		},
+		onShow() {
+			this.hasLogin = this.$mStore.getters.hasLogin;
 		},
 		methods: {
 			initData() {
@@ -299,9 +303,13 @@
 					console.log(err)
 				})
 			},
-			navTo(route) {
-
-				console.log(route)
+			navTo(route, isLogin) {
+				if(isLogin && !this.hasLogin){
+					this.$mRouter.push({
+						route: '/pages/public/logintype'
+					})
+					return
+				}
 				this.$mRouter.push({
 					route
 				})

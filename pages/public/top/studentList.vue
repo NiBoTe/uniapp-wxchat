@@ -35,7 +35,7 @@
 							<view class="left-style"></view>
 							<view class="left-text">{{item.name}}</view>
 						</view>
-						<view class="right">
+						<view class="right" v-if="examSubjectItem.isFaceDetect">
 							<text class="success" v-if="item.faceDetectState === 1">验证成功</text>
 							<text class="no" v-else-if="item.faceDetectState === 0">未验证</text>
 
@@ -44,8 +44,7 @@
 							</view>
 						</view>
 					</view>
-
-					<view class="item-subheader u-flex u-row-between error">
+					<view class="item-subheader u-flex u-row-between" :class="item.faceDetectState === -1 ? 'error' : ''">
 						<view class="left">准考证号 {{item.admissionTicketCode}}</view>
 						<view class="right u-flex u-row-center">
 							<u-icon name="clock" color="#9E9E9E" size="30"></u-icon>
@@ -363,7 +362,7 @@
 
 					&.error {
 						padding-bottom: 24rpx;
-						border-bottom: 2rpx solid #E9E9E9;
+
 					}
 
 					.left {
@@ -381,7 +380,8 @@
 				}
 
 				&-footer {
-					margin-top: 24rpx;
+					padding-top: 24rpx;
+					border-top: 2rpx solid #E9E9E9;
 
 					.left {
 						font-size: 26rpx;

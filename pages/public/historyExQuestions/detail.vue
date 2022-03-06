@@ -13,7 +13,7 @@
 			</u-navbar>
 		</view>
 		<view class="top">
-			<view class="img">
+			<view class="img" @click="previewTap">
 				<image :src="detail.hdImg !== '' ? detail.hdImg : detail.mosaicImg"
 					mode="widthFix"></image>
 			</view>
@@ -80,6 +80,7 @@
 					}
 				}).then(res => {
 					this.detail = res.data
+					this.detail.viewCount = Number(this.detail.viewCount || 0) + 1;
 					this.loading = false;
 				}).catch(err => {
 					console.log(err)
@@ -94,7 +95,8 @@
 					}
 				}).then(res => {
 					this.initData()
-					this.$mHelper.toast(!this.detail.isFavorite ? '收藏成功' : '取消成功')
+					this.$mHelper.toast(!this.detail.isFavorite ? '收藏成功' : '取消收藏成功')
+					uni.$emit('favorite', !this.detail.isFavorite);
 				}).catch(err => {
 					console.log(err)
 				})
@@ -104,6 +106,13 @@
 				this.$mRouter.push({
 					route: `/pages/public/historyExQuestions/sureOrder?id=${this.id}`
 				})
+			},
+			// 预览
+			previewTap(){
+				uni.previewImage({
+					current: 0,
+					urls: [this.detail.hdImg !== '' ? this.detail.hdImg : this.detail.mosaicImg]
+				});
 			}
 		},
 	}

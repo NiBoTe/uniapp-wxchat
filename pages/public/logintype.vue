@@ -191,21 +191,33 @@
 					platform: 'miniapp',
 					code: this.form.code
 				}
-				this.$http.post(loginOrRegisterBySmsCode, data).then(async r => {
-					const data = r.data;
-					await this.$mStore.commit('setToken', data.token);
-					await this.$mStore.commit('login', Object.assign(data.user, {
-						openid: data.openid
-					}));
-					this.$mHelper.toast('已为您授权登录');
-					this.$mRouter.reLaunch({
-						route: '/pages/index/index'
-					});
-					this.btnLoading = false;
-				}).catch(e => {
-					this.$mHelper.toast(e.msg)
-					this.btnLoading = false;
-				});
+				
+				this.$http.post(mpWechatLogin, {
+					code: this.wxcode
+				}).then(async r => {
+					
+				}).catch(err => {
+					if (err.code === 201) {
+						this.$http.post(loginOrRegisterBySmsCode, Object.assign(data, {
+							ticket: err.data.ticket
+						})).then(async r => {
+							const data = r.data;
+							await this.$mStore.commit('setToken', data.token);
+							await this.$mStore.commit('login', Object.assign(data.user, {
+								openid: data.openid
+							}));
+							this.$mHelper.toast('已为您授权登录');
+							this.$mRouter.reLaunch({
+								route: '/pages/index/index'
+							});
+							this.btnLoading = false;
+						}).catch(e => {
+							this.$mHelper.toast(e.msg)
+							this.btnLoading = false;
+						});
+					}
+				})
+				
 			},
 			
 			// 手机号密码登录

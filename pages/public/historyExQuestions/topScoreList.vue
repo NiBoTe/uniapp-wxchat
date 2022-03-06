@@ -7,7 +7,7 @@
 		</view>
 		<scroll-view scroll-y class="scroll-warper" @scrolltolower="lower">
 			<view class="list">
-				<view class="item" v-for="(item, index) in list" :key="index" @click="detailTap(item)">
+				<view class="item" v-for="(item, index) in list" :key="index" @click="detailTap(item, index)">
 					<view class="img">
 						<image :src="item.hdImg !== '' ? item.hdImg : item.mosaicImg"></image>
 					</view>
@@ -47,17 +47,25 @@
 				loadStatus: 'loadmore',
 				current: 1,
 				size: 10,
-				list: []
+				list: [],
+				selectIndex: -1,
 			}
 		},
 		onLoad(options) {
 			if (options.questionId) this.questionId = options.questionId;
-
 			this.initData()
+		},
+		onShow() {
+			if(this.selectIndex !== -1){
+				let num = Number(this.list[this.selectIndex].viewCount) + 1;
+				this.$set(this.list[this.selectIndex], 'viewCount', num)
+				
+			}
+			
+			
 		},
 		methods: {
 			initData() {
-
 				this.loadStatus = 'loading';
 				this.$http.post(examPaperImgList, {
 					questionId: this.questionId,
@@ -103,7 +111,14 @@
 				})
 			},
 			// 查看详情
-			detailTap(item){
+			detailTap(item, index){
+				
+				this.selectIndex = index;
+				console.log(this.selectIndex)
+				uni.$on('favorite', (data) => {
+					console.log(data)
+					this.$set(this.list[this.selectIndex], 'isFavorite', data)
+				})
 				this.$mRouter.push({
 					route: `/pages/public/historyExQuestions/detail?id=${item.id}`
 				})

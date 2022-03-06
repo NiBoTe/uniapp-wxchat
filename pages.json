@@ -310,6 +310,7 @@
 					"style": {
 						"navigationBarTitleText": "试卷详情",
 						"navigationStyle": "custom",
+						"navigationBarTextStyle": "black",
 						"enablePullDownRefresh": false
 					}
 				},

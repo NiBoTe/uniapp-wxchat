@@ -34,7 +34,7 @@
 					</view>
 
 					<view class="right u-flex" @click="provinceShow = true">
-						<input type="text" v-model="province" placeholder="请输入机构名称" />
+						<input type="text" disabled v-model="province" placeholder="请输入机构名称" />
 						<image src="/static/public/arrow_right.png"></image>
 					</view>
 				</view>
@@ -174,6 +174,9 @@
 					}
 				}
 				if(this.identification !== ''){
+					
+					console.log(this.identification)
+					console.log(this.$mHelper.checkIdCard(this.identification))
 					if(!this.$mHelper.checkIdCard(this.identification)) {
 						return this.$mHelper.toast('请输入正确的身份证号码')
 					}

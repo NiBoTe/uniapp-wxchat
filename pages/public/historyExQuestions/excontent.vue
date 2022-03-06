@@ -60,7 +60,7 @@
 				</view>
 			</view>
 		</scroll-view>
-		<view class="footer">
+		<view class="footer" v-if="question.havePaper">
 			<view class="footer-btn" @click="detailTap">高分试卷</view>
 		</view>
 	</view>

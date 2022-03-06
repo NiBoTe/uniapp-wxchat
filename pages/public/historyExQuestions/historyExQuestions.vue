@@ -5,7 +5,7 @@
 				title-color="#ffffff">
 			</u-navbar>
 		</view>
-		<view class="tab-bar background-one" :class="tabNumber === 'one'? 'background-one': 'background-two'">
+		<view class="tab-bar" :class="tabNumber === 'one' ? 'background-one': 'background-two'">
 			<view class="left" :class="tabNumber === 'one'? 'active': ''" @click="handleTab('one')">
 				高考
 			</view>
@@ -67,7 +67,7 @@
 									<view class="text">
 										{{itemb.content}}
 									</view>
-									<view class="time">
+									<view class="time" :style="{paddingBottom: !itemb.havePaper ? '30rpx' : 0}">
 										<view class="t-l">
 											<view class="l">考试时间</view>
 											<view class="r">{{moment(itemb.examDate).format('YYYY.MM.DD')}}</view>
@@ -76,9 +76,9 @@
 											查看详情<u-icon name="arrow-right" size="24" class="arrow"></u-icon>
 										</view>
 									</view>
-									<view class="line"></view>
-									<view class="bottom">
-										<view class="left" v-if="itemb.havePaper">
+									<view class="line" v-if="itemb.havePaper"></view>
+									<view class="bottom" v-if="itemb.havePaper">
+										<view class="left">
 											<image class="img" src="../../../static/public/examinationPaper_icon.png"
 												mode=""></image>
 											高分试卷
@@ -137,7 +137,7 @@
 			initData() {
 				this.$http.post(historyExamMenu, null, {
 					params: {
-						type: this.tabNumber === 'one' ? 0 : 1
+						type: this.tabNumber === 'one' ? 1 : 0
 					}
 				}).then(res => {
 					this.leftData = res.data
@@ -280,7 +280,7 @@
 		}
 
 		.background-two {
-			background: url(/static/public/tabOne.png) no-repeat center;
+			background: url(/static/public/tabTwo.png) no-repeat center;
 			background-size: 100%;
 		}
 

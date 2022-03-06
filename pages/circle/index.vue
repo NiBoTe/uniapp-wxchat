@@ -1,5 +1,5 @@
 <template>
-	<view>
+	<view class="container">
 		<tab-bar :selected="1"></tab-bar>
 
 		<view class="navbar">
@@ -216,16 +216,16 @@
 				itemIndex: 0,
 				reportIndex: 0,
 				commentIndex: -1,
-				content: ''
+				content: '',
 
 			};
 		},
 		onLoad() {
-			this.getList();
 		},
-		
 		onShow() {
 			this.hasLogin = this.$mStore.getters.hasLogin
+			this.current = 1;
+			this.getList();
 		},
 		methods: {
 			// tab
@@ -318,6 +318,7 @@
 				this.popShow = true;
 			},
 			goDetail(item, index) {
+			
 				uni.navigateTo({
 					url: `/pages/module/circleDetail/index?id=${item.id}`
 				})
@@ -333,8 +334,12 @@
 						isLike: true,
 						targetUserId: this.list[this.itemIndex].user.id,
 					}).then(res => {
-						this.current = 1;
-						this.getList()
+						if(res.data){
+							this.current = 1;
+							this.getList()
+						} else {
+							this.$mHelper.toast('拉黑失败')
+						}
 					}).catch(err => {
 						this.$mHelper.toast(err.msg)
 					})
@@ -392,6 +397,12 @@
 </script>
 
 <style lang="scss" scoped>
+	
+	
+	.container{
+		width: 100vw;
+		overflow-x: hidden;
+	}
 	.list-view {
 		padding-bottom: 160rpx;
 		position: relative;
@@ -659,7 +670,7 @@
 
 	.navbar-tabs {
 		position: relative;
-		top: 4rpx;
+		top: 0rpx;
 		z-index: 999;
 		padding-left: 176rpx;
 		width: 100%;

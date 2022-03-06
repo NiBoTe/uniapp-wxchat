@@ -223,9 +223,11 @@ export default {
 		return RegExp(/(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/).test(idcard);
 	},
 	// 首字母分组
-	segSort(arr, key = 'province') {
+	segSort(arr, key = 'examAddress') {
+		console.log(arr)
+		console.log(String.prototype.localeCompare)
 		if (!String.prototype.localeCompare) return null
-		let letters = 'abcdefghjklmnopqrstwxyz'.split('')
+		let letters = 'abcdefghjklmnopqrstwxyz1234567890'.split('')
 		let zh = '阿八嚓哒妸发旮哈讥咔垃痳拏噢妑七呥扨它穵夕丫帀'.split('')
 		let segs = []
 		letters.map((item, i) => {
@@ -240,7 +242,7 @@ export default {
 			})
 			if (cur.data.length) {
 				cur.data.sort(function(a, b) {
-					return a.localeCompare(b, 'zh')
+					return a[key].localeCompare(b[key], 'zh')
 				})
 				segs.push(cur)
 			}
@@ -275,8 +277,6 @@ export default {
 	},
 	// 时间段内
 	timeInByDate(start, end) {
-	console.log(moment().diff(moment(start)))
-	console.log(moment(end).diff(moment()))
 	  if (moment().diff(moment(start)) > 0 && moment(end).diff(moment()) > 0) {
 	    return true
 	  }

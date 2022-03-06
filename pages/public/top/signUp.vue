@@ -66,18 +66,18 @@
 						<text>考试地址</text>
 					</view>
 					<view class="right">
-						<input type="text" v-model="address" placeholder="请输入考试地址" />
+						<input type="text" v-model="address" disabled placeholder="请输入考试地址" />
 					</view>
 				</view>
 
-				<view class="base-item u-flex u-row-between" @click="receivingTap">
+				<view class="base-item u-flex u-row-between" @click="receivingTap" v-if="detail.isNeedExpress">
 					<view class="left">
 
 						<text v-if="detail.isNeedExpress" class="tips">*</text>
 						<text>收货地址</text>
 					</view>
 					<view class="right">
-						<input type="text" v-model="addressName" placeholder="请输入收货地址" />
+						<input type="text" v-model="addressName" disabled placeholder="请输入收货地址" />
 					</view>
 				</view>
 			</view>
@@ -223,15 +223,18 @@
 				this.initData();
 				this.getPeopleList();
 			}
-
+			let list = uni.getStorageSync('examineeInfos');
+			if(list !== '') {
+				this.examineeInfos = JSON.parse(list)
+			}
 			uni.$on('examineeInfoChange', (data) => {
 				if (data) {
-					console.log(data)
 					if (data.index < 0) {
 						this.examineeInfos.push(data.params)
 					} else {
 						this.$set(this.examineeInfos, data.index, data.params)
 					}
+					uni.setStorageSync('examineeInfos', JSON.stringify(this.examineeInfos))
 				}
 			})
 
@@ -244,7 +247,7 @@
 		},
 		computed: {
 			totalPrice() {
-				return (this.examineeInfos.length * (this.detail.price || 0))
+				return (this.examineeInfos.length * (this.detail.price || 0) / 100).toFixed(2) 
 			}
 		},
 		methods: {
@@ -391,10 +394,7 @@
 					payType: 1,
 					tradeType: 'JSAPI'
 				}).then(res => {
-					console.log(res)
-					
 					let params = res.data
-					
 					uni.hideLoading()
 					uni.requestPayment({
 					    provider: 'wxpay',
@@ -410,6 +410,7 @@
 									url: `/pages/public/top/paySuccess?orderId=${orderId}&payStatus=1`
 								})
 							}, 1500)
+							uni.removeStorageSync('examineeInfos')
 					    },
 					    fail: (err) => {
 							this.$mHelper.toast('支付失败')

@@ -25,7 +25,7 @@
 							<view class="right-bottom-left">考试费用</view>
 							<view class="right-bottom-right u-flex">
 								<text>¥</text>
-								<text>{{detail.price}}</text>
+								<text>{{(detail.price / 100).toFixed(2)}}</text>
 							</view>
 						</view>
 					</view>
@@ -121,7 +121,7 @@
 				<view class="card-address">
 					<view class="card-address-item" v-for="(item, index) in examAddressList" :key="index">
 						<view class="card-address-code">{{item.letter}}</view>
-						<view class="card-address-text" v-for="(itemc, indexc) in item.data">{{itemc.province}}</view>
+						<view class="card-address-text" v-for="(itemc, indexc) in item.data">{{itemc.examAddress}}</view>
 					</view>
 				</view>
 			</view>
@@ -143,7 +143,7 @@
 
 
 		<view class="footer" v-if="type === 0">
-			<view class="footer-btn" @click="submitTap">立即报名</view>
+			<view class="footer-btn" :class="!isSignUp ? 'disabled' : ''" @click="submitTap">立即报名</view>
 		</view>
 		<view class="footer" v-if="type === 1">
 			<view class="footer-btn" @click="submitNoTap" :class="!detail.errorState ? '' : 'disabled'">去考试</view>
@@ -176,6 +176,7 @@
 					backgroundSize: 'cover',
 				},
 				type: 0,
+				isSignUp: false,
 			};
 		},
 		onLoad(options) {
@@ -192,13 +193,17 @@
 					id: this.id
 				}).then(res => {
 					this.detail = res.data;
-					this.examAddressList = this.$mHelper.segSort(this.detail.examAddressList)
+					this.examAddressList = this.$mHelper.segSort(this.detail.examAddressList, 'examAddress')
+					this.isSignUp = this.diffSignUp();
 					this.loading = false;
 				}).catch(err => {
 					console.log(err)
 				})
 			},
 			submitTap() {
+				if(!this.isSignUp){
+					return
+				}
 				const checked = uni.getStorageSync('examChecked')
 				if (checked) {
 					this.$mRouter.push({
@@ -239,7 +244,11 @@
 				this.$mRouter.push({
 					route: `/pages/public/top/studentList?id=${this.id}&type=${this.type}`
 				})
-			}
+			},
+			// 是否可以报名
+			diffSignUp() {
+				return this.$mHelper.timeInByDate(`${this.detail.enrollStartTime} 00:00:00`, `${this.detail.enrollEndTime} 23:59:59`) > 0
+			},
 		}
 	}
 </script>
