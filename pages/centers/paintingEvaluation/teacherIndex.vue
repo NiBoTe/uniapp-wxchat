@@ -28,7 +28,7 @@
 				</view>
 
 				<view class="right u-flex" @click="popShow = true">
-					<text>选择科目</text>
+					<text>{{selectName}}</text>
 					<image src="/static/public/arrow_down.png"></image>
 				</view>
 			</view>
@@ -46,11 +46,21 @@
 				</template>
 			</u-waterfall>
 		</view>
+
+
+		<view class="footer" v-if="tabIndex === 1">
+			<view class="footer-btn" @click="submitTap">
+				<text>去评画</text>
+			</view>
+		</view>
 		<nodata v-if="!loading && !list.length"></nodata>
 		<u-loadmore v-else bg-color="rgb(240, 240, 240)" :status="loadStatus" @loadmore="addData"></u-loadmore>
 
 		<u-picker mode="selector" v-model="popShow" :range="selectList" range-key="name" @confirm="popTap">
 		</u-picker>
+
+
+
 	</view>
 </template>
 
@@ -85,7 +95,8 @@
 				skilledMajorId: '', // 科目id
 				tabCurrent: 0,
 				popShow: false,
-				selectList: []
+				selectList: [],
+				selectName: '选择科目'
 
 			};
 		},
@@ -112,27 +123,25 @@
 			},
 			getList() {
 				this.loadStatus = 'loading';
-				if (this.tabIndex === 0) {
-					this.$http.post(this.tabIndex === 0 ? paintEvaluateList : orderItemPaintEvaluateList, {
-						skilledMajorId: this.skilledMajorId,
-						state: this.tabCurrent === 0 ? '已评' : '未评',
-						size: this.size,
-						current: this.current,
-					}).then(res => {
-						if (this.current === 1) {
-							this.list = res.data.records;
-						} else {
-							this.list = this.list.concat(res.data.records);
-						}
-						if (res.data.records.length <= 0) {
-							this.loadStatus = 'nomore';
-						} else {
-							this.loadStatus = 'loadmore';
-						}
+				this.$http.post(this.tabIndex === 0 ? paintEvaluateList : orderItemPaintEvaluateList, {
+					skilledMajorId: this.skilledMajorId,
+					state: this.tabCurrent === 0 ? '已评' : '未评',
+					size: this.size,
+					current: this.current,
+				}).then(res => {
+					if (this.current === 1) {
+						this.list = res.data.records;
+					} else {
+						this.list = this.list.concat(res.data.records);
+					}
+					if (res.data.records.length <= 0) {
+						this.loadStatus = 'nomore';
+					} else {
+						this.loadStatus = 'loadmore';
+					}
 
-						this.loading = false;
-					})
-				}
+					this.loading = false;
+				})
 			},
 			addData() {
 				this.current++;
@@ -165,9 +174,24 @@
 
 			// 选择科目
 			popTap(e) {
-				this.skilledMajorId = this.tabIndex === 0 ? this.evaluatedList[e].id : this.notEvaluatedList[e].id;
+				if (this.tabCurrent === 0 && this.evaluatedList.length <= 0) return
+				if (this.tabCurrent === 1 && this.notEvaluatedList.length <= 0) return
+				if(this.tabCurrent === 0 && this.evaluatedList.length > 0) {
+					
+					this.selectName = this.evaluatedList[e].name;
+				}
+				if(this.tabCurrent === 1 && this.notEvaluatedList.length > 0) {
+					this.selectName = this.evaluatedList[e].name;
+				}
+				this.skilledMajorId = this.tabCurrent === 0 ? this.evaluatedList[e].id : this.notEvaluatedList[e].id;
 				this.current = 1;
 				this.getList()
+			},
+			// 去评画
+			submitTap() {
+				uni.navigateTo({
+					url: '/pages/centers/paintingEvaluation/teacherList'
+				})
 			}
 		},
 		onReachBottom() {
@@ -230,6 +254,7 @@
 				background-color: #fff;
 
 				.navbar-tabs {
+					margin-top: 24rpx;
 					flex: 1;
 					position: relative;
 					z-index: 999;
@@ -285,6 +310,34 @@
 						height: 18rpx;
 					}
 				}
+			}
+		}
+	}
+
+	.footer {
+		position: fixed;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		z-index: 999;
+		padding: 14rpx 34rpx;
+		padding-bottom: calc(14rpx + constant(safe-area-inset-bottom));
+		padding-bottom: calc(14rpx + env(safe-area-inset-bottom));
+		background-color: #fff;
+
+		&-btn {
+			height: 88rpx;
+			line-height: 88rpx;
+			text-align: center;
+			background: $u-type-primary;
+			box-shadow: 0px 6rpx 14rpx 2rpx rgba(235, 235, 235, 0.14);
+			border-radius: 44rpx;
+			font-size: 32rpx;
+			color: #fff;
+
+			&.disabled {
+				background: #EDEFF2;
+				color: #8F9091;
 			}
 		}
 	}

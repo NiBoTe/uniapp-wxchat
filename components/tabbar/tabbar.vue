@@ -10,12 +10,12 @@
 		<u-popup v-model="popShow" mode="bottom" border-radius="40">
 			<view class="pop-content">
 				<view class="pop-list">
-					<view class="pop-item">
+					<view class="pop-item" @click="itemTap(0)">
 						<image src="/static/public/want_painting.png"></image>
-						<text>我要评画</text>
+						<text>{{userInfo.roleSelect === 'teacher' ? '评画' : '我要评画'}}</text>
 					</view>
 
-					<view class="pop-item" @click="itemTap(1)">
+					<view class="pop-item" v-if="userInfo.roleSelect === 'teacher'" @click="itemTap(1)">
 						<image src="/static/public/my_textbook.png"></image>
 						<text>高分教材</text>
 					</view>
@@ -24,7 +24,7 @@
 						<image src="/static/public/dynamic_release.png"></image>
 						<text>发布动态</text>
 					</view>
-					<view class="pop-item">
+					<view class="pop-item" @click="itemTap(3)">
 						<image src="/static/public/my_application.png"></image>
 						<text>我的报考</text>
 					</view>
@@ -75,7 +75,8 @@
 						"pagePath": "/pages/profile/profile",
 						"text": "我的"
 					}
-				]
+				],
+				userInfo: this.$mStore.state.userInfo
 			}
 		},
 		methods: {
@@ -99,6 +100,11 @@
 				this.popShow = false
 				switch (index) {
 					case 0:
+						if (this.userInfo && this.userInfo.roleSelect !== 'teacher') {
+							this.navTo('/pages/centers/paintingEvaluation/index')
+						} else {
+							this.navTo('/pages/centers/paintingEvaluation/teacherIndex')
+						}
 						break;
 					case 1:
 						this.navTo('/pages/centers/highScoreRelease')
@@ -106,6 +112,10 @@
 					case 2:
 						this.navTo('/pages/centers/dynamicRelease')
 						break;
+					case 3:
+						this.navTo('/pages/centers/myApplication')
+						break;
+						
 				}
 			},
 			navTo(url) {

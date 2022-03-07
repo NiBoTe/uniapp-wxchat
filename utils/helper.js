@@ -254,8 +254,8 @@ export default {
 	certificatecode(code){
 		return code.replace(/^(.{4})(?:\d+)(.{3})$/,  "\$1****\$2")
 	},
-	// 格式化跑步时间
-	formatSeconds(value) {
+	// 格式化时间
+	formatSeconds(value, type = 'hour') {
 		let result = parseInt(value)
 		let h = Math.floor(result / 3600) < 10 ? '0' + Math.floor(result / 3600) : Math.floor(result / 3600);
 		let m = Math.floor((result / 60 % 60)) < 10 ? '0' + Math.floor((result / 60 % 60)) : Math.floor((result /
@@ -266,7 +266,7 @@ export default {
 		if (h !== '00') res += `${h}h`;
 		if (m !== '00') res += `${m}min`;
 		res += `${s}s`;
-		return `${h}:${m}:${s}`;
+		return type === 'hour' ? `${h}:${m}:${s}` : `${m}:${s}`;
 	},
 	// 格式化时长
 	formatMinutes(value) {

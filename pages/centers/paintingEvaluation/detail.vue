@@ -67,15 +67,90 @@
 						<image src="/static/public/voice_blue.png"></image>
 						<text>{{$mHelper.formatMinutes(detail.voiceCommentDuration)}}</text>
 					</view>
-					<view class="right-btn u-flex">
-						<image :src="setSrc('painting/play.png')"></image>
+					<view class="right-btn u-flex u-row-center" @click="playBtn()">
+						<u-icon v-if="!playStatus" name="play-right-fill" color="#fff" size="28"></u-icon>
+						<u-icon v-else name="pause" color="#fff" size="28"></u-icon>
 					</view>
 				</view>
 			</view>
 		</view>
 
+		<!-- 查看评论 -->
+		<view class="comment">
+			<view class="title">
+				{{total}}条评论
+			</view>
+			<view class="list" v-for="(item, index) in list" :key="index">
+				<view class="left">
+					<u-avatar size="80" :src="item.user.headUrl"></u-avatar>
+				</view>
+				<view class="right">
+					<view class="name">
+						<text>{{item.user.fullName}}</text>
+					</view>
+					<view class="text">{{item.content}}</view>
+					<view class="time">
+						{{(moment(item.createTime).format('MM-DD'))}} <text @click="replyTap(item, index)">回复</text>
+					</view>
 
-		<view class="footer">
+					<view class="child" v-for="(itemc, indexc) in item.moreList" :key="indexc">
+						<view class="c-l">
+							<u-avatar size="80" :src="itemc.user.headUrl"></u-avatar>
+						</view>
+						<view class="c-r">
+							<view class="name">
+								<text>{{itemc.user.fullName}}</text>
+								<view class="author" v-if="itemc.appUserId === detail.user.id">作品作者</view>
+								<view class="to" v-if="itemc.replyUser">
+									<u-icon name="play-right-fill" color="#9E9E9E" size="26"></u-icon>
+								</view>
+								<view class="form" v-if="itemc.replyUser">{{itemc.replyUser.fullName}}</view>
+							</view>
+							<view class="text">
+								{{itemc.content}}
+							</view>
+							<view class="time">
+								{{(moment(itemc.createTime).format('MM-DD'))}} <text
+									@click="replyTap(itemc, indexc)">回复</text>
+							</view>
+						</view>
+					</view>
+
+					<view class="more u-flex u-row-between" v-if="item.replyList.length">
+						<view class="left" @click="moreTap(item, index, true)">
+							<text v-if="!item.isMore">展开{{item.replyList.length}}条回复</text>
+							<text v-else>查看更多回复</text>
+							<image src="/static/public/arrow_down_text.png"></image>
+						</view>
+
+						<view class="right" v-if="item.isMore" @click="moreTap(item, index)">
+							<text>收起</text>
+							<image src="/static/public/arrow_down_text.png"></image>
+						</view>
+					</view>
+				</view>
+			</view>
+		</view>
+
+		<view class="footer" v-if="detail.state === 'completed'">
+			<view class="footer-box u-flex u-row-between">
+				<view class="left u-flex" v-if="!isFocus" @click="commentTap">
+					<text>说一下你的想法…</text>
+				</view>
+				<view class="left u-flex" v-else>
+					<input type="text" :cursor-spacing="20" v-model="content" placeholder="说一下你的想法…" focus
+						@confirm="confirmCommentTap()" @blur="isFocus = false" />
+				</view>
+
+				<view class="right u-flex">
+					<image src="/static/public/applause.png"></image>
+					<image src="/static/public/laugh.png"></image>
+					<image src="/static/public/cool.png"></image>
+				</view>
+			</view>
+		</view>
+
+		<view class="footer" v-else>
 			<view class="footer-btn" @click="submitTap">
 				<text>确认评画</text>
 			</view>
@@ -90,13 +165,20 @@
 </template>
 
 <script>
+	const innerAudioContext = uni.createInnerAudioContext()
 	import {
 		orderItemPaintEvaluateDetail,
-		notifyTeacherPaintEvaluate
+		notifyTeacherPaintEvaluate,
+		commentList,
+		addComment
 	} from '@/api/paint_evaluate_v2.js'
+
+
+	import moment from '@/common/moment.js'
 	export default {
 		data() {
 			return {
+				moment,
 				currentIndex: 0,
 				id: null,
 				detail: {},
@@ -105,13 +187,22 @@
 				titleStyle: {
 					fontSize: '36rpx',
 					color: '#1B1B1B'
-				}
+				},
+				playStatus: 0,
+				isFocus: false,
+				content: '',
+				replyId: 0,
+				total: 0,
+				current: 1,
+				size: 10,
+				list: [], // 考试列表
 			};
 		},
 		onLoad(options) {
 			if (options.id) {
 				this.id = options.id
 				this.initData()
+				this.getComment();
 			}
 		},
 		methods: {
@@ -119,7 +210,6 @@
 				this.$http.get(orderItemPaintEvaluateDetail, {
 					id: this.id
 				}).then(res => {
-					console.log(res)
 					this.detail = res.data
 				})
 			},
@@ -144,8 +234,114 @@
 				uni.navigateTo({
 					url: `/pages/centers/paintingEvaluation/evaluate?id=${this.id}`
 				})
+			},
+			// 播放
+			playBtn() {
+				innerAudioContext.src = this.detail.voiceComment
+				//在ios下静音时播放没有声音，默认为true，改为false就好了。
+				// innerAudioContext.obeyMuteSwitch = false
+				//点击播放
+				if (this.playStatus == 0) {
+					this.playStatus = 1;
+					innerAudioContext.play();
+				} else {
+					this.playStatus = 0;
+					innerAudioContext.pause()
+				}
+				// //播放结束
+				innerAudioContext.onEnded(() => {
+					this.playStatus = 0;
+					innerAudioContext.stop();
+				})
+			},
+			getComment() {
+				this.loadStatus = 'loading';
+				this.$http.post(commentList, {
+					current: this.current,
+					size: this.size,
+					targetId: this.id
+				}).then(res => {
+					console.log(res)
+					this.total = res.data.total
+					let data = res.data.records
+					data.map(item => {
+						item['isMore'] = false;
+						item['moreList'] = []
+					})
+					if (this.current === 1) {
+						this.list = data;
+					} else {
+						this.list = this.list.concat(data);
+					}
+					if (data.length <= 0) {
+						this.loadStatus = 'nomore';
+					} else {
+						this.loadStatus = 'loadmore';
+					}
+
+
+				}).catch(err => {
+					console.log(err)
+				})
+			},
+			addData() {
+				this.current++;
+				this.getComment();
+			},
+
+			// 更多
+			moreTap(item, index, type) {
+				if (item.isMore && type) {
+
+				} else {
+					if (!item.isMore) {
+						item.moreList = item.replyList
+					} else {
+						item.moreList = []
+					}
+
+					item.isMore = !item.isMore
+				}
+
+			},
+			// 评论
+			commentTap() {
+				this.isFocus = true
+				this.replyId = 0;
+			},
+			// 回复
+			replyTap(item, index) {
+				console.log(item)
+				// if(item.appUserId === this.detail.user.id) {
+				// 	return this.$mHelper.toast('不能自己回复自己哦！')
+				// }
+				this.isFocus = true;
+				this.replyId = item.id
+			},
+			confirmCommentTap() {
+				if (this.content.replace(/ /g, '') === '') {
+					return this.$mHelper.toast('请输入评论内容')
+				}
+				this.$http.post(addComment, {
+					replyId: this.replyId,
+					content: this.content,
+					targetId: this.id
+				}).then(res => {
+					this.$mHelper.toast('评论成功')
+					this.content = ''
+					this.isFocus = false
+					this.current = 1;
+					this.getComment();
+				}).catch(err => {
+					this.$mHelper.toast(err.msg)
+				})
+
 			}
-		}
+		},
+		onReachBottom() {
+			this.loadStatus = 'loading';
+			this.addData();
+		},
 	}
 </script>
 
@@ -373,10 +569,10 @@
 				}
 
 				&-btn {
-					image {
-						width: 60rpx;
-						height: 60rpx;
-					}
+					width: 60rpx;
+					height: 60rpx;
+					border-radius: 50%;
+					background-color: $u-type-primary;
 				}
 			}
 		}
@@ -410,6 +606,31 @@
 			}
 		}
 
+		&-box {
+			padding: 0 24rpx 0 26rpx;
+			width: 100%;
+			height: 80rpx;
+			background: #F7F7F7;
+			border-radius: 16rpx;
+
+			.left {
+				padding-left: 30rpx;
+				flex: 1;
+				height: 64rpx;
+				font-size: 26rpx;
+				font-weight: 500;
+				color: #959595;
+			}
+
+			.right {
+				image {
+					margin-left: 30rpx;
+					width: 32rpx;
+					height: 32rpx;
+				}
+
+			}
+		}
 	}
 
 	.modal-content {
@@ -417,5 +638,169 @@
 		font-size: 28rpx;
 		color: #1B1B1B;
 		line-height: 40rpx;
+	}
+
+	.comment {
+		padding: 38rpx 0;
+		background-color: #fff;
+
+		.title {
+			text-align: center;
+			font-size: 32rpx;
+			font-weight: 600;
+			color: #3A3D71;
+			line-height: 56rpx;
+			margin-bottom: 20rpx;
+		}
+
+		.list {
+			margin-top: 40rpx;
+			display: flex;
+
+			.left {
+				flex: 0 0 126rpx;
+				padding-left: 46rpx;
+
+				image {
+					width: 80rpx;
+					height: 80rpx;
+					border-radius: 50%;
+				}
+			}
+
+			.right {
+				padding-left: 18rpx;
+				padding-right: 20rpx;
+				width: 0;
+				flex: 1;
+
+				.name {
+					font-size: 28rpx;
+					font-family: PingFang-SC-Bold, PingFang-SC;
+					font-weight: bold;
+					color: #3A3D71;
+					line-height: 28rpx;
+				}
+
+				.text {
+					font-size: 28rpx;
+					font-family: PingFangSC-Light, PingFang SC;
+					font-weight: 300;
+					color: #3A3D71;
+					line-height: 40rpx;
+					margin-top: 16rpx;
+				}
+
+				.time {
+					font-size: 26rpx;
+					font-family: PingFangSC-Regular, PingFang SC;
+					font-weight: 400;
+					color: #9E9E9E;
+					line-height: 26rpx;
+					margin-top: 14rpx;
+
+					text {
+						margin-left: 24rpx;
+					}
+				}
+
+				.child {
+					padding-top: 20rpx;
+					display: flex;
+
+					.c-l {
+						image {
+							width: 60rpx;
+							height: 60rpx;
+							border-radius: 50%;
+						}
+					}
+
+					.c-r {
+						padding-left: 18rpx;
+
+						.name {
+							font-size: 28rpx;
+							font-weight: bold;
+							color: #3A3D71;
+							display: flex;
+							align-items: center;
+
+							.author {
+								margin-left: 12rpx;
+								padding: 0 10rpx;
+								height: 32rpx;
+								display: flex;
+								justify-content: center;
+								align-items: center;
+								background: #EFF2FF;
+								border-radius: 16rpx;
+								font-size: 22rpx;
+								color: #8D90B8;
+							}
+
+							.to {
+								margin: 0 16rpx 0 14rpx;
+							}
+
+							.form {
+								font-size: 28rpx;
+								font-weight: bold;
+								color: #9E9E9E;
+							}
+						}
+
+						.text {
+							font-size: 28rpx;
+							font-family: PingFangSC-Light, PingFang SC;
+							font-weight: 300;
+							color: #3A3D71;
+							margin-top: 2rpx;
+							// line-height: 40rpx;
+						}
+
+						.time {
+							ont-size: 26rpx;
+							color: #9E9E9E;
+							line-height: 26rpx;
+						}
+					}
+				}
+
+				.more {
+					margin-top: 40rpx;
+
+					.left {
+						padding-left: 0;
+						flex: 1;
+						display: flex;
+						align-items: center;
+						font-size: 28rpx;
+						color: #3A3D71;
+
+						image {
+							margin-left: 12rpx;
+							width: 24rpx;
+							height: 14rpx;
+						}
+					}
+
+					.right {
+						display: flex;
+						justify-content: flex-end;
+						align-items: center;
+						font-size: 28rpx;
+						color: #3A3D71;
+
+						image {
+							transform: rotate(180deg);
+							margin-left: 14rpx;
+							width: 24rpx;
+							height: 14rpx;
+						}
+					}
+				}
+			}
+		}
 	}
 </style>

@@ -40,6 +40,13 @@
 		</view>
 		<nodata v-if="!loading && !list.length"></nodata>
 		<u-loadmore v-else bg-color="rgb(240, 240, 240)" :status="loadStatus" @loadmore="addData"></u-loadmore>
+	
+	
+		<view class="footer">
+			<view class="footer-btn" @click="submitTap">
+				<text>去评画</text>
+			</view>
+		</view>
 	</view>
 </template>
 
@@ -134,6 +141,12 @@
 				uni.navigateTo({
 					url: `/pages/centers/paintingEvaluation/detail?id=${item.id}`
 				})
+			},
+			// 去评画
+			submitTap(){
+				uni.navigateTo({
+					url: '/pages/centers/paintingEvaluation/teacherList'
+				})
 			}
 		},
 		onReachBottom() {
@@ -147,7 +160,7 @@
 	.paintingEvaluation {
 		min-height: 100vh;
 		background-color: #F3F3F3;
-
+		padding-bottom: 160rpx;
 		.navbar {
 			height: 206rpx;
 			background-image: url('https://ykh-wxapp.oss-cn-hangzhou.aliyuncs.com/wx_applet_img/top_navbar_bg.png');
@@ -196,6 +209,35 @@
 			&-tabs {
 				padding: 26rpx 0 48rpx 0;
 				background-color: #fff;
+			}
+		}
+		
+		
+		.footer {
+			position: fixed;
+			bottom: 0;
+			left: 0;
+			right: 0;
+			z-index: 999;
+			padding: 14rpx 34rpx;
+			padding-bottom: calc(14rpx + constant(safe-area-inset-bottom));
+			padding-bottom: calc(14rpx + env(safe-area-inset-bottom));
+			background-color: #fff;
+		
+			&-btn {
+				height: 88rpx;
+				line-height: 88rpx;
+				text-align: center;
+				background: $u-type-primary;
+				box-shadow: 0px 6rpx 14rpx 2rpx rgba(235, 235, 235, 0.14);
+				border-radius: 44rpx;
+				font-size: 32rpx;
+				color: #fff;
+		
+				&.disabled {
+					background: #EDEFF2;
+					color: #8F9091;
+				}
 			}
 		}
 	}

@@ -43,7 +43,7 @@
 				</view> -->
 			</view>
 			
-			<view class="drawingBoard-next">
+			<view class="drawingBoard-next" @click="sumbit()">
 				<view class="drawingBoard-btn">下一步</view>
 			</view>
 			<!-- <view class="drawingBoard-fixed-bottom-item sumbit" @click="sumbit">提交</view> -->
@@ -142,11 +142,9 @@
 				e.stopPropagation();
 			},
 			sumbit() {
-
 				uni.canvasToTempFilePath({
 					canvasId: this.cid,
 					success: (res) => {
-						//console.log('success', res)
 						this.$emit('sumbit', res)
 					},
 					fail: (err) => {
