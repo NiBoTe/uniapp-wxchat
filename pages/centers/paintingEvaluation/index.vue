@@ -17,11 +17,14 @@
 
 		<view class="content">
 
-			<view class="content-tabs" v-if="!evaluatedList.length && !notEvaluatedList.length">
-				<drawingColumn ref="DrawingColumn" :list="tabIndex === 0 ? evaluatedList : notEvaluatedList"
-					key-name="name" @change="tabChange"></drawingColumn>
+			<view class="content-tabs" v-if="tabIndex === 0 && evaluatedList.length > 0">
+				<drawingColumn ref="DrawingColumn" :list="evaluatedList" key-name="name" @change="tabChange">
+				</drawingColumn>
 			</view>
-
+			<view class="content-tabs" v-if="tabIndex === 1 && notEvaluatedList.length > 0">
+				<drawingColumn ref="DrawingColumn" :list="notEvaluatedList" key-name="name" @change="tabChange">
+				</drawingColumn>
+			</view>
 			<u-waterfall v-model="list" ref="uWaterfall">
 				<template v-slot:left="{leftList}">
 					<view class="item" v-for="(item, index) in leftList" :key="index" @click="detailTap(item)">
@@ -73,13 +76,17 @@
 			initData() {
 				this.loading = true;
 				this.$http.get(orderItemPaintEvaluateSkilledMajorList).then(res => {
+					console.log(res)
 					this.evaluatedList = res.data.evaluatedList
 					this.notEvaluatedList = res.data.notEvaluatedList
-					if (this.evaluatedList) {
+					if (this.evaluatedList.length) {
 						this.skilledMajorId = this.evaluatedList[0].id
 						this.getList()
+					} else {
+						this.loading = false;
 					}
-
+				}).catch(err => {
+					console.log(err)
 				})
 			},
 			getList() {
@@ -103,7 +110,7 @@
 					} else {
 						this.loadStatus = 'loadmore';
 					}
-					
+
 					this.loading = false;
 				})
 			},
@@ -123,7 +130,7 @@
 				this.getList()
 			},
 			// 评画详情
-			detailTap(item){
+			detailTap(item) {
 				uni.navigateTo({
 					url: `/pages/centers/paintingEvaluation/detail?id=${item.id}`
 				})

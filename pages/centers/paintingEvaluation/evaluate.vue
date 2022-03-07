@@ -7,7 +7,9 @@
 				<view class="subtitle u-flex">
 					<u-rate :count="5" v-model="star" inactive-icon="star-fill" active-color="#35CE96"
 						inactive-color="#E3E3E3" gutter="16" size="32"></u-rate>
-					<text>非常差</text>
+					<text v-if="star <= 2">非常差</text>
+					<text v-else-if="star <= 4">一般</text>
+					<text v-else>优秀</text>
 				</view>
 			</view>
 		</view>

@@ -16,7 +16,7 @@
 
 			<!-- menus -->
 			<view class="menus u-flex">
-				<view class="menus-item" @click="navTo('/pages/centers/paintingEvaluation/index')">
+				<view class="menus-item" @click="singleTap">
 					<image src="/static/public/home_tab01.png"></image>
 					<text>专业评画</text>
 				</view>
@@ -304,7 +304,7 @@
 				})
 			},
 			navTo(route, isLogin) {
-				if(isLogin && !this.hasLogin){
+				if (isLogin && !this.hasLogin) {
 					this.$mRouter.push({
 						route: '/pages/public/logintype'
 					})
@@ -351,10 +351,25 @@
 			},
 			// 近期考试
 			testTap(index) {
-				console.log(index)
+
 				uni.navigateTo({
 					url: `/pages/public/top/top?type=${index}`
 				})
+			},
+			// 专业评画
+			singleTap() {
+
+				let userInfo = this.$mStore.state.userInfo;
+				if (userInfo && userInfo.roleSelect !== 'teacher') {
+					uni.navigateTo({
+						url: '/pages/centers/paintingEvaluation/index'
+					})
+				} else {
+					uni.navigateTo({
+						url: '/pages/centers/paintingEvaluation/teacherIndex'
+					})
+				}
+
 			}
 		}
 	}

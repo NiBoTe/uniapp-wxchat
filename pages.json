@@ -216,6 +216,23 @@
 					"navigationBarTextStyle": "black",
 					"enablePullDownRefresh": false
 				}
+			}, {
+				"path": "paintingEvaluation/teacherIndex",
+				"style": {
+					"navigationBarTitleText": "教师评画",
+					"navigationStyle": "custom",
+					"navigationBarTextStyle": "white",
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "paintingEvaluation/teacherEvaluate",
+				"style": {
+					"navigationBarTitleText": "评价",
+					"navigationBarTextStyle": "black",
+					"enablePullDownRefresh": false
+				}
+
 			}]
 		},
 		// 公共模块

@@ -27,8 +27,8 @@
 					<view class="item-header u-flex u-row-between">
 						<view class="left">{{item.name}}</view>
 						<view class="right">
-							<u-rate :count="5" v-model="item.stars" inactive-icon="star-fill" disabled active-color="#35CE96" inactive-color="#E3E3E3"
-								gutter="16" size="32"></u-rate>
+							<u-rate :count="5" v-model="item.stars" inactive-icon="star-fill" disabled
+								active-color="#35CE96" inactive-color="#E3E3E3" gutter="16" size="32"></u-rate>
 						</view>
 					</view>
 
@@ -55,7 +55,7 @@
 				<text v-if="detail.wait_evaluate === 'wait_evaluate'">系统已为您提醒该老师进行评画，如长时间未有评画请点击提醒点评按钮让TA为您评画哦！</text>
 				<text v-else>{{detail.textComment}}</text>
 			</view>
-			
+
 			<view class="tips u-flex u-row-between" v-if="detail.wait_evaluate === 'wait_evaluate'">
 				<view class="left">提醒TA来评画吧！</view>
 				<view class="right" @click="tipsTap">提醒点评</view>
@@ -80,9 +80,10 @@
 				<text>确认评画</text>
 			</view>
 		</view>
-		
-		
-		<u-modal v-model="modalShow" :mask-close-able="true" show-cancel-button :confirm-color="themeColor" cancel-color="#8F9091" border-radius="24" :title-style="titleStyle">
+
+
+		<u-modal v-model="modalShow" :mask-close-able="true" show-cancel-button :confirm-color="themeColor"
+			cancel-color="#8F9091" border-radius="24" :title-style="titleStyle" @confirm="confirmTap">
 			<view class="modal-content">确认后评画费用会打入到评画老师账户中，是否确认提交？</view>
 		</u-modal>
 	</view>
@@ -129,13 +130,19 @@
 				this.modalShow = true;
 			},
 			// 提醒点评
-			tipsTap(){
+			tipsTap() {
 				this.$http.post(notifyTeacherPaintEvaluate, {
 					id: this.id
 				}).then(res => {
 					this.$mHelper.toast('提醒成功！')
 				}).catch(err => {
 					this.$mHelper.toast(err.msg)
+				})
+			},
+			// 确认评画
+			confirmTap() {
+				uni.navigateTo({
+					url: `/pages/centers/paintingEvaluation/evaluate?id=${this.id}`
 				})
 			}
 		}
@@ -308,19 +315,20 @@
 				line-height: 40rpx;
 			}
 		}
-		
-		
-		
-		.tips{
+
+
+
+		.tips {
 			margin: 0 30rpx;
 			padding: 28rpx 0 36rpx;
-			.left{
+
+			.left {
 				font-size: 28rpx;
 				color: #3A3D71;
 			}
-			
-			.right{
-				
+
+			.right {
+
 				width: 134rpx;
 				height: 56rpx;
 				line-height: 56rpx;
@@ -401,10 +409,10 @@
 				color: #8F9091;
 			}
 		}
-		
+
 	}
-	
-	.modal-content{
+
+	.modal-content {
 		padding: 40rpx 40rpx 70rpx;
 		font-size: 28rpx;
 		color: #1B1B1B;

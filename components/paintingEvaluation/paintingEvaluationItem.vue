@@ -3,7 +3,7 @@
 		<view class="item">
 			<view class="item-image">
 				<u-lazy-load threshold="-450" :image="item.evaluateUrl"></u-lazy-load>
-				<voice-playback></voice-playback>
+				<!-- <voice-playback></voice-playback> -->
 			</view>
 
 			<view class="footer">
@@ -205,8 +205,8 @@
 				border-radius: 0px 12rpx 0px 12rpx;
 				font-size: 20rpx;
 				color: #FFFFFF;
-				
-				
+
+
 			}
 
 		}
