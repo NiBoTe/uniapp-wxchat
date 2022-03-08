@@ -233,7 +233,46 @@
 					"enablePullDownRefresh": false
 				}
 
-			}]
+			}, {
+				"path": "paintingEvaluation/drawingBoard",
+				"style": {
+					"navigationBarTitleText": "智能评画",
+					"navigationBarTextStyle": "black",
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "paintingEvaluation/teacherDetail",
+				"style": {
+					"navigationBarTitleText": "评画详情",
+					"navigationBarTextStyle": "black",
+					"enablePullDownRefresh": false
+				}
+			}, {
+				"path": "paintingEvaluation/tDetail",
+				"style": {
+					"navigationBarTitleText": "评画详情",
+					"navigationBarTextStyle": "black",
+					"enablePullDownRefresh": false
+				}
+			}, {
+				"path": "paintingEvaluation/teacherList",
+				"style": {
+					"navigationBarTitleText": "名师列表",
+					"navigationBarTextStyle": "black",
+					"enablePullDownRefresh": false
+				}
+
+			}    ,{
+                    "path" : "myApplication",
+                    "style" :                                                                                    
+                {
+                    "navigationBarTitleText": "我的报考",
+                    "enablePullDownRefresh": false
+                }
+                
+                }
+            ]
 		},
 		// 公共模块
 		{
@@ -340,13 +379,6 @@
 					}
 				},
 				{
-					"path": "paintingEvaluation/index",
-					"style": {
-						"navigationBarTitleText": "智能评画",
-						"enablePullDownRefresh": false
-					}
-
-				}, {
 					"path": "school/index",
 					"style": {
 						"navigationBarTitleText": "名牌高校",

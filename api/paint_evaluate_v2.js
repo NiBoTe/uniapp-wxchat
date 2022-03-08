@@ -21,6 +21,10 @@ const confirmCompleted = `${paint_evaluate_v2}user/confirmCompleted`;
 // 提醒老师
 const notifyTeacherPaintEvaluate = `${paint_evaluate_v2}user/notifyTeacherPaintEvaluate`;
 
+
+// 评论列表
+const commentList = `${paint_evaluate_v2}commentList`;
+
 export {
 	addComment,
 	orderItemPaintEvaluateSkilledMajorList,
@@ -28,5 +32,6 @@ export {
 	orderItemPaintEvaluateDetail,
 	paintEvaluateCommentTagList,
 	confirmCompleted,
-	notifyTeacherPaintEvaluate
+	notifyTeacherPaintEvaluate,
+	commentList
 };
