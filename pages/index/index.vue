@@ -2,7 +2,7 @@
 	<view class="container">
 		<view class="page">
 			<view class="header" :style="{paddingTop: StatusBar + 'px'}">
-				<view class="search u-flex u-row-between">
+				<view class="search u-flex u-row-between" @click="searchTap">
 					<view class="left u-flex">
 						<image src="/static/public/home_search.png"></image>
 						<text>梵高名画</text>
@@ -254,6 +254,11 @@
 			this.hasLogin = this.$mStore.getters.hasLogin;
 		},
 		methods: {
+			searchTap(){
+				uni.navigateTo({
+					url: '/pages/public/search'
+				})
+			},
 			initData() {
 				this.$http.get(banner, {
 					crowed: 0

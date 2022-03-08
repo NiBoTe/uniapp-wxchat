@@ -263,16 +263,69 @@
 					"enablePullDownRefresh": false
 				}
 
-			}    ,{
-                    "path" : "myApplication",
-                    "style" :                                                                                    
-                {
-                    "navigationBarTitleText": "我的报考",
-                    "enablePullDownRefresh": false
-                }
-                
-                }
-            ]
+			}, {
+				"path": "myApplication",
+				"style": {
+					"navigationBarTitleText": "我的报考",
+					"navigationStyle": "custom",
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "achievement/scoreList",
+				"style": {
+					"navigationBarTitleText": "成绩查询",
+					"navigationStyle": "custom",
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "achievement/search",
+				"style": {
+					"navigationBarTitleText": "成绩查询",
+					"navigationStyle": "custom",
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "achievement/detail",
+				"style": {
+					"navigationBarTitleText": "成绩信息",
+					"navigationStyle": "custom",
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "achievement/codeList",
+				"style": {
+					"navigationBarTitleText": "二维码信息",
+					"navigationStyle": "custom",
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "achievement/studentList",
+				"style": {
+					"navigationBarTitleText": "考生列表",
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "achievement/studentDetail",
+				"style": {
+					"navigationBarTitleText": "个人信息",
+					"navigationStyle": "custom",
+					"enablePullDownRefresh": false
+				}
+			}, {
+				"path": "achievement/updateStudent",
+				"style": {
+					"navigationBarTitleText": "修改学生信息",
+					"navigationStyle": "custom",
+					"enablePullDownRefresh": false
+				}
+
+			}]
 		},
 		// 公共模块
 		{
@@ -333,10 +386,10 @@
 					"path": "search",
 					"style": {
 						"navigationBarTitleText": "",
+						"navigationStyle": "custom",
 						"enablePullDownRefresh": false,
 						"navigationBarTextStyle": "black"
 					}
-
 				}, {
 					"path": "historyExQuestions/historyExQuestions",
 					"style": {

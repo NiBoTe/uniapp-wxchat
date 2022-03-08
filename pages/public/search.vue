@@ -1,6 +1,6 @@
 <template>
 	<view class="container">
-		<view class="search u-flex">
+		<view class="search u-flex" :style="{paddingTop: StatusBar + 44 + 'px'}">
 			<view class="back u-flex" @click="$mRouter.back()">
 				<image src="/static/public/arrow_left.png"></image>
 			</view>
@@ -88,6 +88,7 @@
 				themeColor: this.$mConstDataConfig.themeColor,
 				keyword: '',
 				searchStatus: false,
+				StatusBar: this.StatusBar,
 				tabList: [{
 					name: '考试'
 				}, {

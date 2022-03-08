@@ -1,13 +1,13 @@
 <template>
-	<view class="top">
+	<view class="detail">
 		<view class="navbar">
-			<u-navbar title="成绩详情" back-icon-color="#ffffff" :background="background" :border-bottom="false"
+			<u-navbar title="成绩查询" back-icon-color="#ffffff" :background="background" :border-bottom="false"
 				title-color="#ffffff">
 			</u-navbar>
 		</view>
 
-		<view class="content">
 
+		<view class="content">
 			<view class="table">
 				<view class="tr t-head">
 					<view class="td">{{newestScoreQuery.examName || ''}}</view>
@@ -37,7 +37,6 @@
 					<view class="td">{{item.rankInProvince}}</view>
 				</view>
 
-
 				<view class="detail">
 					<view class="more" @click="isMore = !isMore">
 						<text>试卷展示</text>
@@ -58,26 +57,8 @@
 					</view>
 				</view>
 			</view>
-
-
-			<!-- 考试成绩分析 -->
-			<view class="card">
-				<view class="card-header">考试成绩分析</view>
-				<view class="card-item" v-for="(item, index) in examNameList" :key="index">
-					<view class="card-style" :style="{backgroundColor: colorsList[index%4]}"></view>
-					<view class="card-text">{{item}}</view>
-				</view>
-			</view>
-
-			<!-- 科目 -->
-			<view class="card" v-for="(item, index) in courseList" :key="index">
-				<view class="card-title">科目：{{item.course}}</view>
-				<view class="card-content">
-					<qiun-data-charts type="column" :opts="opts" :chartData="chartsDataColumns[index]" />
-				</view>
-			</view>
-
 		</view>
+
 		<view class="footer u-flex u-row-center">
 			<image src="/static/public/logo.png"></image>
 			<text>易考绘成绩查询系统</text>
@@ -86,91 +67,25 @@
 </template>
 
 <script>
-	import {
-		scoreQuery
-	} from '@/api/exam.js'
 	export default {
 		data() {
 			return {
-				background: {
-					backgroundImage: "url('https://ykh-wxapp.oss-cn-hangzhou.aliyuncs.com/wx_applet_img/top_navbar_bg.png')",
-					backgroundSize: 'cover',
-				},
-				colorsList: ['#2C3AFF', '#35CE96', '#FD8626', '#FF334D'],
-				opts: {
-					fontSize: 14,
-					color: '#3A3D71',
-					"fontColor": '#3A3D71',
-					xAxis: {
-						disableGrid: true,
-						"disabled": true,
-						"axisLine": true,
-						"axisLineColor": "#E9E9E9",
-
-					},
-					yAxis: {
-						disableGrid: true,
-						"axisLine": true,
-						"axisLineColor": "#E9E9E9",
-						textColor: "#3A3D71",
-						textOffset: 30
-					},
-					legend: {
-						show: false,
-					},
-					extra: {
-						column: {
-							linearType: 'custom',
-							linearOpacity: 0.5,
-							barBorderCircle: false,
-							customColor: ['#2C3AFF', '#35CE96', '#FD8626', '#FF334D', '#2C3AFF', '#35CE96', '#FD8626',
-								'#FF334D', '#2C3AFF', '#35CE96', '#FD8626', '#FF334D'
-							]
-						}
-					}
-				},
-				chartsDataColumns: [],
-
 				isMore: false,
 				scoreItem: null,
-				newestScoreQuery: {},
-				courseList: [],
-				examNameList: [],
-
+				newestScoreQuery:{}
 			};
 		},
+		
 		onLoad(options) {
 			if (options.scoreItem) {
 				this.scoreItem = JSON.parse(options.scoreItem)
 				this.initData();
 			}
 		},
-		methods: {
+		methods:{
 			initData() {
-
-				this.chartsDataColumns = []
 				this.$http.post(scoreQuery, this.scoreItem).then(res => {
 					this.newestScoreQuery = res.data.newestScoreQuery;
-					this.courseList = res.data.courseList;
-					this.examNameList = res.data.examNameList;
-					subjects.map((item, index) => {
-						let scoreList = item.scoreList;
-						let arr = []
-						scoreList.map((a, b) => {
-							arr.push({
-								value: a,
-								color: '#ffffff'
-							})
-						})
-						this.chartsDataColumns.push({
-							"categories": item.scoreList,
-							"series": [{
-								"name": imte.course,
-								textOffset: -4,
-								"data": arr
-							}]
-						})
-					})
 				}).catch(err => {
 					this.$mHelper.toast(err.msg)
 				})
@@ -187,9 +102,11 @@
 </script>
 
 <style lang="scss" scoped>
-	.top {
-		min-height: 100vh;
-		background: #F3F3F3;
+	.detail {
+		.navbar {
+			background-image: url('https://ykh-wxapp.oss-cn-hangzhou.aliyuncs.com/wx_applet_img/top_navbar_bg.png');
+			background-size: cover;
+		}
 
 		.content {
 
@@ -283,66 +200,6 @@
 								font-size: 26rpx;
 								color: #9E9E9E;
 							}
-						}
-					}
-				}
-			}
-
-
-			.card {
-				margin: 0 34rpx 28rpx;
-
-				background: #FFFFFF;
-				box-shadow: 0px 6rpx 16rpx 6px rgba(230, 230, 230, 0.5);
-				border: 2rpx solid #E9E9E9;
-
-				&-header {
-					padding: 20rpx 0 16rpx;
-					border-bottom: 2rpx solid #E9E9E9;
-					text-align: center;
-					font-size: 30rpx;
-					font-weight: 500;
-					color: #3A3D71;
-				}
-
-
-				&-title {
-					padding: 30rpx 0 16rpx 26rpx;
-					font-size: 26rpx;
-					font-weight: 500;
-					color: #3A3D71;
-				}
-
-				&-content {
-					padding: 0 14rpx;
-				}
-
-				&-item {
-					display: flex;
-					align-items: center;
-					padding-left: 38rpx;
-
-					.card-style {
-						width: 22rpx;
-						height: 22rpx;
-						background: $u-type-primary;
-						border-radius: 4rpx;
-					}
-
-
-					.card-text {
-						flex: 1;
-						margin-left: 14rpx;
-						padding: 20rpx 0 16rpx;
-						border-bottom: 2rpx solid #E9E9E9;
-						font-size: 26rpx;
-						font-weight: 300;
-						color: #3A3D71;
-					}
-
-					&:last-of-type {
-						.card-text {
-							border-bottom: none;
 						}
 					}
 				}
