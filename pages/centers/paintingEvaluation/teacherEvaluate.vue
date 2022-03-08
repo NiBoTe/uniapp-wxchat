@@ -37,7 +37,6 @@
 				</view>
 			</view>
 
-
 			<u-popup v-model="audioShow" mode="center">
 				<view class="prompt-layer">
 					<view class="prompt-loader">
