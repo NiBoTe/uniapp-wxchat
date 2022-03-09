@@ -130,7 +130,7 @@
 				}
 				
 				if (this.name === '') {
-					return this.$mHelper.toast('请选择学生姓名')
+					return this.$mHelper.toast('请输入学生姓名')
 				}
 
 				if (this.identification !== '') {

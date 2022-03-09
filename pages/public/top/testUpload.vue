@@ -144,7 +144,9 @@
 					admissionTicketCode: this.code,
 					course: this.examSubjectItem.subjectName
 				}).then(res => {
-					this.studentDetail = res.data ? res.data[0] : {}
+					
+					this.studentDetail = res.data ? res.data[0] : {},
+					this.id = this.studentDetail.examId
 				}).catch(err => {
 					this.$mHelper.toast(err.msg)
 				})
@@ -221,7 +223,7 @@
 			testUpload(url) {
 				this.$http.post(examPaperUpload, {
 					admissionTicketCode: this.code,
-					course: this.examSubjectItem.subjectName,
+					course: this.examSubjectItem.subjectName ? this.examSubjectItem.subjectName : this.studentDetail.course,
 					examId: this.id,
 					img: url
 				}).then(res => {
