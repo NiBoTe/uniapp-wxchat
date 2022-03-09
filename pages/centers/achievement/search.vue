@@ -12,59 +12,52 @@
 					<text class="required">*</text>
 					<text>考试名称</text>
 				</view>
-				<view class="right">2021第一次美术水平测试模拟考</view>
-			</view>
-			<view class="label">
-				<text>机构名称</text>
+				<view class="right">{{detail.name}}</view>
 			</view>
 
-			<view class="item u-flex u-row-between">
-				<view class="left">
-					<input type="text" v-model="testName" placeholder="请选输入机构名称" />
+			<view v-if="isFilter('admission_ticket_code')">
+				<view class="label">
+					<text>准考证号</text>
 				</view>
-				<!-- <view class="right">
-					<image src="/static/public/arrow_right.png"></image>
-				</view> -->
-			</view>
 
-			<view class="label">
-				<text>准考证号</text>
-			</view>
-
-			<view class="item u-flex u-row-between">
-				<view class="left">
-					<input type="text" v-model="admissionTicketCode" placeholder="请输入准考证号" />
+				<view class="item u-flex u-row-between">
+					<view class="left">
+						<input type="text" v-model="admissionTicketCode" placeholder="请输入准考证号" />
+					</view>
 				</view>
-				
 			</view>
 
 
-			<view class="label">
-				<text class="required">*</text>
-				<text>学生姓名</text>
-			</view>
 
-			<view class="item u-flex u-row-between">
-				<view class="left">
-					<input type="text" v-model="name" placeholder="请输入学生姓名" />
+			<view v-if="isFilter('name')">
+				<view class="label">
+					<text class="required">*</text>
+					<text>学生姓名</text>
 				</view>
-				
-			</view>
 
-			<view class="label">
-				<text>身份证号</text>
-			</view>
-
-			<view class="item u-flex u-row-between">
-				<view class="left">
-					<input type="text" v-model="identification" placeholder="请输入身份证号" />
+				<view class="item u-flex u-row-between">
+					<view class="left">
+						<input type="text" v-model="name" placeholder="请输入学生姓名" />
+					</view>
 				</view>
-				
+			</view>
+
+
+			<view v-if="isFilter('identification')">
+				<view class="label">
+					<text>身份证号</text>
+				</view>
+
+				<view class="item u-flex u-row-between">
+					<view class="left">
+						<input type="text" v-model="identification" placeholder="请输入身份证号" />
+					</view>
+				</view>
 			</view>
 		</view>
 
 		<view class="footer">
-			<view class="footer-btn" :class="testName === '' ? 'disabled' : ''" @click="submitTap">查询</view>
+			<view class="footer-btn" :class="name === '' ? 'disabled' : ''" @click="submitTap">查询</view>
 		</view>
 	</view>
 </template>
@@ -85,7 +78,18 @@
 				admissionTicketCode: '',
 				identification: '',
 				name: '',
+				configureDetail: {},
+				queryCondition: [],
+				queryKey: ''
 			};
+		},
+
+		onLoad(options) {
+			if (options.id) {
+				this.id = options.id
+				this.initData()
+				this.getConfigure()
+			}
 		},
 		methods: {
 			initData() {
@@ -98,11 +102,27 @@
 					console.log(err)
 				})
 			},
-			submitTap() {
 
-				if (this.testName === '') {
-					return this.$mHelper.toast('请选择考试名称')
-				}
+			getConfigure() {
+				this.$http.post(scoreExamList, {
+					examId: this.id
+				}).then(res => {
+					console.log(res)
+					this.configureDetail = res.data.records.length ? res.data.records[0] : {},
+
+						this.queryCondition = res.data.records.length ? this.configureDetail.queryParamsObj
+						.queryCondition : []
+
+					this.queryKey = res.data.records.length ? this.configureDetail.queryKey : ''
+
+				}).catch(err => {
+					console.log(err)
+				})
+			},
+			isFilter(key) {
+				return this.queryCondition.filter(item => item === key)
+			},
+			submitTap() {
 
 				if (this.name === '') {
 					return this.$mHelper.toast('请选择学生姓名')
@@ -118,7 +138,7 @@
 					admissionTicketCode: this.admissionTicketCode,
 					identification: this.identification,
 					name: this.name,
-					queryKey: this.testItem.queryKey,
+					queryKey: this.queryKey,
 				}
 				uni.navigateTo({
 					url: `/pages/public/top/scoreDetail?scoreItem=${JSON.stringify(params)}`
@@ -137,14 +157,16 @@
 
 		.content {
 			padding: 0 34rpx;
-			
-			&-header{
-				.right{
+
+			&-header {
+				.right {
 					font-size: 26rpx;
 					color: #3A3D71;
 				}
+
 				border-bottom: 2rpx solid #E9E9E9;
 			}
+
 			.label {
 				padding: 40rpx 0 26rpx;
 

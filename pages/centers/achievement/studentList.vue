@@ -1,26 +1,24 @@
 <template>
 	<view class="studentList">
 		<view class="header">
-			<drawingColumn v-if="examDetail.examSubjectList" ref="DrawingColumn" :list="examDetail.examSubjectList"
-				key-name="subjectName" @change="tabChange"></drawingColumn>
 			<view class="tabs u-flex">
 				<view class="tab" :class="faceDetectState === '' ? 'active' : ''" @click="tabClick('')">
 					<view class="tab-num">{{total}}</view>
 					<view class="tab-name">全部</view>
 					<view class="tab-border"></view>
 				</view>
-				<view class="tab" :class="faceDetectState === 1 ? 'active' : ''" @click="tabClick(1)">
-					<view class="tab-num">{{successCount}}</view>
+				<view class="tab" :class="faceDetectState === 'tested' ? 'active' : ''" @click="tabClick('tested')">
+					<view class="tab-num">{{testedCount}}</view>
 					<view class="tab-name">已考</view>
 					<view class="tab-border"></view>
 				</view>
-				<view class="tab" :class="faceDetectState === -1 ? 'active' : ''" @click="tabClick(-1)">
-					<view class="tab-num">{{failCount}}</view>
+				<view class="tab" :class="faceDetectState === 'untested' ? 'active' : ''" @click="tabClick('untested')">
+					<view class="tab-num">{{untestedCount}}</view>
 					<view class="tab-name">未考</view>
 					<view class="tab-border"></view>
 				</view>
-				<view class="tab" :class="faceDetectState === 0 ? 'active' : ''" @click="tabClick(0)">
-					<view class="tab-num">{{notDetecteCount}}</view>
+				<view class="tab" :class="faceDetectState === 'not_pay' ? 'active' : ''" @click="tabClick('not_pay')">
+					<view class="tab-num">{{notPayCount}}</view>
 					<view class="tab-name">未支付</view>
 					<view class="tab-border"></view>
 				</view>
@@ -35,16 +33,19 @@
 							<view class="left-style"></view>
 							<view class="left-text">{{item.name}}</view>
 						</view>
-						<view class="right" v-if="examSubjectItem.isFaceDetect">
-							<text class="success" v-if="item.faceDetectState === 1">验证成功</text>
-							<text class="no" v-else-if="item.faceDetectState === 0">未验证</text>
-
-							<view class="right-btn u-flex u-row-center" v-else-if="item.faceDetectState === -1">
-								<text>去验证</text>
-							</view>
+						<view class="right" v-if="examSubjectItem.isFaceDetect && type !== 4">
+							<text class="success" v-if="item.state === 'tested'">已考试</text>
+							<text class="no" v-else-if="item.state === 'untested'">未考试</text>
+							<text class="no" v-else-if="item.state === 'not_pay'">未支付</text>
+						</view>
+						<view class="right" v-else-if="examSubjectItem.isFaceDetect && type === 4">
+							<text class="success" v-if="item.state === 'tested'">已考</text>
+							<text class="error" v-else-if="item.state === 'untested'">未考</text>
+							<text class="no" v-else-if="item.state === 'not_pay'">未支付</text>
 						</view>
 					</view>
-					<view class="item-subheader u-flex u-row-between" :class="item.faceDetectState === -1 ? 'error' : ''">
+					<view class="item-subheader u-flex u-row-between"
+						:class="item.faceDetectState === -1 ? 'error' : ''">
 						<view class="left">准考证号 {{item.admissionTicketCode}}</view>
 						<view class="right u-flex u-row-center">
 							<u-icon name="clock" color="#9E9E9E" size="30"></u-icon>
@@ -55,6 +56,10 @@
 			</view>
 			<u-loadmore margin-top="30" margin-bottom="30" :status="loadStatus" @loadmore="addData"></u-loadmore>
 		</scroll-view>
+
+		<view class="footer" v-if="type !== 4">
+			<view class="footer-btn" :class="name === '' ? 'disabled' : ''" @click="submitTap">批量查询</view>
+		</view>
 	</view>
 </template>
 
@@ -62,9 +67,7 @@
 	import drawingColumn from '@/components/drawingColumn/drawingColumn.vue'
 	import {
 		examDetail,
-		faceDetectExamineeList,
-		faceDetectGetEidToken,
-		faceDetectGetEidResult
+		examineeList,
 	} from '@/api/exam.js'
 
 	import moment from '@/common/moment.js'
@@ -84,11 +87,11 @@
 				course: '',
 				examSubjectItem: {},
 				list: [],
-				failCount: 0, // 失败数量
-				notDetecteCount: 0, // 未验证数量
-				successCount: 0, //成功数量
+				untestedCount: 0, // 未考
+				notPayCount: 0, // 未支付
+				testedCount: 0, // 已考
 				total: 0, // 全部
-				type: 0, // 考试状态
+				type: 0, // 类型
 			};
 		},
 		onLoad(options) {
@@ -115,18 +118,16 @@
 			},
 			getList() {
 				this.loadStatus = 'loading';
-				this.$http.post(faceDetectExamineeList, {
+				this.$http.post(examineeList, {
 					course: this.course,
 					examId: this.id,
 					current: this.current,
 					size: this.size,
 				}).then(res => {
-
-
 					let data = res.data
-					this.failCount = data.failCount;
-					this.notDetecteCount = data.notDetecteCount;
-					this.successCount = data.successCount
+					this.untestedCount = data.untestedCount;
+					this.notPayCount = data.notPayCount;
+					this.testedCount = data.testedCount
 					this.total = data.total;
 					if (this.current === 1) {
 						this.list = res.data.records;
@@ -151,50 +152,38 @@
 				this.current++;
 				this.getList();
 			},
-			tabChange(e) {
-				console.log(e)
-				this.course = e.item.subjectName;
-				this.examSubjectItem = e.item;
-				this.current = 1;
-				this.getList()
-			},
 			// tab状态
 			tabClick(tab) {
 				this.faceDetectState = tab;
 				this.current = 1;
 				this.getList();
 			},
-			// 去考试
+			// 批量查询
 			submitTap() {
-
-				this.$mRouter.push({
-					route: `/pages/public/top/testContent?examId=${this.id}&examSubjectItem=${JSON.stringify(this.examSubjectItem)}&type=${this.type}`
+				uni.navigateTo({
+					url: `/pages/centers/achievement/cardSearch?id=${this.id}&type=${this.type}`
 				})
-				// if(moment(`${this.examDetail.examStartTime} ${this.examSubjectItem.subjectStarttime}`).diff(moment(), 'seconds') > 0) {
-
-				// } else {
-				// 	this.$mRouter.push({
-				// 		route: `/pages/public/top/testRecording?id=${this.id}&course=${this.course}&type=${this.type}`
-				// 	})
-				// }
 
 			},
-			// 验证
+			// 查询
 			detailTap(item) {
-				if (item.faceDetectState !== 1) {
-					this.faceVerify(item.id)
+
+				console.log(item)
+
+				switch (this.type) {
+					case 4:
+						uni.navigateTo({
+							url: `/pages/centers/achievement/studentDetail?id=${item.id}`
+						})
+						break;
+					default:
+						uni.navigateTo({
+							url: `/pages/centers/achievement/cardInfo?id=${this.id}&item=${JSON.stringify(item)}&type=${this.type}`
+						})
+
 				}
 			},
-			faceVerify(id) {
-				this.$http.post(faceDetectGetEidToken, {
-					course: this.course,
-					id
-				}).then(res => {
-					this.goSDK(res.data)
-				}).catch(err => {
-					this.$mHelper.toast(err.msg)
-				})
-			},
+
 		},
 	}
 </script>
@@ -295,6 +284,10 @@
 							&.no {
 								color: $u-type-primary;
 							}
+
+							&.error {
+								color: #FF334D;
+							}
 						}
 
 						&-btn {
@@ -338,4 +331,30 @@
 		}
 	}
 
+	.footer {
+		position: fixed;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		padding: 14rpx 34rpx;
+		padding-bottom: calc(14rpx + constant(safe-area-inset-bottom));
+		padding-bottom: calc(14rpx + env(safe-area-inset-bottom));
+		background-color: #fff;
+
+		&-btn {
+			height: 88rpx;
+			line-height: 88rpx;
+			text-align: center;
+			background: $u-type-primary;
+			box-shadow: 0px 6rpx 14rpx 2rpx rgba(235, 235, 235, 0.14);
+			border-radius: 44rpx;
+			font-size: 32rpx;
+			color: #fff;
+
+			&.disabled {
+				background: #EDEFF2;
+				color: #8F9091;
+			}
+		}
+	}
 </style>

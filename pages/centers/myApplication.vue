@@ -26,14 +26,14 @@
 
 
 		<view class="subtabs u-flex">
-			<view class="subtab">
+			<view class="subtab" @click="navTo('/pages/centers/achievement/scoreList?type=1')">
 				<view class="subtab-header u-flex">
 					<image :src="setSrc('myApplication/subtab01.png')"></image>
 					<text>准考证查询</text>
 				</view>
 				<view class="subtab-text">在线快捷查询准考证信息</view>
 			</view>
-			<view class="subtab subtab02">
+			<view class="subtab subtab02" @click="navTo('/pages/centers/achievement/scoreList?type=2')">
 				<view class="subtab-header u-flex">
 					<image :src="setSrc('myApplication/subtab02.png')"></image>
 					<text>二维码查询</text>
@@ -47,7 +47,7 @@
 
 
 		<view class="list">
-			<view class="item u-flex">
+			<view class="item u-flex" @click="navTo('/pages/centers/achievement/scoreList?type=3')">
 				<view class="item-icon">
 					<image :src="setSrc('myApplication/item01.png')"></image>
 				</view>
@@ -58,7 +58,7 @@
 					</view>
 				</view>
 			</view>
-			<view class="item u-flex">
+			<view class="item u-flex" @click="navTo('/pages/centers/achievement/scoreList?type=4')">
 				<view class="item-icon">
 					<image :src="setSrc('myApplication/item01.png')"></image>
 				</view>
@@ -69,7 +69,7 @@
 					</view>
 				</view>
 			</view>
-			<view class="item u-flex">
+			<view class="item u-flex" @click="navTo('/pages/public/top/takeRecord')">
 				<view class="item-icon">
 					<image :src="setSrc('myApplication/item01.png')"></image>
 				</view>

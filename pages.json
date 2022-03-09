@@ -307,6 +307,7 @@
 				"path": "achievement/studentList",
 				"style": {
 					"navigationBarTitleText": "考生列表",
+					"navigationBarTextStyle": "black",
 					"enablePullDownRefresh": false
 				}
 
@@ -321,6 +322,22 @@
 				"path": "achievement/updateStudent",
 				"style": {
 					"navigationBarTitleText": "修改学生信息",
+					"navigationStyle": "custom",
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "achievement/cardSearch",
+				"style": {
+					"navigationBarTitleText": "准考证查询",
+					"navigationStyle": "custom",
+					"enablePullDownRefresh": false
+				}
+
+			}, {
+				"path": "achievement/cardInfo",
+				"style": {
+					"navigationBarTitleText": "准考证信息",
 					"navigationStyle": "custom",
 					"enablePullDownRefresh": false
 				}

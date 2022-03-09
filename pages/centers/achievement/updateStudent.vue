@@ -104,15 +104,20 @@
 			<view class="footer-btn" @click="submitTap">添加</view>
 		</view>
 
-		<u-picker mode="selector" v-model="provinceShow" :range="provinceList" range-key="name" @confirm="provinceTap"></u-picker>
+		<u-picker mode="selector" v-model="provinceShow" :range="provinceList" range-key="name" @confirm="provinceTap">
+		</u-picker>
 	</view>
 </template>
 
 <script>
 	import {
 		generatePostPolicy,
-		areaList
+		areaList,
 	} from '@/api/basic.js'
+
+	import {
+		examineeUpdate
+	} from '@/api/exam.js'
 	export default {
 		data() {
 			return {
@@ -130,6 +135,7 @@
 				sex: '女',
 				provinceShow: false,
 				provinceList: [],
+				id: null,
 				sexList: [{
 						name: '女',
 						value: '女'
@@ -142,21 +148,23 @@
 			};
 		},
 		onLoad(options) {
-			if(options.item){
+			if (options.item) {
 				let item = JSON.parse(options.item)
 				
+				this.id = item.id;
 				this.name = item.name;
 				this.province = item.province;
 				this.identification = item.identification;
 				this.mobile = item.mobile;
 				this.url = item.url;
 				this.sex = item.sex;
-				
+
 				this.index = options.index
 			}
 			this.getAreaList()
 		},
 		methods: {
+
 			getAreaList() {
 				this.$http.get(areaList).then(res => {
 					console.log(res)
@@ -164,36 +172,43 @@
 				})
 			},
 			submitTap() {
-				if(this.name === ''){
+				if (this.name === '') {
 					return this.$mHelper.toast('请输入考生姓名')
 				}
-				
-				if(this.mobile !== ''){
-					if(!this.$mHelper.checkMobile(this.mobile)) {
+
+				if (this.mobile !== '') {
+					if (!this.$mHelper.checkMobile(this.mobile)) {
 						return this.$mHelper.toast('请输入正确的手机号码')
 					}
 				}
-				if(this.identification !== ''){
-					
+				if (this.identification !== '') {
+
 					console.log(this.identification)
 					console.log(this.$mHelper.checkIdCard(this.identification))
-					if(!this.$mHelper.checkIdCard(this.identification)) {
+					if (!this.$mHelper.checkIdCard(this.identification)) {
 						return this.$mHelper.toast('请输入正确的身份证号码')
 					}
 				}
-				uni.$emit('examineeInfoChange', {
-					params: {
-						gender: this.sex,
-						identification: this.identification,
-						mobile: this.mobile,
-						name: this.name,
-						province: this.province,
-						url: this.url,
-					},
-					index: this.index
+
+				let params = {
+					id:this.id,
+					gender: this.sex,
+					identification: this.identification,
+					mobile: this.mobile,
+					name: this.name,
+					province: this.province,
+					url: this.url,
+				};
+
+				this.$http.post(examineeUpdate, params).then(res => {
+					console.log(res)
+				}).catch(err => {
+					console.log(err)
+					
+					this.$mHelper.toast(err.msg)
 				})
-				
-				this.$mRouter.back();
+
+				// this.$mRouter.back();
 			},
 			radioGroupChange(e) {
 				console.log(e)
@@ -240,7 +255,7 @@
 				})
 			},
 			// 选择省份
-			provinceTap(e){
+			provinceTap(e) {
 				console.log(e)
 				this.province = this.provinceList[e].name
 			}

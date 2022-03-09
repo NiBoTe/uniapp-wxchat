@@ -8,15 +8,15 @@
 		
 		<view class="header u-flex">
 			<view class="header-img">
-				<view class="default u-flex u-row-center">
+				<view class="default u-flex u-row-center" v-if="userInfo.url === ''">
 					<image :src="setSrc('myApplication/user.png')"></image>
 				</view>
-				<!-- <image src="https://img0.baidu.com/it/u=1721391133,702358773&fm=253&fmt=auto&app=120&f=JPEG?w=500&h=625"></image> -->
+				<image v-else :src="userInfo.url"></image>
 			</view>
 			
 			<view class="header-main">
 				<view class="name u-flex u-row-between">
-					<text>王梦琦</text>
+					<text>{{userInfo.name}}</text>
 					<view class="update u-flex u-row-center" @click="updateTap">
 						<image :src="setSrc('myApplication/update.png')"></image>
 						<text>修改信息</text>
@@ -25,16 +25,16 @@
 				
 				<view class="text u-flex">
 					<text>性别</text>
-					<image :src="setSrc('myApplication/woman.png')"></image>
-					<text>女</text>
+					<image :src="setSrc(`myApplication/${userInfo.gender === '女' ? 'woman' : 'man'}.png`)"></image>
+					<text>{{userInfo.gender}}</text>
 				</view>
 				
 				<view class="text u-flex">
-					<text>手机号：18561945135</text>
+					<text>手机号：{{userInfo.mobile}}</text>
 				</view>
 				
 				<view class="text u-flex">
-					<text>身份证号：331045199608260</text>
+					<text>身份证号：{{userInfo.identification}}</text>
 				</view>
 			</view>
 		</view>
@@ -44,19 +44,21 @@
 			<view class="item u-flex u-row-between">
 				<view class="left">报名状态</view>
 				<view class="right">
-					<text class="nopay">未支付</text>
+					<text class="success" v-if="userInfo.state === 'tested'">已考</text>
+					<text class="error" v-else-if="userInfo.state === 'untested'">未考</text>
+					<text class="nopay" v-else-if="userInfo.state === 'not_pay'">未支付</text>
 				</view>
 			</view>
 			<view class="item u-flex u-row-between">
 				<view class="left">考生来源</view>
 				<view class="right">
-					<text>浙江省杭州市</text>
+					<text>{{userInfo.province}}</text>
 				</view>
 			</view>
 			<view class="item u-flex u-row-between">
 				<view class="left">报名时间</view>
 				<view class="right">
-					<text>2021.08.28</text>
+					<text>{{userInfo.createTime}}</text>
 				</view>
 			</view>
 			
@@ -66,16 +68,39 @@
 </template>
 
 <script>
+	
+	import { examineeDetail } from '@/api/exam.js'
 	export default {
 		data() {
 			return {
-				
+				id: null,
+				userInfo: {}
 			};
 		},
+		
+		onLoad(options) {
+			if (options.id) {
+				this.id = options.id
+				
+			}
+		},
+		onShow() {
+			this.initData()
+		},
 		methods:{
+			initData(){
+				this.$http.post(examineeDetail, {
+					id: this.id
+				}).then(res => {
+					console.log(res)
+					this.userInfo = res.data
+				}).catch(err => {
+					console.log(err)
+				})
+			},
 			updateTap(){
 				uni.navigateTo({
-					url: '/pages/centers/achievement/updateStudent'
+					url: `/pages/centers/achievement/updateStudent?item=${JSON.stringify(this.userInfo)}`
 				})
 			}
 		}
@@ -185,6 +210,10 @@
 						
 						&.success{
 							color: #35CE96;
+						}
+						
+						&.error {
+							color: #FF334D;
 						}
 					}
 				}

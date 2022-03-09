@@ -1,7 +1,7 @@
 <template>
 	<view class="scoreList">
 		<view class="navbar">
-			<u-navbar title="成绩查询" back-icon-color="#ffffff" :background="background" :border-bottom="false"
+			<u-navbar title="考试名称" back-icon-color="#ffffff" :background="background" :border-bottom="false"
 				title-color="#ffffff">
 			</u-navbar>
 		</view>
@@ -33,9 +33,8 @@
 
 <script>
 	import {
-		scoreExamList
+		examList2
 	} from '@/api/exam.js'
-	
 	import moment from '@/common/moment.js'
 	export default {
 		data() {
@@ -46,28 +45,27 @@
 				size: 10,
 				list: [], // 考试列表
 				loading: true,
+				type: 0
 			};
 		},
-		
-		onLoad() {
+
+		onLoad(options) {
+			if (options.type) this.type = Number(options.type)
 			this.getList();
 		},
 		methods: {
 			getList() {
 				this.loadStatus = 'loading';
-				this.$http.post(scoreExamList, {
-					examDate: this.examDate,
-					examStatus: this.examStatus,
-					province: this.province,
+				this.$http.post(examList2, {
 					size: this.size,
 					current: this.current,
 				}).then(res => {
 					if (this.current === 1) {
-						this.list = res.data.records;
+						this.list = res.data.list;
 					} else {
-						this.list = this.list.concat(res.data.records);
+						this.list = this.list.concat(res.data.list);
 					}
-					if (res.data.records.length <= 0) {
+					if (res.data.list.length <= 0) {
 						this.loadStatus = 'nomore';
 					} else {
 						this.loadStatus = 'loadmore';
@@ -80,9 +78,27 @@
 				this.getList();
 			},
 			// 详情
-			itemTap(item, index){
+			itemTap(item, index) {
 				console.log(item)
 				console.log(index)
+
+
+				switch (this.type) {
+					case 1:
+					case 2:
+					case 3:
+					case 4:
+						uni.navigateTo({
+							url: `/pages/centers/achievement/studentList?id=${item.id}&type=${this.type}`
+						})
+						break;
+					default:
+						uni.navigateTo({
+							url: `/pages/centers/achievement/search?id=${item.id}`
+						})
+
+				}
+
 			}
 		},
 		onReachBottom() {

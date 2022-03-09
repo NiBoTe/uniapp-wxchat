@@ -54,6 +54,21 @@ const faceDetectGetEidToken = `${exam}faceDetectGetEidToken`;
 // 小程序人脸核身-GetEidResult-获取E证通结果信息
 const faceDetectGetEidResult = `${exam}faceDetectGetEidResult`;
 
+// 批量导出准考证
+const batchExportTicket = `${exam}batchExportTicket`;
+
+// 批量导出二维码
+const batchExportQrcode = `${exam}batchExportQrcode`;
+
+// 批量导出考场信息
+const batchExportExaminationRoomInfo = `${exam}batchExportExaminationRoomInfo`;
+
+// 查看某个考生信息
+const examineeDetail = `${exam}examineeDetail`;
+
+// 编辑考生信息
+const examineeUpdate = `${exam}examineeUpdate`;
+
 export {
 	proviceList,
 	examMenuList,
@@ -72,5 +87,10 @@ export {
 	scoreExamList,
 	examPaperList,
 	faceDetectGetEidToken,
-	faceDetectGetEidResult
+	faceDetectGetEidResult,
+	batchExportTicket,
+	batchExportQrcode,
+	batchExportExaminationRoomInfo,
+	examineeDetail,
+	examineeUpdate
 };

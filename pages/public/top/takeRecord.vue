@@ -27,7 +27,7 @@
 				<view class="list">
 					<view class="item" v-for="(item, index) in list" :key="index" @click="detailTap(item, index)">
 						<view class="item-header u-flex u-row-between">
-							<view class="left">
+							<view class="left u-flex">
 								<view class="item-style"></view>
 								<text>{{item.name || ''}}</text>
 							</view>
@@ -86,10 +86,12 @@
 			};
 		},
 		onLoad(options) {
-			if (options.id) {
+			if (options.id && options.id !== 'null') {
 				this.id = options.id;
 				this.type = options.type;
 				this.initData()
+			} else {
+				this.getList();
 			}
 		},
 		methods: {
@@ -97,6 +99,7 @@
 				this.$http.post(examDetail, {
 					id: this.id
 				}).then(res => {
+					console.log(res)
 					this.examDetail = res.data
 					this.tabList = this.examDetail.examSubjectList;
 					this.examSubjectItem = this.examDetail.examSubjectList[0]
