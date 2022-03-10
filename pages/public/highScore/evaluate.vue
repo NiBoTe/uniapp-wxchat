@@ -1,13 +1,15 @@
 <template>
 	<view class="evaluate">
 		<view class="header u-flex">
-			<image :src="detail.evaluateUrl"></image>
+			<image :src="detail.items[activeIndex].hdImg"></image>
 			<view class="right">
-				<view class="title">{{detail.textComment}}</view>
+				<view class="title">{{detail.items[activeIndex].description}}</view>
 				<view class="subtitle u-flex">
 					<u-rate :count="5" v-model="star" inactive-icon="star-fill" active-color="#35CE96"
 						inactive-color="#E3E3E3" gutter="16" size="32"></u-rate>
-					<text>非常差</text>
+					<text v-if="star <= 2">非常差</text>
+					<text v-else-if="star <= 4">一般</text>
+					<text v-else>优秀</text>
 				</view>
 			</view>
 		</view>
@@ -30,12 +32,13 @@
 			<view class="list">
 				<u-row gutter="16">
 					<u-col span="3" v-for="(item,index) in labelList" :key="index">
-						<view class="item" :class="item.selected ? 'active' : ''" @click="itemTap(item, index)">{{item.name}}</view>
+						<view class="item" :class="item.selected ? 'active' : ''" @click="itemTap(item, index)">
+							{{item.name}}</view>
 					</u-col>
 				</u-row>
 			</view>
 		</view>
-		
+
 		<view class="footer">
 			<view class="footer-btn" @click="submitTap">
 				<text>提交</text>
@@ -45,11 +48,12 @@
 </template>
 
 <script>
+
 	import {
-		orderItemPaintEvaluateDetail,
-		paintEvaluateCommentTagList,
+		getDetail,
+		teachingMaterialCommentTagList,
 		confirmCompleted
-	} from '@/api/paint_evaluate_v2.js'
+	} from '@/api/teaching_material.js'
 	export default {
 		data() {
 			return {
@@ -58,13 +62,15 @@
 				detail: {},
 				isFocus: false,
 				content: '',
-				labelList: []
+				labelList: [],
+				activeIndex: 0,
 			};
 		},
 		onLoad(options) {
 			this.getLabelList();
 			if (options.id) {
 				this.id = options.id
+				this.activeIndex = Number(options.index)
 				this.initData()
 			}
 		},
@@ -77,15 +83,15 @@
 		},
 		methods: {
 			initData() {
-				this.$http.get(orderItemPaintEvaluateDetail, {
+				this.$http.get(getDetail, {
 					id: this.id
 				}).then(res => {
 					this.detail = res.data
 				})
 			},
-			
-			getLabelList(){
-				this.$http.get(paintEvaluateCommentTagList).then(res => {
+
+			getLabelList() {
+				this.$http.get(teachingMaterialCommentTagList).then(res => {
 					console.log(res)
 					res.data.map(item => {
 						item['selected'] = false;
@@ -94,14 +100,14 @@
 				})
 			},
 			// 选择标签
-			itemTap(item, index){
+			itemTap(item, index) {
 				item['selected'] = !item['selected']
 			},
 			// 提交
-			submitTap(){
+			submitTap() {
 				let tags = [];
 				this.labelList.map(item => {
-					if(item.selected) {
+					if (item.selected) {
 						tags.push(item.id)
 					}
 				})
@@ -207,17 +213,18 @@
 					}
 				}
 			}
-		
-		
-			.label{
+
+
+			.label {
 				margin: 24rpx 30rpx;
 				font-size: 26rpx;
 				color: #3A3D71;
 			}
-			
-			.list{
+
+			.list {
 				padding: 0 22rpx 10rpx;
-				.item{
+
+				.item {
 					margin-bottom: 30rpx;
 					min-width: 144rpx;
 					height: 58rpx;
@@ -227,16 +234,16 @@
 					border-radius: 30rpx;
 					font-size: 26rpx;
 					color: #3A3D71;
-					
-					
-					&.active{
+
+
+					&.active {
 						background-color: #EFF2FF;
 						color: $u-type-primary;
 					}
 				}
 			}
 		}
-		
+
 		.footer {
 			position: fixed;
 			bottom: 0;
@@ -247,7 +254,7 @@
 			padding-bottom: calc(14rpx + constant(safe-area-inset-bottom));
 			padding-bottom: calc(14rpx + env(safe-area-inset-bottom));
 			background-color: #fff;
-		
+
 			&-btn {
 				height: 88rpx;
 				line-height: 88rpx;
@@ -257,13 +264,13 @@
 				border-radius: 44rpx;
 				font-size: 32rpx;
 				color: #fff;
-		
+
 				&.disabled {
 					background: #EDEFF2;
 					color: #8F9091;
 				}
 			}
-			
+
 		}
 	}
 </style>

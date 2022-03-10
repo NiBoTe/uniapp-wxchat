@@ -280,10 +280,11 @@
 					return this.$mHelper.toast('请上传视频封面')
 				}
 
+
 				const params = {
 					title: this.title,
 					type: this.type,
-					cover: this.cover,
+					cover: this.cover === '' ? this.imgsList[0].url : this.cover,
 					description: this.description,
 					isNeedExpress: this.isNeedExpress,
 					items: this.imgsList,
@@ -302,11 +303,11 @@
 					this.$http.post(myAddTeachingMaterial, params).then(res => {
 						console.log(res)
 						this.$mHelper.toast('发布成功')
-						// setTimeout(() => {
-						// 	uni.switchTab({
-						// 		url: '/pages/circle/index'
-						// 	})
-						// }, 1500)
+						setTimeout(() => {
+							uni.navigateBack({
+								delta: 1
+							})
+						}, 1500)
 					}).catch(err => {
 						this.$mHelper.toast(err.msg);
 					})

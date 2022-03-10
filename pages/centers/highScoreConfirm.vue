@@ -79,8 +79,14 @@
 				if (this.params.expressContent === '') {
 					return this.$mHelper.toast('请输入详细内容')
 				}
+				console.log(this.params)
 				this.$http.post(myAddTeachingMaterial, this.params).then(res => {
 					this.$mHelper.toast('发布成功')
+					setTimeout(() => {
+						uni.navigateBack({
+							delta: 2
+						})
+					}, 1500)
 				}).catch(err => {
 					this.$mHelper.toast(err.msg);
 				})

@@ -1,168 +1,214 @@
 <template>
-	<scroll-view scroll-y="true" class="high-score">
+	<view class="high-score">
 		<view class="top">
-		 <scroll-view class="h-tabs" scroll-x="true">
-			<view class="tabs-content">
-				 <view class="item" v-for="(item,index) in list" :class="tabActive === index ? 'active':''" @click="handelTabs(index)" :key="index">
-					 {{ item.name }}
-				 </view>
-			</view>
-		 </scroll-view>
-		 <drawingColumn ref="DrawingColumn" @change="tabChange"></drawingColumn>
-		 <view class="line">
-			
-		 </view>
-		 <view class="p-v">
-			<view class="l">
-				色彩作品
-			</view>
-			<view class="r">
-				<view class="p-v-tabs">
-					<view class="p-item active">
-						图片
-					</view>
-					<view class="p-item">
-						视频
-					</view>
+
+			<u-navbar title=" " :border-bottom="false">
+
+				<view class="search u-flex">
+					<u-icon name="search" color="#5D6086" size="32"></u-icon>
+					<text>梵高名画</text>
 				</view>
+			</u-navbar>
+			<view class="h-tabs" scroll-x="true">
+				<u-tabs :list="menusList" :current="tabActive" @change="handelTabs" :is-scroll="true" bar-width="62"
+					bar-height="8" gutter="40" active-color="#1B1B1B" inactive-color="#9E9E9E" font-size="30"></u-tabs>
 			</view>
-		 </view>
-	 </view>
-	 
-	 <view class="masonry">
-	 	<view class="item" v-for="item in 10" :key="item">
-	         <view class="item-content">
-	 			<view class="img-top">
-	 				<image src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fhbimg.huabanimg.com%2Fece15ac7ba2b1ef636fafa442d52094b50b380ed10fc4-qTLBgA_fw658&refer=http%3A%2F%2Fhbimg.huabanimg.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1647232123&t=a787c7d892951e030ca1040e4efacaed" mode="widthFix"></image>
-					<view class="tags">
-						¥299
-					</view>
+
+			<drawingColumn ref="DrawingColumn" :list="childMenus" key-name="name" @change="tabChange"></drawingColumn>
+			<view class="line">
+			</view>
+			<view class="p-v">
+				<view class="l">
+					色彩作品
 				</view>
-				<view class="user-info">
-					<view class="head">
-						<view class="head-out">
-							<image src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fup.enterdesk.com%2Fedpic%2Fd8%2Fb7%2F36%2Fd8b736f5168f2a98667bce3d7ad3e5ed.jpeg&refer=http%3A%2F%2Fup.enterdesk.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1647235323&t=05386371b5770201011c3b0dd5711f55" mode="widthFix"></image>
+				<view class="r">
+					<view class="p-v-tabs">
+						<view class="p-item" :class="type === 'image' ? 'active' : ''"
+							@click="typeChange('image')">
+							图片
+						</view>
+						<view class="p-item" :class="type === 'video' ? 'active' : ''" @click="typeChange('video')">
+							视频
 						</view>
 					</view>
-					<view class="name">
-						刘泉海·LQH
+				</view>
+			</view>
+		</view>
+
+		<u-waterfall v-model="list" ref="uWaterfall">
+			<template v-slot:left="{leftList}">
+				<view class="item" v-for="(item, index) in leftList" :key="index" @click="detailTap(item)">
+					<textbook-item :item="item"></textbook-item>
+					
+					<view class="play" v-if="type === 'video'">
+						<image src="/static/public/video_icon.png"></image>
 					</view>
 				</view>
-				<view class="hot">
-					<view class="h-l">
-						热度值
-					</view>
-					<view class="h-r">
-						<image src="../../../static/public/hot.png" mode=""></image>
-						809w
+			</template>
+			<template v-slot:right="{rightList}">
+				<view class="item" v-for="(item, index) in rightList" :key="index" @click="detailTap(item)">
+					<textbook-item :item="item"></textbook-item>
+					<view class="play" v-if="type === 'video'">
+						<image src="/static/public/video_icon.png"></image>
 					</view>
 				</view>
-	         </view>
-	     </view>
-	 </view>
-	</scroll-view>
+			</template>
+		</u-waterfall>
+
+		<nodata v-if="!loading && !list.length"></nodata>
+		<u-loadmore v-else bg-color="rgb(240, 240, 240)" :status="loadStatus" @loadmore="addData"></u-loadmore>
+	</view>
 </template>
 
 <script>
+	import {
+		menuList,
+		appList
+	} from '@/api/teaching_material.js'
 	import drawingColumn from '@/components/drawingColumn/drawingColumn.vue'
+	import TextbookItem from '@/components/textbook/textbookItem.vue'
 	export default {
-		components:{
-			drawingColumn
+		components: {
+			drawingColumn,
+			TextbookItem
 		},
 		data() {
 			return {
-				list: [{
-						name: '色彩'
-					}, {
-						name: '素描'
-					}, {
-						name: '速写'
-					},
-					{
-						name: '设计'
-					},
-					{
-						name: '创意'
-					},
-					{
-						name: '国画'
-					}],
-					current: 0,
-					tabActive: 0
+				loading: true,
+				loadStatus: 'loadmore',
+				type: 'image',
+				tabActive: 0,
+				childIndex: 0,
+				menusList: [],
+				childMenus: [],
+				current: 1,
+				size: 10,
+				list: []
 			};
 		},
-		created() {
-
-
-		},
-		mounted() {
-				this.$refs.DrawingColumn.timeShow(['静物色彩','人物色彩'])		
+		onLoad(options) {
+			this.getMenuList();
 		},
 		methods: {
-			handelTabs(a){
-				console.log(a)
-				this.tabActive = a
+			getMenuList() {
+				this.$http.post(menuList).then(res => {
+					this.menusList = res.data;
+					this.childMenus = res.data.length ? res.data[0].childMenus : [];
+					
+					this.getList();
+				}).catch(err => {
+					console.log(err)
+				})
 			},
-			tabChange(){
+			getList() {
+				this.loadStatus = 'loading';
+				this.$http.post(appList, {
+					firstMenuId: this.menusList.length > 0 ? this.menusList[this.tabActive].id : '',
+					secondMenuId: this.childMenus.length > 0 ? this.childMenus[this.childIndex].id : '',
+					type: this.type,
+					size: this.size,
+					current: this.current,
+				}).then(res => {
+					if (this.current === 1) {
+						this.list = res.data.records;
+					} else {
+						this.list = this.list.concat(res.data.records);
+					}
+					if (res.data.records.length <= 0) {
+						this.loadStatus = 'nomore';
+					} else {
+						this.loadStatus = 'loadmore';
+					}
+
+					this.loading = false;
+				})
+			},
+			addData() {
+				this.current++;
+				this.getList();
+			},
+			handelTabs(e) {
+				this.tabActive = e
+				this.childMenus = this.menusList[this.tabActive].childMenus;
+				this.current = 1;
+				this.$refs.uWaterfall.clear();
+				this.getList();
+			},
+			tabChange(e) {
+				this.childIndex = e.index;
+				this.current = 1;
+				this.$refs.uWaterfall.clear();
+				this.getList();
+			},
+			typeChange(type) {
+				this.type = type;
+				this.current = 1;
+				this.$refs.uWaterfall.clear();
+				this.getList();
+			},
+			detailTap(item){
+				
+				if(item.type === 'image') {
+					uni.navigateTo({
+						url: `/pages/public/highScore/teachingMaterialDetail?id=${item.id}`
+					})
+				} else {
+					uni.navigateTo({
+						url: `/pages/public/highScore/videoDetail?id=${item.id}`
+					})
+				}
 				
 			}
-		}
+		},
+		onReachBottom() {
+			this.loadStatus = 'loading';
+			this.getList()
+		},
 	}
 </script>
 
-<style lang="scss">
-	.high-score{
-		height: 100vh;
+<style lang="scss" scoped>
+	.high-score {
+		min-height: 100vh;
 		background: #F3F3F3;
-		.top{
+
+		.top {
 			background: #FFFFFF;
-		}
-	}
-	.h-tabs{
-		width: 100vw;
-		padding-left: 34rpx;
-		margin-bottom: 42rpx;
-		.tabs-content{
-			width: 100%;
-			 white-space:nowrap;
-			.item{
-				white-space:nowrap;
-				display: inline-block;
-				margin-right: 68rpx;
-				position: relative;
-				padding-top: 12rpx;
-				padding-bottom: 12rpx;
-				font-size: 34rpx;
-				font-family: PingFangSC-Regular, PingFang SC;
-				font-weight: 400;
-				color: #9E9E9E;
-			}
-			.active{
-				font-size: 34rpx;
-				font-family: PingFang-SC-Bold, PingFang-SC;
-				font-weight: bold;
-				color: #1B1B1B;
-				&::after{
-					content: '';
-					position: absolute;
-					width: 100%;
-					height: 6rpx;
-					background-color: #2C3AFF;
-					bottom: 0rpx;
-					left: 0;
+
+			.search {
+				margin-right: 22rpx;
+				flex: 1;
+				padding-left: 22rpx;
+				height: 64rpx;
+				background: #F3F3F3;
+				border-radius: 34rpx;
+
+				text {
+					margin-left: 14rpx;
+					font-size: 28rpx;
+					font-weight: 500;
+					color: #5D6086;
 				}
 			}
 		}
 	}
-	.line{
+
+	.h-tabs {
+		width: 100vw;
+		margin-bottom: 42rpx;
+	}
+
+	.line {
 		width: 100%;
 		height: 2px;
 		background-color: #E9E9E9;
 		margin: 38rpx 0;
 	}
-	.p-v{
+
+	.p-v {
 		display: flex;
-		.l{
+
+		.l {
 			flex: 1;
 			line-height: 1;
 			font-size: 34rpx;
@@ -172,9 +218,11 @@
 			padding-left: 32rpx;
 			padding-bottom: 38rpx;
 		}
-		.r{
+
+		.r {
 			flex: 1;
-			.p-v-tabs{
+
+			.p-v-tabs {
 				margin-top: -13rpx;
 				width: 204rpx;
 				height: 56rpx;
@@ -183,7 +231,8 @@
 				float: right;
 				margin-right: 32rpx;
 				display: flex;
-				.p-item{
+
+				.p-item {
 					text-align: center;
 					flex: 1;
 					font-size: 28rpx;
@@ -192,7 +241,8 @@
 					color: #9E9E9E;
 					line-height: 54rpx;
 				}
-				.active{
+
+				.active {
 					width: 98rpx;
 					height: 48rpx;
 					background: #FFFFFF;
@@ -208,109 +258,27 @@
 			}
 		}
 	}
-.masonry {
-    column-count: 2;
-    column-gap: 0;
-	padding: 30rpx 29rpx;
-	
-	.item {
-		background: #FFFFFF;
-		border-radius: 16rpx;
-	    break-inside: avoid;
-	    box-sizing: border-box;
-	    padding: 0 5rpx;
-		margin-bottom: 10rpx;
-		overflow: hidden;
-		.item-content{
-			width: 100%;
-			.img-top{
-				width: 100%;
-				position: relative;
-				border-bottom: 1rpx solid red;
-				image{
-					width: 100%;
-				}
-				.tags{
-					// width: 88rpx;
-					height: 40rpx;
-					background: rgba(0, 0, 0, 0.5);
-					border-radius: 16rpx 0rpx 0rpx 0rpx;
-					position: absolute;
-					bottom: 0;
-					right: 0;
-					font-size: 26rpx;
-					font-family: PingFang-SC-Heavy, PingFang-SC;
-					font-weight: 800;
-					color: #FFFFFF;
-					line-height: 40rpx;
-					text-align: center;
-					padding: 0 10rpx;
-				}
-			}
-			.user-info{
-				position: relative;
-				z-index: 1;
-				margin-top: -16rpx;
-				display: flex;
-				.head{
-					flex: 0 0 108rpx;
-					.head-out{
-						width: 74rpx;
-						height: 74rpx;
-						background: #FFFFFF;
-						margin: 0 auto;
-						border-radius: 50%;
-						padding: 4rpx;
-						overflow: hidden;
-						image{
-							width: 100%;
-							border-radius: 50%;
-						}
-					}
-				}
-				.name{
-					z-index: 10;
-					flex: 1;
-					font-size: 24rpx;
-					font-family: PingFangSC-Medium, PingFang SC;
-					font-weight: 500;
-					color: #3A3D71;
-					padding-top: 16rpx;
-				}
-			}
-			.hot{
-				
-				margin-top: 20rpx;
-				padding-bottom: 25rpx;
-				display: flex;
-				.h-l{
-					flex: 0 0 108rpx;
-					text-align: center;
-					font-size: 24rpx;
-					font-family: PingFangSC-Regular, PingFang SC;
-					font-weight: 400;
-					color: #9E9E9E;
-				}
-				.h-r{
-					text-align: right;
-					padding-right: 20rpx;
-					flex: 1;
-					image{
-						width: 24rpx;
-						height: 30rpx;
-						vertical-align: sub;
-						margin-right: 8rpx;
-						margin-left: 8rpx;
-					}
-					height: 24rpx;
-					font-size: 24rpx;
-					font-family: PingFangSC-Regular, PingFang SC;
-					font-weight: 400;
-					color: #3A3D71;
-				}
+
+
+	.item{
+		position: relative;
+		
+		.play{
+			position: absolute;
+			top: 20rpx;
+			right: 20rpx;
+			image{
+				width: 42rpx;
+				height: 32rpx;
 			}
 		}
-		
 	}
-}
+
+	/deep/ .u-tab-item {
+		font-weight: 400;
+	}
+
+	/deep/ .u-tab-bar {
+		background-color: $u-type-primary !important;
+	}
 </style>

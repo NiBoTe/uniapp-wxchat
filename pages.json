@@ -588,6 +588,13 @@
 						"navigationBarTextStyle": "black",
 						"enablePullDownRefresh": false
 					}
+				}, {
+					"path": "highScore/sureOrder",
+					"style": {
+						"navigationBarTitleText": "确认订单",
+						"navigationBarTextStyle": "black",
+						"enablePullDownRefresh": false
+					}
 				}
 			]
 		}

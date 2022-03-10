@@ -105,7 +105,7 @@
 				}).then(res => {
 					console.log(res)
 					this.$set(this.list[index], 'isFavorite', !item.isFavorite)
-					this.$mHelper.toast(item.isFavorite ? '收藏成功' : '取消成功')
+					this.$mHelper.toast(item.isFavorite ? '收藏成功' : '取消收藏成功')
 				}).catch(err => {
 					console.log(err)
 				})

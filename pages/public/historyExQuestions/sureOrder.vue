@@ -95,7 +95,6 @@
 			this.initData();
 			uni.$on('selectAddress', (data) => {
 				this.addressDetail = data.item
-				// this.initData();
 			})
 		},
 		methods: {
@@ -143,7 +142,7 @@
 					title: '支付中'
 				})
 				if (!this.checked) {
-					return this.$mHelper.toast('请勾选付费内容使用协议')
+					return this.$mHelper.toast('请先勾选阅读付费内容使用协议')
 				}
 				if (this.detail.isNeedExpress && !this.addressDetail) {
 					return this.$mHelper.toast('请选择收货地址')

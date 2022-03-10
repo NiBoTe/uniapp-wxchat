@@ -112,9 +112,10 @@
 			this.getWxCode()
 			this.btnLoading = false;
 			if (uni.getStorageSync('accessToken')) {
-				this.$mRouter.reLaunch({
-					route: '/pages/index/index'
-				});
+				this.$mRouter.back()
+				// this.$mRouter.reLaunch({
+				// 	route: '/pages/index/index'
+				// });
 			}
 		},
 		onLoad(options) {
@@ -207,9 +208,10 @@
 								openid: data.openid
 							}));
 							this.$mHelper.toast('已为您授权登录');
-							this.$mRouter.reLaunch({
-								route: '/pages/index/index'
-							});
+							this.$mRouter.back()
+							// this.$mRouter.reLaunch({
+							// 	route: '/pages/index/index'
+							// });
 							this.btnLoading = false;
 						}).catch(e => {
 							this.$mHelper.toast(e.msg)
@@ -236,9 +238,10 @@
 					this.$mHelper.toast('已为您授权登录');
 					
 					if(data.user.roleSelect) {
-						this.$mRouter.reLaunch({
-							route: '/pages/index/index'
-						});
+						this.$mRouter.back()
+						// this.$mRouter.reLaunch({
+						// 	route: '/pages/index/index'
+						// });
 					} else {
 						this.$mRouter.push({
 							route: '/pages/public/roleSelection'
@@ -263,9 +266,10 @@
 					}));
 					this.$mHelper.toast('已为您授权登录');
 					if(data.user.roleSelect) {
-						this.$mRouter.reLaunch({
-							route: '/pages/index/index'
-						});
+						this.$mRouter.back()
+						// this.$mRouter.reLaunch({
+						// 	route: '/pages/index/index'
+						// });
 					} else {
 						this.$mRouter.push({
 							route: '/pages/public/roleSelection'

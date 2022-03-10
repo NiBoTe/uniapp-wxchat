@@ -10,7 +10,7 @@
 		<view class="content" v-if="!isNodata">
 			<image :src="url" v-if="url !== ''" mode="widthFix"></image>
 			
-			<view class="table" v-if="type === 4">
+			<view class="table" v-if="type === 3">
 				<view class="tr t-head">
 					<view class="td">{{addressDetail.examName || ''}}</view>
 				</view>

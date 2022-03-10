@@ -1,14 +1,15 @@
 <template>
 	<view class="teaching-material-detail">
-		<scroll-view scroll-y class="content">
+		<view class="main">
 			<view class="head">
 				<view class="img">
-					<image
-						src="https://img1.baidu.com/it/u=137044454,4224140026&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500"
-						mode=""></image>
+					<u-avatar size="132" :src="detail.cover">
+					</u-avatar>
 				</view>
-				<text class="name">刘泉海·LHQ</text>
-				<image class="like" src="../../../static/public/like_start.png" alt="">
+				<text class="name">{{detail.teacherFullName || ''}}</text>
+				<image class="like" src="/static/public/dynamic_star_fill.png" v-if="!detail.isFavorite"
+					@click="favoriteTap">
+					<image class="like" src="/static/public/dynamic_star.png" v-else @click="favoriteTap">
 			</view>
 			<view class="parameter">
 				<view class="com hot">
@@ -18,7 +19,7 @@
 							热度值
 						</text>
 						<text class="content">
-							809万
+							{{detail.hotValue || 0}}
 						</text>
 					</view>
 
@@ -28,35 +29,36 @@
 					<image class="icon" src="../../../static/public/highScore/shopCat.png" mode=""></image>
 					<view class="com-in">
 						<text class="name">
-							热度值
+							购买量
 						</text>
 						<text class="content">
-							809万
+							{{detail.buyCount || 0}}次
 						</text>
 					</view>
 				</view>
 
-				<view class="price"><text>¥</text>299</view>
+				<view class="price"><text>¥</text>{{detail.price || 0}}</view>
 			</view>
 			<view class="line"></view>
 			<view class="tro">
-				<view class="title">西方人物色彩赏析</view>
-				<text class="pre">西方人物/室外风景色彩赏析，展示了古西方西方人物/室外风景色彩赏析，展示了古西方西方人物/室外风景色彩赏析，展示了古西方</text>
+				<view class="title">{{detail.title || ''}}</view>
+				<text class="pre">{{detail.description}}</text>
 			</view>
 			<view class="swiper">
-				<view class="swiper-item" :class="{'active':activeIndex === index}" v-for="(item, index) in 10"
-					@click="handleClick(index)">
-					<image
-						src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fimg.jj20.com%2Fup%2Fallimg%2F4k%2Fs%2F02%2F2109242332225H9-0-lp.jpg&refer=http%3A%2F%2Fimg.jj20.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1648733409&t=90c4ab51cbe0340472155652f1dc5b26"
-						mode=""></image>
+				<view class="swiper-item" :class="{'active':activeIndex === index}"
+					v-for="(item, index) in detail.items" :key="index" @click="handleClick(index)">
+					<image :src="item.thumbImg" mode="aspectFit"></image>
 				</view>
 			</view>
 
 
 			<view class="works">
-				<image
-					src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fimg.jj20.com%2Fup%2Fallimg%2F4k%2Fs%2F02%2F2109242332225H9-0-lp.jpg&refer=http%3A%2F%2Fimg.jj20.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1648733409&t=90c4ab51cbe0340472155652f1dc5b26"
-					mode=""></image>
+				<view class="works-img">
+					<image :src="detail.items[activeIndex].thumbImg" mode="widthFix"></image>
+				</view>
+				<view class="mask u-flex u-row-center">
+					<image :src="setSrc('highScore/highScore_mask.png')"></image>
+				</view>
 			</view>
 
 			<view class="tabs">
@@ -77,96 +79,262 @@
 				<view class="title">
 					<image src="../../../static/public/examinationPaper_icon.png" mode=""></image>作品描述
 				</view>
-				<view class="d-c">
-					西方人物/室外风景色彩赏析，展示了古西方西方人物/室外风景色彩赏析，展示了古西方西方人物/室外风景色彩赏析，展示了古西方西方人物/室外风景色彩赏析，展示了古西方
-				</view>
+				<view class="d-c">{{detail.items[activeIndex].description}}</view>
 			</view>
 
 
-			<view class="line"></view>
+			<view class="line" v-if="detail.isNeedExpress"></view>
 
-			<view class="delivery-content">
+			<view class="delivery-content" v-if="detail.isNeedExpress">
 				<view class="left">
 					<image src="../../../static/public/highScore/deliveryContent.png" mode=""></image>发货内容
 				</view>
-				<view class="right">
-					教材一本
-				</view>
+				<view class="right">{{detail.expressContent}}</view>
 			</view>
 
 			<!-- 查看评论 -->
 			<view class="comment">
 				<view class="title">
-					3条评论
+					{{total}}条评论
 				</view>
-				<view class="list" v-for="item in 3">
+				<view class="list" v-for="(item, index) in list" :key="index">
 					<view class="left">
-						<image
-							src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fexp-picture.cdn.bcebos.com%2F4e168d5653bbf820b3d559b8ba21056105a36e86.jpg%3Fx-bce-process%3Dimage%2Fresize%2Cm_lfit%2Cw_500%2Climit_1&refer=http%3A%2F%2Fexp-picture.cdn.bcebos.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1648823704&t=fe16818e6a56567aadbde4a73fd7c50e"
-							mode=""></image>
+						<u-avatar size="80" :src="item.user.headUrl"></u-avatar>
 					</view>
 					<view class="right">
 						<view class="name">
-							王维同学
+							<text>{{item.user.fullName}}</text>
 						</view>
-						<view class="text">
-							大超老师的色彩画得真吊，
-							我也想画这种风格我也想画这种风格
-						</view>
+						<view class="text">{{item.content}}</view>
 						<view class="time">
-							12-20 <text>回复</text>
+							{{(moment(item.createTime).format('MM-DD'))}} <text @click="replyTap(item, index)">回复</text>
 						</view>
 
-						<view class="child">
+						<view class="child" v-for="(itemc, indexc) in item.moreList" :key="indexc">
 							<view class="c-l">
-								<image
-									src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fexp-picture.cdn.bcebos.com%2F4e168d5653bbf820b3d559b8ba21056105a36e86.jpg%3Fx-bce-process%3Dimage%2Fresize%2Cm_lfit%2Cw_500%2Climit_1&refer=http%3A%2F%2Fexp-picture.cdn.bcebos.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1648823704&t=fe16818e6a56567aadbde4a73fd7c50e"
-									mode=""></image>
+								<u-avatar size="80" :src="itemc.user.headUrl"></u-avatar>
 							</view>
 							<view class="c-r">
 								<view class="name">
-									程超老师
+									<text>{{itemc.user.fullName}}</text>
+									<view class="author" v-if="itemc.appUserId === detail.user.id">作品作者</view>
+									<view class="to" v-if="itemc.replyUser">
+										<u-icon name="play-right-fill" color="#9E9E9E" size="26"></u-icon>
+									</view>
+									<view class="form" v-if="itemc.replyUser">{{itemc.replyUser.fullName}}</view>
 								</view>
 								<view class="text">
-									跟大神你比我还是差远了😂
+									{{itemc.content}}
 								</view>
 								<view class="time">
-									12-20
+									{{(moment(itemc.createTime).format('MM-DD'))}} <text
+										@click="replyTap(itemc, indexc)">回复</text>
 								</view>
 							</view>
 						</view>
 
+						<view class="more u-flex u-row-between" v-if="item.replyList.length">
+							<view class="left" @click="moreTap(item, index, true)">
+								<text v-if="!item.isMore">展开{{item.replyList.length}}条回复</text>
+								<text v-else>查看更多回复</text>
+								<image src="/static/public/arrow_down_text.png"></image>
+							</view>
+
+							<view class="right" v-if="item.isMore" @click="moreTap(item, index)">
+								<text>收起</text>
+								<image src="/static/public/arrow_down_text.png"></image>
+							</view>
+						</view>
 					</view>
 				</view>
 			</view>
-		</scroll-view>
+		</view>
 		<view class="footer">
-			<view class="footer-btn">立即购买</view>
+			<view class="footer-btn" v-if="!detail.isPayed" @click="submitTap">立即购买</view>
+			<view class="footer-btn" v-else @click="submitTap">我要评价</view>
 		</view>
 	</view>
 </template>
 
 <script>
+	import {
+		getDetail,
+		addFavorite,
+		commentList,
+		addComment
+	} from '@/api/teaching_material.js'
 	export default {
 		data() {
 			return {
-				activeIndex: 0
+				hasLogin: false,
+				activeIndex: 0,
+				detail: {},
+				isFocus: false,
+				content: '',
+				replyId: 0,
+				total: 0,
+				current: 1,
+				size: 10,
+				list: [], // 考试列表
 			};
 		},
+		onLoad(options) {
+			if (options.id) {
+				this.id = options.id
+				this.initData()
+				this.getComment();
+			}
+		},
+		
+		onShow() {
+			this.hasLogin = this.$mStore.getters.hasLogin;
+		},
 		methods: {
+
+			initData() {
+				this.$http.get(getDetail, {
+					id: this.id
+				}).then(res => {
+					console.log(res)
+					this.detail = res.data
+				}).catch(err => {
+					console.log(err)
+				})
+			},
 			handleClick(index) {
 				this.activeIndex = index
+			},
+			// 收藏
+			favoriteTap() {
+				this.$http.post(addFavorite, null, {
+					params: {
+						examPaperImgId: this.id,
+						addFavorite: !this.detail.isFavorite
+					}
+				}).then(res => {
+					console.log(res)
+					this.$set(this.detail, 'isFavorite', !this.detail.isFavorite)
+					this.$mHelper.toast(this.detail.isFavorite ? '收藏成功' : '取消收藏成功')
+				}).catch(err => {
+					console.log(err)
+				})
+			},
+			getComment() {
+				this.loadStatus = 'loading';
+				this.$http.post(commentList, {
+					current: this.current,
+					size: this.size,
+					targetId: this.id
+				}).then(res => {
+					console.log(res)
+					this.total = res.data.total
+					let data = res.data.records
+					data.map(item => {
+						item['isMore'] = false;
+						item['moreList'] = []
+					})
+					if (this.current === 1) {
+						this.list = data;
+					} else {
+						this.list = this.list.concat(data);
+					}
+					if (data.length <= 0) {
+						this.loadStatus = 'nomore';
+					} else {
+						this.loadStatus = 'loadmore';
+					}
+			
+			
+				}).catch(err => {
+					console.log(err)
+				})
+			},
+			addData() {
+				this.current++;
+				this.getComment();
+			},
+			
+			// 更多
+			moreTap(item, index, type) {
+				if (item.isMore && type) {
+			
+				} else {
+					if (!item.isMore) {
+						item.moreList = item.replyList
+					} else {
+						item.moreList = []
+					}
+			
+					item.isMore = !item.isMore
+				}
+			
+			},
+			// 评论
+			commentTap() {
+				this.isFocus = true
+				this.replyId = 0;
+			},
+			// 回复
+			replyTap(item, index) {
+				console.log(item)
+				// if(item.appUserId === this.detail.user.id) {
+				// 	return this.$mHelper.toast('不能自己回复自己哦！')
+				// }
+				this.isFocus = true;
+				this.replyId = item.id
+			},
+			confirmCommentTap() {
+				if (this.content.replace(/ /g, '') === '') {
+					return this.$mHelper.toast('请输入评论内容')
+				}
+				this.$http.post(addComment, {
+					replyId: this.replyId,
+					content: this.content,
+					targetId: this.id
+				}).then(res => {
+					this.$mHelper.toast('评论成功')
+					this.content = ''
+					this.isFocus = false
+					this.current = 1;
+					this.getComment();
+				}).catch(err => {
+					this.$mHelper.toast(err.msg)
+				})
+			},
+			// 立即购买
+			submitTap(){
+				
+				if(!this.hasLogin) {
+					uni.navigateTo({
+						url: '/pages/public/logintype'
+					})
+					return
+				}
+				
+				if(!this.detail.isPayed) {
+					uni.navigateTo({
+						url: `/pages/public/highScore/sureOrder?id=${this.id}`
+					})
+				} else {
+					uni.navigateTo({
+						url: `/pages/public/highScore/evaluate?id=${this.id}&index=${this.activeIndex}`
+					})
+				}
+				
 			}
-		}
+		},
+		onReachBottom() {
+			this.loadStatus = 'loading';
+			this.addData();
+		},
 	}
 </script>
 
 <style lang="scss">
 	.teaching-material-detail {
-		display: flex;
-		flex-direction: column;
-		height: 100vh;
-
+		min-height: 100vh;
+		
+		background-color: #fff;
 		.parameter {
 			position: relative;
 			margin-top: 32rpx;
@@ -198,6 +366,7 @@
 
 					.content {
 						margin-top: 6rpx;
+						
 						font-size: 28rpx;
 						font-family: Helvetica;
 						color: #3A3D71;
@@ -239,7 +408,7 @@
 			margin: 34rpx auto 22rpx;
 		}
 
-		.content {
+		.main {
 			flex: 1;
 			overflow: auto;
 
@@ -276,22 +445,30 @@
 		}
 
 		.footer {
-			flex: 0 0 240rpx;
-			border-top: 1rpx solid #EDEDED;
+			position: fixed;
+			bottom: 0;
+			left: 0;
+			right: 0;
+			z-index: 999;
+			padding: 14rpx 34rpx;
+			padding-bottom: calc(14rpx + constant(safe-area-inset-bottom));
+			padding-bottom: calc(14rpx + env(safe-area-inset-bottom));
+			background-color: #fff;
 
-			.footer-btn {
-				width: 682rpx;
+			&-btn {
 				height: 88rpx;
-				background: #2C3AFF;
+				line-height: 88rpx;
+				text-align: center;
+				background: $u-type-primary;
 				box-shadow: 0px 6rpx 14rpx 2rpx rgba(235, 235, 235, 0.14);
 				border-radius: 44rpx;
-				text-align: center;
-				margin: 24rpx auto 0;
 				font-size: 32rpx;
-				font-family: PingFangSC-Regular, PingFang SC;
-				font-weight: 400;
-				color: #FFFFFF;
-				line-height: 88rpx;
+				color: #fff;
+
+				&.disabled {
+					background: #EDEFF2;
+					color: #8F9091;
+				}
 			}
 		}
 
@@ -346,10 +523,35 @@
 		}
 
 		.works {
-			padding: 0 34rpx;
+			margin: 0 34rpx;
+			border-radius: 24rpx;
+			position: relative;
 
-			image {
-				width: 100%;
+			&-img {
+				border-radius: 24rpx;
+				background: rgba($color: #D8D8D8, $alpha: .6);
+				filter: blur(2rpx);
+
+				image {
+					width: 100%;
+					border-radius: 24rpx;
+				}
+			}
+
+			.mask {
+				position: absolute;
+				top: 0;
+				right: 0;
+				left: 0;
+				bottom: 0;
+				overflow: hidden;
+				border-radius: 24rpx;
+
+				image {
+					width: 478rpx;
+					height: 268rpx;
+
+				}
 			}
 		}
 
@@ -430,8 +632,6 @@
 			display: flex;
 
 			.left {
-				flex: 1;
-
 				image {
 					width: 48rpx;
 					height: 48rpx;
@@ -446,18 +646,21 @@
 			}
 
 			.right {
+				margin-left: 46rpx;
 				flex: 1;
 				text-align: right;
+				color: $u-type-primary;
 			}
 		}
 
-
 		.comment {
+			padding: 38rpx 0;
+			background-color: #fff;
+
 			.title {
 				text-align: center;
-				font-size: 40rpx;
-				font-family: PingFang-SC-Bold, PingFang-SC;
-				font-weight: bold;
+				font-size: 32rpx;
+				font-weight: 600;
 				color: #3A3D71;
 				line-height: 56rpx;
 				margin-bottom: 20rpx;
@@ -531,10 +734,33 @@
 
 							.name {
 								font-size: 28rpx;
-								font-family: PingFang-SC-Bold, PingFang-SC;
 								font-weight: bold;
 								color: #3A3D71;
-								line-height: 60rpx;
+								display: flex;
+								align-items: center;
+
+								.author {
+									margin-left: 12rpx;
+									padding: 0 10rpx;
+									height: 32rpx;
+									display: flex;
+									justify-content: center;
+									align-items: center;
+									background: #EFF2FF;
+									border-radius: 16rpx;
+									font-size: 22rpx;
+									color: #8D90B8;
+								}
+
+								.to {
+									margin: 0 16rpx 0 14rpx;
+								}
+
+								.form {
+									font-size: 28rpx;
+									font-weight: bold;
+									color: #9E9E9E;
+								}
 							}
 
 							.text {
@@ -548,10 +774,42 @@
 
 							.time {
 								ont-size: 26rpx;
-								font-family: PingFangSC-Regular, PingFang SC;
-								font-weight: 400;
 								color: #9E9E9E;
 								line-height: 26rpx;
+							}
+						}
+					}
+
+					.more {
+						margin-top: 40rpx;
+
+						.left {
+							padding-left: 0;
+							flex: 1;
+							display: flex;
+							align-items: center;
+							font-size: 28rpx;
+							color: #3A3D71;
+
+							image {
+								margin-left: 12rpx;
+								width: 24rpx;
+								height: 14rpx;
+							}
+						}
+
+						.right {
+							display: flex;
+							justify-content: flex-end;
+							align-items: center;
+							font-size: 28rpx;
+							color: #3A3D71;
+
+							image {
+								transform: rotate(180deg);
+								margin-left: 14rpx;
+								width: 24rpx;
+								height: 14rpx;
 							}
 						}
 					}

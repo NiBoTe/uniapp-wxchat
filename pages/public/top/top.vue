@@ -170,6 +170,7 @@
 		data() {
 			return {
 				moment,
+				hasLogin: false,
 				loadStatus: 'loadmore',
 				tabIndex: 0,
 				menuIndex: 0,
@@ -199,6 +200,13 @@
 			this.getProviceList();
 			this.getMenuList();
 			this.getList()
+		},
+		
+		onShow() {
+			this.hasLogin = this.$mStore.getters.hasLogin
+			if(!this.hasLogin) {
+				this.tabIndex = 0;
+			}
 		},
 		methods: {
 			
@@ -273,6 +281,14 @@
 				this.getList();
 			},
 			tabTap(index) {
+				
+				
+				if(index > 0 && !this.hasLogin){
+					uni.navigateTo({
+						url: '/pages/public/logintype'
+					})
+					return
+				} 
 				this.tabIndex = index;
 				this.current = 1;
 				this.getList()
@@ -326,6 +342,11 @@
 			
 			// 查看详情
 			detailTap(item, index){
+				if(!this.hasLogin) {
+					uni.navigateTo({
+						url: '/pages/public/logintype'
+					})
+				}
 				uni.navigateTo({
 					url: `/pages/public/top/detail?id=${item.id}&type=${this.tabIndex}`
 				})

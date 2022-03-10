@@ -309,22 +309,19 @@
 				})
 			},
 			navTo(route, isLogin) {
-				if (isLogin && !this.hasLogin) {
-					this.$mRouter.push({
-						route: '/pages/public/logintype'
-					})
-					return
-				}
+				// if (isLogin && !this.hasLogin) {
+				// 	this.$mRouter.push({
+				// 		route: '/pages/public/logintype'
+				// 	})
+				// 	return
+				// }
 				this.$mRouter.push({
 					route
 				})
 			},
 			// 筛选
 			tabChange(e) {
-				console.log(e)
-
 				let key = e.key
-
 				switch (key) {
 					case '0':
 						this.materialIndex = e.index;
