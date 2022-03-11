@@ -3,46 +3,52 @@
 
 		<view class="page">
 			<view class="header">
-				<image
-					src="https://img1.baidu.com/it/u=1319713773,2074606622&fm=253&fmt=auto&app=138&f=JPG?w=889&h=500">
-				</image>
+				<image :src="userInfo.bgImg"></image>
 
-				<view class="settings" :style="{top: StatusBar + 44 + 'px'}" >
-					<image class="settings-back" @click="goBack" src="/static/public/teacherDynamic/d_icon_back.png"></image>
-					<image src="/static/public/teacherDynamic/d_icon_fx.png"></image>
+				<view class="navbar">
+					<u-navbar title=" " immersive back-icon-color="#ffffff" :background="background"
+						:border-bottom="false" title-color="#ffffff">
+						<view slot="right" class="right">
+							<image src="/static/public/teacherDynamic/d_icon_fx.png"></image>
+						</view>
+					</u-navbar>
 				</view>
+				<!-- <view class="settings" :style="{top: StatusBar + 44 + 'px'}">
+					<image class="settings-back" @click="goBack" src="/static/public/teacherDynamic/d_icon_back.png">
+					</image>
+					
+				</view> -->
 			</view>
 			<view class="content">
 				<view class="content-header u-flex u-row-between">
 					<view class="u-flex">
 						<view class="head">
 							<view class="head-img u-flex u-row-center">
-								<image
-									src="https://img1.baidu.com/it/u=1319713773,2074606622&fm=253&fmt=auto&app=138&f=JPG?w=889&h=500">
-								</image>
+								<u-avatar size="186" :src="userInfo.headUrl"></u-avatar>
 							</view>
 
 							<view class="head-auth">
-								<image src="/static/my/no_auth.png"></image>
+								<image src="/static/my/no_auth.png" v-if="!userInfo.authStatus"></image>
+								<image src="/static/my/auth.png" v-else></image>
 							</view>
 						</view>
 						<view class="header-item">
 							<text>关注</text>
-							<text class="num">652</text>
+							<text class="num">{{userInfo.followCount}}</text>
 						</view>
 						<view class="header-item" style="margin-left: 42rpx;">
 							<text>粉丝</text>
-							<text class="num">865w</text>
+							<text class="num">{{userInfo.fansCount}}</text>
 						</view>
 					</view>
 
-					<view class="header-update">
-						<text>已关注</text>
+					<view class="header-update u-flex u-row-center" :class="userInfo.isFollow ? 'disabled' : ''">
+						<text>{{userInfo.isFollow ? '已关注' : '关注'}}</text>
 					</view>
 				</view>
 
 				<view class="content-subheader">
-					<view class="name">刘泉海·LQH</view>
+					<view class="name">{{userInfo.fullName}}</view>
 					<view class="subheader-list">
 						<view class="subheader-item lable main-item">
 							<view v-for="(item,index) in lableList">{{item}}</view>
@@ -50,8 +56,8 @@
 					</view>
 
 					<view class="subheader-text u-line-2">
-						文艺复兴是指13世纪末在意大利各城市兴起，以后扩展到西欧各国，于16世纪在欧洲盛行的一场思想文化运动，带来一段科学与艺术革命以后扩绘画领域来艺术革命以后扩…
-						<view class="fold" bindtap="fold" :data-text="foldText" :data-etc="textEtc"></view>
+						{{userInfo.introduce}}
+						<!-- <view class="fold" bindtap="fold" :data-text="foldText" :data-etc="textEtc"></view> -->
 					</view>
 				</view>
 
@@ -63,7 +69,7 @@
 						</view>
 						<view class="right u-flex">
 							<image src="/static/my/star.png"></image>
-							<text>4.8</text>
+							<text>{{userInfo.publishScore}}</text>
 						</view>
 					</view>
 					<view class="rate-item u-flex u-row-between">
@@ -73,7 +79,7 @@
 						</view>
 						<view class="right u-flex">
 							<image src="/static/my/star.png"></image>
-							<text>4.8</text>
+							<text>{{userInfo.paintEvaluateScore}}</text>
 						</view>
 					</view>
 				</view>
@@ -81,14 +87,14 @@
 				<u-gap height="16" bg-color="#F7F7F7" margin-top="40"></u-gap>
 				<u-sticky :offset-top="0" bg-color="#fff" @fixed="fixedTap" @unfixed="unfixedTap">
 					<view class="tabs" :style="{paddingTop: isFixed ? StatusBar + 'px' : '0'}">
-						<u-tabs ref="tabs" :is-scroll="false" :list="tabList" :current="current" bar-width="62"
+						<u-tabs ref="tabs" :is-scroll="true" :list="tabList" :current="current" bar-width="62"
 							bar-height="8" gutter="40" active-color="#1B1B1B" inactive-color="#9E9E9E" font-size="30"
 							@change="tabChange">
 						</u-tabs>
 					</view>
 				</u-sticky>
 				<view class="borderBottom"></view>
-				
+
 				<!-- 评画tabs -->
 				<view class="" v-if="current == 0">
 					<!-- 评画-评论类型 -->
@@ -97,7 +103,7 @@
 					</view>
 					<view class="content-box">
 						<!-- 评画-内容 -->
-						<painting-evaluation></painting-evaluation>
+						<painting-evaluation ref="PaintingEvaluation"></painting-evaluation>
 					</view>
 				</view>
 				<!-- 高分教材 -->
@@ -120,16 +126,22 @@
 			</view>
 		</view>
 		<view class="footer">
-			<view class="footer-btn" v-if="current == 0" @click="submitTap"><image class="footer-img" src="/static/public/teacherDynamic/d_icon_score.png" mode=""></image>邀请评画</view>
+			<view class="footer-btn" v-if="current == 0" @click="submitTap">
+				<image class="footer-img" src="/static/public/teacherDynamic/d_icon_score.png" mode=""></image>邀请评画
+			</view>
 		</view>
 	</view>
 
 </template>
 <script>
 	import drawingColumn from '@/components/drawingColumnTeachers/drawingColumn.vue'
-	import PaintingEvaluation from '@/pages/teachers/paintingEvaluationTechaers/paintingEvaluation.vue'
+	import PaintingEvaluation from '@/components/paintingEvaluation/paintingEvaluation.vue'
 	import CommentDrawing from '@/pages/teachers/commentDrawing/paintingEvaluation.vue'
 	import Dynamic from '@/pages/teachers/dynamic/dynamic.vue'
+
+	import {
+		teacherDetail
+	} from '@/api/teacher.js'
 	export default {
 		components: {
 			drawingColumn,
@@ -144,37 +156,55 @@
 				textEtc: '...',
 				tabList: [{
 					name: '评画'
-				},{
+				}, {
 					name: '高分教材',
-				},{
+				}, {
 					name: '动态',
 				}],
 				current: 0,
 				swiperCurrent: 0,
 				isFixed: false,
 				// 标签
-				lableList:['色彩','素描','速写'],
+				lableList: [],
+				userInfo: {}
 			}
 		},
-		onLoad() {
-
+		onLoad(options) {
+			if (options.id) {
+				this.id = options.id;
+				this.initData();
+			}
 		},
 		methods: {
+			initData() {
+				this.$http.get(teacherDetail, {
+					teacherId: this.id
+				}).then(res => {
+					console.log(res)
+					this.userInfo = res.data
+					this.lableList = this.userInfo.skilledMajor ? this.userInfo.skilledMajor.split(',') : []
+					console.log(this.userInfo)
+				}).catch(err => {
+					console.log(err)
+				})
+			},
 			tabChange(index) {
 				this.current = index
 				this.swiperCurrent = index;
 			},
 			fixedTap(e) {
 				this.isFixed = true
+				this.$refs.PaintingEvaluation.noScroll(this.isFixed)
 			},
-			unfixedTap(){
+			unfixedTap() {
 				this.isFixed = false
+				this.$refs.PaintingEvaluation.noScroll(this.isFixed)
 			},
-			goBack(){
+			goBack() {
 				this.$mRouter.back();
 			},
 			// 邀请评画
-			submitTap(){}
+			submitTap() {}
 		}
 	}
 </script>
@@ -201,13 +231,16 @@
 					left: 34rpx;
 					display: flex;
 					justify-content: space-between;
+
 					image {
 						width: 72rpx;
 						height: 72rpx;
 					}
-					&-back{
+
+					&-back {
 						width: 20rpx !important;
-						height: 36rpx !important;;
+						height: 36rpx !important;
+						;
 					}
 				}
 			}
@@ -277,23 +310,18 @@
 					}
 
 					.header-update {
-						padding: 0 28rpx 0 28rpx;
-						display: flex;
-						justify-content: center;
-						align-items: center;
+						width: 190rpx;
 						height: 68rpx;
+						line-height: 68rpx;
 						background: #F3F3F3;
 						border-radius: 34rpx;
+						font-size: 24rpx;
+						font-weight: bold;
+						color: $u-type-primary;
 
-						image {
-							width: 24rpx;
-							height: 24rpx;
-						}
-
-						text {
-							margin-left: 10rpx;
-							font-size: 24rpx;
-							color: #3A3D71;
+						&.disabled {
+							font-weight: 500;
+							color: #888C90;
 						}
 					}
 				}
@@ -310,9 +338,11 @@
 
 					.subheader-list {
 						margin-top: 18rpx;
-						.lable{
+
+						.lable {
 							display: flex;
-							view{
+
+							view {
 								width: 84rpx;
 								height: 42rpx;
 								background: #EFF2FF;
@@ -430,7 +460,7 @@
 			}
 		}
 	}
-	
+
 	.footer {
 		position: fixed;
 		bottom: 0;
@@ -440,13 +470,15 @@
 		padding-bottom: calc(14rpx + constant(safe-area-inset-bottom));
 		padding-bottom: calc(14rpx + env(safe-area-inset-bottom));
 		background-color: #fff;
-		z-index:9999;
-		&-img{
+		z-index: 9999;
+
+		&-img {
 			width: 38rpx;
 			height: 38rpx;
 			vertical-align: middle;
 			margin-right: 8rpx;
 		}
+
 		&-btn {
 			height: 88rpx;
 			line-height: 88rpx;
@@ -456,14 +488,14 @@
 			border-radius: 44rpx;
 			font-size: 32rpx;
 			color: #fff;
-			
-			&.disabled{
+
+			&.disabled {
 				background: #EDEFF2;
 				color: #8F9091;
 			}
 		}
 	}
-	
+
 	/deep/ .u-tab-item {
 		font-weight: 400;
 	}

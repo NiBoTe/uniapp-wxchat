@@ -7,17 +7,16 @@
 
 			<video id="myVideo" :src="videoUrl" @loadedmetadata="videoLoadedmetadata" @error="videoErrorCallback"
 				@timeupdate='videoUpdate' @ended="videoEnded" :controls="false" object-fit="contain"
-				enable-play-gesture></video>
+				enable-play-gesture>
+			</video>
 
-
-			<view class="try u-flex u-row-center">
+			<view class="try u-flex u-row-center" v-if="!detail.isPayed">
 				<text>正在试看，购买后观看完整视频</text>
 				<view class="try-btn">购买</view>
 			</view>
-			
-			
-			<view class="trial">
-				<view class="trial-btn">购买</view>
+
+			<view class="trial u-flex u-row-center" v-if="!detail.isPayed">
+				<view class="trial-btn u-flex u-row-center">购买</view>
 				<text>本内容需要购买后才能观看</text>
 			</view>
 
@@ -205,7 +204,6 @@
 				sliderMax: 100,
 				currtime: '00:00', //当前播放时间 字符串 计算后
 				druationTime: '00:00', //总时间 字符串 计算后
-				bool: false,
 				sliderValue: 0, //控制进度条slider的值，
 				updateState: false, //防止视频播放过程中导致的拖拽失效
 				palyFlag: false,
@@ -224,14 +222,12 @@
 		},
 		onReady: function(res) {
 			this.videoContext = uni.createVideoContext('myVideo')
-			console.log(this.videoContext.druation)
 		},
 		methods: {
 			initData() {
 				this.$http.get(getDetail, {
 					id: this.id
 				}).then(res => {
-					console.log(res)
 					this.detail = res.data
 					this.videoUrl = this.detail.items[0].hdImg
 				}).catch(err => {
@@ -247,11 +243,10 @@
 						addFavorite: !this.detail.isFavorite
 					}
 				}).then(res => {
-					console.log(res)
 					this.$set(this.detail, 'isFavorite', !this.detail.isFavorite)
 					this.$mHelper.toast(this.detail.isFavorite ? '收藏成功' : '取消收藏成功')
 				}).catch(err => {
-					console.log(err)
+					this.$mHelper.toast(err.msg)
 				})
 			},
 			getComment() {
@@ -261,7 +256,6 @@
 					size: this.size,
 					targetId: this.id
 				}).then(res => {
-					console.log(res)
 					this.total = res.data.total
 					let data = res.data.records
 					data.map(item => {
@@ -357,11 +351,11 @@
 				}
 
 			},
-
 			// 全屏+退出全屏
 			videoAllscreen(e) {
-				!this.fullScreenFlag ? this.videoContext.exitFullScreen() : this.videoContext.requestFullScreen();
-				// this.fullScreenFlag ? this.bool=true : this.bool=false;
+				console.log(this.fullScreenFlag);
+				!this.fullScreenFlag ? this.videoContext.exitFullScreen() : this
+					.videoContext.requestFullScreen();
 				this.fullScreenFlag = !this.fullScreenFlag;
 			},
 			// 根据秒获取时间
@@ -389,21 +383,16 @@
 				let duration = e.detail.duration
 				let sliderValue = (e.detail.currentTime / duration) * 100;
 
-				// if(sliderValue >= this.sliderMax) {
-				// 	this.videoContext.seek(0)
-				// 	this.videoContext.pause()
-				// }
+				if (sliderValue >= this.sliderMax) {
+					// this.videoContext.seek(0)
+					this.videoContext.pause()
+				}
 				if (this.updateState) { //判断拖拽完成后才触发更新，避免拖拽失效
 					this.sliderValue = sliderValue;
 				} else {
 					this.sliderValue = sliderValue
 				}
 				this.currtime = this.formatSeconds(e.detail.currentTime);
-			},
-			//拖动过程中触发的事件
-			sliderChanging(e) {
-				//拖拽过程中，不允许更新进度条
-				this.updateState = false;
 			},
 			// 拖动slider完成后触发
 			sliderChange(e) {
@@ -484,23 +473,50 @@
 					color: #35CE96;
 				}
 			}
+
+			.trial {
+				flex-direction: column;
+				position: absolute;
+				z-index: 2;
+				top: 0;
+				right: 0;
+				left: 0;
+				bottom: 0;
+
+				&-btn {
+					margin-bottom: 24rpx;
+					width: 178rpx;
+					height: 74rpx;
+					background: #35CE96;
+					border-radius: 37rpx;
+					font-size: 28rpx;
+					font-weight: 500;
+					color: #FFFFFF;
+				}
+
+				text {
+					font-size: 24rpx;
+					color: #FFFFFF;
+				}
+			}
 		}
 
 		//  视频操作面板
 		.panel {
-			width: 100%;
 			position: absolute;
 			bottom: 46rpx;
+			left: 54rpx;
+			right: 54rpx;
 
 			.controls {
-				margin: 0 50rpx;
+				margin: 0 28rpx 0 34rpx;
 				flex: 1;
 				display: flex;
 				align-items: center;
 
 				&-slider {
 					flex: 1;
-					margin: 0 18rpx;
+					margin: 0 18rpx 0 36rpx;
 
 					.block {
 						width: 28rpx;

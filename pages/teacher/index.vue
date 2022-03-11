@@ -1,26 +1,3 @@
-<!-- <template>
-	<view>
-		<tab-bar :selected="3"></tab-bar>
-	</view>
-</template>
-
-<script>
-	import tabBar from '@/components/tabbar/tabbar.vue'
-	export default {
-		components:{
-			tabBar
-		},
-		data() {
-			return {
-				
-			};
-		}
-	}
-</script>
-
-<style lang="scss">
-
-</style> -->
 
 <template>
 	<view class="u-wrap">
@@ -124,9 +101,8 @@
 				this.getList();
 			},
 			detailTap(item){
-				console.log(item)
 				this.$mRouter.push({
-					route: `/pages/teachers/dynamicHomePage?universityId=${item.id}`
+					route: `/pages/teachers/dynamicHomePage?id=${item.id}`
 				})
 			},
 			// 点击左边的栏目切换

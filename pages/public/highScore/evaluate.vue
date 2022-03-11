@@ -1,7 +1,7 @@
 <template>
 	<view class="evaluate">
 		<view class="header u-flex">
-			<image :src="detail.items[activeIndex].hdImg"></image>
+			<image :src="detail.type === 'image' ? detail.items[activeIndex].hdImg : detail.cover"></image>
 			<view class="right">
 				<view class="title">{{detail.items[activeIndex].description}}</view>
 				<view class="subtitle u-flex">
@@ -33,7 +33,8 @@
 				<u-row gutter="16">
 					<u-col span="3" v-for="(item,index) in labelList" :key="index">
 						<view class="item" :class="item.selected ? 'active' : ''" @click="itemTap(item, index)">
-							{{item.name}}</view>
+							{{item.name}}
+						</view>
 					</u-col>
 				</u-row>
 			</view>
@@ -48,7 +49,6 @@
 </template>
 
 <script>
-
 	import {
 		getDetail,
 		teachingMaterialCommentTagList,

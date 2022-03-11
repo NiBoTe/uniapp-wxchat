@@ -137,6 +137,7 @@
 					"path": "dynamicHomePage",
 					"style": {
 						"navigationBarTitleText": "动态主页",
+						"navigationBarTextStyle": "black",
 						"navigationStyle": "custom"
 					}
 				}, {

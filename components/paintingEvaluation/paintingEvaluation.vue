@@ -1,7 +1,7 @@
 <template>
 	<view class="container">
 
-		<scroll-view scroll-y="true" class="scroll-warper" @scrolltolower="lower">
+		<scroll-view :scroll-y="isFixed" class="scroll-warper" @scrolltolower="lower">
 			<u-waterfall v-model="flowList" ref="uWaterfall">
 				<template v-slot:left="{leftList}">
 					<view class="item" v-for="(item, index) in leftList" :key="index">
@@ -21,92 +21,37 @@
 
 <script>
 	import PaintingEvaluationItem from '@/components/paintingEvaluation/paintingEvaluationItem.vue'
+
+	import {
+		paintEvaluateList
+	} from '@/api/teacher.js'
 	export default {
 		name: "PaintingEvaluation",
 		components: {
 			PaintingEvaluationItem
 		},
+		props: {
+			id: {
+				type: String,
+				default: ''
+			}
+		},
 		data() {
 			return {
+				isFixed: false,
 				loadStatus: 'loadmore',
+				current: 1,
+				size: 10,
 				flowList: [],
-				list: [{
-						price: 35,
-						title: '北国风光，千里冰封，万里雪飘',
-						shop: '李白杜甫白居易旗舰店',
-						image: 'http://pic.sc.chinaz.com/Files/pic/pic9/202002/zzpic23327_s.jpg',
-					},
-					{
-						price: 75,
-						title: '望长城内外，惟余莽莽',
-						shop: '李白杜甫白居易旗舰店',
-						image: 'https://img1.baidu.com/it/u=2716398045,2043787292&fm=253&fmt=auto&app=120&f=JPEG?w=800&h=800',
-					},
-					{
-						price: 385,
-						title: '大河上下，顿失滔滔',
-						shop: '李白杜甫白居易旗舰店',
-						image: 'https://img2.baidu.com/it/u=2013499784,686759970&fm=253&fmt=auto&app=120&f=JPEG?w=800&h=1333',
-					},
-					{
-						price: 784,
-						title: '欲与天公试比高',
-						shop: '李白杜甫白居易旗舰店',
-						image: 'http://pic2.sc.chinaz.com/Files/pic/pic9/202002/zzpic23369_s.jpg',
-					},
-					{
-						price: 7891,
-						title: '须晴日，看红装素裹，分外妖娆',
-						shop: '李白杜甫白居易旗舰店',
-						image: 'http://pic2.sc.chinaz.com/Files/pic/pic9/202002/hpic2130_s.jpg',
-					},
-					{
-						price: 2341,
-						shop: '李白杜甫白居易旗舰店',
-						title: '江山如此多娇，引无数英雄竞折腰',
-						image: 'http://pic1.sc.chinaz.com/Files/pic/pic9/202002/zzpic23346_s.jpg',
-					},
-					{
-						price: 661,
-						shop: '李白杜甫白居易旗舰店',
-						title: '惜秦皇汉武，略输文采',
-						image: 'http://pic1.sc.chinaz.com/Files/pic/pic9/202002/zzpic23344_s.jpg',
-					},
-					{
-						price: 1654,
-						title: '唐宗宋祖，稍逊风骚',
-						shop: '李白杜甫白居易旗舰店',
-						image: 'http://pic1.sc.chinaz.com/Files/pic/pic9/202002/zzpic23343_s.jpg',
-					},
-					{
-						price: 1678,
-						title: '一代天骄，成吉思汗',
-						shop: '李白杜甫白居易旗舰店',
-						image: 'http://pic1.sc.chinaz.com/Files/pic/pic9/202002/zzpic23343_s.jpg',
-					},
-					{
-						price: 924,
-						title: '只识弯弓射大雕',
-						shop: '李白杜甫白居易旗舰店',
-						image: 'http://pic1.sc.chinaz.com/Files/pic/pic9/202002/zzpic23343_s.jpg',
-					},
-					{
-						price: 8243,
-						title: '俱往矣，数风流人物，还看今朝',
-						shop: '李白杜甫白居易旗舰店',
-						image: 'http://pic1.sc.chinaz.com/Files/pic/pic9/202002/zzpic23343_s.jpg',
-					},
-				]
+				list: []
 			}
 		},
 		created() {
-			console.log('---------')
 			this.addRandomData();
 		},
 
 		methods: {
 			lower() {
-				console.log('=========')
 				this.loadStatus = 'loading';
 				// 模拟数据加载
 				setTimeout(() => {
@@ -114,20 +59,42 @@
 					this.loadStatus = 'loadmore';
 				}, 1000)
 			},
+
+			getList() {
+				this.loadStatus = 'loading';
+				this.$http.post(paintEvaluateList, {
+					teacherId: this.id,
+					current: this.current,
+					size: this.size,
+				}).then(res => {
+					let data = res.data
+					if (this.current === 1) {
+						this.list = res.data.records;
+					} else {
+						this.list = this.list.concat(res.data.records);
+					}
+					if (res.data.total <= this.list.length) {
+						this.loadStatus = 'nomore';
+					} else {
+						this.loadStatus = 'loadmore';
+					}
+
+				}).catch(err => {
+					console.log(err)
+				})
+			},
 			addRandomData() {
-				for (let i = 0; i < 10; i++) {
-					let index = this.$u.random(0, this.list.length - 1);
-					// 先转成字符串再转成对象，避免数组对象引用导致数据混乱
-					let item = JSON.parse(JSON.stringify(this.list[index]))
-					item.id = this.$u.guid();
-					this.flowList.push(item);
-				}
+				this.current++;
+				this.getList();
 			},
 			remove(id) {
 				this.$refs.uWaterfall.remove(id);
 			},
 			clear() {
 				this.$refs.uWaterfall.clear();
+			},
+			noScroll(bool) {
+				this.isFixed = bool
 			}
 		}
 	}
@@ -138,5 +105,6 @@
 	.scroll-warper {
 		height: calc(100vh - 94rpx);
 	}
+
 	.item {}
 </style>

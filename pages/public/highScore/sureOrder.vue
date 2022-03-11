@@ -40,9 +40,9 @@
 						商品名称 ：{{detail.title}}
 					</view>
 					<view class="parameter-list">
-						商品数量 ：{{detail.items.length}}张
+						商品数量 ：{{detail.items ? detail.items.length : 0}}张
 						<view class="price">
-							¥<text>{{(detail.price * detail.items.length).toFixed(2)}}</text>
+							¥<text>{{detail.items ? (detail.price * detail.items.length).toFixed(2) : 0}}</text>
 						</view>
 					</view>
 				</view>
@@ -50,7 +50,41 @@
 
 			<view class="t-b"></view>
 
-			<view class="swiper">
+			<view class="navbar" v-if="detail.type === 'video'">
+
+				<video id="myVideo" :src="videoUrl" @loadedmetadata="videoLoadedmetadata" @error="videoErrorCallback"
+					@timeupdate='videoUpdate' @ended="videoEnded" :controls="false" object-fit="contain"
+					enable-play-gesture>
+				</video>
+
+				<view class="panel u-flex">
+					<view class="video-play" @click='videoOpreation'>
+						<u-icon v-if="!palyFlag" name="play-right-fill" color="#fff" size="28"></u-icon>
+						<u-icon v-else name="pause" color="#fff" size="28"></u-icon>
+					</view>
+					<view class="controls">
+						<text>{{currtime}}</text>
+						<view class="controls-slider">
+							<u-slider v-model="sliderValue" :max="sliderMax" inactive-color="#A5A5A4"
+								active-color="#35CE96" :use-slot="true" @moving="sliderChange">
+								<view class="block u-flex u-row-center">
+									<view class="block-box"></view>
+								</view>
+							</u-slider>
+						</view>
+						<text>{{druationTime}}</text>
+					</view>
+
+					<view class="video-screen u-flex" @click='videoAllscreen'>
+						<image src="/static/public/screen.png"></image>
+					</view>
+				</view>
+
+				<view class="mask u-flex u-row-center">
+					<image :src="setSrc('highScore/highScore_mask.png')"></image>
+				</view>
+			</view>
+			<view class="swiper" v-if="detail.type === 'image'">
 				<view class="swiper-item" :class="{'active':activeIndex === index}"
 					v-for="(item, index) in detail.items" @click="handleClick(index)">
 					<image :src="item.thumbImg" mode="aspectFit"></image>
@@ -58,7 +92,7 @@
 			</view>
 
 
-			<view class="works">
+			<view class="works" v-if="detail.type === 'image'">
 				<view class="works-img">
 					<image :src="detail.items[activeIndex].thumbImg" mode="widthFix"></image>
 				</view>
@@ -86,7 +120,7 @@
 	import {
 		getDetail
 	} from '@/api/teaching_material.js'
-	
+
 	import {
 		orderLaunch,
 		orderPay
@@ -101,6 +135,18 @@
 				activeIndex: 0,
 				detail: {},
 				addressDetail: null,
+
+				// video
+				videoUrl: '',
+				videoContext: null,
+				fullScreenFlag: false,
+				duration: 0,
+				sliderMax: 100,
+				currtime: '00:00', //当前播放时间 字符串 计算后
+				druationTime: '00:00', //总时间 字符串 计算后
+				sliderValue: 0, //控制进度条slider的值，
+				updateState: false, //防止视频播放过程中导致的拖拽失效
+				palyFlag: false,
 			};
 		},
 		onLoad(options) {
@@ -113,6 +159,9 @@
 				this.addressDetail = data.item
 			})
 		},
+		onReady: function(res) {
+			this.videoContext = uni.createVideoContext('myVideo')
+		},
 		methods: {
 			initData() {
 				this.$http.get(getDetail, {
@@ -120,6 +169,7 @@
 				}).then(res => {
 					console.log(res)
 					this.detail = res.data
+					this.videoUrl = this.detail.items[0].hdImg
 				}).catch(err => {
 					console.log(err)
 				})
@@ -168,7 +218,7 @@
 					uni.hideLoading()
 				})
 			},
-			goPay(){
+			goPay() {
 				this.$http.post(orderPay, {
 					openid: this.$mStore.state.userInfo.openid,
 					orderId: this.productDetail.id,
@@ -176,32 +226,115 @@
 					tradeType: 'JSAPI'
 				}).then(res => {
 					console.log(res)
-					
+
 					let params = res.data
-					
+
 					uni.hideLoading()
 					uni.requestPayment({
-					    provider: 'wxpay',
-					    timeStamp: params.timeStamp,
-					    nonceStr: params.nonceStr,
-					    package: params.packageValue,
-					    signType: params.signType,
-					    paySign: params.paySign,
-					    success: (res) =>  {
+						provider: 'wxpay',
+						timeStamp: params.timeStamp,
+						nonceStr: params.nonceStr,
+						package: params.packageValue,
+						signType: params.signType,
+						paySign: params.paySign,
+						success: (res) => {
 							this.$mHelper.toast('支付成功')
 							setTimeout(() => {
 								uni.navigateBack({
 									delta: 2
 								})
 							}, 1500)
-					    },
-					    fail: (err) => {
+						},
+						fail: (err) => {
 							this.$mHelper.toast('支付失败')
-					    }
+						}
 					});
 				}).catch(err => {
 					uni.hideLoading()
 				})
+			},
+
+			// 全屏+退出全屏
+			videoAllscreen(e) {
+				!this.fullScreenFlag ? this.videoContext.exitFullScreen() : this.videoContext.requestFullScreen();
+				// this.fullScreenFlag ? this.bool=true : this.bool=false;
+				this.fullScreenFlag = !this.fullScreenFlag;
+			},
+			// 根据秒获取时间
+			formatSeconds(a) {
+				var hh = parseInt(a / 3600);
+				var mm = parseInt((a - hh * 3600) / 60);
+				if (mm < 10) mm = "0" + mm;
+				var ss = parseInt((a - hh * 3600) % 60);
+				if (ss < 10) ss = "0" + ss;
+				if (hh < 10) hh = hh == 0 ? '' : `0${hh}:`;
+				var length = hh + mm + ":" + ss;
+				if (a >= 0) {
+					return length;
+				} else {
+					return "00:00";
+				}
+			},
+			//开始+暂停
+			videoOpreation() {
+				!this.palyFlag ? this.videoContext.play() : this.videoContext.pause();
+				this.palyFlag = !this.palyFlag;
+			},
+			// 播放进度变化时触发，event.detail = {currentTime, duration} 。触发频率 250ms 一次
+			videoUpdate(e) {
+				let duration = e.detail.duration
+				let sliderValue = (e.detail.currentTime / duration) * 100;
+
+				if (sliderValue >= this.sliderMax) {
+					// this.videoContext.seek(0)
+					this.videoContext.pause()
+				}
+				if (this.updateState) { //判断拖拽完成后才触发更新，避免拖拽失效
+					this.sliderValue = sliderValue;
+				} else {
+					this.sliderValue = sliderValue
+				}
+				this.currtime = this.formatSeconds(e.detail.currentTime);
+			},
+			// 拖动slider完成后触发
+			sliderChange(e) {
+				var duration = this.duration;
+				var second = this.sliderValue / 100 * duration;
+				if (duration) { //完成拖动后，计算对应时间并跳转到指定位置
+					this.videoContext.seek(second);
+					this.updateState = true //完成拖动后允许更新滚动条
+					this.druationTime = this.formatSeconds(duration);
+					this.currtime = this.formatSeconds(second);
+				} else {}
+			},
+			// 开始
+			contrPlay() {
+				this.videoContext.play();
+				this.palyFlag = false;
+			},
+			// 暂停
+			pause() {
+				this.videoContext.pause(); //站厅播放
+				this.palyFlag = true;
+			},
+
+			videoErrorCallback: function(e) {
+				uni.showModal({
+					content: e.target.errMsg,
+					showCancel: false
+				})
+			},
+			// 结束
+			videoEnded(e) {
+				console.log(e)
+			},
+			videoLoadedmetadata(e) {
+				this.duration = e.detail.duration.toFixed(0)
+				this.druationTime = this.formatSeconds(this.duration);
+
+				if (!this.detail.isPayed) {
+					this.sliderMax = ((this.detail.videoTrialDuration / this.duration) * 100).toFixed(2);
+				}
 			}
 		}
 	}
@@ -214,6 +347,102 @@
 		height: 100vh;
 
 
+		.navbar {
+			height: 548rpx;
+			position: relative;
+
+
+			.mask {
+				position: absolute;
+				top: 0;
+				right: 0;
+				left: 0;
+				bottom: 0;
+				overflow: hidden;
+				border-radius: 24rpx;
+				background: rgba($color: #000000, $alpha: .7);
+				image {
+					width: 478rpx;
+					height: 268rpx;
+
+				}
+			}
+
+			#myVideo {
+				width: 100%;
+				height: 548rpx;
+			}
+
+			.try {
+				padding: 0 20rpx;
+				position: absolute;
+				bottom: 100rpx;
+				left: 34rpx;
+				height: 68rpx;
+				background: rgba(0, 0, 0, 0.7);
+				border-radius: 16rpx;
+
+				&>text {
+					font-size: 24rpx;
+					color: #FFFFFF;
+				}
+
+				&-btn {
+					margin-left: 24rpx;
+					font-size: 24rpx;
+					font-weight: 800;
+					color: #35CE96;
+				}
+			}
+		}
+
+		//  视频操作面板
+		.panel {
+			position: absolute;
+			z-index: 2;
+			bottom: 46rpx;
+			left: 54rpx;
+			right: 54rpx;
+
+			.controls {
+				margin: 0 28rpx 0 34rpx;
+				flex: 1;
+				display: flex;
+				align-items: center;
+
+				&-slider {
+					flex: 1;
+					margin: 0 18rpx 0 36rpx;
+
+					.block {
+						width: 28rpx;
+						height: 28rpx;
+						border-radius: 50%;
+						background: rgba($color: #35CE96, $alpha: .49);
+
+						&-box {
+							width: 16rpx;
+							height: 16rpx;
+							border-radius: 50%;
+							background: #35CE96;
+						}
+					}
+				}
+
+				&>text {
+					font-size: 24rpx;
+					font-weight: 500;
+					color: #FFFFFF;
+				}
+			}
+
+			.video-screen {
+				image {
+					width: 34rpx;
+					height: 34rpx;
+				}
+			}
+		}
 
 		.top {
 			width: 100%;
@@ -370,7 +599,7 @@
 			padding-bottom: calc(14rpx + constant(safe-area-inset-bottom));
 			padding-bottom: calc(14rpx + env(safe-area-inset-bottom));
 			background-color: #fff;
-		
+
 			&-btn {
 				height: 88rpx;
 				line-height: 88rpx;
@@ -380,7 +609,7 @@
 				border-radius: 44rpx;
 				font-size: 32rpx;
 				color: #fff;
-		
+
 				&.disabled {
 					background: #EDEFF2;
 					color: #8F9091;
@@ -421,10 +650,11 @@
 
 		.checkbox {
 			padding: 28rpx 34rpx;
+
 			text {
 				font-size: 24rpx;
 				color: #1B1B1B;
-			
+
 				&.agreement {
 					font-size: 24rpx;
 					color: #2C3AFF;
