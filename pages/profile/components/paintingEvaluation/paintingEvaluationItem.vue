@@ -1,8 +1,9 @@
 <template>
 	<view class="container">
+
 		<view class="item" @click="detailTap">
 			<view class="item-image">
-				<u-lazy-load threshold="-450" :image="item.evaluateUrl"></u-lazy-load>
+				<u-lazy-load threshold="-450" :image="item.url"></u-lazy-load>
 				<!-- <voice-playback></voice-playback> -->
 			</view>
 
@@ -12,7 +13,7 @@
 						<u-avatar size="65" :src="item.teacherHeadUrl"></u-avatar>
 					</view>
 					<view class="text">
-						<text>{{item.teacherFullName || ''}}</text>
+						<text>{{item.teacherFullName}}</text>
 						<text>评画老师</text>
 					</view>
 				</view>
@@ -21,7 +22,7 @@
 						<u-avatar size="65" :src="item.teacherInfo.headUrl"></u-avatar>
 					</view>
 					<view class="text">
-						<text>{{item.teacherInfo.fullName || ''}}</text>
+						<text>{{item.teacherInfo.fullName}}</text>
 						<text>评画老师</text>
 					</view>
 				</view>
@@ -48,7 +49,7 @@
 	export default {
 		name: "PaintingEvaluationItem",
 		components: {
-			VoicePlayback
+			VoicePlayback,
 		},
 		props: {
 			item: {
@@ -57,15 +58,15 @@
 					return {}
 				}
 			},
-			type: {
-				type: String,
-				default: 'default'
-			}
 		},
 		data() {
 			return {
-
+				type: 'default'
 			};
+		},
+		created() {
+			this.type = this.$mStore.state.userInfo.roleSelect === 'teacher' ? 'teacherInfo' : 'default'
+			console.log(this.type)
 		},
 		mounted() {
 			this.getBox()
@@ -80,7 +81,7 @@
 					}
 				}).exec();
 			},
-			detailTap(){
+			detailTap() {
 				uni.navigateTo({
 					url: `/pages/centers/paintingEvaluation/detail?id=${this.item.id}`
 				})

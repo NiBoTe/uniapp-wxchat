@@ -1,10 +1,14 @@
 <template>
 	<view class="container">
 
+
 		<view class="page">
-			<view class="header">
-				<image :src="userInfo.bgUrl"></image>
-				<view class="settings" :style="{top: StatusBar + 44 + 'px'}" @tap="toSetting">
+			<view class="header" @click="updateBgTap">
+				<view class="header-text u-flex u-row-center">点击设置个性化背景</view>
+				<view class="header-bg">
+					<image :src="userInfo.bgUrl" mode="aspectFill"></image>
+				</view>
+				<view class="settings" :style="{top: StatusBar + 44 + 'px'}" @click.stop="toSetting">
 					<image src="/static/my/settings.png"></image>
 				</view>
 			</view>
@@ -32,7 +36,7 @@
 						</view>
 					</view>
 
-					<view class="header-update">
+					<view class="header-update" @click="userInfoTap">
 						<image src="/static/my/update.png"></image>
 						<text>完善资料</text>
 					</view>
@@ -77,7 +81,15 @@
 
 				<u-gap height="16" bg-color="#F7F7F7" margin-top="40"></u-gap>
 				<u-sticky :offset-top="0" bg-color="#fff" @fixed="fixedTap" @unfixed="unfixedTap">
-					<view class="tabs" :style="{paddingTop: isFixed ? StatusBar + 'px' : '0'}">
+
+					<view class="navbar" v-if="isFixed">
+						<u-navbar :title="title" :border-bottom="false" :is-back="false">
+							<view class="navbar-right" slot="right">
+								<image src="/static/public/user_setting.png"></image>
+							</view>
+						</u-navbar>
+					</view>
+					<view class="tabs">
 						<u-tabs ref="tabs" :is-scroll="true" :list="tabList" :current="current" bar-width="62"
 							bar-height="8" gutter="40" active-color="#1B1B1B" inactive-color="#9E9E9E" font-size="30"
 							@change="tabChange">
@@ -85,16 +97,26 @@
 					</view>
 				</u-sticky>
 				<view class="borderBottom"></view>
-
+				<!-- 
 				<view class="subtabs">
 					<drawingColumn></drawingColumn>
 				</view>
-
+ -->
 
 				<view class="content-box">
 					<!-- 评画 -->
-					<painting-evaluation :isFixed="isFixed"></painting-evaluation>
+					<PaintingEvaluation v-show="current === 0" ref="PaintingEvaluation"></PaintingEvaluation>
+
+					<!-- 动态 -->
+					<dynamic v-show="current === 1" ref="Dynamic"></dynamic>
+					
+					<!-- 高分教材 -->
+					<textbook v-show="current === 2" ref="Textbook"></textbook>
+					
+					<!-- 收益 -->
+					<profit v-show="current === 3" ref="Profit"></profit>
 				</view>
+
 			</view>
 		</view>
 		<tab-bar :selected="4"></tab-bar>
@@ -104,16 +126,25 @@
 <script>
 	import tabBar from '@/components/tabbar/tabbar.vue'
 	import drawingColumn from '@/components/drawingColumn/drawingColumn.vue'
-	import PaintingEvaluation from '@/components/paintingEvaluation/paintingEvaluation.vue'
-
+	import PaintingEvaluation from './components/paintingEvaluation/paintingEvaluation.vue'
+	import Dynamic from './components/dynamic/dynamic.vue'
+	import Textbook from './components/textbook/textbook.vue'
+	import Profit from './components/profit/index.vue'
 	import {
-		getMyInfo
+		getMyInfo,
+		updateBgUrl
 	} from '@/api/userInfo.js'
+	import {
+		generatePostPolicy
+	} from '@/api/basic.js'
 	export default {
 		components: {
 			tabBar,
 			drawingColumn,
-			PaintingEvaluation
+			PaintingEvaluation,
+			Dynamic,
+			Textbook,
+			Profit
 		},
 		data() {
 			return {
@@ -134,11 +165,14 @@
 				}, {
 					name: '订单',
 				}, {
-					name: '动态',
+					name: '收藏',
+				}, {
+					name: '消息',
 				}],
 				current: 0,
 				swiperCurrent: 0,
 				isFixed: false,
+				title: ''
 			}
 		},
 		onLoad() {
@@ -166,6 +200,7 @@
 						let user = r.data.user;
 						user.skilledMajor = user.skilledMajor ? user.skilledMajor.split(",") : []
 						this.userInfo = r.data.user;
+						this.title = this.userInfo.fullName
 						this.$mStore.commit('login', this.userInfo);
 					})
 					.catch((err) => {
@@ -176,15 +211,81 @@
 						uni.stopPullDownRefresh();
 					});
 			},
+			// 更换背景图
+			updateBgTap() {
+				// 从相册选择图片
+				const _this = this;
+				if (!this.userInfo.bgUrl || this.userInfo.bgUrl === '') {
+					uni.chooseImage({
+						count: 1,
+						sizeType: ['original', 'compressed'],
+						sourceType: ['album'],
+						success: function(res) {
+							_this.handleUploadFile(res.tempFilePaths[0]);
+						}
+					});
+				} else {
+
+					uni.$on('updateUrl', () => {
+						console.log('123123更新')
+						this.getMemberInfo()
+					})
+					uni.navigateTo({
+						url: '/pages/set/updateUrl'
+					})
+				}
+			},
+			// 上传头像
+			handleUploadFile(filePath) {
+				const _this = this;
+				_this.$http.get(generatePostPolicy, {
+					app_token: uni.getStorageSync('accessToken')
+				}).then(res => {
+					let data = res.data;
+					_this.$http
+						.upload(data.host, {
+							filePath,
+							formData: {
+								key: data.dir,
+								policy: data.policy,
+								OSSAccessKeyId: data.accessid,
+								signature: data.signature,
+							}
+						})
+						.then(r => {
+							console.log(r)
+							_this.setUpdateBgUrl(r)
+						});
+				}).catch(err => {
+					console.log(err)
+				})
+			},
+
+			setUpdateBgUrl(bgUrl) {
+				this.$http.post(updateBgUrl, {
+					bgUrl
+				}).then(res => {
+					this.getMemberInfo()
+				})
+			},
 			tabChange(index) {
 				this.current = index
 				this.swiperCurrent = index;
 			},
 			fixedTap(e) {
 				this.isFixed = true
+				this.noScroll()
 			},
 			unfixedTap() {
 				this.isFixed = false
+				this.noScroll()
+			},
+			noScroll(){
+				console.log(this.isFixed)
+				this.$refs.PaintingEvaluation.noScroll(this.isFixed)
+				this.$refs.Dynamic.noScroll(this.isFixed)
+				this.$refs.Textbook.noScroll(this.isFixed)
+				this.$refs.Profit.noScroll(this.isFixed)
 			},
 			toSetting: function() {
 				uni.navigateTo({
@@ -198,8 +299,13 @@
 				uni.navigateTo({
 					url: `/pages/profile/fansList?type=${type}`,
 				});
+			},
+			// 完善资料
+			userInfoTap(){
+				uni.navigateTo({
+					url: '/pages/set/userInfo'
+				})
 			}
-
 		}
 	}
 </script>
@@ -209,10 +315,39 @@
 		position: relative;
 		height: 100vh;
 
+		.navbar {
+			&-right {
+				margin-right: 24rpx;
+
+				image {
+					width: 44rpx;
+					height: 44rpx;
+				}
+			}
+		}
+
 		.page {
 			.header {
 				position: relative;
 				height: 440rpx;
+				background-color: #9E9E9E;
+
+
+				&-bg {
+					position: relative;
+					z-index: 2;
+				}
+
+				&-text {
+					position: absolute;
+					z-index: 1;
+					top: 0;
+					left: 0;
+					right: 0;
+					bottom: 0;
+					font-size: 24rpx;
+					color: #fff;
+				}
 
 				image {
 					width: 100%;
@@ -235,9 +370,13 @@
 			.content {
 				margin-top: -100rpx;
 				position: relative;
+				z-index: 3;
 				background-color: #fff;
 				border-radius: 40rpx 40rpx 0px 0px;
-
+				
+				&-box{
+					background-color: #F3F3F3;
+				}
 				&-header {
 					padding: 0 34rpx;
 

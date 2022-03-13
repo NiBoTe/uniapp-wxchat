@@ -1,311 +1,586 @@
 <template>
-	<!-- 动态 -->
 	<view class="container">
-		<scroll-view scroll-y="true" class="scroll-warper" @scrolltolower="lower">
-			<!-- <u-waterfall v-model="flowList" ref="uWaterfall">
-				<template v-slot:left="{leftList}">
-					<view class="item item-left" v-for="(item, index) in leftList" :key="index">
-						<painting-evaluation-item :item="item"></painting-evaluation-item>
+		<scroll-view class="list-view" :scroll-y="isFixed" @scrolltolower="lower">
+
+
+			<view class="item-main" v-for="(item,index) in list" :key="index" @click="goDetail(item, index)">
+				<view class="year" v-if="isHide(item, index)">
+					<u-gap height="16" bg-color="#F0F0F1"></u-gap>
+					<text>{{moment(item.createTime).format('YYYY')}}年</text>
+				</view>
+				<view class="item-box u-flex">
+					<view class="time">
+						<view class="time-day">{{moment(item.createTime).format('DD')}}</view>
+						<view class="time-month">{{moment(item.createTime).format('M')}}月</view>
 					</view>
-				</template>
-				<template v-slot:right="{rightList}">
-					<view class="item item-right" v-for="(item, index) in rightList" :key="index">
-						<painting-evaluation-item :item="item"></painting-evaluation-item>
-					</view>
-				</template>
-			</u-waterfall>
-			<u-loadmore bg-color="rgb(240, 240, 240)" :status="loadStatus" @loadmore="addRandomData"></u-loadmore> -->
-			<view class="content">
-				<view class="" v-for="(item,index) in 4">
-					<view class="content-subheader">
-						<view class="subheader-text u-line-2">
-							文艺复兴是指13世纪末在意大利各城市兴起，以后扩展到西欧各国，于16世纪在欧洲盛行的一场思想文化运动，带来一段科学与艺术革命以后扩绘画领域来艺术革命以后扩…
-							<view class="fold" bindtap="fold" :data-text="foldText" :data-etc="textEtc"></view>
+					<view class="item">
+						<view class="paragraph">{{item.content}}</view>
+						<!-- 照片 -->
+						<view class="thumbnails">
+							<view :class="item.snsImgs.length === 1?'my-gallery':'thumbnail'"
+								v-for="(image, index_images) in item.snsImgs" :key="index_images">
+								<image class="gallery_img" lazy-load mode="aspectFill" :src="image.thumbImg"
+									:data-src="image.thumbImg" @click.stop="previewImage(item.snsImgs,index_images)">
+								</image>
+							</view>
 						</view>
-					</view>
-					<view class="content-main">
-						<image src="/static/public/teacherDynamic/d_photo.png" mode=""></image>
-					</view>
-					<view class="content-rate u-flex">
-						<view class="rate-item u-flex u-row-between">
-							<view>
-								<image class="icon" src="/static/public/dynamic_star.png" mode=""></image>
-								<text>295</text>
+						<!-- 点赞、收藏 分享 -->
+						<view class="toolbar">
+							<view class="left">
+								<view class="tool-item" @click.stop="favoriteTap(item, index)">
+									<image v-if="item.isFavorite" src="/static/public/dynamic_star.png"></image>
+									<image v-else src="/static/public/dynamic_star_fill.png"></image>
+									<view class="num">
+										{{item.favoriteCount}}
+									</view>
+								</view>
+								<view class="tool-item" v-if="!item.noComment" @click.stop="commentTap(index)">
+									<image src="/static/public/dynamic_comment.png"></image>
+									<view class="num">
+										{{item.commentCount}}
+									</view>
+								</view>
+								<view class="tool-item" @click.stop="likeTap(item, index)">
+									<image v-if="item.isLike" src="/static/public/dynamic_praise.png"></image>
+									<image v-else src="/static/public/dynamic_praise_fill.png"></image>
+									<view class="num">
+										{{item.likeCount}}
+									</view>
+								</view>
 							</view>
-							<view>
-								<image class="icon" src="/static/public/dynamic_praise.png" mode=""></image>
-								<text>295</text>
-							</view>
-							<view></view>
-							<view>
-								<image class="icon" src="/static/public/dynamic_share.png" mode=""></image>
-								<text>分享</text>
-							</view>
+							<button open-type="share" class="right" @tap="share(item)">
+								<view class="tool-item">
+									<image src="/static/public/dynamic_share.png"></image>
+									<view class="num">
+										分享
+									</view>
+								</view>
+							</button>
+
 						</view>
 					</view>
 				</view>
-				
 			</view>
+
+			<u-loadmore margin-top="30" margin-bottom="30" :status="loadStatus" @loadmore="addData"></u-loadmore>
 		</scroll-view>
+
+
 	</view>
 </template>
 
 <script>
-	import PaintingEvaluationItem from '@/pages/teachers/commentDrawing/paintingEvaluationItem.vue'
+	import {
+		addFavorite,
+		addLike,
+		snsBlackSave,
+		snsReportSave,
+		addComment,
+		followSnsList
+	} from '@/api/sns.js'
+
+	import {
+		snsList
+	} from '@/api/teacher.js'
+	import moment from '@/common/moment.js'
 	export default {
-		name: "PaintingEvaluation",
-		components: {
-			PaintingEvaluationItem
+		props: {
+			teacherId: {
+				type: String,
+				default: ''
+			}
 		},
 		data() {
 			return {
-				StatusBar: this.StatusBar,
-				foldText: '全文',
-				textEtc: '...',
+				moment,
+				isFixed: false,
+				hasLogin: false,
 				loadStatus: 'loadmore',
-				}
-		},
-		created() {
-			console.log('---------')
-			// this.addRandomData();
-		},
+				current: 1,
+				size: 10,
+				list: [], // 考试列表
+				itemIndex: 0,
+				reportIndex: 0,
+				commentIndex: -1,
+				content: '',
 
+			};
+		},
+		watch: {
+			teacherId(val) {
+				if (this.teacherId) {
+					this.getList();
+				}
+			}
+		},
 		methods: {
-			lower() {
-				console.log('=========')
-				this.loadStatus = 'loading';
-				// 模拟数据加载
-				// setTimeout(() => {
-				// 	this.addRandomData();
-				// 	this.loadStatus = 'loadmore';
-				// }, 1000)
+			// 收藏
+			favoriteTap(item, index) {
+				this.$http.post(addFavorite, null, {
+					params: {
+						snsId: item.id,
+						isFavorite: !item.isFavorite
+					}
+				}).then(res => {
+					this.$set(this.list[index], 'isFavorite', !item.isFavorite)
+					this.$set(this.list[index], 'favoriteCount', item.isFavorite ? Number(item.favoriteCount) + 1 :
+						item.favoriteCount - 1)
+
+					this.$mHelper.toast(item.isFavorite ? '收藏成功' : '取消收藏成功');
+				})
 			},
-			// addRandomData() {
-			// 	for (let i = 0; i < 10; i++) {
-			// 		let index = this.$u.random(0, this.list.length - 1);
-			// 		// 先转成字符串再转成对象，避免数组对象引用导致数据混乱
-			// 		let item = JSON.parse(JSON.stringify(this.list[index]))
-			// 		item.id = this.$u.guid();
-			// 		this.flowList.push(item);
-			// 	}
-			// },
-			
+			// 点赞
+			likeTap(item, index) {
+				this.$http.post(addLike, null, {
+					params: {
+						snsId: item.id,
+						isLike: !item.isLike
+					}
+				}).then(res => {
+					this.$set(this.list[index], 'isLike', !item.isLike)
+					this.$set(this.list[index], 'likeCount', item.isLike ? Number(item.likeCount) + 1 :
+						item.likeCount - 1)
+
+					this.$mHelper.toast(item.isLike ? '点赞成功' : '取消点赞成功');
+				})
+			},
+			// 获取列表
+
+			getList() {
+				this.loadStatus = 'loading';
+				this.$http.post(snsList, {
+					userId: this.teacherId,
+					size: this.size,
+					current: this.current,
+				}).then(res => {
+					if (this.current === 1) {
+						this.list = res.data.records;
+					} else {
+						this.list = this.list.concat(res.data.records);
+					}
+					if (res.data.records.length <= 0) {
+						this.loadStatus = 'nomore';
+					} else {
+						this.loadStatus = 'loadmore';
+					}
+				})
+
+			},
+			addData() {
+				this.current++;
+				this.getList();
+			},
+			share(e) {
+				console.log(e)
+				// this.$refs.popup.open();
+			},
+
+			previewImage(imageList, current) {
+				let list = []
+				imageList.map(item => {
+					list.push(item.hdImg)
+				})
+				uni.previewImage({
+					current,
+					urls: list
+				});
+			},
+			cancelShare() {
+				this.$refs.popup.close();
+			},
+			goDetail(item, index) {
+
+				uni.navigateTo({
+					url: `/pages/module/circleDetail/index?id=${item.id}`
+				})
+			},
+
+			// 评论
+			commentTap(index) {
+				this.commentIndex = index
+			},
+			confirmTap(item, index) {
+				if (this.content.replace(/ /g, '') === '') {
+					return this.$mHelper.toast('请输入评论内容')
+				}
+				this.$http.post(addComment, {
+					replyId: 0,
+					content: this.content,
+					targetId: item.id
+				}).then(res => {
+					this.$mHelper.toast('评论成功')
+					this.commentIndex = -1;
+					this.$set(this.list[index], 'commentCount', Number(item.commentCount) + 1)
+					this.content = ''
+				}).catch(err => {
+					this.$mHelper.toast(err.msg)
+				})
+			},
+			lower() {
+				this.loadStatus = 'loading';
+				this.addData();
+			},
+			isHide(item, index) {
+				if (index > 0) {
+					return moment(item.createTime).format('YYYY') !== moment().format('YYYY') && moment(item.createTime)
+						.format('YYYY') !== moment(this.list[index - 1].createTime).format('YYYY')
+				} else {
+					return false
+				}
+			},
+			noScroll(bool) {
+				this.isFixed = bool
+			}
 		}
 	}
 </script>
 
-
 <style lang="scss" scoped>
-	.scroll-warper {
-		height: calc(100vh - 94rpx);
-		background: #F3F3F3;
-		padding: 0 34rpx;
+	.container {
+		width: 100vw;
+		overflow-x: hidden;
+		background-color: #F3F3F3;
 	}
-	.content {
-		// margin-top: 50rpx;
+
+	.list-view {
+		padding-bottom: 160rpx;
 		position: relative;
-		// background-color: #fff;
-		// border-radius: 40rpx 40rpx 0px 0px;
-	
-		&-header {
-			padding: 0 34rpx;
-	
-			.head {
-				margin-top: -72rpx;
-				margin-right: 42rpx;
-	
-				&-img {
-					position: relative;
-					width: 202rpx;
-					height: 202rpx;
-					background-color: #fff;
-					border-radius: 50%;
-					overflow: hidden;
-	
-					image {
-						width: 186rpx;
-						height: 186rpx;
-						border-radius: 50%;
-					}
-				}
-	
-				&-auth {
-					position: relative;
-					z-index: 9;
-					margin-top: -28rpx;
-					display: flex;
-					justify-content: center;
-	
-					image {
-						width: 136rpx;
-						height: 46rpx;
-	
-					}
+
+
+		.item-main {
+			.year {
+
+				text {
+					display: inline-block;
+					padding: 30rpx 0 0 36rpx;
+					font-size: 40rpx;
+					font-weight: 600;
+					color: #3A3D71;
 				}
 			}
-	
-	
-			.header-item {
-				display: flex;
-				flex-direction: column;
-				align-items: center;
-	
-				text {
-					font-size: 24rpx;
-					color: #888C90;
-	
-					&.num {
-						display: block;
-						margin-top: 18rpx;
-						font-size: 30rpx;
-						font-weight: 800;
+
+			.item-box {
+				align-items: baseline;
+
+				.time {
+					margin: 16rpx 44rpx 0 34rpx;
+
+					&-day {
+						font-size: 48rpx;
+						font-weight: 600;
+						color: $u-type-primary;
+					}
+
+					&-month {
+						font-size: 28rpx;
+						font-weight: 600;
 						color: #3A3D71;
 					}
 				}
 			}
-	
-			.header-update {
-				padding: 0 28rpx 0 28rpx;
-				display: flex;
-				justify-content: center;
-				align-items: center;
-				height: 68rpx;
-				background: #F3F3F3;
-				border-radius: 34rpx;
-	
-				image {
-					width: 24rpx;
-					height: 24rpx;
-				}
-	
-				text {
-					margin-left: 10rpx;
-					font-size: 24rpx;
-					color: #3A3D71;
-				}
-			}
 		}
-	
-	
-		&-subheader {
-			padding: 18rpx 28rpx 18rpx 34rpx;
-	
-			.name {
-				font-size: 40rpx;
-				font-weight: 600;
-				color: #1B1B1B;
-			}
-	
-			.subheader-list {
-				margin-top: 18rpx;
-				.lable{
+
+		.item {
+			display: flex;
+			align-items: center;
+			flex-direction: column;
+			padding: 24rpx 32rpx;
+			border-bottom: 16rpx solid #F5F5F5;
+
+			.item-top {
+				width: 100%;
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+
+				.userInfo {
 					display: flex;
-					view{
-						width: 84rpx;
-						height: 42rpx;
-						background: #EFF2FF;
-						border-radius: 21px;
-						margin-right: 30rpx;
-						font-size: 24rpx;
-						font-family: PingFangSC-Regular, PingFang SC;
-						font-weight: 400;
-						color: #676A8B;
-						line-height: 42rpx;
-						margin-bottom: 20rpx;
-						text-align: center;
+					justify-content: flex-start;
+					align-items: center;
+
+					.logo {
+						width: 80rpx;
+						height: 80rpx;
+						border-radius: 80rpx;
+
+						image {
+							width: 100%;
+							height: 100%;
+							border-radius: 80rpx;
+						}
+					}
+
+					.name {
+						font-size: 32rpx;
+						font-family: PingFangSC-Semibold, PingFang SC;
+						font-weight: 600;
+						color: #1B1B1B;
+						margin-left: 12px;
+					}
+				}
+
+				.right {
+					width: 40rpx;
+					height: 45rpx;
+
+					image {
+						width: 100%;
+						height: 100%;
+					}
+				}
+
+			}
+
+			.paragraph {
+				width: 100%;
+				margin-top: 12rpx;
+				margin-bottom: 18rpx;
+				font-size: 26rpx;
+				color: #3A3D71;
+				line-height: 23px;
+				word-break: break-all;
+			}
+
+
+			.thumbnails {
+				width: 100%;
+				display: flex;
+				flex-wrap: wrap;
+
+				.gallery_img {
+					width: 100%;
+					height: 100%
+				}
+			}
+
+			.thumbnails .thumbnail {
+				width: 220rpx;
+				height: 220rpx;
+				margin: 4rpx;
+				background: #757575;
+				overflow: hidden;
+			}
+
+			.my-gallery {
+				width: 380rpx;
+				height: 554rpx;
+				margin: 4rpx;
+				background: #757575;
+				overflow: hidden
+			}
+
+			.toolbar {
+				width: 100%;
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				padding: 24rpx 0;
+
+			}
+
+			.toolbar .left {
+				flex: 1;
+				display: flex;
+				align-items: center;
+
+				.tool-item {
+					flex: 0 0 33%;
+					display: flex;
+					justify-content: flex-start;
+					align-items: center;
+
+					image {
+						width: 35rpx;
+						height: 35rpx;
+					}
+
+					.num {
+						font-size: 26rpx;
+						font-family: PingFang-SC-Medium, PingFang-SC;
+						font-weight: 500;
+						color: #3A3D71;
+						margin-left: 6px;
 					}
 				}
 			}
-	
-			.subheader-text {
-				margin-top: 14rpx;
-				position: relative;
-				line-height: 46rpx;
-				font-size: 26rpx;
-				color: #3A3D71;
-	
-				.fold::before {
-					//设置在文本下面的展开按钮那一部分，此部分的前面设置——...省略号，并通过绝对定位设置在超出部分的后面
-					content: attr(data-etc);
-					position: absolute;
-					left: 0;
-					transform: translateX(4rpx);
-	
+
+			.toolbar .right {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				background-color: transparent;
+				border: none;
+
+				&::after {
+					border: none;
 				}
-	
-				.fold::after {
-					//设置文本下面的展开按钮的那一部分，此部分的后面设置——展开  展开按钮，并通过绝对定位设置在省略号的后面
-					content: attr(data-text);
-					position: absolute;
-					right: 0;
-					color: $u-type-primary;
+
+				.tool-item {
+					display: flex;
+					justify-content: flex-start;
+					align-items: center;
+
+					image {
+						width: 35rpx;
+						height: 35rpx;
+					}
+
+					.num {
+						font-size: 26rpx;
+						font-family: PingFang-SC-Medium, PingFang-SC;
+						font-weight: 500;
+						color: #3A3D71;
+						margin-left: 6px;
+					}
 				}
-	
-				.fold {
-					//展开按钮的那一部分，同样设置绝对定位，并设置宽高，将通过样式实现的省略号遮住，同时将::before和::after展开的内容设置在里面
-					width: 110rpx;
-					height: 45rpx;
-					position: absolute;
-					right: 0;
-					bottom: 0;
-					background-color: #F3F3F3;
-				}
-	
-				.foldIntroduct {
-					//出现此样式名时，设置不出现省略号和展开按钮
-					-webkit-line-clamp: inherit !important;
-				}
+
 			}
-		}
-	
-	
-	
-		&-rate {
-			padding: 0 32rpx 0 36rpx;
-	
-			.rate-item {
-				flex: 1;
-				height: 68rpx;
-				// background: linear-gradient(270deg, rgba(248, 250, 255, 0) 0%, #EFF2FF 100%);
-				border-radius: 12rpx;
-	
-				.icon{
-					width: 36rpx;
-					height: 35rpx;
-					vertical-align: text-bottom;
-					margin-right: 12rpx;
-					font-size: 26rpx;
-					font-family: PingFang-SC-Medium, PingFang-SC;
-					font-weight: 500;
-					color: #3A3D71;
-				}
-			}
-		}
-	
-		.tabs {
-			padding-top: 4rpx;
-			background-color: #fff;
-		}
-	
-		.borderBottom {
-			margin-top: -10rpx;
-			height: 2rpx;
-			border: 2rpx solid #E9E9E9;
-		}
-	
-		.subtabs {
-			// padding: 28rpx 0;
-			padding-top: 28rpx;
-		}
-		&-main{
-			padding: 0 28rpx 0 28rpx;
-			height: 330rpx;
-			width: 100%;
-			image{
+
+
+
+			.comment {
+				padding: 0 24rpx 0 26rpx;
 				width: 100%;
-				height: 100%;
+				height: 80rpx;
+				background: #F7F7F7;
+				border-radius: 16rpx;
+
+				.left {
+					font-size: 24rpx;
+					font-weight: 500;
+					color: #959595;
+
+					input {
+						font-size: 24rpx;
+						font-weight: 500;
+						color: #3A3D71;
+					}
+				}
+
+				.right {
+					image {
+						margin-left: 30rpx;
+						width: 32rpx;
+						height: 32rpx;
+					}
+				}
+			}
+
+		}
+	}
+
+
+	.pop-content {
+		width: 100%;
+		padding: 0 0 82px 0;
+		background-color: #fff;
+		z-index: 999999;
+		background: #F0F4F6;
+		border-radius: 20rpx 20rpx 0px 0px;
+
+		.head {
+			font-size: 16px;
+			font-family: PingFang-SC-Bold, PingFang-SC;
+			font-weight: bold;
+			color: #3A3D71;
+			text-align: center;
+			padding: 24rpx 0;
+		}
+
+		.pop-content-view {
+			display: flex;
+			align-items: center;
+			justify-content: space-around;
+			padding: 12rpx 0 34rpx 0;
+
+			.pop-content-item {
+				display: flex;
+				align-items: center;
+				flex-direction: column;
+				justify-content: center;
+				width: 150rpx;
+				display: inline-block;
+				margin-right: 24rpx;
+
+				.item-img {
+					text-align: center;
+					width: 98rpx;
+					height: 98rpx;
+					margin-left: 26rpx;
+
+					image {
+						width: 100%;
+						height: 100%;
+					}
+				}
+
+				.item-title {
+					margin-top: 20rpx;
+					font-size: 28rpx;
+					font-family: PingFang SC Regular, PingFang SC Regular-Regular;
+					font-weight: 400;
+					color: #333333;
+					text-align: center;
+				}
+			}
+
+		}
+
+		.bottom-button {
+			width: 100%;
+			padding: 12rpx 0;
+			border-top: #CCCCCC solid 1rpx;
+			text-align: center;
+			background: #fff;
+
+			font-size: 15px;
+			font-family: PingFangSC-Medium, PingFang SC;
+			font-weight: 500;
+			color: #3A3D71;
+		}
+	}
+
+	.navbar-tabs {
+		position: relative;
+		top: 0rpx;
+		z-index: 999;
+		padding-left: 176rpx;
+		width: 100%;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+
+		.navbar-tab {
+			margin: 0 50rpx;
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			align-items: center;
+
+			text {
+				font-size: 34rpx;
+				color: #9E9E9E;
+			}
+
+			.line {
+				margin-top: 20rpx;
+				width: 66rpx;
+				height: 6rpx;
+				background-color: transparent;
+				border-radius: 6rpx;
+			}
+
+			&.active {
+				text {
+					font-weight: bold;
+					color: #1B1B1B;
+				}
+
+				.line {
+					background-color: $u-type-primary;
+					border-radius: 6rpx;
+				}
 			}
 		}
-	}	
-	
+	}
 </style>

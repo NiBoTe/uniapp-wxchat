@@ -22,20 +22,22 @@
 		<view class="subtabs u-flex u-row-between" v-show="tabIndex === 0">
 			<view class="left u-flex">
 				<view class="subtab u-flex" @click="statusTap()">
-					<text v-if="examStatus === ''">全部</text>
+					<text v-if="examStatus === '-1'">选择状态</text>
+					<text v-else-if="examStatus === ''">全部</text>
 					<text v-else-if="examStatus === 'NO_START'">未开始</text>
 					<text v-else-if="examStatus === 'ONGOING'">正在进行</text>
 					<text v-else-if="examStatus === 'EXAM_END'">考试结束</text>
 					<image src="/static/public/arrow_down.png"></image>
 				</view>
 				<view class="subtab u-flex" @click="timeTap()">
-					<text>{{examDate}}</text>
+					<text>{{examDate || '选择日期'}}</text>
 					<image src="/static/public/arrow_down.png"></image>
 				</view>
 			</view>
 
 			<view class="right u-flex" @click="resetTap">
 				<image src="/static/public/reset.png"></image>
+				<text>重置</text>
 			</view>
 		</view>
 
@@ -43,7 +45,7 @@
 			<scroll-view scroll-y scroll-with-animation class="left" v-show="tabIndex === 0">
 				<view v-for="(item,index) in menuList" :key="index" class="left-item">
 					<view class="left-item-box u-flex u-row-center" v-if="item.childMenus.length > 0"
-						@click.stop="menusTap(index)"
+						@click.stop="menusTap(item, index)"
 						:class="[menuIndex === index && item.childMenus.length !== 0  ? 'active' : '']">
 						<text>{{item.name}}</text>
 						<view class="left-icon" v-if="item.childMenus.length !== 0">
@@ -75,7 +77,7 @@
 				</view>
 
 				<view v-for="(item,index) in proviceData" :key="index" class="left-item">
-					<view class="left-item-box u-flex u-row-center" @click.stop="proviceTap(index)"
+					<view class="left-item-box u-flex u-row-center" @click.stop="proviceTap(item, index)"
 						:class="[proviceCurrent === index ? 'active1' : '']">
 						<text>{{item.areaName}}</text>
 					</view>
@@ -173,8 +175,8 @@
 				hasLogin: false,
 				loadStatus: 'loadmore',
 				tabIndex: 0,
-				menuIndex: 0,
-				childCurrent: 0,
+				menuIndex: -1,
+				childCurrent: -1,
 				proviceCurrent: -1,
 				popShow: false,
 				timeShow: false,
@@ -186,12 +188,15 @@
 					minute: false,
 					second: false
 				},
-				examDate: moment().format('YYYY-MM-DD'),
-				examStatus: '',
+				examDate: '',
+				examStatus: '-1',
 				proviceData: [], // 省份列表
+				province: '',
 				menuList: [], // 菜单
 				current: 1,
 				size: 10,
+				firstMenuId: '',
+				secondMenuId: '',
 				list: [], // 考试列表
 			};
 		},
@@ -215,10 +220,10 @@
 				if(this.tabIndex === 0) {
 					this.$http.post(examList, {
 						examDate: this.examDate,
-						examStatus: this.examStatus,
-						// firstMenuId: this.firstMenuId
+						examStatus: this.examStatus !== '-1' ? this.examStatus : '',
+						firstMenuId: this.firstMenuId,
 						province: this.province,
-						// secondMenuId: this.secondMenuId,
+						secondMenuId: this.secondMenuId,
 						size: this.size,
 						current: this.current,
 					}).then(res => {
@@ -266,8 +271,8 @@
 				}).then(res => {
 					console.log(res)
 					
-					this.menuIndex = 0;
-					this.childCurrent = 0;
+					this.menuIndex = -1;
+					this.childCurrent = -1;
 					this.proviceCurrent = -1;
 					this.menuList = res.data.menuList
 				})
@@ -281,8 +286,6 @@
 				this.getList();
 			},
 			tabTap(index) {
-				
-				
 				if(index > 0 && !this.hasLogin){
 					uni.navigateTo({
 						url: '/pages/public/logintype'
@@ -294,20 +297,28 @@
 				this.getList()
 			},
 			// 院校
-			menusTap(index) {
+			menusTap(item, index) {
 				this.menuIndex = this.menuIndex === index ? -1 : index
-				this.childCurrent = 0;
+				this.province = ''
+				this.firstMenuId = item.id
+				this.secondMenuId = ''
+				this.childCurrent = -1;
 				this.proviceCurrent = -1;
 			},
 			// 省份
-			proviceTap(index) {
+			proviceTap(item, index) {
 				this.menuIndex = -1;
+				this.province = item.areaName;
+				this.firstMenuId = ''
+				this.secondMenuId = ''
 				this.proviceCurrent = index
 				this.current = 1;
 				this.getList();
 			},
 			childMenusTap(item, index) {
+				this.province = ''
 				this.childCurrent = index
+				this.secondMenuId = item.id
 				this.current = 1;
 				this.getList();
 			},
@@ -334,8 +345,14 @@
 				this.getList();	
 			},
 			resetTap(){
-				this.examDate = moment().format('YYYY-MM-DD');
-				this.examStatus = '';
+				this.examDate = '';
+				this.examStatus = '-1';
+				this.menuIndex = -1;
+				this.childCurrent = -1;
+				this.proviceCurrent = -1;
+				this.firstMenuId = ''
+				this.secondMenuId = ''
+				this.province = ''
 				this.current = 1;
 				this.getList();
 			},

@@ -45,6 +45,7 @@
 			"style": {
 				"navigationBarTitleText": "我的",
 				"navigationStyle": "custom",
+				"navigationBarTextStyle": "black",
 				"enablePullDownRefresh": false
 			}
 
@@ -125,6 +126,29 @@
 						"enablePullDownRefresh": false
 					}
 
+				}, {
+					"path": "updateUrl",
+					"style": {
+						"navigationBarTitleText": "",
+						"navigationBarTextStyle": "black",
+						"navigationStyle": "custom",
+						"enablePullDownRefresh": false
+					}
+
+				}, {
+					"path": "userInfo",
+					"style": {
+						"navigationBarTitleText": "个人资料",
+						"navigationBarTextStyle": "black",
+						"enablePullDownRefresh": false
+					}
+				}, {
+					"path": "selectMajor",
+					"style": {
+						"navigationBarTitleText": "选择专业",
+						"navigationBarTextStyle": "black",
+						"enablePullDownRefresh": false
+					}
 				}
 			]
 		},
@@ -153,6 +177,30 @@
 					"path": "detail/detail",
 					"style": {
 						"navigationBarTitleText": "",
+						"enablePullDownRefresh": false
+					}
+
+				}, {
+					"path": "inviteComments/index",
+					"style": {
+						"navigationBarTitleText": "邀请评画",
+						"navigationBarTextStyle": "black",
+						"enablePullDownRefresh": false
+					}
+
+				}, {
+					"path": "inviteComments/detail",
+					"style": {
+						"navigationBarTitleText": "申请评画",
+						"navigationBarTextStyle": "black",
+						"enablePullDownRefresh": false
+					}
+
+				}, {
+					"path": "inviteComments/comfirmOrder",
+					"style": {
+						"navigationBarTitleText": "支付订单",
+						"navigationBarTextStyle": "black",
 						"enablePullDownRefresh": false
 					}
 

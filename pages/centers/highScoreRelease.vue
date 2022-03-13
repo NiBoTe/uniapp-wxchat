@@ -135,11 +135,14 @@
 		generatePostPolicy
 	} from '@/api/basic.js'
 	import {
-		myAddTeachingMaterial
+		myAddTeachingMaterial,
+		myDetail,
+		myMenuList2
 	} from '@/api/teaching_material.js'
 	export default {
 		data() {
 			return {
+				id: null,
 				title: '',
 				description: '', // 详细内容
 				expressContent: '', // 发货内容
@@ -162,9 +165,15 @@
 				videoContext: null
 			};
 		},
+
+		onLoad(options) {
+			if (options.id) {
+				this.id = options.id;
+				this.initData();
+			}
+		},
 		watch: {
 			maskShow(val) {
-
 				if (!val) {
 					this.videoContext.stop()
 				}
@@ -175,6 +184,67 @@
 			this.videoContext = uni.createVideoContext('videoContext')
 		},
 		methods: {
+			initData(id) {
+				this.$http.get(myDetail, {
+					id: this.id
+				}).then(res => {
+					let params = res.data;
+					this.type = params.type;
+					this.title = params.title;
+					this.description = params.description;
+					this.isNeedExpress = params.isNeedExpress;
+					this.expressContent = params.expressContent;
+					this.hdImgViewCount = params.hdImgViewCount;
+					this.videoTrialDuration = params.videoTrialDuration;
+					this.price = params.price;
+					this.getMenuList(params);
+
+					// _this.imgsList.push({
+					// 	url: r,
+					// 	cover: list[i].thumbTempFilePath,
+					// 	description: ''
+					// });
+					let list = []
+					params.items.map(item => {
+						list.push({
+							id: item.id,
+							url: item.url,
+							cover: params.type === 'image' ? '' : params.cover,
+							description: item.description
+						})
+					})
+					this.imgsList = list;
+					if (params.type === 'video') {
+						this.cover = params.cover
+					}
+				}).catch(err => {
+					console.log(err)
+				})
+			},
+			getMenuList(params) {
+				this.$http.post(myMenuList2).then(res => {
+					let list = res.data;
+					// this.subjectName = `${data.subject.name}-${data.subjectType.name}`
+					// this.subject = data
+					// subject: this.list[this.nameActive],
+					// subjectType: this.list[this.nameActive].childMenus[this.typeActive]
+					list.map(a => {
+						if (a.id === params.firstMenuId) {
+							this.subject['subject'] = a
+							a.childMenus.map(b => {
+								if (b.id === params.secondMenuId) {
+									this.subject['subjectType'] = b
+								}
+							})
+						}
+					})
+
+					if (this.subject.subject && this.subject.subjectType) {
+						this.subjectName = `${this.subject.subject.name}-${this.subject.subjectType.name}`
+					}
+
+				})
+			},
 			addTap() {
 				if (this.imgsList.length >= 9) {
 					return this.$mHelper.toast('最多只能上传9张')
@@ -282,6 +352,7 @@
 
 
 				const params = {
+					id: this.id,
 					title: this.title,
 					type: this.type,
 					cover: this.cover === '' ? this.imgsList[0].url : this.cover,
@@ -302,6 +373,8 @@
 				} else {
 					this.$http.post(myAddTeachingMaterial, params).then(res => {
 						console.log(res)
+						
+						uni.$emit('updateHighScore', true);
 						this.$mHelper.toast('发布成功')
 						setTimeout(() => {
 							uni.navigateBack({

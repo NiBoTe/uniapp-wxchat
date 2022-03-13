@@ -39,6 +39,10 @@
 			activeColor:{
 				type: String,
 				default: '#EFF2FF'
+			},
+			disabled: {
+				type: Boolean,
+				default: false
 			}
 		},
 		data() {
@@ -65,6 +69,7 @@
 				this.list = list
 			},
 			tabClick(item, index) {
+				if(this.disabled) return
 				this.activeIndex = index
 				this.$emit('change', {
 					item,

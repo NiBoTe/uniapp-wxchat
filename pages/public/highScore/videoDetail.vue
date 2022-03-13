@@ -10,13 +10,13 @@
 				enable-play-gesture>
 			</video>
 
-			<view class="try u-flex u-row-center" v-if="!detail.isPayed">
+			<view class="try u-flex u-row-center" v-if="!detail.isPayed && !isTrialEnd" @click="submitTap">
 				<text>正在试看，购买后观看完整视频</text>
 				<view class="try-btn">购买</view>
 			</view>
 
-			<view class="trial u-flex u-row-center" v-if="!detail.isPayed">
-				<view class="trial-btn u-flex u-row-center">购买</view>
+			<view class="trial u-flex u-row-center" v-if="!detail.isPayed && isTrialEnd">
+				<view class="trial-btn u-flex u-row-center" @click="submitTap">购买</view>
 				<text>本内容需要购买后才能观看</text>
 			</view>
 
@@ -169,9 +169,23 @@
 				</view>
 			</view>
 		</view>
-		<view class="footer">
-			<view class="footer-btn" v-if="!detail.isPayed" @click="submitTap">立即购买</view>
-			<view class="footer-btn" v-else @click="submitTap">我要评价</view>
+
+		<view class="commit u-flex" v-if="isFocus">
+			<view class="left u-flex">
+				<textarea :fixed="true" auto-height :cursor-spacing="30" v-model="content" :placeholder="placeholder" focus
+					@confirm="confirmTap()" @blur="isFocus = false" />
+			</view>
+			<view class="commit-btn u-flex" @click.stop="confirmTap()">
+				<image src="/static/public/commit.png"></image>
+			</view>
+		</view>
+		<view v-if="!isFocus">
+			<view class="footer" v-if="!detail.isPayed">
+				<view class="footer-btn" @click="submitTap">立即购买</view>
+			</view>
+			<view class="footer" v-else-if="detail.notCommentOrderIds.length > 0">
+				<view class="footer-btn" @click="submitTap">我要评价</view>
+			</view>
 		</view>
 	</view>
 </template>
@@ -183,9 +197,11 @@
 		commentList,
 		addComment
 	} from '@/api/teaching_material.js'
+	import moment from '@/common/moment.js'
 	export default {
 		data() {
 			return {
+				moment,
 				hasLogin: false,
 				activeIndex: 0,
 				detail: {},
@@ -207,6 +223,8 @@
 				sliderValue: 0, //控制进度条slider的值，
 				updateState: false, //防止视频播放过程中导致的拖拽失效
 				palyFlag: false,
+				isTrialEnd: false,
+				placeholder: ''
 			};
 		},
 		onLoad(options) {
@@ -229,6 +247,7 @@
 					id: this.id
 				}).then(res => {
 					this.detail = res.data
+					console.log(this.detail.notCommentOrderIds)
 					this.videoUrl = this.detail.items[0].hdImg
 				}).catch(err => {
 					console.log(err)
@@ -306,13 +325,14 @@
 			// 回复
 			replyTap(item, index) {
 				console.log(item)
+				this.placeholder = `回复${item.user.fullName}`
 				// if(item.appUserId === this.detail.user.id) {
 				// 	return this.$mHelper.toast('不能自己回复自己哦！')
 				// }
 				this.isFocus = true;
 				this.replyId = item.id
 			},
-			confirmCommentTap() {
+			confirmTap() {
 				if (this.content.replace(/ /g, '') === '') {
 					return this.$mHelper.toast('请输入评论内容')
 				}
@@ -346,7 +366,7 @@
 					})
 				} else {
 					uni.navigateTo({
-						url: `/pages/public/highScore/evaluate?id=${this.id}&index=${this.activeIndex}`
+						url: `/pages/public/highScore/evaluate?id=${this.id}&index=${this.activeIndex}&orderId=${this.detail.notCommentOrderIds.length ? this.detail.notCommentOrderIds[0] : '' }`
 					})
 				}
 
@@ -386,6 +406,8 @@
 				if (sliderValue >= this.sliderMax) {
 					// this.videoContext.seek(0)
 					this.videoContext.pause()
+
+					this.isTrialEnd = true;
 				}
 				if (this.updateState) { //判断拖拽完成后才触发更新，避免拖拽失效
 					this.sliderValue = sliderValue;
@@ -627,6 +649,7 @@
 		}
 
 		.main {
+			margin-top: 40rpx;
 			flex: 1;
 			overflow: auto;
 
@@ -686,6 +709,42 @@
 				&.disabled {
 					background: #EDEFF2;
 					color: #8F9091;
+				}
+			}
+		}
+
+
+
+		// 评论输入
+		.commit {
+			width: 100%;
+			position: fixed;
+			bottom: 0;
+			background: #FFFFFF;
+			min-height: 128rpx;
+			padding: 24rpx 34rpx;
+			box-sizing: border-box;
+
+			.left {
+				width: 0;
+				padding: 20rpx 28rpx;
+				flex: 1;
+				min-height: 80rpx;
+				background: #F7F7F7;
+				border-radius: 16rpx;
+
+				textarea {
+					font-size: 26rpx;
+					color: #3A3D71;
+				}
+			}
+
+			&-btn {
+				margin-left: 22rpx;
+
+				image {
+					width: 60rpx;
+					height: 60rpx;
 				}
 			}
 		}

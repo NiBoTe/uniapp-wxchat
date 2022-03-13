@@ -1,9 +1,9 @@
 <template>
 	<view class="evaluate">
 		<view class="header u-flex">
-			<image :src="detail.evaluateUrl"></image>
+			<image :src="detail.url"></image>
 			<view class="right">
-				<view class="title">{{detail.textComment}}</view>
+				<view class="title">{{detail.textComment || ''}}</view>
 				<view class="subtitle u-flex">
 					<u-rate :count="5" v-model="star" inactive-icon="star-fill" active-color="#35CE96"
 						inactive-color="#E3E3E3" gutter="16" size="32"></u-rate>

@@ -1,16 +1,19 @@
 <template>
 	<view class="container">
-
+		<view class="subtabs">
+			<drawingColumn ref="DrawingColumn" :list="allList" key-name="name" @change="tabChange">
+			</drawingColumn>
+		</view>
 		<scroll-view :scroll-y="isFixed" class="scroll-warper" @scrolltolower="lower">
 			<u-waterfall v-model="list" ref="uWaterfall">
 				<template v-slot:left="{leftList}">
 					<view class="item" v-for="(item, index) in leftList" :key="index">
-						<painting-evaluation-item :item="item"></painting-evaluation-item>
+						<painting-evaluation-item :item="item" :type="type"></painting-evaluation-item>
 					</view>
 				</template>
 				<template v-slot:right="{rightList}">
 					<view class="item" v-for="(item, index) in rightList" :key="index">
-						<painting-evaluation-item :item="item"></painting-evaluation-item>
+						<painting-evaluation-item :item="item" :type="type"></painting-evaluation-item>
 					</view>
 				</template>
 			</u-waterfall>
@@ -20,28 +23,24 @@
 </template>
 
 <script>
-	import PaintingEvaluationItem from '@/components/paintingEvaluation/paintingEvaluationItem.vue'
+	import drawingColumn from '@/components/drawingColumn/drawingColumn.vue'
+	import PaintingEvaluationItem from './paintingEvaluationItem.vue'
 
 	import {
-		paintEvaluateList
-	} from '@/api/teacher.js'
+		orderItemPaintEvaluateList,
+		orderItemPaintEvaluateSkilledMajorList
+	} from '@/api/paint_evaluate_v2.js'
+	
+	import { paintEvaluateList } from '@/api/paint_evaluate_v2_teacher.js'
 	export default {
-		name: "PaintingEvaluation",
+		name: "PaintingEvaluationUser",
 		components: {
-			PaintingEvaluationItem
+			PaintingEvaluationItem,
+			drawingColumn
 		},
-		props: {
-			teacherId: {
-				type: String,
-				default: ''
-			}
-		},
-		watch:{
-			teacherId(val){
-				if(this.teacherId) {
-					this.getList();
-				}
-			}
+		created() {
+			console.log('========')
+			this.getList();
 		},
 		data() {
 			return {
@@ -49,15 +48,32 @@
 				loadStatus: 'loadmore',
 				current: 1,
 				size: 10,
-				flowList: [],
-				list: []
+				list: [],
+				skilledMajorId: '',
+				allList: [],
+				type: 'default'
+				
 			}
 		},
 		created() {
-			
+			this.initData()
 		},
-
 		methods: {
+			initData() {
+				this.loading = true;
+				this.$http.get(orderItemPaintEvaluateSkilledMajorList).then(res => {
+					console.log(res)
+					this.allList = res.data.allList
+					if (this.allList.length) {
+						this.skilledMajorId = this.allList[0].id
+						this.getList()
+					} else {
+						this.loading = false;
+					}
+				}).catch(err => {
+					console.log(err)
+				})
+			},
 			lower() {
 				this.loadStatus = 'loading';
 				// 模拟数据加载
@@ -69,8 +85,9 @@
 
 			getList() {
 				this.loadStatus = 'loading';
-				this.$http.post(paintEvaluateList, {
-					teacherId: this.teacherId,
+				this.$http.post(orderItemPaintEvaluateList, {
+					state: '全部',
+					skilledMajorId: this.skilledMajorId,
 					current: this.current,
 					size: this.size,
 				}).then(res => {
@@ -89,6 +106,14 @@
 				}).catch(err => {
 					console.log(err)
 				})
+			},
+			
+			tabChange(e) {
+				console.log(e)
+				this.$refs.uWaterfall.clear();
+				this.skilledMajorId = e.item.id
+				this.current = 1;
+				this.getList()
 			},
 			addRandomData() {
 				this.current++;
@@ -111,7 +136,12 @@
 <style lang="scss" scoped>
 	.scroll-warper {
 		height: calc(100vh - 94rpx);
+		padding: 18rpx 24rpx;
 	}
 
-	.item {}
+	
+	.subtabs {
+		padding: 28rpx 0;
+		background-color: #fff;
+	}
 </style>

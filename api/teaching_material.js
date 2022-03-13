@@ -30,6 +30,18 @@ const teachingMaterialCommentTagList = `${teaching_material}teachingMaterialComm
 // 发表评价
 const confirmCompleted = `${teaching_material}confirmCompleted`;
 
+// 我的高分教材
+const myList = `${teaching_material}myList`;
+
+// 我的高分教材详情
+const myDetail = `${teaching_material}myDetail`;
+
+// 上架高分教材
+const myUpdateSaleState = `${teaching_material}myUpdateSaleState`;
+
+// 删除高分教材
+const myDeleteTeachingMaterial = `${teaching_material}myDeleteTeachingMaterial`;
+
 export {
 	myMenuList2,
 	myAddTeachingMaterial,
@@ -40,5 +52,9 @@ export {
 	addComment,
 	commentList,
 	teachingMaterialCommentTagList,
-	confirmCompleted
+	confirmCompleted,
+	myList,
+	myDetail,
+	myUpdateSaleState,
+	myDeleteTeachingMaterial
 };

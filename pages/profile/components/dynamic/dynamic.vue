@@ -1,215 +1,96 @@
 <template>
 	<view class="container">
-		<tab-bar :selected="1"></tab-bar>
-
-		<view class="navbar">
-			<u-navbar :is-back="false" :title="!hasLogin ? '广场' : ' '" :border-bottom="hasLogin">
-				<view class="navbar-tabs" v-if="hasLogin">
-					<view class="navbar-tab" :class="tabCurrent === 0 ? 'active' : ''" @click="tabChange(0)">
-						<text>广场</text>
-						<view class="line"></view>
-					</view>
-					<view class="navbar-tab" :class="tabCurrent === 1 ? 'active' : ''" @click="tabChange(1)">
-						<text>关注</text>
-						<view class="line"></view>
-					</view>
+		<scroll-view class="list-view" :scroll-y="isFixed" @scrolltolower="lower">
+			<view class="item-main" v-for="(item,index) in list" :key="index" @click="goDetail(item, index)">
+				<view class="year" v-if="isHide(item, index)">
+					<u-gap height="16" bg-color="#F0F0F1"></u-gap>
+					<text>{{moment(item.createTime).format('YYYY')}}年</text>
 				</view>
-			</u-navbar>
-		</view>
-		<view class="list-view">
-			<view class="item" v-for="(item,index) in list" :key="index" @click="goDetail(item, index)">
-				<view class="item-top">
-					<view class="userInfo">
-						<view class="logo">
-							<u-avatar size="80" :src="item.user.headUrl"></u-avatar>
-						</view>
-						<view class="name">
-							{{item.user.fullName || ''}}
-						</view>
-
+				<view class="item-box u-flex">
+					<view class="time">
+						<view class="time-day">{{moment(item.createTime).format('DD')}}</view>
+						<view class="time-month">{{moment(item.createTime).format('M')}}月</view>
 					</view>
-					<view class="right" @click.stop="handleTap(index, $event)">
-						<image src="/static/public/dynamic_menu.png"></image>
-					</view>
-				</view>
-				<view class="paragraph">{{item.content}}</view>
-				<!-- 照片 -->
-				<view class="thumbnails">
-					<view :class="item.snsImgs.length === 1?'my-gallery':'thumbnail'"
-						v-for="(image, index_images) in item.snsImgs" :key="index_images">
-						<image class="gallery_img" lazy-load mode="aspectFill" :src="image.thumbImg"
-							:data-src="image.thumbImg" @click.stop="previewImage(item.snsImgs,index_images)"></image>
-					</view>
-				</view>
-				<!-- 点赞、收藏 分享 -->
-				<view class="toolbar">
-					<view class="left">
-						<view class="tool-item" @click.stop="favoriteTap(item, index)">
-							<image v-if="item.isFavorite" src="/static/public/dynamic_star.png"></image>
-							<image v-else src="/static/public/dynamic_star_fill.png"></image>
-							<view class="num">
-								{{item.favoriteCount}}
+					<view class="item">
+						<view class="paragraph">{{item.content}}</view>
+						<!-- 照片 -->
+						<view class="thumbnails">
+							<view :class="item.snsImgs.length === 1?'my-gallery':'thumbnail'"
+								v-for="(image, index_images) in item.snsImgs" :key="index_images">
+								<image class="gallery_img" lazy-load mode="aspectFill" :src="image.thumbImg"
+									:data-src="image.thumbImg" @click.stop="previewImage(item.snsImgs,index_images)">
+								</image>
 							</view>
 						</view>
-						<view class="tool-item" v-if="!item.noComment" @click.stop="commentTap(index)">
-							<image src="/static/public/dynamic_comment.png"></image>
-							<view class="num">
-								{{item.commentCount}}
+						<!-- 点赞、收藏 分享 -->
+						<view class="toolbar">
+							<view class="left">
+								<view class="tool-item" @click.stop="favoriteTap(item, index)">
+									<image v-if="item.isFavorite" src="/static/public/dynamic_star.png"></image>
+									<image v-else src="/static/public/dynamic_star_fill.png"></image>
+									<view class="num">
+										{{item.favoriteCount}}
+									</view>
+								</view>
+								<view class="tool-item" v-if="!item.noComment" @click.stop="commentTap(index)">
+									<image src="/static/public/dynamic_comment.png"></image>
+									<view class="num">
+										{{item.commentCount}}
+									</view>
+								</view>
+								<view class="tool-item" @click.stop="likeTap(item, index)">
+									<image v-if="item.isLike" src="/static/public/dynamic_praise.png"></image>
+									<image v-else src="/static/public/dynamic_praise_fill.png"></image>
+									<view class="num">
+										{{item.likeCount}}
+									</view>
+								</view>
 							</view>
-						</view>
-						<view class="tool-item" @click.stop="likeTap(item, index)">
-							<image v-if="item.isLike" src="/static/public/dynamic_praise.png"></image>
-							<image v-else src="/static/public/dynamic_praise_fill.png"></image>
-							<view class="num">
-								{{item.likeCount}}
-							</view>
-						</view>
-					</view>
-					<button open-type="share" class="right" @tap="share(item)">
-						<view class="tool-item">
-							<image src="/static/public/dynamic_share.png"></image>
-							<view class="num">
-								分享
-							</view>
-						</view>
-					</button>
+							<button open-type="share" class="right" @tap="share(item)">
+								<view class="tool-item">
+									<image src="/static/public/dynamic_share.png"></image>
+									<view class="num">
+										分享
+									</view>
+								</view>
+							</button>
 
-				</view>
-
-				<view class="comment u-flex u-row-between" v-if="!item.noComment" @click.stop="commentTap(index)">
-					<view class="left">
-						<text v-if="commentIndex !== index">说一下你的想法...</text>
-						<input v-else type="text" :cursor-spacing="20" v-model="content" placeholder="说一下你的想法..." focus
-							@confirm="confirmTap(item, index)" />
-					</view>
-					<view class="right u-flex">
-						<image src="/static/public/applause.png"></image>
-						<image src="/static/public/laugh.png"></image>
-						<image src="/static/public/cool.png"></image>
+						</view>
 					</view>
 				</view>
 			</view>
 
 			<u-loadmore margin-top="30" margin-bottom="30" :status="loadStatus" @loadmore="addData"></u-loadmore>
-		</view>
-
-		<bubblePopups ref="bubblePopups" v-model="popShow" :popData="popData" :isTwoline="true" @tapPopup="tapPopup"
-			:x="344" :y="positionY" placement="top-end">
-		</bubblePopups>
-
-		<bubblePopups ref="bubblePopups2" v-model="popShow2" :dynamic="true" :popData="popData2" :isTwoline="true"
-			@tapPopup="tapPopup2" :x="224" :y="positionY" placement="top-end">
-		</bubblePopups>
-
-		<uni-popup ref="popup" type="bottom" :maskClick="false">
-			<view class="pop-content">
-				<view class="head">
-					请选择分享平台
-				</view>
-				<view class="pop-content-view">
-					<scroll-view scroll-x="true" style="white-space: nowrap; vertical-align: middle;"
-						show-scrollbar="true">
-						<view class="pop-content-item" v-for="(items, indexs) in shareData" :key="indexs">
-							<view class="item-img">
-								<image :src="items.icon"></image>
-							</view>
-							<view class="item-title">
-								{{items.title}}
-							</view>
-						</view>
-					</scroll-view>
-
-				</view>
-
-				<view class="bottom-button" @tap="cancelShare">
-					取消分享
-				</view>
+		</scroll-view>
 
 
-			</view>
-		</uni-popup>
 	</view>
 </template>
 
 <script>
-	import tabBar from '@/components/tabbar/tabbar.vue'
-	import bubblePopups from "@/components/bubblePopups/bubblePopups";
-
 	import {
-		snsList,
 		addFavorite,
 		addLike,
 		snsBlackSave,
 		snsReportSave,
 		addComment,
-		followSnsList
+		followSnsList,
+		mySnsList
 	} from '@/api/sns.js'
+	import moment from '@/common/moment.js'
 	export default {
-		components: {
-			tabBar,
-			bubblePopups
+		props: {
+			teacherId: {
+				type: String,
+				default: ''
+			}
 		},
 		data() {
 			return {
+				moment,
+				isFixed: false,
 				hasLogin: false,
 				loadStatus: 'loadmore',
-				tabList: [{
-					name: '广场'
-				}, {
-					name: '关注'
-				}],
-				tabCurrent: 0,
-				popData: [{
-						title: '举报',
-						subTitle: '标题夸张，内容质量差、图片包含不良色情…',
-						icon: '../../static/public/gantanhao.png',
-					},
-					{
-						title: '不看：大超导师',
-						icon: '../../static/public/jinzhi.png'
-					}
-				],
-				popData2: [{
-						title: '标题夸张',
-					},
-					{
-						title: '旧闻重复',
-					},
-					{
-						title: '封面反感',
-					},
-					{
-						title: '内容质量差',
-					},
-					{
-						title: '其他',
-					}
-				],
-				shareData: [{
-						title: '微信',
-						icon: '../../static/public/wexin.png',
-					},
-					{
-						title: '朋友圈',
-						icon: '../../static/public/pengyouquan.png'
-					},
-					{
-						title: '微博',
-						icon: '../../static/public/weibo.png'
-					},
-					{
-						title: 'QQ',
-						icon: '../../static/public/qq.png'
-					},
-					{
-						title: 'QQ空间',
-						icon: '../../static/public/kongjian.png'
-					}
-				],
-				scrollTop: 0,
-				positionY: 20,
-				popShow: false,
-				popShow2: false,
 				current: 1,
 				size: 10,
 				list: [], // 考试列表
@@ -220,20 +101,10 @@
 
 			};
 		},
-		onLoad() {
-		},
-		onShow() {
-			this.hasLogin = this.$mStore.getters.hasLogin
-			this.current = 1;
+		created() {
 			this.getList();
 		},
 		methods: {
-			// tab
-			tabChange(e) {
-				this.tabCurrent = e;
-				this.current = 1;
-				this.getList()
-			},
 			// 收藏
 			favoriteTap(item, index) {
 				this.$http.post(addFavorite, null, {
@@ -268,10 +139,7 @@
 
 			getList() {
 				this.loadStatus = 'loading';
-				this.$http.post(this.tabCurrent === 0 ? snsList : followSnsList, {
-					examDate: this.examDate,
-					examStatus: this.examStatus,
-					province: this.province,
+				this.$http.post(mySnsList, {
 					size: this.size,
 					current: this.current,
 				}).then(res => {
@@ -310,52 +178,13 @@
 			cancelShare() {
 				this.$refs.popup.close();
 			},
-			// 操作面板
-			handleTap(index, e) {
-				this.itemIndex = index
-				this.positionY = e.detail.y - this.scrollTop
-				this.$set(this.popData[1], 'title', `不看：${this.list[index].user['fullName']}`)
-				this.popShow = true;
-			},
 			goDetail(item, index) {
-			
+
 				uni.navigateTo({
 					url: `/pages/module/circleDetail/index?id=${item.id}`
 				})
 			},
-			tapPopup(e) {
-				if (e.index === 0) {
-					this.popShow = false;
-					this.$nextTick(() => {
-						this.popShow2 = true;
-					})
-				} else {
-					this.$http.post(snsBlackSave, {
-						isLike: true,
-						targetUserId: this.list[this.itemIndex].user.id,
-					}).then(res => {
-						if(res.data){
-							this.current = 1;
-							this.getList()
-						} else {
-							this.$mHelper.toast('拉黑失败')
-						}
-					}).catch(err => {
-						this.$mHelper.toast(err.msg)
-					})
-				}
-			},
-			tapPopup2(e) {
-				this.$http.post(snsReportSave, {
-					snsId: this.list[this.itemIndex].id,
-					content: e.item.title
-				}).then(res => {
-					this.popShow2 = false;
-					this.$mHelper.toast('举报成功')
-				}).catch(err => {
-					this.$mHelper.toast(err.msg)
-				})
-			},
+
 			// 评论
 			commentTap(index) {
 				this.commentIndex = index
@@ -376,44 +205,76 @@
 				}).catch(err => {
 					this.$mHelper.toast(err.msg)
 				})
+			},
+			lower() {
+				this.loadStatus = 'loading';
+				this.addData();
+			},
+			isHide(item, index) {
+				if (index > 0) {
+					return moment(item.createTime).format('YYYY') !== moment().format('YYYY') && moment(item.createTime)
+						.format('YYYY') !== moment(this.list[index - 1].createTime).format('YYYY')
+				} else {
+					return false
+				}
+			},
+			noScroll(bool) {
+				this.isFixed = bool
 			}
-
-		},
-
-		onPageScroll(e) {
-			this.scrollTop = e.scrollTop
-		},
-		onReachBottom() {
-			this.loadStatus = 'loading';
-			this.addData();
-		},
-		onShareAppMessage(e) {
-
-		},
-		onShareTimeline(e) {
-
 		}
 	}
 </script>
 
 <style lang="scss" scoped>
-	
-	
-	.container{
+	.container {
 		width: 100vw;
 		overflow-x: hidden;
+		background-color: #fff;
 	}
+
 	.list-view {
 		padding-bottom: 160rpx;
 		position: relative;
 
+
+		.item-main {
+			.year {
+
+				text {
+					display: inline-block;
+					padding: 30rpx 0 0 36rpx;
+					font-size: 40rpx;
+					font-weight: 600;
+					color: #3A3D71;
+				}
+			}
+
+			.item-box {
+				align-items: flex-start;
+
+				.time {
+					margin: 16rpx 44rpx 0 34rpx;
+					padding-top: 20rpx;
+					&-day {
+						font-size: 48rpx;
+						font-weight: 600;
+						color: $u-type-primary;
+					}
+
+					&-month {
+						font-size: 28rpx;
+						font-weight: 600;
+						color: #3A3D71;
+					}
+				}
+			}
+		}
+
 		.item {
-			background-color: #fff;
 			display: flex;
 			align-items: center;
 			flex-direction: column;
 			padding: 24rpx 32rpx;
-			border-bottom: 16rpx solid #F5F5F5;
 
 			.item-top {
 				width: 100%;
@@ -462,6 +323,7 @@
 			.paragraph {
 				width: 100%;
 				margin-top: 12rpx;
+				margin-bottom: 18rpx;
 				font-size: 26rpx;
 				font-family: PingFangSC-Regular, PingFang SC;
 				font-weight: 400;

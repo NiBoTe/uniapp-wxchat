@@ -2,24 +2,20 @@
 	<view class="container">
 		<view class="item" :class="imgHeight !== 'auto' ? 'boxShadow' : ''" @click="detailTap">
 			<view class="item-image">
-				<u-lazy-load threshold="-450" border-radius="10" :height="imgHeight"
-					:img-mode="imgHeight === 'auto' ? 'widthFix' :  'aspectFill'" :image="item.cover">
+				<u-lazy-load threshold="-450" border-radius="10" :image="item.cover">
 				</u-lazy-load>
 				<view class="item-image-badge">
 					<text>¥</text>
 					<text>{{item.price}}</text>
 				</view>
+				
+				<view class="mark u-flex u-row-center" v-if="item.state === 'stop_sale'">
+					<image :src="setSrc('highScore/stop_sale.png')"></image>
+				</view>
 			</view>
 
 			<view class="footer">
-				<view class="footer-title u-flex">
-					<view class="image">
-						<u-avatar size="65" :src="item.teacherHeadUrl">
-						</u-avatar>
-					</view>
-					<view class="text">{{item.teacherFullName}}</view>
-				</view>
-
+				<view class="dec u-line-2">{{item.title}}</view>
 				<view class="footer-subtitle u-flex u-row-between">
 					<view class="left">热度值</view>
 					<view class="right u-flex">
@@ -28,6 +24,8 @@
 					</view>
 				</view>
 			</view>
+
+			
 		</view>
 	</view>
 </template>
@@ -54,13 +52,15 @@
 		},
 		methods: {
 			detailTap() {
-				if (this.item.type === 'image') {
+
+				console.log(this.item)
+				if (this.item.type === 'video') {
 					uni.navigateTo({
-						url: `/pages/public/highScore/teachingMaterialDetail?id=${this.item.id}`
+						url: `/pages/public/highScore/videoDetail?id=${this.item.id}&type=user`
 					})
 				} else {
 					uni.navigateTo({
-						url: `/pages/public/highScore/videoDetail?id=${this.item.id}`
+						url: `/pages/public/highScore/teachingMaterialDetail?id=${this.item.id}&type=user`
 					})
 				}
 			}
@@ -73,6 +73,7 @@
 <style lang="scss">
 	.container {
 		.item {
+			position: relative;
 			margin: 10rpx;
 			background: #FFFFFF;
 			border-radius: 16rpx;
@@ -83,6 +84,7 @@
 				border-radius: 20rpx;
 
 				.item-image {
+					position: relative;
 					border-top-left-radius: 20rpx;
 					border-top-right-radius: 20rpx;
 
@@ -99,7 +101,6 @@
 				border-top-right-radius: 16rpx;
 
 				&-badge {
-
 					position: absolute;
 					right: 0;
 					bottom: 0;
@@ -122,8 +123,16 @@
 			}
 
 
+
 			.footer {
 				padding: 0 20rpx 26rpx;
+
+				.dec {
+					padding: 14rpx 0 18rpx;
+					border-bottom: 2rpx solid #E9E9E9;
+					font-size: 26rpx;
+					color: #3A3D71;
+				}
 
 				&-title {
 					position: relative;
@@ -181,6 +190,18 @@
 				}
 			}
 
+			.mark {
+				position: absolute;
+				top: 0;
+				right: 0;
+				bottom: 0;
+				left: 0;
+				background: rgba($color: #000000, $alpha: .5);
+				image{
+					width: 148rpx;
+					height: 148rpx;
+				}
+			}
 
 		}
 	}

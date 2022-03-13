@@ -5,28 +5,14 @@
 				<u-lazy-load threshold="-450" border-radius="10" :height="imgHeight"
 					:img-mode="imgHeight === 'auto' ? 'widthFix' :  'aspectFill'" :image="item.cover">
 				</u-lazy-load>
-				<view class="item-image-badge">
+				<!-- <view class="item-image-badge">
 					<text>¥</text>
 					<text>{{item.price}}</text>
-				</view>
+				</view> -->
 			</view>
 
 			<view class="footer">
-				<view class="footer-title u-flex">
-					<view class="image">
-						<u-avatar size="65" :src="item.teacherHeadUrl">
-						</u-avatar>
-					</view>
-					<view class="text">{{item.teacherFullName}}</view>
-				</view>
-
-				<view class="footer-subtitle u-flex u-row-between">
-					<view class="left">热度值</view>
-					<view class="right u-flex">
-						<image src="/static/public/hot.png"></image>
-						<text>{{item.hotValue}}</text>
-					</view>
-				</view>
+				<view class="footer-dec u-line-2">{{item.description}}</view>
 			</view>
 		</view>
 	</view>
@@ -34,7 +20,7 @@
 
 <script>
 	export default {
-		name: "TextbookItem",
+		name: "TextbookItemMy",
 		props: {
 			imgHeight: {
 				type: String | Number,
@@ -123,61 +109,11 @@
 
 
 			.footer {
-				padding: 0 20rpx 26rpx;
+				padding: 14rpx 20rpx 18rpx;
 
-				&-title {
-					position: relative;
-					z-index: 2;
-					margin-top: -16rpx;
-
-					.image {
-						// width: 74rpx;
-						// height: 74rpx;
-						// line-height: 74rpx;
-						padding: 4rpx;
-						text-align: center;
-						overflow: hidden;
-						border-radius: 50rpx;
-						background-color: #fff;
-
-						image {
-							width: 65rpx;
-							height: 65rpx;
-						}
-					}
-
-					.text {
-						margin-left: 16rpx;
-						font-size: 24rpx;
-						font-weight: 500;
-						color: #3A3D71;
-					}
-				}
-
-
-				&-subtitle {
-
-					margin-top: 16rpx;
-
-					.left {
-						font-size: 24rpx;
-						color: #9E9E9E;
-					}
-
-					.right {
-						align-items: flex-start;
-
-						image {
-							width: 24rpx;
-							height: 30rpx;
-						}
-
-						text {
-							margin-left: 8rpx;
-							font-size: 24rpx;
-							color: #3A3D71;
-						}
-					}
+				&-dec{
+					font-size: 26rpx;
+					color: #3A3D71;
 				}
 			}
 

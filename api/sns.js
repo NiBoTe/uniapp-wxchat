@@ -32,6 +32,10 @@ const commentList = `${sns}commentList`;
 // 关注
 const followSnsList = `${sns}followSnsList`;
 
+// 我的动态列表
+const mySnsList = `${sns}mySnsList`;
+
+
 export {
 	snsList,
 	snsSave,
@@ -42,5 +46,6 @@ export {
 	snsBlackSave,
 	snsDetail,
 	commentList,
-	followSnsList
+	followSnsList,
+	mySnsList
 };

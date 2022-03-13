@@ -59,6 +59,7 @@
 			return {
 				star: 4,
 				id: null,
+				orderId: null,
 				detail: {},
 				isFocus: false,
 				content: '',
@@ -70,6 +71,7 @@
 			this.getLabelList();
 			if (options.id) {
 				this.id = options.id
+				this.orderId = options.orderId;
 				this.activeIndex = Number(options.index)
 				this.initData()
 			}
@@ -114,7 +116,7 @@
 				this.$http.post(confirmCompleted, {
 					tagId: tags.join(','),
 					stars: this.star,
-					orderId: this.detail.id,
+					orderId: this.orderId,
 					content: this.content,
 				}).then(res => {
 					uni.navigateBack({

@@ -5,13 +5,13 @@
 				<swiper @change="swiperChange">
 					<swiper-item>
 						<view class="swiper-item">
-							<image :src="detail.evaluateUrl"></image>
+							<image :src="detail.url"></image>
 						</view>
 					</swiper-item>
 				</swiper>
 				<!-- <view class="dots u-flex u-row-center">{{currentIndex}}/3</view> -->
 				<view class="score u-flex u-row-center" v-if="detail.score >= 0">
-					<text>{{detail.score}}</text>
+					<text>{{detail.score || 0}}</text>
 					<text class="unit">分</text>
 				</view>
 			</view>
@@ -33,7 +33,7 @@
 					</view>
 
 					<view class="item-subheader">
-						<text>{{item.content}}</text>
+						<text>{{item.content || ''}}</text>
 					</view>
 				</view>
 			</view>
@@ -53,7 +53,7 @@
 
 			<view class="card-subtitle" :class="detail.wait_evaluate === 'wait_evaluate' ? 'disabled' : ''">
 				<text v-if="detail.wait_evaluate === 'wait_evaluate'">系统已为您提醒该老师进行评画，如长时间未有评画请点击提醒点评按钮让TA为您评画哦！</text>
-				<text v-else>{{detail.textComment}}</text>
+				<text v-else>{{detail.textComment || ''}}</text>
 			</view>
 
 			<view class="tips u-flex u-row-between" v-if="detail.wait_evaluate === 'wait_evaluate'">
@@ -65,7 +65,7 @@
 				<view class="right u-flex u-row-between">
 					<view class="right-vol u-flex">
 						<image src="/static/public/voice_blue.png"></image>
-						<text>{{$mHelper.formatMinutes(detail.voiceCommentDuration)}}</text>
+						<text>{{$mHelper.formatMinutes(detail.voiceCommentDuration || 0)}}</text>
 					</view>
 					<view class="right-btn u-flex u-row-center" @click="playBtn()">
 						<u-icon v-if="!playStatus" name="play-right-fill" color="#fff" size="28"></u-icon>

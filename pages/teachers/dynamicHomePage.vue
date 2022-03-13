@@ -8,7 +8,7 @@
 				<view class="navbar">
 					<u-navbar title=" " immersive back-icon-color="#ffffff" :background="background"
 						:border-bottom="false" title-color="#ffffff">
-						<view slot="right" class="right">
+						<view slot="right" class="navbar-right">
 							<image src="/static/public/teacherDynamic/d_icon_fx.png"></image>
 						</view>
 					</u-navbar>
@@ -42,7 +42,8 @@
 						</view>
 					</view>
 
-					<view class="header-update u-flex u-row-center" :class="userInfo.isFollow ? 'disabled' : ''">
+					<view class="header-update u-flex u-row-center" @click.stop="followTap"
+						:class="userInfo.isFollow ? 'disabled' : ''">
 						<text>{{userInfo.isFollow ? '已关注' : '关注'}}</text>
 					</view>
 				</view>
@@ -93,41 +94,44 @@
 						</u-tabs>
 					</view>
 				</u-sticky>
-				<view class="borderBottom"></view>
 
 				<!-- 评画tabs -->
-				<view class="" v-if="current == 0">
+				<view class="" v-show="current == 0">
 					<!-- 评画-评论类型 -->
-					<view class="subtabs">
-						<drawingColumn></drawingColumn>
+					<u-gap height="16" bg-color="#F7F7F7"></u-gap>
+					<view class="subtabs" v-if="tagPaintList.length">
+						<drawingColumn ref="DrawingColumn" :list="tagPaintList" key-name="name">
+						</drawingColumn>
 					</view>
 					<view class="content-box">
 						<!-- 评画-内容 -->
-						<painting-evaluation ref="PaintingEvaluation"></painting-evaluation>
+						<painting-evaluation ref="PaintingEvaluation" :teacherId="id"></painting-evaluation>
 					</view>
 				</view>
 				<!-- 高分教材 -->
-				<view class="" v-if="current == 1">
+				<view class="" v-show="current == 1">
+					<u-gap height="16" bg-color="#F7F7F7"></u-gap>
 					<!-- 高分教材-评论类型 -->
-					<view class="subtabs">
-						<drawingColumn></drawingColumn>
+					<view class="subtabs" v-if="tagTeachingMaterialList.length">
+						<drawingColumn ref="DrawingColumn" :list="tagTeachingMaterialList" key-name="name">
+						</drawingColumn>
 					</view>
 					<!-- 高分教材-评论类型 -->
 					<view class="content-box">
-						<comment-drawing></comment-drawing>
+						<Textbook ref="TextBook" :teacherId="id" type="user"></Textbook>
 					</view>
 				</view>
 				<!-- 评论 -->
-				<view class="" v-if="current == 2">
+				<view class="" v-show="current == 2">
 					<view class="content-box">
-						<dynamic></dynamic>
+						<dynamic ref="Dynamic" :teacherId="id"></dynamic>
 					</view>
 				</view>
 			</view>
 		</view>
-		<view class="footer">
-			<view class="footer-btn" v-if="current == 0" @click="submitTap">
-				<image class="footer-img" src="/static/public/teacherDynamic/d_icon_score.png" mode=""></image>邀请评画
+		<view class="footer" v-if="current == 0">
+			<view class="footer-btn" @click="submitTap">
+				<image class="footer-img" src="/static/public/teacherDynamic/d_icon_score_write.png"></image>邀请评画
 			</view>
 		</view>
 	</view>
@@ -136,21 +140,25 @@
 <script>
 	import drawingColumn from '@/components/drawingColumnTeachers/drawingColumn.vue'
 	import PaintingEvaluation from '@/components/paintingEvaluation/paintingEvaluation.vue'
-	import CommentDrawing from '@/pages/teachers/commentDrawing/paintingEvaluation.vue'
+	import Textbook from '@/components/textbook/textbook.vue'
 	import Dynamic from '@/pages/teachers/dynamic/dynamic.vue'
 
 	import {
-		teacherDetail
+		teacherDetail,
+		teacherTagPaintEvaluate,
+		teacherTagTeachingMaterial,
+		addFollow
 	} from '@/api/teacher.js'
 	export default {
 		components: {
 			drawingColumn,
 			PaintingEvaluation,
-			CommentDrawing,
+			Textbook,
 			Dynamic
 		},
 		data() {
 			return {
+				id: null,
 				StatusBar: this.StatusBar,
 				foldText: '展开',
 				textEtc: '...',
@@ -162,17 +170,20 @@
 					name: '动态',
 				}],
 				current: 0,
-				swiperCurrent: 0,
 				isFixed: false,
 				// 标签
 				lableList: [],
-				userInfo: {}
+				userInfo: {},
+				tagPaintList: [], // 评画统计标签
+				tagTeachingMaterialList: [], // 高分教材统计标签
 			}
 		},
 		onLoad(options) {
 			if (options.id) {
 				this.id = options.id;
 				this.initData();
+				this.getPaint();
+				this.getTeachingMaterial();
 			}
 		},
 		methods: {
@@ -188,31 +199,81 @@
 					console.log(err)
 				})
 			},
+
+			getPaint() {
+				this.$http.get(teacherTagPaintEvaluate, {
+					teacherId: this.id
+				}).then(res => {
+					console.log(res)
+					this.tagPaintList = res.data;
+				})
+			},
+
+			getTeachingMaterial() {
+				this.$http.get(teacherTagTeachingMaterial, {
+					teacherId: this.id
+				}).then(res => {
+					console.log(res)
+					this.tagTeachingMaterialList = res.data;
+				})
+			},
 			tabChange(index) {
 				this.current = index
-				this.swiperCurrent = index;
+				console.log(this.current)
 			},
 			fixedTap(e) {
 				this.isFixed = true
 				this.$refs.PaintingEvaluation.noScroll(this.isFixed)
+				this.$refs.TextBook.noScroll(this.isFixed)
+				this.$refs.Dynamic.noScroll(this.isFixed)
 			},
 			unfixedTap() {
 				this.isFixed = false
 				this.$refs.PaintingEvaluation.noScroll(this.isFixed)
+				this.$refs.TextBook.noScroll(this.isFixed)
+				this.$refs.Dynamic.noScroll(this.isFixed)
 			},
 			goBack() {
 				this.$mRouter.back();
 			},
 			// 邀请评画
-			submitTap() {}
+			submitTap() {
+				uni.navigateTo({
+					url: `/pages/teachers/inviteComments/index?teacherId=${this.id}`
+				})
+			},
+			followTap() {
+				this.$http.post(addFollow, null, {
+					params: {
+						toAppUserId: this.id,
+						isFollow: !this.userInfo.isFollow
+					}
+				}).then(res => {
+					this.$mHelper.toast(!this.userInfo.isFollow ? '关注成功' : '取消关注成功');
+					this.$set(this.userInfo, 'isFollow', !this.userInfo.isFollow)
+				}).catch(err => {
+					this.$mHelper.toast(err.msg)
+				})
+			}
 		}
 	}
 </script>
 
 <style lang="scss" scoped>
+	.navbar-right {
+		margin-right: 24rpx;
+		image {
+			width: 72rpx !important;
+			height: 72rpx !important;;
+		}
+	}
+
 	.container {
 		position: relative;
-		height: 100vh;
+		min-height: 100vh;
+		background-color: #F3F3F3;
+
+
 
 		.page {
 			.header {
@@ -250,9 +311,16 @@
 				margin-top: -100rpx;
 				position: relative;
 				background-color: #fff;
-				border-radius: 40rpx 40rpx 0px 0px;
+
+				&-box {
+					background-color: #F3F3F3;
+				}
+
 
 				&-header {
+					background-color: #fff;
+					border-radius: 40rpx 40rpx 0px 0px;
+
 					padding: 0 34rpx;
 
 					.head {
@@ -329,6 +397,7 @@
 
 				&-subheader {
 					padding: 42rpx 28rpx 18rpx 34rpx;
+					background-color: #fff;
 
 					.name {
 						font-size: 40rpx;
@@ -403,7 +472,9 @@
 
 
 				&-rate {
+
 					padding: 0 32rpx 0 36rpx;
+					background-color: #fff;
 
 					.rate-item {
 						flex: 1;
@@ -456,6 +527,8 @@
 				.subtabs {
 					// padding: 28rpx 0;
 					padding-top: 28rpx;
+					padding-bottom: 32rpx;
+					background-color: #fff;
 				}
 			}
 		}

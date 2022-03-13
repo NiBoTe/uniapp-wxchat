@@ -1,5 +1,9 @@
 <template>
 	<view class="teaching-material-detail">
+		<view class="tips" v-if="type === 'user' && detail.state === 'rejected'">
+			<view class="tips-title">温馨提示</view>
+			<view class="tips-subtitle">{{detail.auditReason}}</view>
+		</view>
 		<view class="main">
 			<view class="head">
 				<view class="img">
@@ -52,12 +56,21 @@
 			</view>
 
 
-			<view class="works">
-				<view class="works-img">
+			<view class="works" v-if="type === 'default'">
+				<view class="works-img" :class="!detail.isPayed ? 'filter' : ''">
 					<image :src="detail.items[activeIndex].thumbImg" mode="widthFix"></image>
 				</view>
-				<view class="mask u-flex u-row-center">
+				<view class="mask u-flex u-row-center" v-if="!detail.isPayed">
 					<image :src="setSrc('highScore/highScore_mask.png')"></image>
+				</view>
+			</view>
+
+			<view class="works" v-else>
+				<view class="works-img">
+					<image :src="detail.items[activeIndex].url" mode="widthFix"></image>
+				</view>
+				<view class="mask mask1 u-flex u-row-center" v-if="!detail.state === 'stop_sale'">
+					<image :src="setSrc('highScore/stop_sale.png')" style="width: 280rpx;height: 280rpx;"></image>
 				</view>
 			</view>
 
@@ -77,7 +90,7 @@
 
 			<view class="description">
 				<view class="title">
-					<image src="../../../static/public/examinationPaper_icon.png" mode=""></image>作品描述
+					<image src="/static/public/examinationPaper_icon.png" mode=""></image>作品描述
 				</view>
 				<view class="d-c">{{detail.items[activeIndex].description}}</view>
 			</view>
@@ -87,7 +100,7 @@
 
 			<view class="delivery-content" v-if="detail.isNeedExpress">
 				<view class="left">
-					<image src="../../../static/public/highScore/deliveryContent.png" mode=""></image>发货内容
+					<image src="/static/public/highScore/deliveryContent.png" mode=""></image>发货内容
 				</view>
 				<view class="right">{{detail.expressContent}}</view>
 			</view>
@@ -149,23 +162,52 @@
 				</view>
 			</view>
 		</view>
-		<view class="footer">
-			<view class="footer-btn" v-if="!detail.isPayed" @click="submitTap">立即购买</view>
-			<view class="footer-btn" v-else @click="submitTap">我要评价</view>
+
+
+		<view class="commit u-flex" v-if="isFocus">
+			<view class="left u-flex">
+				<textarea :fixed="true" auto-height :cursor-spacing="30" v-model="content" :placeholder="placeholder"
+					focus @confirm="confirmTap()" @blur="isFocus = false" />
+			</view>
+			<view class="commit-btn u-flex" @click.stop="confirmTap()">
+				<image src="/static/public/commit.png"></image>
+			</view>
+		</view>
+		<view v-if="!isFocus && type === 'default'">
+			<view class="footer" v-if="!detail.isPayed">
+				<view class="footer-btn" @click="submitTap">立即购买</view>
+			</view>
+			<view class="footer" v-else-if="detail.notCommentOrderIds.length > 0">
+				<view class="footer-btn" @click="submitTap">我要评价</view>
+			</view>
+		</view>
+		<view v-if="!isFocus && type === 'user'">
+			<view class="footer u-flex">
+				<view v-if="detail.state === 'on_sale'" class="footer-btn" style="margin-right: 24rpx;" @click="offTap">
+					下架作品</view>
+				<view v-if="detail.state === 'auditing' || detail.state === 'rejected' || detail.state === 'stop_sale'"
+					class="footer-btn" style="margin-right: 24rpx;" @click="updateTap">编辑作品</view>
+				<view class="footer-btn" @click="removeTap">删除作品</view>
+			</view>
 		</view>
 	</view>
 </template>
 
 <script>
+	import moment from '@/common/moment.js'
 	import {
 		getDetail,
 		addFavorite,
 		commentList,
-		addComment
+		addComment,
+		myDetail,
+		myDeleteTeachingMaterial,
+		myUpdateSaleState
 	} from '@/api/teaching_material.js'
 	export default {
 		data() {
 			return {
+				moment,
 				hasLogin: false,
 				activeIndex: 0,
 				detail: {},
@@ -176,26 +218,28 @@
 				current: 1,
 				size: 10,
 				list: [], // 考试列表
+				placeholder: '',
+				type: 'default',
 			};
 		},
 		onLoad(options) {
 			if (options.id) {
 				this.id = options.id
+				this.type = options.type || 'default'
 				this.initData()
 				this.getComment();
 			}
 		},
-		
+
 		onShow() {
 			this.hasLogin = this.$mStore.getters.hasLogin;
 		},
 		methods: {
 
 			initData() {
-				this.$http.get(getDetail, {
+				this.$http.get(this.type === 'default' ? getDetail : myDetail, {
 					id: this.id
 				}).then(res => {
-					console.log(res)
 					this.detail = res.data
 				}).catch(err => {
 					console.log(err)
@@ -212,7 +256,6 @@
 						addFavorite: !this.detail.isFavorite
 					}
 				}).then(res => {
-					console.log(res)
 					this.$set(this.detail, 'isFavorite', !this.detail.isFavorite)
 					this.$mHelper.toast(this.detail.isFavorite ? '收藏成功' : '取消收藏成功')
 				}).catch(err => {
@@ -243,8 +286,8 @@
 					} else {
 						this.loadStatus = 'loadmore';
 					}
-			
-			
+
+
 				}).catch(err => {
 					console.log(err)
 				})
@@ -253,21 +296,21 @@
 				this.current++;
 				this.getComment();
 			},
-			
+
 			// 更多
 			moreTap(item, index, type) {
 				if (item.isMore && type) {
-			
+
 				} else {
 					if (!item.isMore) {
 						item.moreList = item.replyList
 					} else {
 						item.moreList = []
 					}
-			
+
 					item.isMore = !item.isMore
 				}
-			
+
 			},
 			// 评论
 			commentTap() {
@@ -277,13 +320,14 @@
 			// 回复
 			replyTap(item, index) {
 				console.log(item)
+				this.placeholder = `回复${item.user.fullName}`
 				// if(item.appUserId === this.detail.user.id) {
 				// 	return this.$mHelper.toast('不能自己回复自己哦！')
 				// }
 				this.isFocus = true;
 				this.replyId = item.id
 			},
-			confirmCommentTap() {
+			confirmTap() {
 				if (this.content.replace(/ /g, '') === '') {
 					return this.$mHelper.toast('请输入评论内容')
 				}
@@ -302,16 +346,16 @@
 				})
 			},
 			// 立即购买
-			submitTap(){
-				
-				if(!this.hasLogin) {
+			submitTap() {
+
+				if (!this.hasLogin) {
 					uni.navigateTo({
 						url: '/pages/public/logintype'
 					})
 					return
 				}
-				
-				if(!this.detail.isPayed) {
+
+				if (!this.detail.isPayed) {
 					uni.navigateTo({
 						url: `/pages/public/highScore/sureOrder?id=${this.id}`
 					})
@@ -320,7 +364,75 @@
 						url: `/pages/public/highScore/evaluate?id=${this.id}&index=${this.activeIndex}`
 					})
 				}
-				
+
+			},
+			// 下架作品
+			offTap() {
+				uni.showModal({
+					title: '提示',
+					confirmText: '确认',
+					content: '下架后对应高分教材前台将不可见，是否确认下架？',
+					success: (res) => {
+						if (res.confirm) {
+							uni.$emit('removeHighScore', true)
+							this.$http.post(myUpdateSaleState, {
+								id: this.id,
+								isSale: this.detail.auditStatus === 1 ? false : true
+							}).then(res => {
+								this.$mHelper.toast('下架成功')
+								uni.$emit('offHighScore', true)
+								
+								this.initData()
+								// setTimeout(() => {
+								// 	uni.navigateBack({
+								// 		delta: 1
+								// 	})
+								// }, 1500)
+							}).catch(err => {
+								console.log(err)
+							})
+						}
+					}
+				});
+			},
+			// 编辑作品
+			updateTap() {
+				uni.$on('updateHighScore', () => {
+					this.initData()
+				})
+				uni.navigateTo({
+					url: `/pages/centers/highScoreRelease?id=${this.detail.id}`
+				})
+			},
+			// 删除作品
+			removeTap() {
+				uni.showModal({
+					title: '提示',
+					confirmText: '确认',
+					content: '删除后不可恢复，是否确认删除？',
+					success: (res) => {
+						if (res.confirm) {
+							uni.$emit('removeHighScore', true)
+							this.$http.post(myDeleteTeachingMaterial, null, {
+								params: {
+									id: this.id
+								}
+							}).then(res => {
+								this.$mHelper.toast('删除成功')
+								uni.$emit('removeHighScore', true)
+								setTimeout(() => {
+									uni.navigateBack({
+										delta: 1
+									})
+								}, 1500)
+							}).catch(err => {
+								console.log(err)
+							})
+						}
+					}
+				});
+
+
 			}
 		},
 		onReachBottom() {
@@ -333,8 +445,26 @@
 <style lang="scss">
 	.teaching-material-detail {
 		min-height: 100vh;
-		
 		background-color: #fff;
+
+		.tips {
+			margin: 28rpx 34rpx;
+			padding: 24rpx 20rpx 20rpx;
+			background: #FFF3EA;
+			border-radius: 16rpx;
+
+			&-title {
+				font-size: 28rpx;
+				font-weight: 800;
+				color: #FF8827;
+			}
+
+			&-subtitle {
+				font-size: 26rpx;
+				color: #FF8827;
+			}
+		}
+
 		.parameter {
 			position: relative;
 			margin-top: 32rpx;
@@ -366,7 +496,7 @@
 
 					.content {
 						margin-top: 6rpx;
-						
+
 						font-size: 28rpx;
 						font-family: Helvetica;
 						color: #3A3D71;
@@ -409,6 +539,7 @@
 		}
 
 		.main {
+			padding-bottom: 160rpx;
 			flex: 1;
 			overflow: auto;
 
@@ -456,6 +587,7 @@
 			background-color: #fff;
 
 			&-btn {
+				flex: 1;
 				height: 88rpx;
 				line-height: 88rpx;
 				text-align: center;
@@ -471,6 +603,41 @@
 				}
 			}
 		}
+
+		// 评论输入
+		.commit {
+			width: 100%;
+			position: fixed;
+			bottom: 0;
+			background: #FFFFFF;
+			min-height: 128rpx;
+			padding: 24rpx 34rpx;
+			box-sizing: border-box;
+
+			.left {
+				width: 0;
+				padding: 20rpx 28rpx;
+				flex: 1;
+				min-height: 80rpx;
+				background: #F7F7F7;
+				border-radius: 16rpx;
+
+				textarea {
+					font-size: 26rpx;
+					color: #3A3D71;
+				}
+			}
+
+			&-btn {
+				margin-left: 22rpx;
+
+				image {
+					width: 60rpx;
+					height: 60rpx;
+				}
+			}
+		}
+
 
 		.tro {
 			padding: 0 34rpx;
@@ -529,8 +696,11 @@
 
 			&-img {
 				border-radius: 24rpx;
-				background: rgba($color: #D8D8D8, $alpha: .6);
-				filter: blur(2rpx);
+
+				&.filter {
+					background: rgba($color: #D8D8D8, $alpha: .6);
+					filter: blur(2rpx);
+				}
 
 				image {
 					width: 100%;
@@ -546,6 +716,10 @@
 				bottom: 0;
 				overflow: hidden;
 				border-radius: 24rpx;
+
+				&.mask1 {
+					background: rgba($color: #000000, $alpha: .5);
+				}
 
 				image {
 					width: 478rpx;

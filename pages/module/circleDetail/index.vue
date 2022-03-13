@@ -85,15 +85,27 @@
 			</view>
 		</view>
 
-		<view class="footer">
+
+
+		<view class="commit u-flex" v-if="isFocus">
+			<view class="left u-flex">
+				<textarea :fixed="true" auto-height :cursor-spacing="30" v-model="content" :placeholder="placeholder"
+					focus @confirm="confirmTap()" @blur="isFocus = false" />
+			</view>
+			<view class="commit-btn u-flex" @click.stop="confirmTap()">
+				<image src="/static/public/commit.png"></image>
+			</view>
+		</view>
+
+		<view class="footer" v-else>
 			<view class="footer-box u-flex u-row-between">
-				<view class="left u-flex" v-if="!isFocus" @click="commentTap">
+				<view class="left u-flex" @click="commentTap">
 					<text>写评论…</text>
 				</view>
-				<view class="left u-flex" v-else>
+				<!-- <view class="left u-flex" v-else>
 					<input type="text" :cursor-spacing="20" v-model="content" placeholder="写评论…" focus
 						@confirm="confirmTap()" @blur="isFocus = false" />
-				</view>
+				</view> -->
 
 				<view class="right u-flex">
 					<view @click.stop="favoriteTap()">
@@ -277,10 +289,10 @@
 				}).then(res => {
 					this.detail.isLike = !this.detail.isLike
 					this.$mHelper.toast(this.detail.isLike ? '点赞成功' : '取消点赞成功');
-					
+
 					uni.$emit('selectHandle', {
 						key: 'isLike',
-						status:!this.detail.isLike
+						status: !this.detail.isLike
 					})
 				})
 			},
@@ -450,6 +462,7 @@
 				font-weight: 400;
 				color: #3A3D71;
 				line-height: 23px;
+				word-break: break-all;
 			}
 
 
@@ -482,6 +495,7 @@
 
 		}
 	}
+
 
 
 	.comment {
@@ -643,6 +657,41 @@
 						}
 					}
 				}
+			}
+		}
+	}
+
+
+	// 评论输入
+	.commit {
+		width: 100%;
+		position: fixed;
+		bottom: 0;
+		background: #FFFFFF;
+		min-height: 128rpx;
+		padding: 24rpx 34rpx;
+		box-sizing: border-box;
+
+		.left {
+			width: 0;
+			padding: 20rpx 28rpx;
+			flex: 1;
+			min-height: 80rpx;
+			background: #F7F7F7;
+			border-radius: 16rpx;
+
+			textarea {
+				font-size: 26rpx;
+				color: #3A3D71;
+			}
+		}
+
+		&-btn {
+			margin-left: 22rpx;
+
+			image {
+				width: 60rpx;
+				height: 60rpx;
 			}
 		}
 	}
