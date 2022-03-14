@@ -89,11 +89,7 @@ import TextbookItem from './textbookItem.vue'
 		methods: {
 			lower() {
 				this.loadStatus = 'loading';
-				// 模拟数据加载
-				setTimeout(() => {
-					this.addRandomData();
-					this.loadStatus = 'loadmore';
-				}, 1000)
+				this.addRandomData();
 			},
 
 			getList() {

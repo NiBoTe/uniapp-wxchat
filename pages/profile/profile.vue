@@ -115,6 +115,10 @@
 
 					<!-- 收益 -->
 					<profit v-show="current === 3" ref="Profit"></profit>
+
+					<!-- 订单 -->
+					<order v-show="current === 4" ref="Order"></order>
+
 				</view>
 
 			</view>
@@ -130,6 +134,7 @@
 	import Dynamic from './components/dynamic/dynamic.vue'
 	import Textbook from './components/textbook/textbook.vue'
 	import Profit from './components/profit/index.vue'
+	import Order from './components/order/index.vue'
 	import {
 		getMyInfo,
 		updateBgUrl
@@ -144,7 +149,8 @@
 			PaintingEvaluation,
 			Dynamic,
 			Textbook,
-			Profit
+			Profit,
+			Order
 		},
 		data() {
 			return {
@@ -286,6 +292,7 @@
 				this.$refs.Dynamic.noScroll(this.isFixed)
 				this.$refs.Textbook.noScroll(this.isFixed)
 				this.$refs.Profit.noScroll(this.isFixed)
+				this.$refs.Order.noScroll(this.isFixed)
 			},
 			toSetting: function() {
 				uni.navigateTo({

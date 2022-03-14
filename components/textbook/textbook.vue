@@ -63,23 +63,13 @@ import TextbookItemMy from '@/components/textbook/textbookItemMy.vue'
 				loadStatus: 'loadmore',
 				current: 1,
 				size: 10,
-				flowList: [],
 				list: []
 			}
 		},
-		created() {
-			console.log(this.teacherId)
-			console.log('123123123====')
-		},
-
 		methods: {
 			lower() {
 				this.loadStatus = 'loading';
-				// 模拟数据加载
-				setTimeout(() => {
-					this.addRandomData();
-					this.loadStatus = 'loadmore';
-				}, 1000)
+				this.addRandomData();
 			},
 
 			getList() {

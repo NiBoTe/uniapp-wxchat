@@ -12,10 +12,17 @@ const updateBgUrl = `${user}updateBgUrl`;
 // 修改用户信息
 const updateMyInfoV2 = `${user}updateMyInfoV2`;
 
+// 我的收益总和
+const myEarningsSum = `${user}myEarningsSum`;
+
+// 我的收益列表
+const myEarningsList = `${user}myEarningsList`;
 
 export {
 	getMyInfo,
 	updateRoleSelect,
 	updateBgUrl,
-	updateMyInfoV2
+	updateMyInfoV2,
+	myEarningsSum,
+	myEarningsList
 };

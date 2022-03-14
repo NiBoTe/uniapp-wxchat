@@ -49,24 +49,14 @@
 				loadStatus: 'loadmore',
 				current: 1,
 				size: 10,
-				flowList: [],
 				list: []
 			}
 		},
-		created() {
-			
-		},
-
 		methods: {
 			lower() {
 				this.loadStatus = 'loading';
-				// 模拟数据加载
-				setTimeout(() => {
-					this.addRandomData();
-					this.loadStatus = 'loadmore';
-				}, 1000)
+				this.addRandomData();
 			},
-
 			getList() {
 				this.loadStatus = 'loading';
 				this.$http.post(paintEvaluateList, {

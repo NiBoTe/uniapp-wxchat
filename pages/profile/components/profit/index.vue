@@ -4,7 +4,7 @@
 		<view class="panel">
 			<view class="title u-flex u-row-between">
 				<vlew class="left">
-					<view class="left-title">{{isEyes ? '68098.59' : '******'}}</view>
+					<view class="left-title">{{isEyes ? totalIncome.toFixed(2) : '******'}}</view>
 					<view class="left-subtitle">账户总览</view>
 				</vlew>
 
@@ -17,13 +17,13 @@
 			<view class="footer u-flex">
 
 				<view class="footer-item">
-					<view class="title">{{isEyes ? '246.87' : '****'}}</view>
+					<view class="title">{{isEyes ? yesterdayIncome.toFixed(2) : '****'}}</view>
 					<view class="subtitle">昨日收益</view>
 				</view>
 
 				<view class="line"></view>
 				<view class="footer-item">
-					<view class="title">{{isEyes ? '246.87' : '****'}}</view>
+					<view class="title">{{isEyes ? balance.toFixed(2) : '****'}}</view>
 					<view class="subtitle">可提现金额</view>
 				</view>
 			</view>
@@ -40,20 +40,20 @@
 		<scroll-view :scroll-y="isFixed" class="scroll-warper" @scrolltolower="lower">
 
 			<view class="list">
-				<view class="item u-flex u-row-between">
+				<view class="item u-flex u-row-between" v-for="(item, index) in list" :key="index">
 					<view class="left">
-						<view class="left-title">收益发放</view>
-						<view class="left-subtitle">2021-08-31 09:26</view>
+						<view class="left-title">{{item.title}}</view>
+						<view class="left-subtitle">{{item.createTime}}</view>
 					</view>
 
 					<view class="right">
 						<view class="right-item">
 							<text>实际发放</text>
-							<text class="price">-89.00</text>
+							<text class="price">-{{item.realMoney.toFixed(2)}}</text>
 						</view>
 						<view class="right-item">
-							<text>实际发放</text>
-							<text class="price">-89.00</text>
+							<text>可提现金额</text>
+							<text class="price">-{{item.money.toFixed(2)}}</text>
 						</view>
 					</view>
 				</view>
@@ -65,11 +65,11 @@
 
 <script>
 	import {
-		myList
-	} from '@/api/teaching_material.js'
+		myEarningsSum,
+		myEarningsList
+	} from '@/api/userInfo.js';
 	export default {
-		name: "Textbook",
-
+		name: "Profit",
 		props: {
 			type: {
 				type: String,
@@ -88,26 +88,15 @@
 				loadStatus: 'loadmore',
 				current: 1,
 				size: 10,
-				allList: [{
-					name: '已上架',
-					value: 'on_sale'
-				}, {
-					name: '审核中',
-					value: 'auditing'
-				}, {
-					name: '审核失败',
-					value: 'rejected'
-				}, {
-					name: '已下架',
-					value: 'stop_sale'
-				}],
-				state: 'on_sale',
-				list: []
+				list: [],
+				balance: 0,
+				totalIncome: 0,
+				yesterdayIncome: 0
 			}
 		},
 		created() {
+			this.initData();
 			this.getList();
-
 			uni.$on('removeHighScore', () => {
 				this.current = 1
 				this.getList()
@@ -124,21 +113,31 @@
 			})
 		},
 		methods: {
+			initData() {
+				this.$http.post(myEarningsSum).then(res => {
+					console.log(res)
+					let {
+						balance,
+						totalIncome,
+						yesterdayIncome
+					} = res.data
+					this.balance = balance
+					this.totalIncome = totalIncome
+					this.yesterdayIncome = yesterdayIncome
+				}).catch(err => {
+					console.log(err)
+				})
+			},
 			lower() {
 				this.loadStatus = 'loading';
-				// 模拟数据加载
-				setTimeout(() => {
-					this.addRandomData();
-					this.loadStatus = 'loadmore';
-				}, 1000)
+				this.addRandomData();
 			},
 
 			getList() {
 				this.loadStatus = 'loading';
-				this.$http.post(myList, {
+				this.$http.post(myEarningsList, {
 					current: this.current,
 					size: this.size,
-					state: this.state,
 				}).then(res => {
 					let data = res.data
 					if (this.current === 1) {
@@ -180,7 +179,7 @@
 				this.isTips = false;
 			},
 			// 隐藏金额
-			showTap(){
+			showTap() {
 				this.isEyes = !this.isEyes
 			}
 		}
