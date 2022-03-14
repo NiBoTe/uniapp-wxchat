@@ -9,9 +9,13 @@ const updateRoleSelect = `${user}updateRoleSelect`;
 // 更换背景
 const updateBgUrl = `${user}updateBgUrl`;
 
+// 修改用户信息
+const updateMyInfoV2 = `${user}updateMyInfoV2`;
+
 
 export {
 	getMyInfo,
 	updateRoleSelect,
-	updateBgUrl
+	updateBgUrl,
+	updateMyInfoV2
 };

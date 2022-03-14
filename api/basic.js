@@ -10,7 +10,11 @@ const areaList = `${common}dict/areaList`;
 // 上传文件
 const generatePostPolicy = `${oss}generatePostPolicy`;
 
+// 获取擅长的专业选择列表
+const skilledMajorList = `${common}dict/skilledMajorList`;
+
 export {
 	areaList,
-	generatePostPolicy
+	generatePostPolicy,
+	skilledMajorList
 };

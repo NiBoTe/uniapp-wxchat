@@ -109,10 +109,10 @@
 
 					<!-- 动态 -->
 					<dynamic v-show="current === 1" ref="Dynamic"></dynamic>
-					
+
 					<!-- 高分教材 -->
 					<textbook v-show="current === 2" ref="Textbook"></textbook>
-					
+
 					<!-- 收益 -->
 					<profit v-show="current === 3" ref="Profit"></profit>
 				</view>
@@ -280,7 +280,7 @@
 				this.isFixed = false
 				this.noScroll()
 			},
-			noScroll(){
+			noScroll() {
 				console.log(this.isFixed)
 				this.$refs.PaintingEvaluation.noScroll(this.isFixed)
 				this.$refs.Dynamic.noScroll(this.isFixed)
@@ -301,7 +301,7 @@
 				});
 			},
 			// 完善资料
-			userInfoTap(){
+			userInfoTap() {
 				uni.navigateTo({
 					url: '/pages/set/userInfo'
 				})
@@ -373,10 +373,11 @@
 				z-index: 3;
 				background-color: #fff;
 				border-radius: 40rpx 40rpx 0px 0px;
-				
-				&-box{
+
+				&-box {
 					background-color: #F3F3F3;
 				}
+
 				&-header {
 					padding: 0 34rpx;
 
@@ -470,17 +471,15 @@
 						margin-top: 18rpx;
 
 						.subheader-item {
+							margin-right: 22rpx;
 							display: inline-block;
 							padding: 0 20rpx 0 22rpx;
 							height: 48rpx;
 							line-height: 48rpx;
 							background: #F3F3F3;
 							border-radius: 25rpx;
-
-							text {
-								font-size: 24rpx;
-								color: #888C90;
-							}
+							font-size: 24rpx;
+							color: #888C90;
 						}
 					}
 
