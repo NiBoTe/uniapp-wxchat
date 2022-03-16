@@ -18,6 +18,12 @@ const resetPassword = `${login}resetPassword`;
 // 注册账号
 const register = `${login}register`;
 
+// 新设置或修改密码
+const newSetPassword = `${login}newSetPassword`;
+
+// 重新绑定手机号
+const bindMobile = `${login}bindMobile`;
+
 // 刷新token
 const refreshToken = ''; // TODO
 
@@ -32,5 +38,7 @@ export {
 	resetPassword,
 	register,
 	refreshToken,
-	verifyAccessToken
+	verifyAccessToken,
+	newSetPassword,
+	bindMobile
 };

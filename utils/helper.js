@@ -251,7 +251,7 @@ export default {
 		return segs
 	},
 	// 身份证脱敏
-	certificatecode(code){
+	certificatecode(code, bagin = 4, end = 3){
 		return code.replace(/^(.{4})(?:\d+)(.{3})$/,  "\$1****\$2")
 	},
 	// 格式化时间

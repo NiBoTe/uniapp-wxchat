@@ -155,12 +155,8 @@
 
 		methods: {
 			toAccount: function() {
-				// uni.navigateTo({
-				// 	url: '/pages/set/account/index'
-				// })
-
 				uni.navigateTo({
-					url: '/pages/set/changePhone/index'
+					url: '/pages/set/accountList'
 				})
 			},
 			navTo(url) {

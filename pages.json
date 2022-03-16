@@ -104,14 +104,6 @@
 					}
 				},
 				{
-					"path": "account/index",
-					"style": {
-						"navigationBarTitleText": "账号与安全",
-						"navigationBarTextStyle": "black",
-						"enablePullDownRefresh": false
-					}
-				},
-				{
 					"path": "changePhone/index",
 					"style": {
 						"navigationBarTitleText": "更换手机号码",
@@ -146,6 +138,36 @@
 					"path": "selectMajor",
 					"style": {
 						"navigationBarTitleText": "选择专业",
+						"navigationBarTextStyle": "black",
+						"enablePullDownRefresh": false
+					}
+				}, {
+					"path": "accountList",
+					"style": {
+						"navigationBarTitleText": "账号与安全",
+						"navigationBarTextStyle": "black",
+						"enablePullDownRefresh": false
+					}
+				}, {
+					"path": "updatePassword",
+					"style": {
+						"navigationBarTitleText": "登录密码设置",
+						"navigationBarTextStyle": "black",
+						"enablePullDownRefresh": false
+					}
+
+				}, {
+					"path": "paintingEvaluationPrice",
+					"style": {
+						"navigationBarTitleText": "专业评画价格",
+						"navigationBarTextStyle": "black",
+						"enablePullDownRefresh": false
+					}
+
+				}, {
+					"path": "setPaintingEvaluationPrice",
+					"style": {
+						"navigationBarTitleText": "设置评画价格",
 						"navigationBarTextStyle": "black",
 						"enablePullDownRefresh": false
 					}

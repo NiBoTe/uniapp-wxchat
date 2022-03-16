@@ -1,33 +1,37 @@
 <template>
 	<view class="container">
-		
+
 		<view class="header">
 			<u-icon name="close" @click="toBack()"></u-icon>
 		</view>
-		
+
 		<view class="title">绑定手机号</view>
-		
+
 		<view class="form">
 			<view class="form-item">
 				<view class="ipt">
-					<u-input v-model="form.phone" placeholder-style="placeholderStyle" type="number" maxlength="11" :clearable="clearable" placeholder="请输入您的手机号" />
+					<u-input v-model="form.phone" placeholder-style="placeholderStyle" type="number" maxlength="11"
+						:clearable="clearable" placeholder="请输入您的手机号" />
 				</view>
 				<view class="code" @click="getCode()">
 					<text>{{tips}}</text>
-					<u-verification-code :seconds="seconds" change-text="XS后重新获取" @end="end" @start="start" ref="uCode" @change="codeChange">
+					<u-verification-code :seconds="seconds" change-text="XS后重新获取" @end="end" @start="start" ref="uCode"
+						@change="codeChange">
 					</u-verification-code>
 				</view>
 			</view>
 
 			<view class="form-item">
 				<view class="ipt">
-					<u-input type="number" maxlength="25" placeholder-style="placeholderStyle" :clearable="clearable" v-model="form.code" placeholder="请输入您的验证码" />
+					<u-input type="number" maxlength="25" placeholder-style="placeholderStyle" :clearable="clearable"
+						v-model="form.code" placeholder="请输入您的验证码" />
 				</view>
 			</view>
 		</view>
 		<view class="footer">
 			<view class="u-flex">
-				<button :disabled="btnDisabled" :loading="btnLoading" type="primary" class="submit" :class="btnDisabled ? 'disabled' : ''" @click="toSubmit">
+				<button :disabled="btnDisabled" :loading="btnLoading" type="primary" class="submit"
+					:class="btnDisabled ? 'disabled' : ''" @click="toSubmit">
 					<text>立即绑定</text>
 				</button>
 			</view>
@@ -64,10 +68,10 @@
 			};
 		},
 		onLoad(options) {
-			if(options.ticket) this.form.ticket = options.ticket
+			if (options.ticket) this.form.ticket = options.ticket
 		},
-		computed:{
-			btnDisabled(){
+		computed: {
+			btnDisabled() {
 				return this.form.phone === '' || this.form.code === ''
 			}
 		},
@@ -87,7 +91,7 @@
 						openid: data.openid
 					}));
 					this.$mHelper.toast('已为您授权登录');
-					if(data.user.roleSelect) {
+					if (data.user.roleSelect) {
 						this.$mRouter.reLaunch({
 							route: '/pages/index/index'
 						});
@@ -138,7 +142,7 @@
 			start() {
 				// this.$u.toast('倒计时开始');
 			},
-			toBack(){
+			toBack() {
 				this.$mRouter.back()
 			}
 		}
@@ -148,14 +152,14 @@
 	.container {
 		background-color: #fff;
 		padding: 0 48rpx;
-		
+
 		.header {
 			margin-top: 40rpx;
 			display: flex;
 			justify-content: space-between;
 			align-items: center;
 		}
-		
+
 		.title {
 			margin-top: 102rpx;
 			margin-bottom: 126rpx;
@@ -164,10 +168,10 @@
 			font-weight: 800;
 			color: #333333;
 		}
-		
+
 		.form {
 			&-item {
-				
+
 				margin-top: 48rpx;
 				font-size: 26rpx;
 				color: #1B1B1B;
@@ -187,7 +191,7 @@
 				.code {
 					color: $u-type-primary;
 					font-weight: 800;
-					
+
 				}
 			}
 		}
@@ -218,11 +222,11 @@
 					font-size: 32rpx;
 					color: #FFFFFF;
 
-					&.disabled{
+					&.disabled {
 						background: rgba(44, 58, 255, 0.3);
 						opacity: 1;
 					}
-					
+
 					&:after {
 						border: none;
 					}
@@ -233,8 +237,8 @@
 		/deep/ .u-checkbox__label {
 			margin-right: 0 !important;
 		}
-		
-		/deep/ .u-input__input{
+
+		/deep/ .u-input__input {
 			font-size: 30rpx;
 			font-weight: 500;
 			color: #333;

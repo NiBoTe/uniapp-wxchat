@@ -1,19 +1,24 @@
 <template>
 	<view class="container">
 		<view class="list">
-			<view class="item" @click="selectTap('teacher')">
+			<view class="item" :class="userInfo.roleSelect === 'teacher' ? 'active' : ''" @click="selectTap('teacher')">
 				<image :src="setSrc('role_teacher.png')"></image>
 				<view class="item-box">
 					<view class="item-header">我是教师</view>
 					<view class="item-subheader">开启线上第二职场</view>
 				</view>
+
+				<view class="item-badge u-flex u-row-center" v-show="userInfo.roleSelect === 'teacher'">当前角色</view>
 			</view>
-			<view class="item" @click="selectTap('not_teacher')">
+			<view class="item" :class="userInfo.roleSelect === 'not_teacher' ? 'active1' : ''"
+				@click="selectTap('not_teacher')">
 				<image :src="setSrc('role_student.png')"></image>
 				<view class="item-box">
 					<view class="item-header">我是学生</view>
 					<view class="item-subheader">开启我的艺术之旅</view>
 				</view>
+
+				<view class="item-badge u-flex u-row-center" v-show="userInfo.roleSelect === 'not_teacher'">当前角色</view>
 			</view>
 		</view>
 	</view>
@@ -26,8 +31,15 @@
 	export default {
 		data() {
 			return {
-
+				userInfo: {}
 			};
+		},
+		onLoad() {
+
+		},
+
+		onShow() {
+			this.userInfo = this.$mStore.state.userInfo;
 		},
 		methods: {
 			selectTap(type) {
@@ -37,9 +49,6 @@
 					this.$mStore.commit('login', Object.assign(this.$mStore.state.userInfo, {
 						roleSelect: type
 					}))
-					this.$mRouter.reLaunch({
-						route: '/pages/index/index'
-					});
 				}).catch(err => {
 					this.$mHelper.toast(err.msg)
 				})
@@ -51,23 +60,54 @@
 <style lang="scss" scoped>
 	.container {
 		.list {
-			padding: 0 40rpx;
+			padding: 48rpx 40rpx 0;
 
 			.item {
 				margin-bottom: 38rpx;
 				width: 100%;
-				height: 248rpx;
+				height: 256rpx;
 				position: relative;
+				border-radius: 30rpx;
+				border: 4rpx solid transparent;
+
+				&.active {
+					border: 4rpx solid $u-type-primary;
+
+					.item-badge {
+						background: $u-type-primary;
+					}
+				}
+
+				&.active1 {
+					border: 4rpx solid #059E66;
+
+					.item-badge {
+						background: #059E66;
+					}
+
+				}
+
+
+				&-badge {
+					position: absolute;
+					top: -4rpx;
+					right: -4rpx;
+					width: 140rpx;
+					height: 44rpx;
+					border-radius: 0px 30rpx 0px 30rpx;
+					font-size: 24rpx;
+					color: #FFFFFF;
+				}
 
 				image {
 					width: 100%;
-					height: 248rpx;
+					height: 100%;
 				}
 
 
 				&-box {
 					position: absolute;
-					top: 62rpx;
+					top: 52rpx;
 					left: 60rpx;
 
 					.item-header {

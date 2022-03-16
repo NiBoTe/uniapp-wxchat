@@ -1,11 +1,13 @@
 <template>
-	<view class="changePhone">
+	<view class="password">
+		<view class="header">设置新密码需要先验证您的手机号{{userInfo.mobile}}</view>
 		<view class="form">
 			<view class="form-item">
 				<view class="ipt">
-					<u-input v-model="form.oldMobile" placeholder-style="placeholderStyle" type="number" maxlength="11"
-						:clearable="clearable" placeholder="请输入原手机号" />
+					<u-input type="number" maxlength="25" placeholder-style="placeholderStyle" :clearable="clearable"
+						v-model="form.code" placeholder="请输入验证码" />
 				</view>
+				<view class="line"></view>
 				<view class="code" @click="getCode()">
 					<text>{{tips}}</text>
 					<u-verification-code :seconds="seconds" change-text="XS后重新获取" @end="end" @start="start" ref="uCode"
@@ -16,72 +18,62 @@
 
 			<view class="form-item">
 				<view class="ipt">
-					<u-input type="number" maxlength="25" placeholder-style="placeholderStyle" :clearable="clearable"
-						v-model="form.oldCode" placeholder="请输入您的验证码" />
+					<u-input type="password" placeholder-style="placeholderStyle" :clearable="clearable"
+						v-model="form.password" placeholder="请设置新的登录密码" />
 				</view>
+
 			</view>
-
-
-			<view class="form-item">
-				<view class="ipt">
-					<u-input v-model="form.mobile" placeholder-style="placeholderStyle" type="number" maxlength="11"
-						:clearable="clearable1" placeholder="请输入新手机号" />
-				</view>
-				<view class="code" @click="getCode1()">
-					<text>{{tips1}}</text>
-					<u-verification-code :seconds="seconds1" change-text="XS后重新获取" @end="end" @start="start"
-						ref="uCode1" @change="codeChange1">
-					</u-verification-code>
-				</view>
-			</view>
-
-			<view class="form-item">
-				<view class="ipt">
-					<u-input type="number" maxlength="25" placeholder-style="placeholderStyle" :clearable="clearable1"
-						v-model="form.code" placeholder="请输入您的验证码" />
-				</view>
-			</view>
-
-
 		</view>
 		<view class="footer">
 			<view class="u-flex">
 				<button :disabled="btnLoading" :loading="btnLoading" type="primary" class="submit" @click="toSubmit">
-					<text>确认</text>
+					<text>确定提交</text>
 				</button>
 			</view>
 
 		</view>
 	</view>
 </template>
+
 <script>
 	import {
-		bindMobile,
+		newSetPassword,
 		sendSmsCode
 	} from '@/api/login';
 
+	import {
+		getMyInfo
+	} from '@/api/userInfo.js'
 	export default {
 		data() {
 			return {
 				btnLoading: false,
+				wxcode: null,
 				form: {
-					mobile: '',
 					code: '',
-					oldCode: '',
-					oldMobile: ''
+					password: '',
 				},
 				tips: '获取验证码',
 				seconds: 60,
 				clearable: false,
-				tips1: '获取验证码',
-				seconds1: 60,
-				clearable1: false,
 				placeholderStyle: {
 					fontSize: '26rpx !important',
 					color: '#9E9E9E !important',
 					fontWeight: '400 !important'
-				}
+				},
+				hasLogin: false,
+				userInfo: {}
 			};
+		},
+		onShow() {
+			this.hasLogin = this.$mStore.getters.hasLogin
+			if (this.hasLogin) {
+				this.userInfo = this.$mStore.state.userInfo;
+			} else {
+				uni.navigateTo({
+					url: '/pages/public/logintype'
+				})
+			}
 		},
 		methods: {
 			// 通用跳转
@@ -94,14 +86,14 @@
 			toSubmit(e) {
 				this.btnLoading = true;
 				const data = {
-					mobile: this.form.mobile,
 					code: this.form.code,
-					oldMobile: this.form.oldMobile,
-					oldCode: this.form.oldCode
+					password: this.form.password
 				}
-				this.$http.post(bindMobile, data).then(async r => {
-					this.$mHelper.toast('更换成功');
-					this.$mRouter.back();
+				this.$http.post(newSetPassword, data).then(async r => {
+					this.$mHelper.toast('设置成功');
+
+					this.getMemberInfo();
+
 					this.btnLoading = false;
 				}).catch(e => {
 					this.$mHelper.toast(e.msg)
@@ -112,11 +104,8 @@
 			codeChange(text) {
 				this.tips = text;
 			},
-			codeChange1(text) {
-				this.tips1 = text;
-			},
 			getCode() {
-				if (!this.$mHelper.checkMobile(this.form.oldMobile)) {
+				if (!this.$mHelper.checkMobile(this.userInfo.mobileFull)) {
 					this.$mHelper.toast('手机号码输入有误，请检查')
 					return
 				}
@@ -126,42 +115,17 @@
 						title: '正在获取验证码'
 					})
 					this.$http.post(sendSmsCode, {
-						mobile: this.form.oldMobile,
-						type: 3
+						mobile: this.userInfo.mobileFull,
+						type: 4
 					}).then(res => {
+						console.log(res)
 						uni.hideLoading();
 						// 这里此提示会被this.start()方法中的提示覆盖
 						this.$mHelper.toast('验证码已发送');
 						// 通知验证码组件内部开始倒计时
 						this.$refs.uCode.start();
 					}).catch(err => {
-						uni.hideLoading();
-						this.$mHelper.toast(err.msg);
-					})
-				} else {
-					this.$mHelper.toast('倒计时结束后再发送');
-				}
-			},
-			getCode1() {
-				if (!this.$mHelper.checkMobile(this.form.mobile)) {
-					this.$mHelper.toast('手机号码输入有误，请检查')
-					return
-				}
-				if (this.$refs.uCode1.canGetCode) {
-					// 模拟向后端请求验证码
-					uni.showLoading({
-						title: '正在获取验证码'
-					})
-					this.$http.post(sendSmsCode, {
-						mobile: this.form.mobile,
-						type: 3
-					}).then(res => {
-						uni.hideLoading();
-						// 这里此提示会被this.start()方法中的提示覆盖
-						this.$mHelper.toast('验证码已发送');
-						// 通知验证码组件内部开始倒计时
-						this.$refs.uCode1.start();
-					}).catch(err => {
+						console.log(err)
 						uni.hideLoading();
 						this.$mHelper.toast(err.msg);
 					})
@@ -177,35 +141,62 @@
 			},
 			toBack() {
 				this.$mRouter.back()
-			}
+			},
+			// 获取用户信息
+			async getMemberInfo() {
+				await this.$http
+					.post(getMyInfo)
+					.then(async r => {
+						let user = r.data.user;
+						this.userInfo = r.data.user;
+						this.$mStore.commit('login', this.userInfo);
+						uni.$emit('update', this.userInfo.passwordIsset)
+						this.$mRouter.back();
+					});
+			},
 		}
-	};
+	}
 </script>
+
 <style lang="scss" scoped>
-	.changePhone {
-		background-color: #fff;
-		padding: 0 48rpx;
+	.password {
+		background-color: #F3F3F3;
+		padding: 0 34rpx;
+
+
+		.header {
+			padding: 28rpx 0;
+			text-align: center;
+			font-size: 26rpx;
+			color: #8F9091;
+		}
 
 		.form {
 			&-item {
-
-				margin-top: 48rpx;
+				margin-bottom: 28rpx;
+				padding: 0 30rpx;
+				height: 112rpx;
+				background: #FFFFFF;
+				border-radius: 24rpx;
 				font-size: 26rpx;
 				color: #1B1B1B;
 				display: flex;
 				align-items: center;
-				border-bottom: 2rpx solid #E9E9E9;
-
-				&:first-of-type {
-					margin-top: 68rpx;
-				}
 
 				.ipt {
 					flex: 1;
 					padding: 12rpx 0;
 				}
 
+				.line {
+
+					width: 4rpx;
+					height: 44rpx;
+					background: #D8D8D8;
+				}
+
 				.code {
+					margin-left: 42rpx;
 					color: $u-type-primary;
 				}
 			}

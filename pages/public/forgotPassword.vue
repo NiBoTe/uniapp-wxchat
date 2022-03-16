@@ -44,9 +44,6 @@
 		data() {
 			return {
 				btnLoading: false,
-				appAgreementDefaultSelect: this.$mSettingConfig.appAgreementDefaultSelect, // 是否允许点击登录按钮
-				appName: this.$mSettingConfig.appName,
-				wxcode: null,
 				form: {
 					phone: '',
 					code:'',
@@ -140,7 +137,7 @@
 		}
 	};
 </script>
-<style lang="scss">
+<style lang="scss"scoped>
 	.forgotPassword {
 		background-color: #fff;
 		padding: 0 48rpx;
