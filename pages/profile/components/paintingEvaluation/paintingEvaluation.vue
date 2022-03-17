@@ -1,6 +1,6 @@
 <template>
 	<view class="container">
-		<view class="subtabs">
+		<view class="subtabs" v-if="allList.length">
 			<drawingColumn ref="DrawingColumn" :list="allList" key-name="name" @change="tabChange">
 			</drawingColumn>
 		</view>
@@ -17,7 +17,9 @@
 					</view>
 				</template>
 			</u-waterfall>
-			<u-loadmore bg-color="rgb(240, 240, 240)" :status="loadStatus" @loadmore="addRandomData"></u-loadmore>
+			
+			<nodata v-if="!loadStatus !== 'loading' && !list.length"></nodata>
+			<u-loadmore v-else :status="loadStatus" @loadmore="addRandomData"></u-loadmore>
 		</scroll-view>
 	</view>
 </template>

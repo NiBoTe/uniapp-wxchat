@@ -22,7 +22,7 @@
 					<view class="right">
 						<view class="subtitle">
 						</view>
-						<image src="../../../static/public/arrow_right.png" mode=""></image>
+						<image src="/static/public/arrow_right.png" mode=""></image>
 					</view>
 				</view>
 			</view>
@@ -30,20 +30,20 @@
 
 		<view class="contenBox">
 			<view class="content-view">
-				<view class="item">
+				<view class="item" @click="navTo('/pages/set/about/agreement')">
 					<view class="menu-title">用户协议</view>
 					<view class="right">
 						<view class="subtitle">
 						</view>
-						<image src="../../../static/public/arrow_right.png" mode=""></image>
+						<image src="/static/public/arrow_right.png" mode=""></image>
 					</view>
 				</view>
-				<view class="item">
+				<view class="item" @click="navTo('/pages/set/about/detail')">
 					<view class="menu-title">隐私政策</view>
 					<view class="right">
 						<view class="subtitle">
 						</view>
-						<image src="../../../static/public/arrow_right.png" mode=""></image>
+						<image src="/static/public/arrow_right.png" mode=""></image>
 					</view>
 				</view>
 				<view class="item" @click="navTo('/pages/set/roleSelection')">
@@ -51,36 +51,36 @@
 					<view class="right">
 						<view class="subtitle">
 						</view>
-						<image src="../../../static/public/arrow_right.png" mode=""></image>
+						<image src="/static/public/arrow_right.png" mode=""></image>
 					</view>
 				</view>
 			</view>
 
 		</view>
-		<view class="contenBox">
+		<view class="contenBox" v-if="userInfo.roleSelect === 'teacher'">
 			<view class="content-view">
-				<view class="item">
+				<view class="item" @click="navTo('/pages/set/paintingEvaluationPrice')">
 					<view class="menu-title">专业评画价格</view>
 					<view class="right">
 						<view class="subtitle">
 						</view>
-						<image src="../../../static/public/arrow_right.png" mode=""></image>
+						<image src="/static/public/arrow_right.png" mode=""></image>
 					</view>
 				</view>
-				<view class="item">
+				<view class="item" @click="navTo('/pages/set/bindAccount')">
 					<view class="menu-title">绑定收款账号</view>
 					<view class="right">
 						<view class="subtitle">
 						</view>
-						<image src="../../../static/public/arrow_right.png" mode=""></image>
+						<image src="/static/public/arrow_right.png" mode=""></image>
 					</view>
 				</view>
-				<view class="item">
+				<view class="item" @click="navTo('/pages/set/teacherAuth')">
 					<view class="menu-title">教师认证</view>
 					<view class="right">
 						<view class="subtitle">
 						</view>
-						<image src="../../../static/public/arrow_right.png" mode=""></image>
+						<image src="/static/public/arrow_right.png" mode=""></image>
 					</view>
 				</view>
 			</view>
@@ -93,27 +93,27 @@
 					<view class="right">
 						<view class="subtitle">
 						</view>
-						<image src="../../../static/public/arrow_right.png" mode=""></image>
+						<image src="/static/public/arrow_right.png"></image>
 					</view>
 				</view>
-				<view class="item">
+				<view class="item"  @click="navTo('/pages/set/about/index')">
 					<view class="menu-title">关于易考绘</view>
 					<view class="right">
 						<view class="subtitle">
 						</view>
-						<image src="../../../static/public/arrow_right.png" mode=""></image>
+						<image src="/static/public/arrow_right.png"></image>
 					</view>
 				</view>
-				<view class="item">
+				<view class="item" @click="clearStorageTap">
 					<view class="menu-title">清除缓存</view>
 					<view class="right">
 						<view class="subtitle">
-							56.8MB
+							{{currentSize}} kb
 						</view>
-						<image src="../../../static/public/arrow_right.png" mode=""></image>
+						<image src="/static/public/arrow_right.png" mode=""></image>
 					</view>
 				</view>
-				<view class="item">
+				<view class="item" @click="navTo('/pages/set/feedback')">
 					<view class="menu-title">意见反馈</view>
 					<view class="right">
 						<view class="subtitle">
@@ -126,16 +126,10 @@
 		</view>
 
 		<view class="bottom">
-			<view class="loginOut" @tap="saveRequest">
+			<view class="loginOut" @tap="escTap">
 				退出登录
 			</view>
 		</view>
-
-
-
-
-
-
 	</view>
 </template>
 
@@ -144,13 +138,16 @@
 		components: {},
 		data() {
 			return {
+				currentSize: 0,
 				background: {
 					background: "#0680FD",
 				},
+				userInfo: {}
 			}
 		},
 		onLoad: function(options) {
-
+			this.currentSize = uni.getStorageInfoSync().currentSize;
+			this.userInfo = this.$mStore.state.userInfo;
 		},
 
 		methods: {
@@ -163,7 +160,40 @@
 				uni.navigateTo({
 					url
 				})
-			}
+			},
+			// 清除缓存
+			
+			clearStorageTap(){
+				uni.showModal({
+					content: '确定要清除缓存吗',
+					success: e => {
+						if (e.confirm) {
+							uni.clearStorageSync();
+							this.currentSize = 0;
+							this.$mStore.commit('login', {});
+							this.$mHelper.toast('清除缓存成功');
+						}
+					}
+				});
+			},
+			// 退出登录
+			escTap() {
+				let _this = this
+				uni.showModal({
+					title: '提示',
+					content: '确认退出登录吗?',
+					success: async res => {
+						if (res.confirm) {
+							_this.profileInfo = {}
+							await _this.$mStore.commit('logout');
+							let pages = getCurrentPages() // 获取页面栈
+							let prePage = pages[pages.length - 2] //获取上一页
+							prePage.$vm.needRefresh = true // 需要刷新
+							_this.$mRouter.back();
+						}
+					}
+				});
+			},
 
 		},
 	}
@@ -172,7 +202,8 @@
 <style lang="scss" scoped>
 	.page-index {
 		background-color: #F3F3F3;
-		height: 100vh;
+		min-height: 100vh;
+		padding-bottom: 28rpx;
 		overflow-x: hidden;
 	}
 

@@ -68,16 +68,26 @@
 				{
 					"path": "about/detail",
 					"style": {
-						"navigationBarTitleText": "隐私政策"
+						"navigationBarTitleText": "隐私政策",
+						"navigationBarTextStyle": "black",
+						"enablePullDownRefresh": false
 					}
 				},
 				{
 					"path": "about/agreement",
 					"style": {
-						"navigationBarTitleText": "用户协议",
+						"navigationBarTitleText": "使用协议",
+						"navigationBarTextStyle": "black",
 						"enablePullDownRefresh": false
 					}
-
+				},
+				{
+					"path": "about/paymentAgreement",
+					"style": {
+						"navigationBarTitleText": "付费内容协议",
+						"navigationBarTextStyle": "black",
+						"enablePullDownRefresh": false
+					}
 				},
 				{
 					"path": "address/index",
@@ -171,6 +181,54 @@
 						"navigationBarTextStyle": "black",
 						"enablePullDownRefresh": false
 					}
+				}, {
+					"path": "bindAccount",
+					"style": {
+						"navigationBarTitleText": "绑定收款账号",
+						"navigationBarTextStyle": "black",
+						"enablePullDownRefresh": false
+					}
+
+				}, {
+					"path": "teacherAuth",
+					"style": {
+						"navigationBarTitleText": "教师认证",
+						"navigationBarTextStyle": "black",
+						"enablePullDownRefresh": false
+					}
+
+				}, {
+					"path": "selectProvince",
+					"style": {
+						"navigationBarTitleText": "选择省份",
+						"navigationBarTextStyle": "black",
+						"enablePullDownRefresh": false
+					}
+
+				}, {
+					"path": "feedback",
+					"style": {
+						"navigationBarTitleText": "意见反馈",
+						"navigationBarTextStyle": "black",
+						"enablePullDownRefresh": false
+					}
+
+				}, {
+					"path": "about/index",
+					"style": {
+						"navigationBarTitleText": "",
+						"navigationBarTextStyle": "black",
+						"enablePullDownRefresh": false
+					}
+
+				}, {
+					"path": "order/registrationDetails",
+					"style": {
+						"navigationBarTitleText": "",
+						"navigationStyle": "custom",
+						"enablePullDownRefresh": false
+					}
+
 				}
 			]
 		},

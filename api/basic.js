@@ -13,8 +13,12 @@ const generatePostPolicy = `${oss}generatePostPolicy`;
 // 获取擅长的专业选择列表
 const skilledMajorList = `${common}dict/skilledMajorList`;
 
+// 意见反馈
+const submitV2 = `${common}feedback/submitV2`;
+
 export {
 	areaList,
 	generatePostPolicy,
-	skilledMajorList
+	skilledMajorList,
+	submitV2
 };

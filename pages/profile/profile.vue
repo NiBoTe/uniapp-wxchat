@@ -52,7 +52,7 @@
 
 					<view class="subheader-text u-line-2">
 						{{userInfo.introduce || ''}}
-						<view class="fold" bindtap="fold" :data-text="foldText" :data-etc="textEtc"></view>
+						<!-- <view class="fold" bindtap="fold" :data-text="foldText" :data-etc="textEtc"></view> -->
 					</view>
 				</view>
 

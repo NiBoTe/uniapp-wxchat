@@ -133,9 +133,9 @@
 					introduce: this.introduce,
 					skilledMajorId: this.skilledMajorId,
 				}).then(res => {
-					console.log(res)
+					this.$mHelper.toast('保存成功')
 				}).catch(err => {
-					console.log(err)
+					this.$mHelper.toast(err.msg)
 				})
 			},
 			// 选择专业

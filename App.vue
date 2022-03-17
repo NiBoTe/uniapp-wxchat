@@ -61,12 +61,11 @@
 			initSystemInfo() {
 				uni.getSystemInfo({
 					success(e) {
-						console.log(e)
-						console.log(e.statusBarHeight)
 						Vue.prototype.StatusBar = e.statusBarHeight;
 						const custom = wx.getMenuButtonBoundingClientRect();
 						Vue.prototype.Custom = custom;
 						Vue.prototype.CustomBar = custom.top - e.statusBarHeight;
+						console.log(custom.top - e.statusBarHeight)
 					}
 				});
 			},

@@ -1,6 +1,19 @@
 <template>
-	<view class="container">
-		<view class="page">
+	<view class="container" :style="{'overflow-y': isScreen ? 'hidden' : 'isScreen'}">
+		<view class="screen" v-if="isScreen">
+			<image src="/static/logo2.png"></image>
+			<view class="screen-footer">
+				<view class="screen-title">{{appName}}</view>
+				<view class="screen-subtitle u-flex u-row-center">
+					<text>{{appName}}</text>
+					<view class="circle"></view>
+					<text>艺考会</text>
+					<view class="circle"></view>
+					<text>一考会</text>
+				</view>
+			</view>
+		</view>
+		<view class="page" v-else>
 			<view class="header" :style="{paddingTop: StatusBar + 'px'}">
 				<view class="search u-flex u-row-between" @click="searchTap">
 					<view class="left u-flex">
@@ -230,6 +243,7 @@
 		data() {
 			return {
 				hasLogin: false,
+				appName: this.$mSettingConfig.appName,
 				StatusBar: this.StatusBar,
 				bannerList: [], // banner,
 				recentExam: [], // 近期考试
@@ -242,9 +256,13 @@
 				teachersIndex: 0,
 				hotList: [], // 热门评画
 				hotIndex: 0,
+				isScreen: true,
 			}
 		},
 		onLoad() {
+			setTimeout(() => {
+				this.isScreen = false;
+			}, 2000)
 			this.initData();
 			this.getMaterialList();
 			this.getTeacherList();
@@ -254,7 +272,7 @@
 			this.hasLogin = this.$mStore.getters.hasLogin;
 		},
 		methods: {
-			searchTap(){
+			searchTap() {
 				uni.navigateTo({
 					url: '/pages/public/search'
 				})
@@ -379,9 +397,54 @@
 
 <style lang="scss" scoped>
 	.container {
+		min-height: 100vh;
 		background-color: #fff;
-
 		padding-bottom: 164rpx;
+		position: relative;
+
+		.screen {
+			position: absolute;
+			z-index: 99999999;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			background-color: #fff;
+			text-align: center;
+
+			&>image {
+				margin-top: 400rpx;
+				display: inline-block;
+				width: 134rpx;
+				height: 254rpx;
+			}
+
+			&-footer {
+				margin-top: 200rpx;
+				.screen-title {
+					font-size: 62rpx;
+					font-weight: bold;
+				}
+
+				.screen-subtitle {
+					text {
+						font-size: 30rpx;
+						color: #9E9E9E;
+					}
+
+					.circle {
+						margin: 0 10rpx;
+						width: 3rpx;
+						height: 3rpx;
+						background: #9E9E9E;
+						border: 2rpx solid #979797;
+						border-radius: 50%;
+					}
+
+
+				}
+			}
+		}
 
 		.page {
 			.header {

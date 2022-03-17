@@ -4,7 +4,7 @@
 		<view class="form">
 			<view class="form-item">
 				<view class="ipt">
-					<u-input type="number" maxlength="25" placeholder-style="placeholderStyle" :clearable="clearable"
+					<u-input type="number" maxlength="6" placeholder-style="placeholderStyle" :clearable="clearable"
 						v-model="form.code" placeholder="请输入验证码" />
 				</view>
 				<view class="line"></view>
@@ -30,7 +30,6 @@
 					<text>确定提交</text>
 				</button>
 			</view>
-
 		</view>
 	</view>
 </template>
@@ -160,6 +159,8 @@
 
 <style lang="scss" scoped>
 	.password {
+		
+		min-height: 100vh;
 		background-color: #F3F3F3;
 		padding: 0 34rpx;
 
@@ -247,9 +248,8 @@
 		}
 
 		/deep/ .u-input__input {
-			font-size: 30rpx;
-			font-weight: 500;
-			color: #333;
+			font-size: 26rpx;
+			color: #3A3D71;
 		}
 	}
 </style>

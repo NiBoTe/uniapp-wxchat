@@ -104,7 +104,7 @@
 			<view class="checkbox">
 				<u-checkbox-group>
 					<u-checkbox v-model="checked" size="28" icon-size="20" shape="circle"><text>我已阅读并同意 </text><text
-							class="agreement">《付费内容使用协议》</text>
+							class="agreement" @click.stop="navTo">《付费内容使用协议》</text>
 					</u-checkbox>
 				</u-checkbox-group>
 			</view>
@@ -335,6 +335,11 @@
 				if (!this.detail.isPayed) {
 					this.sliderMax = ((this.detail.videoTrialDuration / this.duration) * 100).toFixed(2);
 				}
+			},
+			navTo(){
+				uni.navigateTo({
+					url: '/pages/set/about/paymentAgreement'
+				})
 			}
 		}
 	}

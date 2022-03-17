@@ -1,6 +1,6 @@
 <template>
 	<view class="container">
-		<web-view :src="webUrl + 'privacy_agreement.html'"></web-view>
+		<web-view :src="webUrl + 'payment_agreement.html'"></web-view>
 	</view>
 </template>
 <script>

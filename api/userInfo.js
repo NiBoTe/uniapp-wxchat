@@ -18,11 +18,19 @@ const myEarningsSum = `${user}myEarningsSum`;
 // 我的收益列表
 const myEarningsList = `${user}myEarningsList`;
 
+// 获取提交过的教师信息
+const getLatestTeacherAuth = `${user}getLatestTeacherAuth`;
+
+// 提交教师信息认证
+const submitTeacherAuthV2 = `${user}submitTeacherAuthV2`;
+
 export {
 	getMyInfo,
 	updateRoleSelect,
 	updateBgUrl,
 	updateMyInfoV2,
 	myEarningsSum,
-	myEarningsList
+	myEarningsList,
+	getLatestTeacherAuth,
+	submitTeacherAuthV2
 };

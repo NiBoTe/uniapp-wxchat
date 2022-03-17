@@ -58,7 +58,9 @@
 					</view>
 				</view>
 			</view>
-			<u-loadmore :status="loadStatus" @loadmore="addRandomData"></u-loadmore>
+			
+			<nodata v-if="!loadStatus !== 'loading' && !list.length"></nodata>
+			<u-loadmore v-else :status="loadStatus" @loadmore="addRandomData"></u-loadmore>
 		</scroll-view>
 	</view>
 </template>

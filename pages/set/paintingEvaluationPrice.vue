@@ -9,29 +9,16 @@
 		</view>
 
 		<view class="list">
-			<view class="item u-flex u-row-between">
+			<view class="item u-flex u-row-between" v-for="(item, index) in list" :key='index' @click="detailTap(item, index)">
 				<view class="left">
 					<view class="title">
-						<text>素描</text>
-						<text class="default">（未设置）</text>
-						<text class="price">5元/张</text>
+						<text>{{item.skilledMajorName}}</text>
+						<text class="default" v-if="!item.paintEvaluate">（未设置）</text>
+						<text class="price" v-else>{{item.paintEvaluate.price}}元/张</text>
 					</view>
-					<view class="subtitle">这方面我有很多年的素描画经验，也点评了很多学生，在素描领域有自己独到的见解，希望我的经验可以帮助你提升水平。</view>
+					<view class="subtitle" v-if="item.paintEvaluate">{{item.paintEvaluate.description}}</view>
 				</view>
 
-				<view class="right">
-					<image src="/static/public/arrow_right.png"></image>
-				</view>
-			</view>
-			<view class="item u-flex u-row-between">
-				<view class="left">
-					<view class="title">
-						<text>素描</text>
-						<text class="default">（未设置）</text>
-						<text class="price">5元/张</text>
-					</view>
-				</view>
-			
 				<view class="right">
 					<image src="/static/public/arrow_right.png"></image>
 				</view>
@@ -41,13 +28,35 @@
 </template>
 
 <script>
+	import {
+		paintEvaluatePriceList
+	} from '@/api/paint_evaluate_v2_teacher.js'
 	export default {
 		data() {
 			return {
-				isTips: true
+				isTips: true,
+				list: []
 			};
 		},
+
+		onShow() {
+			this.initData()
+		},
 		methods: {
+			initData() {
+				this.$http.post(paintEvaluatePriceList).then(res => {
+					console.log(res)
+					this.list = res.data
+				}).catch(err => {
+					console.log(err)
+				})
+			},
+			// 详情
+			detailTap(item, index){
+				uni.navigateTo({
+					url: `/pages/set/setPaintingEvaluationPrice?detail=${JSON.stringify(item)}`
+				})
+			},
 			closeTap() {
 				this.isTips = false;
 			}
@@ -107,8 +116,8 @@
 							}
 						}
 					}
-					
-					.subtitle{
+
+					.subtitle {
 						margin-top: 8rpx;
 						font-size: 26rpx;
 						color: #3A3D71;
@@ -117,6 +126,7 @@
 
 				.right {
 					margin-left: 46rpx;
+
 					image {
 						width: 28rpx;
 						height: 52rpx;

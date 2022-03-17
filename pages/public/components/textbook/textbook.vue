@@ -1,10 +1,6 @@
 <template>
 	<view class="container">
-		
-		<view class="subtabs">
-			<drawingColumn ref="DrawingColumn" :list="allList" key-name="name" @change="tabChange">
-			</drawingColumn>
-		</view>
+
 		<scroll-view :scroll-y="isFixed" class="scroll-warper" @scrolltolower="lower">
 			<u-waterfall v-model="list" ref="uWaterfall">
 				<template v-slot:left="{leftList}">
@@ -18,90 +14,60 @@
 					</view>
 				</template>
 			</u-waterfall>
-			
+
 			<nodata v-if="!loadStatus !== 'loading' && !list.length"></nodata>
-			<u-loadmore v-else :status="loadStatus" @loadmore="addRandomData"></u-loadmore>
+			<u-loadmore v-else bg-color="rgb(240, 240, 240)" :status="loadStatus" @loadmore="addRandomData">
+			</u-loadmore>
+
 		</scroll-view>
 	</view>
 </template>
 
 <script>
-import TextbookItem from './textbookItem.vue'
+	import TextbookItem from '@/components/textbook/textbookItem.vue'
 	import {
-		myList
-	} from '@/api/teaching_material.js'
+		searchTeachingMaterialList
+	} from '@/api/search.js'
 	export default {
 		name: "Textbook",
 		components: {
 			TextbookItem
 		},
 		props: {
+			teacherId: {
+				type: String,
+				default: ''
+			},
 			type: {
 				type: String,
 				default: 'list'
 			}
 		},
-		created() {
-			console.log(this.teacherId)
-			console.log('ceshi 111')
-		},
 		data() {
 			return {
 				isFixed: false,
+				loading: true,
+				keyword: '',
 				loadStatus: 'loadmore',
 				current: 1,
 				size: 10,
-				allList: [
-					{
-						name: '已上架',
-						value: 'on_sale'
-					},{
-						name: '审核中',
-						value: 'auditing'
-					},{
-						name: '审核失败',
-						value: 'rejected'
-					},{
-						name: '已下架',
-						value: 'stop_sale'
-					}
-				],
-				state: 'on_sale',
 				list: []
 			}
-		},
-		created() {
-			this.getList();
-			
-			uni.$on('removeHighScore', () => {
-				this.current = 1
-				this.getList()
-			})
-			
-			uni.$on('offHighScore', () => {
-				this.current = 1
-				this.getList()
-			})
-			
-			uni.$on('updateHighScore', () => {
-				this.current = 1
-				this.getList()
-			})
 		},
 		methods: {
 			lower() {
 				this.loadStatus = 'loading';
 				this.addRandomData();
 			},
-
 			getList() {
 				this.loadStatus = 'loading';
-				this.$http.post(myList, {
+				this.$http.post(searchTeachingMaterialList, {
+					keyword: this.keyword,
 					current: this.current,
 					size: this.size,
-					state: this.state,
 				}).then(res => {
 					let data = res.data
+					console.log(data)
 					if (this.current === 1) {
 						this.list = res.data.records;
 					} else {
@@ -130,30 +96,19 @@ import TextbookItem from './textbookItem.vue'
 			noScroll(bool) {
 				this.isFixed = bool
 			},
-			tabChange(e) {
-				this.$refs.uWaterfall.clear();
-				this.state = e.item.value
-				this.current = 1;
+			refresh(keyword) {
+				this.keyword = keyword;
 				this.getList()
-			},
+			}
 		}
 	}
 </script>
 
 
 <style lang="scss" scoped>
-	
-	.container{
-		padding-bottom: 200rpx;
-	}
 	.scroll-warper {
-		padding: 18rpx 24rpx;
 		height: calc(100vh - 94rpx);
 	}
-	
-	.subtabs {
-		padding: 28rpx 0;
-		background-color: #fff;
-	}
+
 	.item {}
 </style>

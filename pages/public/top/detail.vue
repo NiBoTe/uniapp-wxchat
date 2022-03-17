@@ -143,7 +143,11 @@
 
 
 		<view class="footer" v-if="type === 0">
-			<view class="footer-btn" :class="!isSignUp ? 'disabled' : ''" @click="submitTap">立即报名</view>
+			<view class="footer-btn" v-if="!detail.errorState" :class="!isSignUp ? 'disabled' : ''" @click="submitTap">
+				{{moment(detail.enrollEndTime).diff(moment(), 'days') >= 0 ? '立即报名' : '报名截止'}}</view>
+				
+				<view class="footer-btn disabled" v-else>
+					{{detail.errorState === 'delay' ? '立即报名' : '考试已取消'}}</view>
 		</view>
 		<view class="footer" v-if="type === 1">
 			<view class="footer-btn" @click="submitNoTap" :class="!detail.errorState ? '' : 'disabled'">去考试</view>
