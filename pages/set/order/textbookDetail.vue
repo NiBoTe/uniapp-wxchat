@@ -193,20 +193,21 @@
 
 
 				<view class="pop-form">
-					<view class="form-item">
+					<view class="form-item u-flex">
 						<view class="left">选择快递公司：</view>
-						<view class="right">
+						<view class="right u-flex">
 							<input type="text" placeholder="请选择" disabled />
 							<image src="/static/public/arrow_right.png"></image>
 						</view>
 					</view>
 
-					<view class="form-item">
+					<view class="form-item u-flex">
 						<view class="left">输入快递单号：</view>
 						<view class="right">
 							<input type="text" placeholder="请输入快递单号" />
 						</view>
 					</view>
+
 				</view>
 			</view>
 
@@ -975,9 +976,27 @@
 						color: $u-type-primary;
 					}
 				}
-				
-				.text{
-					
+
+				.text {
+					margin-top: 12rpx;
+					font-size: 26rpx;
+					color: #3A3D71;
+				}
+			}
+
+			.pop-form {
+				.form-item {
+					.left {
+						font-size: 26rpx;
+						color: #3A3D71;
+					}
+
+					.right {
+						image {
+							width: 12rpx;
+							height: 22rpx;
+						}
+					}
 				}
 			}
 		}
