@@ -3,7 +3,7 @@
 
 		<scroll-view :scroll-y="isFixed" class="scroll-warper" @scrolltolower="lower">
 			<view class="list">
-				<view class="item" v-for="(item, index) in list" :key="index">
+				<view class="item" v-for="(item, index) in list" :key="index" @click="detailTap(item)">
 					<view class="item-main u-flex">
 						<view class="left">
 							<image :src="item.productImgUrl"></image>
@@ -103,6 +103,11 @@
 				this.state = status;
 				this.current = 1;
 				this.getList();
+			},
+			detailTap(item){
+				uni.navigateTo({
+					url: `/pages/set/order/registrationDetails?orderId=${item.id}`
+				})
 			}
 		}
 	}

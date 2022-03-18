@@ -229,6 +229,29 @@
 						"enablePullDownRefresh": false
 					}
 
+				}, {
+					"path": "logistics",
+					"style": {
+						"navigationBarTitleText": "物流信息",
+						"navigationBarTextStyle": "black",
+						"enablePullDownRefresh": false
+					}
+
+				}, {
+					"path": "order/highScoreDetail",
+					"style": {
+						"navigationBarTitleText": "",
+						"navigationStyle": "custom",
+						"enablePullDownRefresh": false
+					}
+
+				}, {
+					"path": "order/textbookDetail",
+					"style": {
+						"navigationBarTitleText": "",
+						"navigationStyle": "custom",
+						"enablePullDownRefresh": false
+					}
 				}
 			]
 		},

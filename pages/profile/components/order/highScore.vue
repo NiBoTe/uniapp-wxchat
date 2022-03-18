@@ -3,7 +3,7 @@
 
 		<scroll-view :scroll-y="isFixed" class="scroll-warper" @scrolltolower="lower">
 			<view class="list">
-				<view class="item" v-for="(item, index) in list" :key="index">
+				<view class="item" v-for="(item, index) in list" :key="index" @click="detailTap(item)">
 					<view class="item-main u-flex">
 						<view class="left">
 							<image :src="item.productImgUrl"></image>
@@ -27,7 +27,7 @@
 						</view>
 					</view>
 
-					
+
 				</view>
 			</view>
 			<u-loadmore margin-top="30" :status="loadStatus" @loadmore="addRandomData"></u-loadmore>
@@ -94,10 +94,15 @@
 				this.isFixed = bool
 			},
 			// 刷新
-			refresh(status){
+			refresh(status) {
 				this.state = status;
 				this.current = 1;
 				this.getList();
+			},
+			detailTap(item) {
+				uni.navigateTo({
+					url: `/pages/set/order/highScoreDetail?orderId=${item.id}`
+				})
 			}
 		}
 	}
@@ -147,18 +152,19 @@
 
 			&-order {
 				margin-top: 16rpx;
+
 				.left {
-					
+
 					text {
 						font-size: 26rpx;
 						color: #9E9E9E;
-					
+
 						&.unit {
 							font-size: 28rpx;
 							font-weight: bold;
 							color: #3A3D71;
 						}
-					
+
 						&.price {
 							margin-left: 4rpx;
 							font-size: 34rpx;
