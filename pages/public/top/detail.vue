@@ -1,7 +1,7 @@
 <template>
 	<view class="top">
 		<view class="navbar">
-			<u-navbar title="考试详情" immersive back-icon-color="#ffffff" :background="background" :border-bottom="false"
+			<u-navbar title="考试详情" back-icon-color="#ffffff" :background="background" :border-bottom="false"
 				title-color="#ffffff">
 			</u-navbar>
 		</view>
@@ -162,6 +162,8 @@
 
 <script>
 	import TopTips from './components/top-tips.vue'
+	
+	import moment from '@/common/moment.js'
 	import {
 		examDetail
 	} from '@/api/exam.js'
@@ -171,6 +173,7 @@
 		},
 		data() {
 			return {
+				moment,
 				id: null,
 				loading: true,
 				detail: {},
@@ -261,12 +264,6 @@
 	.top {
 		height: calc(100vh);
 		background-color: #F3F3F3;
-	}
-
-	.navbar {
-		height: 146rpx;
-		// background-image: url('https://ykh-wxapp.oss-cn-hangzhou.aliyuncs.com/wx_applet_img/top_navbar_bg.png');
-		// background-size: cover;
 	}
 
 	.content {

@@ -1,6 +1,6 @@
 <template>
 	<view class="top">
-		<view class="navbar">
+		<view class="navbar" :style="{paddingTop: StatusBar - 20 + 'px'}">
 			<u-navbar title="TOP美考" immersive back-icon-color="#ffffff" :background="background" :border-bottom="false"
 				title-color="#ffffff">
 			</u-navbar>
@@ -172,6 +172,7 @@
 		data() {
 			return {
 				moment,
+				StatusBar: this.StatusBar,
 				hasLogin: false,
 				loadStatus: 'loadmore',
 				tabIndex: 0,
@@ -387,6 +388,7 @@
 
 	.navbar {
 		height: 206rpx;
+		box-sizing: content-box;
 		background-image: url('https://ykh-wxapp.oss-cn-hangzhou.aliyuncs.com/wx_applet_img/top_navbar_bg.png');
 		background-size: cover;
 	}

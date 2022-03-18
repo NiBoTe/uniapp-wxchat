@@ -252,6 +252,14 @@
 						"navigationStyle": "custom",
 						"enablePullDownRefresh": false
 					}
+				}, {
+					"path": "order/paintingEvaluationDetail",
+					"style": {
+						"navigationBarTitleText": "",
+						"navigationStyle": "custom",
+						"enablePullDownRefresh": false
+					}
+
 				}
 			]
 		},
@@ -579,7 +587,7 @@
 					"path": "historyExQuestions/topScoreList",
 					"style": {
 						"navigationBarTitleText": "高分试卷",
-						"navigationStyle": "custom",
+						"navigationBarTextStyle": "black",
 						"enablePullDownRefresh": false
 					}
 				},

@@ -61,6 +61,7 @@
 			initSystemInfo() {
 				uni.getSystemInfo({
 					success(e) {
+						console.log(e)
 						Vue.prototype.StatusBar = e.statusBarHeight;
 						const custom = wx.getMenuButtonBoundingClientRect();
 						Vue.prototype.Custom = custom;

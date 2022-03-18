@@ -41,7 +41,6 @@
 			drawingColumn
 		},
 		created() {
-			console.log('========')
 			this.getList();
 		},
 		data() {
@@ -116,14 +115,12 @@
 				this.current++;
 				this.getList();
 			},
-			remove(id) {
-				this.$refs.uWaterfall.remove(id);
-			},
-			clear() {
-				this.$refs.uWaterfall.clear();
-			},
 			noScroll(bool) {
 				this.isFixed = bool
+			},
+			refresh(){
+				this.current = 1;
+				this.getList()
 			}
 		}
 	}

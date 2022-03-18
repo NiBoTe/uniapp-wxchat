@@ -1,6 +1,6 @@
 <template>
 	<view class="top">
-		<view class="navbar">
+		<view class="navbar" :style="{paddingTop: StatusBar - 20 + 'px'}">
 			<u-navbar title="拍摄记录" immersive back-icon-color="#ffffff" :background="background" :border-bottom="false"
 				title-color="#ffffff">
 			</u-navbar>
@@ -64,6 +64,7 @@
 		data() {
 			return {
 				id: null,
+				StatusBar: this.StatusBar,
 				examDetail: {},
 				tabList: [],
 				type: 0,
@@ -154,7 +155,7 @@
 				this.getList();
 			},
 			// 查看详情
-			detailTap(item, index){
+			detailTap(item, index) {
 				uni.navigateTo({
 					url: `/pages/public/top/testUpload?id=${this.id}&type=${this.type}&code=${item.admissionTicketCode}&uploadState=${item.uploadState}`
 				})
@@ -170,6 +171,7 @@
 
 		.navbar {
 			height: 206rpx;
+			box-sizing: content-box;
 			background-image: url('https://ykh-wxapp.oss-cn-hangzhou.aliyuncs.com/wx_applet_img/top_navbar_bg.png');
 			background-size: cover;
 		}

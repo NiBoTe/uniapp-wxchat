@@ -2,15 +2,7 @@
 	<view class="container">
 		<scroll-view class="list-view" :scroll-y="isFixed" @scrolltolower="lower">
 			<view class="item-main" v-for="(item,index) in list" :key="index" @click="goDetail(item, index)">
-				<view class="year" v-if="isHide(item, index)">
-					<u-gap height="16" bg-color="#F0F0F1"></u-gap>
-					<text>{{moment(item.createTime).format('YYYY')}}年</text>
-				</view>
 				<view class="item-box u-flex">
-					<view class="time">
-						<view class="time-day">{{moment(item.createTime).format('DD')}}</view>
-						<view class="time-month">{{moment(item.createTime).format('M')}}月</view>
-					</view>
 					<view class="item">
 						<view class="paragraph">{{item.content}}</view>
 						<!-- 照片 -->
@@ -56,6 +48,20 @@
 							</button>
 
 						</view>
+
+						<view class="comment u-flex u-row-between" v-if="!item.noComment"
+							@click.stop="commentTap(index)">
+							<view class="left">
+								<text v-if="commentIndex !== index">说一下你的想法...</text>
+								<input v-else type="text" :cursor-spacing="20" v-model="content"
+									placeholder="说一下你的想法..." focus @confirm="confirmTap(item, index)" />
+							</view>
+							<view class="right u-flex">
+								<image src="/static/public/applause.png"></image>
+								<image src="/static/public/laugh.png"></image>
+								<image src="/static/public/cool.png"></image>
+							</view>
+						</view>
 					</view>
 				</view>
 			</view>
@@ -77,8 +83,15 @@
 		followSnsList,
 		mySnsList
 	} from '@/api/sns.js'
+	import { snsList } from '@/api/favorite.js'
 	import moment from '@/common/moment.js'
 	export default {
+		props: {
+			teacherId: {
+				type: String,
+				default: ''
+			}
+		},
 		data() {
 			return {
 				moment,
@@ -130,10 +143,9 @@
 				})
 			},
 			// 获取列表
-
 			getList() {
 				this.loadStatus = 'loading';
-				this.$http.post(mySnsList, {
+				this.$http.post(snsList, {
 					size: this.size,
 					current: this.current,
 				}).then(res => {
@@ -215,10 +227,11 @@
 			noScroll(bool) {
 				this.isFixed = bool
 			},
-			refresh(){
+			// 刷新
+			refresh() {
 				this.current = 1;
-				this.getList()
-			}
+				this.getList();
+			},
 		}
 	}
 </script>
@@ -253,6 +266,7 @@
 				.time {
 					margin: 16rpx 44rpx 0 34rpx;
 					padding-top: 20rpx;
+
 					&-day {
 						font-size: 48rpx;
 						font-weight: 600;

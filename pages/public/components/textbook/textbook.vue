@@ -16,7 +16,7 @@
 			</u-waterfall>
 
 			<nodata v-if="!loadStatus !== 'loading' && !list.length"></nodata>
-			<u-loadmore v-else bg-color="rgb(240, 240, 240)" :status="loadStatus" @loadmore="addRandomData">
+			<u-loadmore v-else margin-top="30" margin-bottom="30" bg-color="rgb(240, 240, 240)" :status="loadStatus" @loadmore="addRandomData">
 			</u-loadmore>
 
 		</scroll-view>

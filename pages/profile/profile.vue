@@ -1,7 +1,5 @@
 <template>
 	<view class="container">
-
-
 		<view class="page">
 			<view class="header" @click="updateBgTap">
 				<view class="header-text u-flex u-row-center">点击设置个性化背景</view>
@@ -90,7 +88,7 @@
 						</u-navbar>
 					</view>
 					<view class="tabs">
-						<u-tabs ref="tabs" :is-scroll="true" :list="tabList" :current="current" bar-width="62"
+						<u-tabs ref="tabs" :is-scroll="true" :list="userInfo.roleSelect === 'teacher' ? tabList : tabList1" :current="current" bar-width="62"
 							bar-height="8" gutter="40" active-color="#1B1B1B" inactive-color="#9E9E9E" font-size="30"
 							@change="tabChange">
 						</u-tabs>
@@ -103,7 +101,7 @@
 				</view>
  -->
 
-				<view class="content-box">
+				<view class="content-box" v-if="userInfo.roleSelect=== 'teacher'" >
 					<!-- 评画 -->
 					<PaintingEvaluation v-show="current === 0" ref="PaintingEvaluation"></PaintingEvaluation>
 
@@ -118,7 +116,31 @@
 
 					<!-- 订单 -->
 					<order v-show="current === 4" ref="Order"></order>
+					
+					<!-- 收藏 -->
+					<collection v-show="current === 5" ref="Collection"></collection>
+					
+					<!-- 消息 -->
+					<message v-show="current === 6" ref="Message"></message>
 
+				</view>
+				
+				<view class="content-box" v-else>
+					<!-- 评画 -->
+					<PaintingEvaluation v-show="current === 0" ref="PaintingEvaluation"></PaintingEvaluation>
+				
+					<!-- 动态 -->
+					<dynamic v-show="current === 1" ref="Dynamic"></dynamic>
+				
+					<!-- 订单 -->
+					<order v-show="current === 2" ref="Order"></order>
+					
+					<!-- 收藏 -->
+					<collection v-show="current === 3" ref="Collection"></collection>
+					
+					<!-- 消息 -->
+					<message v-show="current === 4" ref="Message"></message>
+				
 				</view>
 
 			</view>
@@ -135,6 +157,8 @@
 	import Textbook from './components/textbook/textbook.vue'
 	import Profit from './components/profit/index.vue'
 	import Order from './components/order/index.vue'
+	import Collection from './components/collection/index.vue'
+	import Message from './components/message/index.vue'
 	import {
 		getMyInfo,
 		updateBgUrl
@@ -150,7 +174,9 @@
 			Dynamic,
 			Textbook,
 			Profit,
-			Order
+			Order,
+			Collection,
+			Message
 		},
 		data() {
 			return {
@@ -168,6 +194,17 @@
 					name: '高分教材',
 				}, {
 					name: '收益',
+				}, {
+					name: '订单',
+				}, {
+					name: '收藏',
+				}, {
+					name: '消息',
+				}],
+				tabList1: [{
+					name: '评画'
+				}, {
+					name: '动态'
 				}, {
 					name: '订单',
 				}, {
@@ -193,9 +230,22 @@
 				this.hasLogin = this.$mStore.getters.hasLogin;
 				if (this.hasLogin) {
 					await this.getMemberInfo();
+					this.refresh();
 				} else {
 					this.loading = false;
 				}
+			},
+			
+			refresh(){
+				this.$refs.PaintingEvaluation.refresh();
+				this.$refs.Dynamic.refresh()
+				if(this.userInfo.roleSelect === 'teacher') {
+					this.$refs.Textbook.refresh()
+					this.$refs.Profit.refresh()
+				}
+				this.$refs.Order.refresh()
+				this.$refs.Collection.refresh()
+				this.$refs.Message.refresh()
 			},
 			// 获取用户信息
 			async getMemberInfo() {
@@ -287,12 +337,13 @@
 				this.noScroll()
 			},
 			noScroll() {
-				console.log(this.isFixed)
 				this.$refs.PaintingEvaluation.noScroll(this.isFixed)
 				this.$refs.Dynamic.noScroll(this.isFixed)
 				this.$refs.Textbook.noScroll(this.isFixed)
 				this.$refs.Profit.noScroll(this.isFixed)
 				this.$refs.Order.noScroll(this.isFixed)
+				this.$refs.Collection.noScroll(this.isFixed)
+				this.$refs.Message.noScroll(this.isFixed)
 			},
 			toSetting: function() {
 				uni.navigateTo({

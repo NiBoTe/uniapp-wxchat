@@ -135,7 +135,7 @@
 				activeIndex: 0,
 				detail: {},
 				addressDetail: null,
-
+				hasLogin: false,
 				// video
 				videoUrl: '',
 				videoContext: null,
@@ -152,12 +152,21 @@
 		onLoad(options) {
 			if (options.id) {
 				this.id = options.id
-				this.initData()
 			}
 			this.getAddressList();
 			uni.$on('selectAddress', (data) => {
 				this.addressDetail = data.item
 			})
+		},
+		onShow() {
+			this.hasLogin = this.$mStore.getters.hasLogin
+			if(this.hasLogin) {
+				this.initData()
+			} else {
+				uni.navigateTo({
+					url: '/pages/public/logintype'
+				})
+			}
 		},
 		onReady: function(res) {
 			this.videoContext = uni.createVideoContext('myVideo')

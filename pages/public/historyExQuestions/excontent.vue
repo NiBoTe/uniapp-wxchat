@@ -2,7 +2,7 @@
 	<view class="exdetail">
 
 		<view class="navbar">
-			<u-navbar title="考试内容" immersive back-icon-color="#ffffff" :background="background" :border-bottom="false"
+			<u-navbar title="考试内容" back-icon-color="#ffffff" :background="background" :border-bottom="false"
 				title-color="#ffffff">
 			</u-navbar>
 		</view>
@@ -79,7 +79,11 @@
 				subjectName: null,
 				question: null,
 				exam: null,
-				imgList: []
+				imgList: [],
+				background: {
+					backgroundImage: "url('https://ykh-wxapp.oss-cn-hangzhou.aliyuncs.com/wx_applet_img/top_navbar_bg.png')",
+					backgroundSize: 'cover',
+				},
 			}
 		},
 		onLoad(options) {
@@ -127,14 +131,7 @@
 		height: 100vh;
 		overflow: hidden;
 
-		.navbar {
-			height: 206rpx;
-			background-image: url('https://ykh-wxapp.oss-cn-hangzhou.aliyuncs.com/wx_applet_img/top_navbar_bg.png');
-			background-size: cover;
-		}
-
 		.top {
-			margin-top: -55rpx;
 			height: calc(100% - 200rpx);
 			background-color: #fff;
 			.content{

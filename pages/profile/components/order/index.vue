@@ -103,6 +103,12 @@
 				this.$refs.PaintingEvaluation.refresh(status)
 				this.popShow = false;
 			},
+			refresh(){
+				this.$refs.SignUp.refresh('')
+				this.$refs.HighScore.refresh('')
+				this.$refs.TextBook.refresh('')
+				this.$refs.PaintingEvaluation.refresh('')
+			}
 		}
 	}
 </script>

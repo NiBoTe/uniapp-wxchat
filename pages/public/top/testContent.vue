@@ -187,10 +187,6 @@
 
 <style lang="scss" scoped>
 	.top {
-		.navbar {
-			height: 146rpx;
-		}
-
 		.content {
 			padding: 36rpx 36rpx 0 28rpx;
 			height: calc(100vh - 146rpx);

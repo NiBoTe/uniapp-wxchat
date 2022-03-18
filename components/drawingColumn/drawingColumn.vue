@@ -1,15 +1,16 @@
 <template>
 	<view class="container">
 		<scroll-view class="tabs" :scroll-x="true">
-			<view class="tab" :class="[type !== 'list' ? 'zero' : '', activeIndex === index ? 'active' : '']" :style="{backgroundColor: activeIndex === index  ? activeColor : ''}"
-				v-for="(item, index) in list" :key="index" @click="tabClick(item, index)">
-				<text v-if="type === 'time'">{{item.year}}</text>
-				<text v-else>{{item[keyName]}}</text>
-				<view class="tab-border" v-if="activeIndex === index">
-					<image src="/static/public/home_scroll_style.png"></image>
-				</view>
-			</view>
 
+				<view class="tab" :class="[type !== 'list' ? 'zero' : '', activeIndex === index ? 'active' : '']"
+					:style="{backgroundColor: activeIndex === index  ? activeColor : ''}"
+					 v-for="(item, index) in list" :key="index" @click="tabClick(item, index)">
+					<text v-if="type === 'time'">{{item.year}}</text>
+					<text v-else>{{item[keyName]}}</text>
+					<view class="tab-border" v-if="activeIndex === index">
+						<image src="/static/public/home_scroll_style.png"></image>
+					</view>
+				</view>
 		</scroll-view>
 	</view>
 </template>
@@ -24,7 +25,7 @@
 			},
 			keys: {
 				type: String,
-				default:'0'
+				default: '0'
 			},
 			keyName: {
 				type: String,
@@ -36,11 +37,15 @@
 					return []
 				}
 			},
-			activeColor:{
+			activeColor: {
 				type: String,
 				default: '#EFF2FF'
 			},
 			disabled: {
+				type: Boolean,
+				default: false
+			},
+			gap: {
 				type: Boolean,
 				default: false
 			}
@@ -69,7 +74,7 @@
 				this.list = list
 			},
 			tabClick(item, index) {
-				if(this.disabled) return
+				if (this.disabled) return
 				this.activeIndex = index
 				this.$emit('change', {
 					item,
@@ -131,6 +136,16 @@
 					height: 36rpx;
 				}
 			}
+		}
+		
+		
+		.tabs-box{
+			display: flex;
+			align-items: center;
+		}
+		.line{
+			height: 42rpx;
+			border-right: 2rpx solid #E9E9E9;
 		}
 	}
 </style>

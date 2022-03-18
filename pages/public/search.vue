@@ -36,25 +36,20 @@
 
 				<view class="history">
 					<view class="history-list">
-						<view class="history-item u-flex" v-for="(item, index) in historyList" :key="index">{{item}}
+						<view class="history-item u-flex" v-for="(item, index) in historyList" :key="index" @click="historyTap(item)">{{item}}
 						</view>
 					</view>
 				</view>
 			</view>
 			<view class="search-list" v-if="searchStatus">
-				<view class="search-item u-flex u-row-between" v-for="(item, index) in searchList" :key="index" @click="hotKeyWordTap(item)">
+				<view class="search-item u-flex u-row-between" v-for="(item, index) in searchList" :key="index"
+					@click="hotKeyWordTap(item)">
 					<view class="left u-flex">
 						<image src="/static/public/search.png"></image>
-						<rich-text class="center" :nodes="$mHelper.highlightKeyword(item.name, keyword, 'customClass')"></rich-text>
+						<rich-text class="center" :nodes="$mHelper.highlightKeyword(item.name, keyword, 'customClass')">
+						</rich-text>
 					</view>
 					<view class="right">约{{item.resultCount}}个结果</view>
-				</view>
-				<view class="search-item u-flex u-row-between">
-					<view class="left u-flex">
-						<image src="/static/public/search.png"></image>
-						<rich-text :nodes="$mHelper.highlightKeyword('人物色彩', keyword, 'customClass')"></rich-text>
-					</view>
-					<view class="right">约285个结果</view>
 				</view>
 			</view>
 
@@ -73,11 +68,11 @@
 
 					<!-- 考试 -->
 					<examination ref="Examination" v-show="current === 0"></examination>
-					
-					
+
+
 					<!-- 历年考题 -->
 					<examination-paper ref="ExaminationPaper" v-show="current === 1"></examination-paper>
-					
+
 
 					<!-- 高分教材 -->
 					<text-book ref="TextBook" v-show="current === 2"></text-book>
@@ -165,10 +160,10 @@
 			searchTap() {
 				this.historyList.push(this.keyword);
 				uni.setStorageSync('historyList', this.historyList);
-				
+
 				this.searchConentStatus = true;
 				this.seachContent(this.keyword)
-				
+
 			},
 			// 热门搜索
 			hotKeyWordTap(item) {
@@ -177,13 +172,19 @@
 						id: item.id
 					}
 				}).then(res => {
+					this.keyword = item.name
 					this.searchStatus = false;
 					this.searchConentStatus = true;
 					this.seachContent(item.name)
 				})
 			},
+			// 历史搜索
+			historyTap(item){
+				this.keyword = item;
+				this.seachContent(item.name)
+			},
 			// 搜索内容
-			seachContent(keyword){
+			seachContent(keyword) {
 				this.$refs.Examination.refresh(keyword);
 				this.$refs.ExaminationPaper.refresh(keyword);
 				this.$refs.TextBook.refresh(keyword);
@@ -211,13 +212,13 @@
 				}, 1000)
 			},
 			// 搜索结果
-			markSure(){
+			markSure() {
 				this.$http.post(searchMatch, {
 					keyword: this.keyword
 				}).then(res => {
 					console.log(res)
 					this.searchList = res.data
-					if(this.searchList.length) {
+					if (this.searchList.length) {
 						this.searchStatus = true
 					}
 				})
@@ -365,21 +366,22 @@
 					margin: 0 32rpx;
 					padding: 28rpx 0;
 					border-bottom: 2rpx solid #E9E9E9;
-					
-					
+
+
 					.left {
 						flex: 1;
 						margin-right: 28rpx;
 						font-size: 26rpx;
 						color: #3A3D71;
+
 						image {
 							margin-right: 16rpx;
 							width: 32rpx;
 							height: 32rpx;
 						}
 					}
-					
-					.center{
+
+					.center {
 						flex: 1;
 					}
 

@@ -131,7 +131,6 @@
 			<view class="footer-btn" @click="receivingTap">确认收货</view>
 		</view>
 
-
 		<!-- 选择地址 -->
 		<u-popup v-model="popShow" mode="bottom" :safe-area-inset-bottom="true" border-radius="40">
 			<view class="pop-header">订单取消</view>

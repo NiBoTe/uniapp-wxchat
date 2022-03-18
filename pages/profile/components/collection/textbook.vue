@@ -1,47 +1,46 @@
 <template>
 	<view class="container">
-
 		<scroll-view :scroll-y="isFixed" class="scroll-warper" @scrolltolower="lower">
 			<u-waterfall v-model="list" ref="uWaterfall">
 				<template v-slot:left="{leftList}">
 					<view class="item" v-for="(item, index) in leftList" :key="index">
-						<painting-evaluation-item :item="item"></painting-evaluation-item>
+						<textbook-item :item="item"></textbook-item>
 					</view>
 				</template>
 				<template v-slot:right="{rightList}">
 					<view class="item" v-for="(item, index) in rightList" :key="index">
-						<painting-evaluation-item :item="item"></painting-evaluation-item>
+						<textbook-item :item="item"></textbook-item>
 					</view>
 				</template>
 			</u-waterfall>
-
+			
 			<nodata v-if="!loadStatus !== 'loading' && !list.length"></nodata>
-			<u-loadmore v-else margin-top="30" margin-bottom="30" bg-color="rgb(240, 240, 240)" :status="loadStatus"
-				@loadmore="addRandomData"></u-loadmore>
+			<u-loadmore v-else :status="loadStatus" @loadmore="addRandomData"></u-loadmore>
 		</scroll-view>
 	</view>
 </template>
 
 <script>
-	import PaintingEvaluationItem from '@/components/paintingEvaluation/paintingEvaluationItem.vue'
-
+import TextbookItem from './textbookItem.vue'
 	import {
-		searchPaintEvaluateList
-	} from '@/api/search.js'
+		teachingMaterialList
+	} from '@/api/favorite.js'
 	export default {
-		name: "PaintingEvaluation",
+		name: "Textbook",
 		components: {
-			PaintingEvaluationItem
+			TextbookItem
 		},
 		data() {
 			return {
 				isFixed: false,
-				keyword: '',
 				loadStatus: 'loadmore',
 				current: 1,
 				size: 10,
 				list: []
 			}
+		},
+		created() {
+			this.getList();
 		},
 		methods: {
 			lower() {
@@ -50,8 +49,7 @@
 			},
 			getList() {
 				this.loadStatus = 'loading';
-				this.$http.post(searchPaintEvaluateList, {
-					keyword: this.keyword,
+				this.$http.post(teachingMaterialList, {
 					current: this.current,
 					size: this.size,
 				}).then(res => {
@@ -75,28 +73,38 @@
 				this.current++;
 				this.getList();
 			},
-			remove(id) {
-				this.$refs.uWaterfall.remove(id);
-			},
-			clear() {
-				this.$refs.uWaterfall.clear();
-			},
 			noScroll(bool) {
 				this.isFixed = bool
 			},
-			refresh(keyword) {
-				this.keyword = keyword;
+			// 刷新
+			refresh() {
+				this.current = 1;
+				this.getList();
+			},
+			tabChange(e) {
+				this.$refs.uWaterfall.clear();
+				this.state = e.item.value
+				this.current = 1;
 				this.getList()
-			}
+			},
 		}
 	}
 </script>
 
 
 <style lang="scss" scoped>
+	
+	.container{
+		padding-bottom: 200rpx;
+	}
 	.scroll-warper {
+		padding: 18rpx 24rpx;
 		height: calc(100vh - 94rpx);
 	}
-
+	
+	.subtabs {
+		padding: 28rpx 0;
+		background-color: #fff;
+	}
 	.item {}
 </style>

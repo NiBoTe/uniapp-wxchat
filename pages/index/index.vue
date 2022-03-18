@@ -14,7 +14,7 @@
 			</view>
 		</view>
 		<view class="page" v-else>
-			<view class="header" :style="{paddingTop: StatusBar + 'px'}">
+			<view class="header" :style="{paddingTop: StatusBar + 24 + 'px'}">
 				<view class="search u-flex u-row-between" @click="searchTap">
 					<view class="left u-flex">
 						<image src="/static/public/home_search.png"></image>
@@ -167,7 +167,7 @@
 				<view class="teacher">
 					<u-row gutter="42">
 						<u-col span="4" v-for="(item,index) in teachersList[teachersIndex].list" :key="index">
-							<view class="teacher-item">
+							<view class="teacher-item" @click="teacherTap(item, index)">
 								<view class="teacher-head">
 									<image :src="item.headUrl" mode="aspectFill"></image>
 									<view class="teacher-name">{{item.fullName}}</view>
@@ -376,6 +376,12 @@
 					url: `/pages/public/top/top?type=${index}`
 				})
 			},
+			// 名师推荐
+			teacherTap(item, index){
+				this.$mRouter.push({
+					route: `/pages/teachers/dynamicHomePage?id=${item.id}`
+				})
+			},
 			// 专业评画
 			singleTap() {
 
@@ -449,7 +455,7 @@
 		.page {
 			.header {
 				margin: 0;
-				height: 562rpx;
+				height: 600rpx;
 				background: linear-gradient(360deg, rgba(255, 255, 255, 0) 0%, #FEDCB6 100%);
 
 				.search {

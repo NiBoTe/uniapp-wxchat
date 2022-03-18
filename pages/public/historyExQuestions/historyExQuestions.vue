@@ -1,6 +1,6 @@
 <template>
 	<view class="historyExQuestions">
-		<view class="navbar">
+		<view class="navbar" :style="{paddingTop: StatusBar - 20 + 'px'}">
 			<u-navbar title="历年考题" immersive back-icon-color="#ffffff" :background="background" :border-bottom="false"
 				title-color="#ffffff">
 			</u-navbar>
@@ -115,6 +115,7 @@
 		data() {
 			return {
 				moment,
+				StatusBar: this.StatusBar,
 				loadStatus: 'loadmore',
 				tabNumber: 'one',
 				leftData: [],
@@ -244,6 +245,7 @@
 
 		.navbar {
 			height: 206rpx;
+			box-sizing: content-box;
 			background-image: url('https://ykh-wxapp.oss-cn-hangzhou.aliyuncs.com/wx_applet_img/top_navbar_bg.png');
 			background-size: cover;
 		}

@@ -1,6 +1,6 @@
 <template>
 	<view class="paintingEvaluation">
-		<view class="navbar">
+		<view class="navbar" :style="{paddingTop: StatusBar - 20 + 'px'}">
 			<u-navbar title="专业评画" immersive back-icon-color="#ffffff" :background="background" :border-bottom="false"
 				title-color="#ffffff">
 			</u-navbar>
@@ -65,6 +65,7 @@
 		data() {
 			return {
 				loading: true,
+				StatusBar: this.StatusBar,
 				loadStatus: 'loadmore',
 				tabIndex: 0,
 				current: 1,
@@ -163,6 +164,7 @@
 		padding-bottom: 160rpx;
 		.navbar {
 			height: 206rpx;
+			box-sizing: content-box;
 			background-image: url('https://ykh-wxapp.oss-cn-hangzhou.aliyuncs.com/wx_applet_img/top_navbar_bg.png');
 			background-size: cover;
 		}

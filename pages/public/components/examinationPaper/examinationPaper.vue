@@ -7,7 +7,7 @@
 				</view>
 			</view>
 			<nodata v-if="!loadStatus !== 'loading' && !list.length"></nodata>
-			<u-loadmore v-else bg-color="rgb(240, 240, 240)" :status="loadStatus" @loadmore="addRandomData"></u-loadmore>
+			<u-loadmore margin-top="30" margin-bottom="30" v-else bg-color="rgb(240, 240, 240)" :status="loadStatus" @loadmore="addRandomData"></u-loadmore>
 		</scroll-view>
 	</view>
 </template>
@@ -23,6 +23,8 @@
 		data() {
 			return {
 				loadStatus: 'loadmore',
+				current: 1,
+				size: 10,
 				keyword: '',
 				list: []
 			}

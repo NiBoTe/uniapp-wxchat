@@ -147,6 +147,9 @@
 			<view class="footer-btn" @click="receivingTap">确认收货</view>
 		</view>
 
+		<view class="footer" v-if="orderDetail.state === 'NOT_DELIVERED'">
+			<view class="footer-btn" @click="popDeliverShow = true">发货</view>
+		</view>
 
 		<!-- 选择地址 -->
 		<u-popup v-model="popShow" mode="bottom" :safe-area-inset-bottom="true" border-radius="40">
@@ -182,21 +185,21 @@
 				<view class="pop-address">
 					<view class="address u-flex u-row-between">
 						<view class="left">
-							<text>收货人：张三</text>
-							<text>13916629786</text>
+							<text>收货人：{{orderDetail.realname}}</text>
+							<text>{{orderDetail.mobile}}</text>
 						</view>
-						<view class="copy u-flex u-row-center">复制</view>
+						<view class="copy u-flex u-row-center" @click="copyDeliverTap">复制</view>
 					</view>
 
-					<view class="text">收货地址 ：浙江省杭州市西湖区转塘街道象山路7号</view>
+					<view class="text">收货地址 ：{{orderDetail.address}}</view>
 				</view>
 
 
 				<view class="pop-form">
-					<view class="form-item u-flex">
+					<view class="form-item u-flex" @click="selectShow = true">
 						<view class="left">选择快递公司：</view>
 						<view class="right u-flex">
-							<input type="text" placeholder="请选择" disabled />
+							<input v-model="expressName" type="text" placeholder="请选择" disabled />
 							<image src="/static/public/arrow_right.png"></image>
 						</view>
 					</view>
@@ -204,7 +207,7 @@
 					<view class="form-item u-flex">
 						<view class="left">输入快递单号：</view>
 						<view class="right">
-							<input type="text" placeholder="请输入快递单号" />
+							<input v-model="expressNumber" type="text" placeholder="请输入快递单号" maxlength="30"/>
 						</view>
 					</view>
 
@@ -212,10 +215,13 @@
 			</view>
 
 			<view class="pop-footer u-flex">
-				<view class="pop-btn esc u-flex u-row-center" @click="popShow = false">暂不取消</view>
-				<view class="pop-btn u-flex u-row-center" @click="enterTap">确定取消</view>
+				<view class="pop-btn u-flex u-row-center" @click="deliverTap">确定发货</view>
 			</view>
 		</u-popup>
+		
+		
+		<u-select v-model="selectShow" :list="expressData" label-name="name" value-name="id"
+			@confirm="expressConfirm"></u-select>
 	</view>
 </template>
 
@@ -224,15 +230,16 @@
 		orderDetail,
 		orderPay,
 		orderCancel,
-		confirmDelivered
+		confirmDelivered,
+		teachingMaterialSetExpressInfo
 	} from '@/api/order.js'
-
+	import { expressList } from '@/api/basic.js'
 	import moment from '@/common/moment.js'
 	export default {
 		data() {
 			return {
 				popShow: false,
-				popDeliverShow: true,
+				popDeliverShow: false,
 				cancelReason: '',
 				orderId: null,
 				activeIndex: 0,
@@ -268,12 +275,18 @@
 				updateState: false, //防止视频播放过程中导致的拖拽失效
 				palyFlag: false,
 				isTrialEnd: false,
+				expressData: [],
+				selectShow: false,
+				extraData: {},
+				expressName: '',
+				expressNumber: ''
 			};
 		},
 		onLoad(options) {
 			if (options.orderId) {
 				this.orderId = options.orderId
 				this.initData()
+				this.getExpressList();
 			}
 		},
 		onReady: function(res) {
@@ -287,9 +300,19 @@
 				}).then(res => {
 					this.orderDetail = res.data.order
 					this.productDetail = res.data.product
+					this.extraData = res.data.extraData
 					if (this.productDetail.type === 'video') {
 						this.videoUrl = this.productDetail.items[0].hdImg
 					}
+				}).catch(err => {
+					console.log(err)
+				})
+			},
+			
+			getExpressList(){
+				this.$http.get(expressList).then(res => {
+					console.log(res)
+					this.expressData = res.data
 				}).catch(err => {
 					console.log(err)
 				})
@@ -378,6 +401,32 @@
 						this.$mHelper.toast('复制成功')
 					}
 				});
+			},
+			copyDeliverTap(){
+				uni.setClipboardData({
+					data: this.orderDetail.mobile, //要被复制的内容
+					success: () => { //复制成功的回调函数
+						this.$mHelper.toast('复制成功')
+					}
+				});
+			},
+			// 选择物流
+			expressConfirm(e){
+				console.log(e)
+				this.expressName = e[0].label
+			},
+			// 确定发货
+			deliverTap(){
+				this.$http.post(teachingMaterialSetExpressInfo, {
+					expressName: this.expressName,
+					expressNumber: this.expressNumber,
+					orderId: this.orderId
+				}).then(res => {
+					this.initData()
+					this.selectShow = false;
+				}).catch(err => {
+					this.$mHelper.toast(err.msg)
+				})
 			},
 			// 查看物流
 			logisticsTap() {
@@ -986,12 +1035,26 @@
 
 			.pop-form {
 				.form-item {
+					padding: 14rpx 10rpx 0 28rpx;
 					.left {
 						font-size: 26rpx;
 						color: #3A3D71;
 					}
 
 					.right {
+						display: flex;
+						align-items: center;
+						flex: 1;
+						height: 58rpx;
+						padding: 0 30rpx 0 10rpx;
+						background: #FFFFFF;
+						border: 2rpx solid rgba(158, 158, 158, 0.34);
+						border-radius: 6rpx;
+						input{
+							flex: 1;
+							font-size: 26rpx;
+							color: #3A3D71;
+						}
 						image {
 							width: 12rpx;
 							height: 22rpx;

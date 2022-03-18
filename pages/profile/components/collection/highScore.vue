@@ -1,6 +1,6 @@
 <template>
 	<view class="top-score-list">
-		<scroll-view scroll-y class="scroll-warper" @scrolltolower="lower">
+		<scroll-view :scroll-y="isFixed" class="scroll-warper" @scrolltolower="lower">
 			<view class="list">
 				<view class="item" v-for="(item, index) in list" :key="index" @click="detailTap(item, index)">
 					<view class="img">
@@ -23,47 +23,38 @@
 					</view>
 				</view>
 			</view>
-			<u-loadmore :status="loadStatus" @loadmore="addData"></u-loadmore>
+			
+			<nodata v-if="!loadStatus !== 'loading' && !list.length"></nodata>
+			<u-loadmore v-else :status="loadStatus" @loadmore="addData"></u-loadmore>
 		</scroll-view>
 	</view>
 </template>
 <script>
 	import {
-		examPaperImgList,
 		addFavorite
 	} from '@/api/history_exam.js'
+	
+	import { examPaperList } from '@/api/favorite.js'
 	export default {
 		components: {
 
 		},
 		data() {
 			return {
-				questionId: null,
+				isFixed: false,
 				loadStatus: 'loadmore',
 				current: 1,
 				size: 10,
 				list: [],
-				selectIndex: -1,
 			}
 		},
-		onLoad(options) {
-			if (options.questionId) this.questionId = options.questionId;
-			this.initData()
-		},
-		onShow() {
-			if(this.selectIndex !== -1){
-				let num = Number(this.list[this.selectIndex].viewCount) + 1;
-				this.$set(this.list[this.selectIndex], 'viewCount', num)
-				
-			}
-			
-			
+		created() {
+			this.initData();
 		},
 		methods: {
 			initData() {
 				this.loadStatus = 'loading';
-				this.$http.post(examPaperImgList, {
-					questionId: this.questionId,
+				this.$http.post(examPaperList, {
 					current: this.current,
 					size: this.size,
 				}).then(res => {
@@ -98,37 +89,33 @@
 						addFavorite: !item.isFavorite
 					}
 				}).then(res => {
-					console.log(res)
 					this.$set(this.list[index], 'isFavorite', !item.isFavorite)
 					this.$mHelper.toast(item.isFavorite ? '收藏成功' : '取消收藏成功')
 				}).catch(err => {
-					console.log(err)
 				})
 			},
 			// 查看详情
 			detailTap(item, index){
-				
-				this.selectIndex = index;
-				console.log(this.selectIndex)
-				uni.$on('favorite', (data) => {
-					console.log(data)
-					this.$set(this.list[this.selectIndex], 'isFavorite', data)
-				})
 				this.$mRouter.push({
 					route: `/pages/public/historyExQuestions/detail?id=${item.id}`
 				})
+			},
+			// 刷新
+			refresh() {
+				this.current = 1;
+				this.initData();
+			},
+			noScroll(bool) {
+				this.isFixed = bool
 			}
 		}
 	}
 </script>
 <style lang="scss">
 	.top-score-list {
-		overflow: hidden;
-
 		.scroll-warper {
-			height: calc(100vh - 160rpx);
-			background: #F3F3F3;
-
+			height: calc(100vh - 94rpx);
+			padding-bottom: 170rpx;
 			.list {
 				padding: 28rpx;
 				display: flex;

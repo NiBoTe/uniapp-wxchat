@@ -16,9 +16,13 @@ const skilledMajorList = `${common}dict/skilledMajorList`;
 // 意见反馈
 const submitV2 = `${common}feedback/submitV2`;
 
+// 获取物流信息
+const expressList = `${common}dict/expressList`;
+
 export {
 	areaList,
 	generatePostPolicy,
 	skilledMajorList,
-	submitV2
+	submitV2,
+	expressList
 };

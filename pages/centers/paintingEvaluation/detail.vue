@@ -179,6 +179,7 @@
 		data() {
 			return {
 				moment,
+				hasLogin: false,
 				currentIndex: 0,
 				id: null,
 				detail: {},
@@ -201,8 +202,18 @@
 		onLoad(options) {
 			if (options.id) {
 				this.id = options.id
+				
+			}
+		},
+		
+		onShow(){
+			this.hasLogin = this.$mStore.getters.hasLogin
+			if(this.hasLogin) {
 				this.initData()
-				this.getComment();
+			} else {
+				uni.navigateTo({
+					url: '/pages/public/logintype'
+				})
 			}
 		},
 		methods: {
@@ -211,6 +222,12 @@
 					id: this.id
 				}).then(res => {
 					this.detail = res.data
+					this.getComment();
+				}).catch(err => {
+					this.$mHelper.toast(err.msg)
+					setTimeout(() => {
+						this.$mRouter.back()
+					}, 1500)
 				})
 			},
 			swiperChange(e) {

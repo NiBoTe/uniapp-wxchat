@@ -21,6 +21,9 @@ const orderCancel = `${order}cancel`;
 // 确认收货
 const confirmDelivered = `${order}confirmDelivered`;
 
+// 高分教材发货
+const teachingMaterialSetExpressInfo = `${order}teachingMaterialSetExpressInfo`;
+
 export {
 	orderLaunch,
 	orderPay,
@@ -28,5 +31,6 @@ export {
 	orderList,
 	queryExpressV2,
 	orderCancel,
-	confirmDelivered
+	confirmDelivered,
+	teachingMaterialSetExpressInfo
 };
