@@ -145,7 +145,7 @@
 
 
 		<view class="footer" v-if="type === 0">
-			<view class="footer-btn" v-if="!detail.errorState" :class="!isSignUp ? 'disabled' : ''" @click="submitTap">
+			<view class="footer-btn" v-if="!detail.errorState" :class="[!isSignUp ? 'disabled' : '', detail.auditState === 'auditing' ? 'disabled' : '']" @click="submitTap">
 				{{moment(detail.enrollEndTime).diff(moment(), 'days') >= 0 ? '立即报名' : '报名截止'}}
 			</view>
 
@@ -188,6 +188,7 @@
 				},
 				type: 0,
 				isSignUp: false,
+				hasLogin: false,
 			};
 		},
 		onLoad(options) {
@@ -197,6 +198,10 @@
 				this.initData();
 			}
 
+		},
+		onShow() {
+				
+				this.hasLogin = this.$mStore.getters.hasLogin;
 		},
 		methods: {
 			initData() {
@@ -216,16 +221,21 @@
 				if (!this.isSignUp) {
 					return
 				}
+				if(this.detail.auditState === 'auditing') {
+					return this.$mHelper.toast('审核中')
+				}
+				
+				if(!this.hasLogin) {
+					uni.navigateTo({
+						url: '/pages/public/logintype'
+					})
+					return
+				}
 				const checked = uni.getStorageSync('examChecked')
 				if (checked) {
-					
-					if(this.detail.auditState !== 'auditing') {
-						this.$mRouter.push({
-							route: `/pages/public/top/signUp?id=${this.id}`
-						})
-					} else {
-						this.$mHelper.toast('审核中')
-					}
+					this.$mRouter.push({
+						route: `/pages/public/top/signUp?id=${this.id}`
+					})
 					
 				} else {
 					this.$refs.TopTips.open();

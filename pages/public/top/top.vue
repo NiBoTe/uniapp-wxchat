@@ -79,7 +79,7 @@
 				<view v-for="(item,index) in proviceData" :key="index" class="left-item">
 					<view class="left-item-box u-flex u-row-center" @click.stop="proviceTap(item, index)"
 						:class="[proviceCurrent === index ? 'active1' : '']">
-						<text>{{item.areaName}}</text>
+						<text>{{item}}</text>
 					</view>
 				</view>
 			</scroll-view>
@@ -203,7 +203,6 @@
 		},
 		onLoad(options) {
 			this.tabIndex = Number(options.type) || 0;
-			this.getProviceList();
 			this.getMenuList();
 			this.getList()
 		},
@@ -258,12 +257,6 @@
 					})
 				}
 			},
-			getProviceList() {
-				this.$http.post(proviceList).then(res => {
-					console.log(res)
-					this.proviceData = res.data
-				})
-			},
 			getMenuList() {
 				this.$http.post(examMenuList, {
 					examDate: this.examDate,
@@ -275,6 +268,8 @@
 					this.menuIndex = -1;
 					this.childCurrent = -1;
 					this.proviceCurrent = -1;
+					
+					this.proviceData = res.data.provinceList
 					this.menuList = res.data.menuList
 				})
 			},
@@ -309,7 +304,7 @@
 			// 省份
 			proviceTap(item, index) {
 				this.menuIndex = -1;
-				this.province = item.areaName;
+				this.province = item;
 				this.firstMenuId = ''
 				this.secondMenuId = ''
 				this.proviceCurrent = index
@@ -360,11 +355,11 @@
 			
 			// 查看详情
 			detailTap(item, index){
-				if(!this.hasLogin) {
-					uni.navigateTo({
-						url: '/pages/public/logintype'
-					})
-				}
+				// if(!this.hasLogin) {
+				// 	uni.navigateTo({
+				// 		url: '/pages/public/logintype'
+				// 	})
+				// }
 				uni.navigateTo({
 					url: `/pages/public/top/detail?id=${item.id}&type=${this.tabIndex}`
 				})
