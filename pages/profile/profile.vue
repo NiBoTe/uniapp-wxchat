@@ -18,8 +18,9 @@
 								<u-avatar size="186" :src="userInfo.headUrl"></u-avatar>
 							</view>
 
-							<view class="head-auth">
-								<image src="/static/my/no_auth.png"></image>
+							<view class="head-auth" v-if="userInfo.roleSelect === 'teacher'">
+								<image src="/static/my/no_auth.png" v-if="userInfo.authStatus === 0"></image>
+								<image src="/static/my/auth.png" v-else-if="userInfo.authStatus === 1"></image>
 							</view>
 						</view>
 						<!-- 0跳转默认展示关注tab页 -->
@@ -41,20 +42,21 @@
 				</view>
 
 				<view class="content-subheader">
-					<view class="name">{{userInfo.fullName}}</view>
-					<view class="subheader-list">
+					<view class="name">{{userInfo.fullName || '' }}</view>
+					<view class="subheader-list" v-if="userInfo.roleSelect === 'teacher'">
 						<view class="subheader-item" v-for="(item, index) in userInfo.skilledMajor" :key="index">
 							{{item}}
 						</view>
 					</view>
 
 					<view class="subheader-text u-line-2">
-						{{userInfo.introduce || ''}}
-						<!-- <view class="fold" bindtap="fold" :data-text="foldText" :data-etc="textEtc"></view> -->
+						<expandable-text :line="2" expandText="全文" foldText="收起">
+							{{userInfo.introduce || ''}}
+						</expandable-text>
 					</view>
 				</view>
 
-				<view class="content-rate u-flex">
+				<view class="content-rate u-flex" v-if="userInfo.roleSelect === 'teacher'">
 					<view class="rate-item u-flex u-row-between" style="margin-right: 46rpx;">
 						<view class="left u-flex">
 							<image src="/static/my/book.png"></image>
@@ -62,7 +64,7 @@
 						</view>
 						<view class="right u-flex">
 							<image src="/static/my/star.png"></image>
-							<text>{{userInfo.publishScore || 0}}</text>
+							<text>{{userInfo.publishScore || 5}}</text>
 						</view>
 					</view>
 					<view class="rate-item u-flex u-row-between">
@@ -72,7 +74,7 @@
 						</view>
 						<view class="right u-flex">
 							<image src="/static/my/star.png"></image>
-							<text>{{userInfo.paintEvaluateScore || 0}}</text>
+							<text>{{userInfo.paintEvaluateScore || 5}}</text>
 						</view>
 					</view>
 				</view>
@@ -88,9 +90,10 @@
 						</u-navbar>
 					</view>
 					<view class="tabs">
-						<u-tabs ref="tabs" :is-scroll="true" :list="userInfo.roleSelect === 'teacher' ? tabList : tabList1" :current="current" bar-width="62"
-							bar-height="8" gutter="40" active-color="#1B1B1B" inactive-color="#9E9E9E" font-size="30"
-							@change="tabChange">
+						<u-tabs ref="tabs" :is-scroll="true"
+							:list="userInfo.roleSelect === 'teacher' && userInfo.authStatus === 1 ? tabList : tabList1"
+							:current="current" bar-width="62" bar-height="8" gutter="40" active-color="#1B1B1B"
+							inactive-color="#9E9E9E" font-size="30" @change="tabChange">
 						</u-tabs>
 					</view>
 				</u-sticky>
@@ -101,7 +104,8 @@
 				</view>
  -->
 
-				<view class="content-box" v-if="userInfo.roleSelect=== 'teacher'" >
+				<view class="content-box"
+					v-if="userInfo.roleSelect=== 'teacher' && hasLogin && userInfo.authStatus === 1">
 					<!-- 评画 -->
 					<PaintingEvaluation v-show="current === 0" ref="PaintingEvaluation"></PaintingEvaluation>
 
@@ -116,31 +120,31 @@
 
 					<!-- 订单 -->
 					<order v-show="current === 4" ref="Order"></order>
-					
+
 					<!-- 收藏 -->
 					<collection v-show="current === 5" ref="Collection"></collection>
-					
+
 					<!-- 消息 -->
 					<message v-show="current === 6" ref="Message"></message>
 
 				</view>
-				
-				<view class="content-box" v-else>
+
+				<view class="content-box" v-else-if="hasLogin">
 					<!-- 评画 -->
 					<PaintingEvaluation v-show="current === 0" ref="PaintingEvaluation"></PaintingEvaluation>
-				
+
 					<!-- 动态 -->
 					<dynamic v-show="current === 1" ref="Dynamic"></dynamic>
-				
+
 					<!-- 订单 -->
 					<order v-show="current === 2" ref="Order"></order>
-					
+
 					<!-- 收藏 -->
 					<collection v-show="current === 3" ref="Collection"></collection>
-					
+
 					<!-- 消息 -->
 					<message v-show="current === 4" ref="Message"></message>
-				
+
 				</view>
 
 			</view>
@@ -232,14 +236,17 @@
 					await this.getMemberInfo();
 					this.refresh();
 				} else {
+					uni.navigateTo({
+						url: '/pages/public/logintype'
+					})
 					this.loading = false;
 				}
 			},
-			
-			refresh(){
+
+			refresh() {
 				this.$refs.PaintingEvaluation.refresh();
 				this.$refs.Dynamic.refresh()
-				if(this.userInfo.roleSelect === 'teacher') {
+				if (this.userInfo.roleSelect === 'teacher' && this.userInfo.authStatus === 1) {
 					this.$refs.Textbook.refresh()
 					this.$refs.Profit.refresh()
 				}
@@ -253,11 +260,12 @@
 					.post(getMyInfo)
 					.then(async r => {
 						this.loading = false;
+						let data = r.data
 						let user = r.data.user;
 						user.skilledMajor = user.skilledMajor ? user.skilledMajor.split(",") : []
 						this.userInfo = r.data.user;
 						this.title = this.userInfo.fullName
-						this.$mStore.commit('login', this.userInfo);
+						this.$mStore.commit('login', data.user);
 					})
 					.catch((err) => {
 						console.log(err)
@@ -339,8 +347,10 @@
 			noScroll() {
 				this.$refs.PaintingEvaluation.noScroll(this.isFixed)
 				this.$refs.Dynamic.noScroll(this.isFixed)
-				this.$refs.Textbook.noScroll(this.isFixed)
-				this.$refs.Profit.noScroll(this.isFixed)
+				if (this.userInfo.roleSelect === 'teacher' && this.userInfo.authStatus === 1) {
+					this.$refs.Textbook.noScroll(this.isFixed)
+					this.$refs.Profit.noScroll(this.isFixed)
+				}
 				this.$refs.Order.noScroll(this.isFixed)
 				this.$refs.Collection.noScroll(this.isFixed)
 				this.$refs.Message.noScroll(this.isFixed)

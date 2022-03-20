@@ -347,7 +347,7 @@
 			}, {
 				"path": "highScoreConfirm",
 				"style": {
-					"navigationBarTitleText": "1/5",
+					"navigationBarTitleText": "发布高分教材",
 					"navigationBarTextStyle": "black",
 					"enablePullDownRefresh": false
 				}

@@ -74,7 +74,8 @@
 <script>
 	import {
 		examDetail,
-		scoreExamList
+		scoreExamList,
+		scoreQuery
 	} from '@/api/exam.js'
 	export default {
 		data() {
@@ -145,9 +146,15 @@
 					name: this.name,
 					queryKey: this.testItem.queryKey,
 				}
-				uni.navigateTo({
-					url: `/pages/public/top/scoreDetail?scoreItem=${JSON.stringify(params)}`
+				
+				this.$http.post(scoreQuery, params).then(res => {
+					uni.navigateTo({
+						url: `/pages/public/top/scoreDetail?scoreItem=${JSON.stringify(params)}`
+					})
+				}).catch(err => {
+					this.$mHelper.toast(err.msg)
 				})
+				
 			},
 			// 选择考试
 			selectTestTap() {

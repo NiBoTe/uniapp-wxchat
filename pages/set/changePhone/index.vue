@@ -71,10 +71,10 @@
 					oldMobile: ''
 				},
 				tips: '获取验证码',
-				seconds: 60,
+				seconds: 120,
 				clearable: false,
 				tips1: '获取验证码',
-				seconds1: 60,
+				seconds1: 120,
 				clearable1: false,
 				placeholderStyle: {
 					fontSize: '26rpx !important',

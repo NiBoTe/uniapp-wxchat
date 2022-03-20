@@ -78,7 +78,8 @@
 				<view class="item" @click="navTo('/pages/set/teacherAuth')">
 					<view class="menu-title">教师认证</view>
 					<view class="right">
-						<view class="subtitle">
+						<view class="subtitle success" v-if="userInfo.authStatus === 1">
+							已认证
 						</view>
 						<image src="/static/public/arrow_right.png" mode=""></image>
 					</view>
@@ -96,10 +97,11 @@
 						<image src="/static/public/arrow_right.png"></image>
 					</view>
 				</view>
-				<view class="item"  @click="navTo('/pages/set/about/index')">
+				<view class="item" @click="navTo('/pages/set/about/index')">
 					<view class="menu-title">关于易考绘</view>
 					<view class="right">
 						<view class="subtitle">
+							当前版本：{{version_number}}
 						</view>
 						<image src="/static/public/arrow_right.png"></image>
 					</view>
@@ -142,12 +144,17 @@
 				background: {
 					background: "#0680FD",
 				},
-				userInfo: {}
+				userInfo: {},
+				version_number: '1.0'
 			}
 		},
 		onLoad: function(options) {
 			this.currentSize = uni.getStorageInfoSync().currentSize;
 			this.userInfo = this.$mStore.state.userInfo;
+
+			const accountInfo = wx.getAccountInfoSync();
+			console.log(accountInfo)
+			this.version_number = accountInfo.miniProgram.version !== '' ? accountInfo.miniProgram.version : '1.0'// 小程序 版本号
 		},
 
 		methods: {
@@ -162,8 +169,8 @@
 				})
 			},
 			// 清除缓存
-			
-			clearStorageTap(){
+
+			clearStorageTap() {
 				uni.showModal({
 					content: '确定要清除缓存吗',
 					success: e => {
@@ -249,6 +256,10 @@
 			font-weight: 400;
 			color: #8F9091;
 			margin-right: 24rpx;
+
+			&.success {
+				color: #35CE96;
+			}
 		}
 
 		image {

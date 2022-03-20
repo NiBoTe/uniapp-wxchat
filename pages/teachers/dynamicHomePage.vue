@@ -38,7 +38,7 @@
 						</view>
 						<view class="header-item" style="margin-left: 42rpx;">
 							<text>粉丝</text>
-							<text class="num">{{userInfo.fansCount}}</text>
+							<text class="num">{{userInfo.fansCount || 0}}</text>
 						</view>
 					</view>
 
@@ -49,7 +49,7 @@
 				</view>
 
 				<view class="content-subheader">
-					<view class="name">{{userInfo.fullName}}</view>
+					<view class="name">{{userInfo.fullName || ''}}</view>
 					<view class="subheader-list">
 						<view class="subheader-item lable main-item">
 							<view v-for="(item,index) in lableList">{{item}}</view>
@@ -70,7 +70,7 @@
 						</view>
 						<view class="right u-flex">
 							<image src="/static/my/star.png"></image>
-							<text>{{userInfo.publishScore}}</text>
+							<text>{{userInfo.publishScore || 5}}</text>
 						</view>
 					</view>
 					<view class="rate-item u-flex u-row-between">
@@ -80,7 +80,7 @@
 						</view>
 						<view class="right u-flex">
 							<image src="/static/my/star.png"></image>
-							<text>{{userInfo.paintEvaluateScore}}</text>
+							<text>{{userInfo.paintEvaluateScore || 5}}</text>
 						</view>
 					</view>
 				</view>

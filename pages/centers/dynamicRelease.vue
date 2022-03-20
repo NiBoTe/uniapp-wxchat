@@ -122,6 +122,8 @@
 			},
 			// 提交
 			submitTap() {
+				if(this.btnLoading) return
+				this.btnLoading = true;
 				if (this.content === '') {
 					return this.$mHelper.toast('请输入此刻你的想法')
 				}
@@ -142,6 +144,9 @@
 					}, 1500)
 				}).catch(err => {
 					this.$mHelper.toast(err.msg);
+					setTimeout(() => {
+						this.btnLoading = false;
+					}, 500)
 				})
 			}
 		}

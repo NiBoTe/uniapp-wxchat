@@ -78,6 +78,9 @@
 			};
 		},
 		onLoad() {
+			
+		},
+		onShow() {
 			this.initData()
 		},
 		methods: {

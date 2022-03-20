@@ -63,7 +63,7 @@
 					password: '',
 				},
 				tips: '获取验证码',
-				seconds: 60,
+				seconds: 120,
 				clearable: false,
 				placeholderStyle: {
 					fontSize: '26rpx !important',
@@ -92,7 +92,20 @@
 				this.appAgreementDefaultSelect = true;
 			}
 		},
+		
+		onShow() {
+			this.getWxCode()
+		},
 		methods: {
+			getWxCode() {
+				let _this = this;
+				uni.login({
+					provider: 'weixin',
+					success: function(loginRes) {
+						_this.wxcode = loginRes.code;
+					}
+				});
+			},
 			// 通用跳转
 			navTo(route) {
 				this.$mRouter.redirectTo({
@@ -115,23 +128,55 @@
 					mobile: this.form.phone,
 					platform: 'miniapp',
 					code: this.form.code,
-					password: this.form.password
+					password: this.form.password,
+					jsCode: this.wxcode
 				}
 				this.$http.post(register, data).then(async r => {
 					const data = r.data;
 					await this.$mStore.commit('setToken', data.token);
-					await this.$mStore.commit('login', Object.assign(data.user, {
-						openid: data.openid
-					}));
+					await this.$mStore.commit('setOpenId', data.openid);
+					await this.$mStore.commit('login', data.user);
 					this.$mHelper.toast('已为您授权登录');
-					this.$mRouter.reLaunch({
-						route: '/pages/index/index'
-					});
+					console.log(data.user)
+					if(data.user.roleSelect) {
+						console.log('===========')
+						this.$mRouter.back()
+					} else {
+						this.$mRouter.push({
+							route: '/pages/public/roleSelection'
+						});
+					}
 					this.btnLoading = false;
-				}).catch(e => {
-					this.$mHelper.toast(e.msg)
-					this.btnLoading = false;
-				});
+				}).catch(err => {
+					console.log(err)
+					if (err.code === 201) {
+						this.$http.post(loginOrRegisterBySmsCode, Object.assign(data, {
+							ticket: err.data.ticket
+						})).then(async r => {
+							const data = r.data;
+							await this.$mStore.commit('setToken', data.token);
+							await this.$mStore.commit('setOpenId', data.openid);
+							await this.$mStore.commit('login', data.user);
+							this.$mHelper.toast('已为您授权登录');
+							
+							console.log(data.user)
+							if(data.user.roleSelect) {
+								this.$mRouter.back()
+							} else {
+								this.$mRouter.push({
+									route: '/pages/public/roleSelection'
+								});
+							}
+							this.btnLoading = false;
+						}).catch(e => {
+							this.$mHelper.toast(e.msg)
+							this.btnLoading = false;
+						});
+					} else {
+						this.$mHelper.toast(err.msg)
+						this.btnLoading = false;
+					}
+				})
 			},
 			codeChange(text) {
 				this.tips = text;

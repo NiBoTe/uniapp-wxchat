@@ -9,6 +9,7 @@ Vue.use(Vuex);
 const USERINFO = uni.getStorageSync('userInfo') || {};
 const ACCESSTOKEN = uni.getStorageSync('accessToken') || '';
 const REFRESHTOKEN = uni.getStorageSync('refreshToken') || '';
+const OPENID = uni.getStorageSync('openid') || '';
 const store = new Vuex.Store({
 	state: {
 		// 用户信息
@@ -16,7 +17,7 @@ const store = new Vuex.Store({
 		// 用户token
 		accessToken: ACCESSTOKEN,
 		// 小程序openid
-		openId: '',
+		openid: OPENID,
 		// 网络状态，用于下载提醒
 		networkState: 'unknown',
 		refreshToken: REFRESHTOKEN,
@@ -46,9 +47,9 @@ const store = new Vuex.Store({
 			state.accessToken = token;
 			uni.setStorageSync('accessToken', token);
 		},
-		setOpenId(state, openId) {
-			state.openId = openId;
-			uni.setStorageSync('openId', openId);
+		setOpenId(state, openid) {
+			state.openid = openid;
+			uni.setStorageSync('openid', openid);
 		},
 		setNetworkState(state, provider) {
 			state.networkState = provider;

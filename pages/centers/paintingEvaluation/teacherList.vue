@@ -99,7 +99,7 @@
 			detailTap(item){
 				console.log(item)
 				this.$mRouter.push({
-					route: `/pages/teachers/dynamicHomePage?universityId=${item.id}`
+					route: `/pages/teachers/dynamicHomePage?id=${item.id}`
 				})
 			},
 			// 点击左边的栏目切换

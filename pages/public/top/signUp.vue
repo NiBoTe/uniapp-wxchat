@@ -167,7 +167,9 @@
 		examOrderCreate,
 		getStudioNameByStudioCode
 	} from '@/api/exam.js';
-	import { orderPay } from '@/api/order.js';
+	import {
+		orderPay
+	} from '@/api/order.js';
 	import MenusPops from "@/components/menus-popups/menus-popups.vue";
 	import SortPickerList from '@/components/sortPickerList.vue';
 	export default {
@@ -223,9 +225,12 @@
 				this.initData();
 				this.getPeopleList();
 			}
-			let list = uni.getStorageSync('examineeInfos');
-			if(list !== '') {
-				this.examineeInfos = JSON.parse(list)
+			let datas = uni.getStorageSync('examineeInfos');
+			if (datas !== '') {
+				let params = JSON.parse(datas)
+				if (params.id == this.id) {
+					this.examineeInfos = params.data
+				}
 			}
 			uni.$on('examineeInfoChange', (data) => {
 				if (data) {
@@ -234,7 +239,11 @@
 					} else {
 						this.$set(this.examineeInfos, data.index, data.params)
 					}
-					uni.setStorageSync('examineeInfos', JSON.stringify(this.examineeInfos))
+					let datas = {
+						data: this.examineeInfos,
+						id: this.id
+					}
+					uni.setStorageSync('examineeInfos', JSON.stringify(datas))
 				}
 			})
 
@@ -247,7 +256,7 @@
 		},
 		computed: {
 			totalPrice() {
-				return (this.examineeInfos.length * (this.detail.price || 0) / 100).toFixed(2) 
+				return (this.examineeInfos.length * (this.detail.price || 0) / 100).toFixed(2)
 			}
 		},
 		methods: {
@@ -257,7 +266,7 @@
 				}).then(res => {
 					console.log(res)
 					this.detail = res.data;
-					this.examAddressList = this.$mHelper.segSort(this.detail.examAddressList)
+					this.examAddressList = this.$mHelper.segSort(this.detail.examAddressList, 'province')
 					console.log(this.examAddressList)
 					this.loading = false;
 				}).catch(err => {
@@ -387,9 +396,9 @@
 					console.log(err)
 				})
 			},
-			goPay(orderId){
+			goPay(orderId) {
 				this.$http.post(orderPay, {
-					openid: this.$mStore.state.userInfo.openid,
+					openid: this.$mStore.state.openid,
 					orderId,
 					payType: 1,
 					tradeType: 'JSAPI'
@@ -397,13 +406,13 @@
 					let params = res.data
 					uni.hideLoading()
 					uni.requestPayment({
-					    provider: 'wxpay',
-					    timeStamp: params.timeStamp,
-					    nonceStr: params.nonceStr,
-					    package: params.packageValue,
-					    signType: params.signType,
-					    paySign: params.paySign,
-					    success: (res) =>  {
+						provider: 'wxpay',
+						timeStamp: params.timeStamp,
+						nonceStr: params.nonceStr,
+						package: params.packageValue,
+						signType: params.signType,
+						paySign: params.paySign,
+						success: (res) => {
 							this.$mHelper.toast('支付成功')
 							setTimeout(() => {
 								uni.redirectTo({
@@ -411,15 +420,15 @@
 								})
 							}, 1500)
 							uni.removeStorageSync('examineeInfos')
-					    },
-					    fail: (err) => {
+						},
+						fail: (err) => {
 							this.$mHelper.toast('支付失败')
 							setTimeout(() => {
 								uni.redirectTo({
 									url: `/pages/public/top/paySuccess?orderId=${orderId}&payStatus=0`
 								})
 							}, 1500)
-					    }
+						}
 					});
 				}).catch(err => {
 					uni.hideLoading()

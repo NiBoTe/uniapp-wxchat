@@ -85,7 +85,7 @@
 				<view class="item u-flex u-row-between">
 					<view class="left">
 						<view class="left-title">
-							<text class="tips">*</text>
+							<!-- <text class="tips">*</text> -->
 							<text>身份证号码</text>
 						</view>
 					</view>

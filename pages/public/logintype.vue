@@ -99,7 +99,7 @@
 					code: '',
 				},
 				tips: '获取验证码',
-				seconds: 60,
+				seconds: 120,
 				clearable: false,
 				placeholderStyle: {
 					fontSize: '26rpx !important',
@@ -196,7 +196,13 @@
 				this.$http.post(mpWechatLogin, {
 					code: this.wxcode
 				}).then(async r => {
-					
+					const data = r.data;
+					await this.$mStore.commit('setToken', data.token);
+					await this.$mStore.commit('setOpenId', data.openid);
+					await this.$mStore.commit('login', data.user);
+					this.$mHelper.toast('已为您授权登录');
+					this.$mRouter.back()
+					this.btnLoading = false;
 				}).catch(err => {
 					if (err.code === 201) {
 						this.$http.post(loginOrRegisterBySmsCode, Object.assign(data, {
@@ -204,9 +210,8 @@
 						})).then(async r => {
 							const data = r.data;
 							await this.$mStore.commit('setToken', data.token);
-							await this.$mStore.commit('login', Object.assign(data.user, {
-								openid: data.openid
-							}));
+							await this.$mStore.commit('setOpenId', data.openid);
+							await this.$mStore.commit('login', data.user);
 							this.$mHelper.toast('已为您授权登录');
 							this.$mRouter.back()
 							// this.$mRouter.reLaunch({
@@ -217,6 +222,9 @@
 							this.$mHelper.toast(e.msg)
 							this.btnLoading = false;
 						});
+					} else {
+						this.$mHelper.toast(err.msg)
+						this.btnLoading = false;
 					}
 				})
 				
@@ -227,7 +235,8 @@
 				const data = {
 					mobile: this.form.phone,
 					platform: 'miniapp',
-					password: this.form.password
+					password: this.form.password,
+					jsCode: this.wxcode
 				}
 				this.$http.post(loginByMobilePassword, data).then(async r => {
 					const data = r.data;
@@ -239,15 +248,11 @@
 					
 					if(data.user.roleSelect) {
 						this.$mRouter.back()
-						// this.$mRouter.reLaunch({
-						// 	route: '/pages/index/index'
-						// });
 					} else {
 						this.$mRouter.push({
 							route: '/pages/public/roleSelection'
 						});
 					}
-					
 					this.btnLoading = false;
 				}).catch(e => {
 					this.$mHelper.toast(e.msg)
@@ -261,9 +266,8 @@
 				}).then(async r => {
 					const data = r.data;
 					await this.$mStore.commit('setToken', data.token);
-					await this.$mStore.commit('login', Object.assign(data.user, {
-						openid: data.openid
-					}));
+					await this.$mStore.commit('setOpenId', data.openid);
+					await this.$mStore.commit('login', data.user);
 					this.$mHelper.toast('已为您授权登录');
 					if(data.user.roleSelect) {
 						this.$mRouter.back()

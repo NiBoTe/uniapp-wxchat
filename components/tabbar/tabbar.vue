@@ -101,7 +101,7 @@
 				switch (index) {
 					case 0:
 						if (this.userInfo && this.userInfo.roleSelect !== 'teacher') {
-							this.navTo('/pages/centers/paintingEvaluation/index')
+							this.navTo('/pages/centers/paintingEvaluation/teacherList')
 						} else {
 							this.navTo('/pages/centers/paintingEvaluation/teacherIndex')
 						}

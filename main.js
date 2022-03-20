@@ -10,7 +10,7 @@ import $mConfig from '@/config/index.config.js';
 import $mRoutesConfig from '@/config/routes.config.js';
 import $mConstDataConfig from '@/config/constData.config.js';
 import $mSettingConfig from '@/config/setting.config.js';
-import mixins from '@/mixins' 
+import mixins from '@/mixins'
 // 引入全局方法
 import {
 	http
@@ -21,6 +21,7 @@ import $mRouter from '@/utils/router';
 import rfImage from '@/components/rf-image/rf-image';
 import rfLoading from '@/components/rf-loading';
 import nodata from '@/components/nodata'
+import ExpandableText from "@/components/expandable-text.vue"
 // 网络状态监听
 uni.getNetworkType({
 	success: res => {
@@ -46,6 +47,7 @@ Vue.prototype.$mRouter = $mRouter;
 Vue.component('rfImage', rfImage);
 Vue.component('rfLoading', rfLoading);
 Vue.component('nodata', nodata);
+Vue.component('ExpandableText', ExpandableText);
 
 if (process.env.NODE_ENV === 'production') {
 	Vue.config.productionTip = false;

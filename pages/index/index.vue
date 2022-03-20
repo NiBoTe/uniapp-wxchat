@@ -129,12 +129,12 @@
 				</u-row>
 			</view>
 
-			<!-- 高分素材 -->
+			<!-- 高分教材 -->
 			<view class="page-wrapper" v-if="materialList.length">
 				<view class="gap"></view>
 				<view class="column u-flex">
 					<image :src="setSrc('home_high_score.png')"></image>
-					<view class="column-title">高分素材</view>
+					<view class="column-title">高分教材</view>
 					<view class="line"></view>
 					<view class="column-label">学习名师画作</view>
 				</view>
@@ -216,6 +216,20 @@
 
 		</view>
 		<tab-bar :selected="0"></tab-bar>
+
+
+		<u-modal v-model="modalShow" title="使用协议和隐私政策" ref="uModal" :async-close="true" border-radius="24"
+			cancel-color="#9E9E9E" :show-cancel-button="true" :cancel-style="cancelStyle" :confirm-style="confirmStyle"
+			:cancel-text="cancelText" :confirm-text="confirmText" :confirm-color="themeColor" :mask-close-able="true"
+			@confirm="confirmTap" @cancel="cancelTap">
+			<view class="modal-content">
+				<text>请你务必审慎阅读、充分理解"服务协议"和“隐私政策"各条款，包括但不限于:为了向你提供即时通讯、内容分享等服务，我们需要收集你的设备信息、操作日志等个人信息。你可以在“设置“中查看、变更、删除个人信息并管理你的授权，你可阅读《</text>
+				<text class="link" @click="navTo('/pages/set/about/agreement')">服务协议</text>
+				<text>》和《</text>
+				<text class="link" @click="navTo('/pages/set/about/detail')">隐私政策</text>
+				<text>》了解详细信息。如你同意，请点击同意并始接受我们的服务。</text>
+			</view>
+		</u-modal>
 	</view>
 </template>
 
@@ -257,6 +271,15 @@
 				hotList: [], // 热门评画
 				hotIndex: 0,
 				isScreen: true,
+				modalShow: false,
+				cancelText: "暂不使用",
+				confirmText: "同意",
+				cancelStyle: {
+					fontWeight: '400'
+				},
+				confirmStyle: {
+					fontWeight: '400'
+				},
 			}
 		},
 		onLoad() {
@@ -270,6 +293,10 @@
 		},
 		onShow() {
 			this.hasLogin = this.$mStore.getters.hasLogin;
+			let agreement = uni.getStorageSync('agreement');
+			if(agreement != 'true') {
+				this.modalShow = true
+			}
 		},
 		methods: {
 			searchTap() {
@@ -377,14 +404,19 @@
 				})
 			},
 			// 名师推荐
-			teacherTap(item, index){
+			teacherTap(item, index) {
 				this.$mRouter.push({
 					route: `/pages/teachers/dynamicHomePage?id=${item.id}`
 				})
 			},
 			// 专业评画
 			singleTap() {
-
+				if (!this.hasLogin) {
+					this.$mRouter.push({
+						route: '/pages/public/logintype'
+					})
+					return
+				}
 				let userInfo = this.$mStore.state.userInfo;
 				if (userInfo && userInfo.roleSelect !== 'teacher') {
 					uni.navigateTo({
@@ -396,6 +428,18 @@
 					})
 				}
 
+			},
+			// 不同意
+			cancelTap() {
+				console.log('====')
+				uni.navigateBack({
+					delta: 1
+				})
+			},
+			// 同意
+			confirmTap() {
+				uni.setStorageSync('agreement', 'true')
+				this.modalShow = false;
 			}
 		}
 	}
@@ -427,6 +471,7 @@
 
 			&-footer {
 				margin-top: 200rpx;
+
 				.screen-title {
 					font-size: 62rpx;
 					font-weight: bold;
@@ -453,6 +498,12 @@
 		}
 
 		.page {
+
+			.page-wrapper {
+				position: relative;
+				z-index: 9;
+			}
+
 			.header {
 				margin: 0;
 				height: 600rpx;
@@ -767,5 +818,20 @@
 				}
 			}
 		}
+	}
+
+	.modal-content {
+		padding: 24rpx 36rpx 40rpx 42rpx;
+
+		text {
+			font-size: 28rpx;
+			color: #1B1B1B;
+			line-height: 40rpx;
+
+			&.link {
+				color: #204BD6;
+			}
+		}
+
 	}
 </style>

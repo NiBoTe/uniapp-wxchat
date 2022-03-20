@@ -151,7 +151,7 @@
 			},
 			goPay(){
 				this.$http.post(orderPay, {
-					openid: this.$mStore.state.userInfo.openid,
+					openid: this.$mStore.state.openid,
 					orderId: this.productDetail.id,
 					payType: 1,
 					tradeType: 'JSAPI'

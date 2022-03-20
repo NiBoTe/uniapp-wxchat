@@ -50,7 +50,7 @@
 					password: '',
 				},
 				tips: '获取验证码',
-				seconds: 60,
+				seconds: 120,
 				clearable: false,
 				placeholderStyle: {
 					fontSize: '26rpx !important',

@@ -224,8 +224,6 @@ export default {
 	},
 	// 首字母分组
 	segSort(arr, key = 'examAddress') {
-		console.log(arr)
-		console.log(String.prototype.localeCompare)
 		if (!String.prototype.localeCompare) return null
 		let letters = 'abcdefghjklmnopqrstwxyz1234567890'.split('')
 		let zh = '阿八嚓哒妸发旮哈讥咔垃痳拏噢妑七呥扨它穵夕丫帀'.split('')
@@ -240,6 +238,7 @@ export default {
 					cur.data.push(item)
 				}
 			})
+			
 			if (cur.data.length) {
 				cur.data.sort(function(a, b) {
 					return a[key].localeCompare(b[key], 'zh')

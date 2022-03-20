@@ -128,9 +128,15 @@
 
 
 <style lang="scss" scoped>
+	
+	
+	.container{
+		min-height: 100vh;
+	}
 	.scroll-warper {
 		height: calc(100vh - 94rpx);
 		padding: 18rpx 24rpx;
+		padding-bottom: 170rpx;
 	}
 
 	

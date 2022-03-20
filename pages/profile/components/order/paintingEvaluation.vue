@@ -111,7 +111,6 @@
 
 <style lang="scss" scoped>
 	.scroll-warper {
-		height: calc(100vh - 94rpx);
 		padding-bottom: 170rpx;
 	}
 

@@ -80,10 +80,10 @@
 
 
 			<view class="works" v-if="productDetail.type === 'image'">
-				<view class="works-img" :class="!productDetail.isPayed ? 'filter' : ''">
+				<view class="works-img" :class="orderDetail.status !== 1 ? 'filter' : ''">
 					<image :src="productDetail.items[activeIndex].hdImg" mode="widthFix"></image>
 				</view>
-				<view class="mask u-flex u-row-center" v-if="!productDetail.isPayed">
+				<view class="mask u-flex u-row-center" v-if="orderDetail.status !== 1">
 					<image :src="setSrc('highScore/highScore_mask.png')"></image>
 				</view>
 			</view>
@@ -103,12 +103,12 @@
 					enable-play-gesture>
 				</video>
 
-				<view class="try u-flex u-row-center" v-if="!productDetail.isPayed && !isTrialEnd" @click="submitTap">
+				<view class="try u-flex u-row-center" v-if="orderDetail.status !== 1 && !isTrialEnd" @click="submitTap">
 					<text>正在试看，购买后观看完整视频</text>
 					<view class="try-btn">购买</view>
 				</view>
 
-				<view class="trial u-flex u-row-center" v-if="!productDetail.isPayed && isTrialEnd">
+				<view class="trial u-flex u-row-center" v-if="orderDetail.status !== 1 && isTrialEnd">
 					<view class="trial-btn u-flex u-row-center" @click="submitTap">购买</view>
 					<text>本内容需要购买后才能观看</text>
 				</view>
@@ -147,7 +147,7 @@
 			<view class="footer-btn" @click="receivingTap">确认收货</view>
 		</view>
 
-		<view class="footer" v-if="orderDetail.state === 'NOT_DELIVERED'">
+		<view class="footer" v-if="orderDetail.state === 'NOT_DELIVERED' && userInfo.id === orderDetail.teacherId">
 			<view class="footer-btn" @click="popDeliverShow = true">发货</view>
 		</view>
 
@@ -207,7 +207,7 @@
 					<view class="form-item u-flex">
 						<view class="left">输入快递单号：</view>
 						<view class="right">
-							<input v-model="expressNumber" type="text" placeholder="请输入快递单号" maxlength="30"/>
+							<input v-model="expressNumber" type="text" placeholder="请输入快递单号" maxlength="30" />
 						</view>
 					</view>
 
@@ -218,10 +218,10 @@
 				<view class="pop-btn u-flex u-row-center" @click="deliverTap">确定发货</view>
 			</view>
 		</u-popup>
-		
-		
-		<u-select v-model="selectShow" :list="expressData" label-name="name" value-name="id"
-			@confirm="expressConfirm"></u-select>
+
+
+		<u-select v-model="selectShow" :list="expressData" label-name="name" value-name="id" @confirm="expressConfirm">
+		</u-select>
 	</view>
 </template>
 
@@ -233,7 +233,9 @@
 		confirmDelivered,
 		teachingMaterialSetExpressInfo
 	} from '@/api/order.js'
-	import { expressList } from '@/api/basic.js'
+	import {
+		expressList
+	} from '@/api/basic.js'
 	import moment from '@/common/moment.js'
 	export default {
 		data() {
@@ -277,6 +279,7 @@
 				isTrialEnd: false,
 				expressData: [],
 				selectShow: false,
+				userInfo: {},
 				extraData: {},
 				expressName: '',
 				expressNumber: ''
@@ -285,9 +288,13 @@
 		onLoad(options) {
 			if (options.orderId) {
 				this.orderId = options.orderId
+
 				this.initData()
 				this.getExpressList();
 			}
+		},
+		onShow() {
+			this.userInfo = this.$mStore.state.userInfo;
 		},
 		onReady: function(res) {
 			this.videoContext = uni.createVideoContext('myVideo')
@@ -308,8 +315,8 @@
 					console.log(err)
 				})
 			},
-			
-			getExpressList(){
+
+			getExpressList() {
 				this.$http.get(expressList).then(res => {
 					console.log(res)
 					this.expressData = res.data
@@ -352,8 +359,9 @@
 
 			},
 			goPay() {
+				uni.showLoading()
 				this.$http.post(orderPay, {
-					openid: this.$mStore.state.userInfo.openid,
+					openid: this.$mStore.state.openid,
 					orderId: this.orderId,
 					payType: 1,
 					tradeType: 'JSAPI'
@@ -402,7 +410,7 @@
 					}
 				});
 			},
-			copyDeliverTap(){
+			copyDeliverTap() {
 				uni.setClipboardData({
 					data: this.orderDetail.mobile, //要被复制的内容
 					success: () => { //复制成功的回调函数
@@ -411,12 +419,12 @@
 				});
 			},
 			// 选择物流
-			expressConfirm(e){
+			expressConfirm(e) {
 				console.log(e)
 				this.expressName = e[0].label
 			},
 			// 确定发货
-			deliverTap(){
+			deliverTap() {
 				this.$http.post(teachingMaterialSetExpressInfo, {
 					expressName: this.expressName,
 					expressNumber: this.expressNumber,
@@ -521,7 +529,7 @@
 				this.duration = e.detail.duration.toFixed(0)
 				this.druationTime = this.formatSeconds(this.duration);
 
-				if (!this.productDetail.isPayed) {
+				if (this.orderDetail.status !== 1) {
 					this.sliderMax = ((this.productDetail.videoTrialDuration / this.duration) * 100).toFixed(2);
 				}
 			}
@@ -1036,6 +1044,7 @@
 			.pop-form {
 				.form-item {
 					padding: 14rpx 10rpx 0 28rpx;
+
 					.left {
 						font-size: 26rpx;
 						color: #3A3D71;
@@ -1050,11 +1059,13 @@
 						background: #FFFFFF;
 						border: 2rpx solid rgba(158, 158, 158, 0.34);
 						border-radius: 6rpx;
-						input{
+
+						input {
 							flex: 1;
 							font-size: 26rpx;
 							color: #3A3D71;
 						}
+
 						image {
 							width: 12rpx;
 							height: 22rpx;

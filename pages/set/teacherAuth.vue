@@ -4,8 +4,8 @@
 
 			<view class="form-item">
 				<view class="ipt">
-					<u-input type="text" v-model="form.realname" placeholder="姓名"
-						maxlength="20" :clearable="clearable" />
+					<u-input type="text" v-model="form.realname" placeholder="姓名" maxlength="20"
+						:clearable="clearable" />
 				</view>
 			</view>
 			<view class="form-item">
@@ -112,7 +112,7 @@
 					provinceName: ""
 				},
 				tips: '获取验证码',
-				seconds: 60,
+				seconds: 120,
 				clearable: false,
 				hasLogin: false,
 				userInfo: {},
@@ -264,9 +264,9 @@
 				await this.$http
 					.post(getMyInfo)
 					.then(async r => {
-						let user = r.data.user;
-						this.userInfo = r.data.user;
-						this.$mStore.commit('login', this.userInfo);
+						let data = r.data;
+						this.userInfo = data.user;
+						this.$mStore.commit('login', data.user);
 						this.$mRouter.back();
 					});
 			},

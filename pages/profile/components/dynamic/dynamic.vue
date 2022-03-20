@@ -227,6 +227,7 @@
 	.container {
 		width: 100vw;
 		overflow-x: hidden;
+		min-height: 100vh;
 		background-color: #fff;
 	}
 
@@ -251,6 +252,8 @@
 				align-items: flex-start;
 
 				.time {
+					
+					
 					margin: 16rpx 44rpx 0 34rpx;
 					padding-top: 20rpx;
 					&-day {
@@ -269,6 +272,7 @@
 		}
 
 		.item {
+			flex: 1;
 			display: flex;
 			align-items: center;
 			flex-direction: column;

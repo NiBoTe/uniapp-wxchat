@@ -13,7 +13,7 @@
 
 				<view class="content u-flex" v-if="item.type === 2">
 					<image :src="item.extraData.snsImgs[0].hdImg"></image>
-					<text>{{item.extraData.content}}</text>
+					<text class="u-line-1">{{item.extraData.content}}</text>
 				</view>
 
 				<view class="item-footer u-flex u-row-between">
@@ -24,7 +24,7 @@
 				</view>
 			</view>
 			<nodata v-if="!loadStatus !== 'loading' && !list.length"></nodata>
-			<u-loadmore v-else :status="loadStatus" @loadmore="addRandomData"></u-loadmore>
+			<u-loadmore v-else :status="loadStatus" @loadmore="addData"></u-loadmore>
 		</scroll-view>
 
 
@@ -88,6 +88,11 @@
 				})
 
 			},
+			lower() {
+				console.log('======')
+				this.loadStatus = 'loading';
+				this.addData();
+			},
 			addData() {
 				this.current++;
 				this.getList();
@@ -115,6 +120,7 @@
 
 			},
 			lower() {
+				console.log('=====')
 				this.loadStatus = 'loading';
 				this.addData();
 			},
@@ -181,7 +187,8 @@
 				}
 
 				text {
-					margin-left: 2rpx;
+					flex: 1;
+					margin-left: 6rpx;
 					font-size: 20rpx;
 					color: #9E9E9E;
 				}

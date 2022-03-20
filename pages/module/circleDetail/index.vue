@@ -41,7 +41,13 @@
 					<view class="name">
 						<text>{{item.user.fullName}}</text>
 					</view>
-					<view class="text">{{item.content}}</view>
+					
+					<view class="text">
+						<expandable-text :line="3" expandText="全文" foldText="收起">
+						  {{item.content}}
+						</expandable-text>
+					</view>
+					
 					<view class="time">
 						{{(moment(item.createTime).format('MM-DD'))}} <text @click="replyTap(item, index)">回复</text>
 					</view>
@@ -154,6 +160,7 @@
 	} from '@/api/sns.js'
 	import moment from '@/common/moment.js'
 	import bubblePopups from "@/components/bubblePopups/bubblePopups";
+
 	export default {
 		components: {
 			bubblePopups
@@ -546,6 +553,7 @@
 					color: #3A3D71;
 					line-height: 40rpx;
 					margin-top: 16rpx;
+					word-break: break-all;
 				}
 
 				.time {

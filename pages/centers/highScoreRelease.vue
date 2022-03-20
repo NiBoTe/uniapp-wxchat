@@ -22,7 +22,7 @@
 							<view class="video-play" v-if="type === 'video'" @click="prevVideoTap(index)">
 								<u-icon name="play-circle-fill" color="#E8E9EB" size="108"></u-icon>
 							</view>
-							<view class="remark u-flex u-row-center" @click="imgDecTap(index)">
+							<view class="remark u-flex u-row-center" @click.stop="imgDecTap(index)">
 								{{item.description === '' ? '添加描述' : '查看描述'  }}
 							</view>
 						</view>

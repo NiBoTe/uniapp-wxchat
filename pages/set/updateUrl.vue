@@ -1,8 +1,7 @@
 <template>
 	<view class="container u-flex">
 		<view class="content">
-			<image :src="userInfo.bgUrl"
-				mode="widthFix"></image>
+			<image :src="userInfo.bgUrl" mode="widthFix"></image>
 		</view>
 
 		<view class="footer u-flex u-row-center">
@@ -35,9 +34,9 @@
 				await this.$http
 					.post(getMyInfo)
 					.then(async r => {
-						let user = r.data.user;
-						this.userInfo = r.data.user;
-						this.$mStore.commit('login', this.userInfo);
+						let data = r.data;
+						this.userInfo = data.user;
+						this.$mStore.commit('login', data.user);
 					})
 					.catch((err) => {
 						this.userInfo = {};

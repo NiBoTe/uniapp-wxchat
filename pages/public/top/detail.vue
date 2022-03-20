@@ -94,7 +94,8 @@
 						:key="index">
 						<view class="left">
 							<text>{{item.subjectName}}</text>
-							<text class="time" v-if="type === 2">考试时间：{{item.subjectStarttime}}-{{item.subjectEndtime}}</text>
+							<text class="time"
+								v-if="type === 2">考试时间：{{item.subjectStarttime}}-{{item.subjectEndtime}}</text>
 						</view>
 						<view class="right" v-if="type !== 2">
 							<text>{{item.subjectDate}}</text>
@@ -121,7 +122,8 @@
 				<view class="card-address">
 					<view class="card-address-item" v-for="(item, index) in examAddressList" :key="index">
 						<view class="card-address-code">{{item.letter}}</view>
-						<view class="card-address-text" v-for="(itemc, indexc) in item.data">{{itemc.examAddress}}</view>
+						<view class="card-address-text" v-for="(itemc, indexc) in item.data">{{itemc.examAddress}}
+						</view>
 					</view>
 				</view>
 			</view>
@@ -144,10 +146,12 @@
 
 		<view class="footer" v-if="type === 0">
 			<view class="footer-btn" v-if="!detail.errorState" :class="!isSignUp ? 'disabled' : ''" @click="submitTap">
-				{{moment(detail.enrollEndTime).diff(moment(), 'days') >= 0 ? '立即报名' : '报名截止'}}</view>
-				
-				<view class="footer-btn disabled" v-else>
-					{{detail.errorState === 'delay' ? '立即报名' : '考试已取消'}}</view>
+				{{moment(detail.enrollEndTime).diff(moment(), 'days') >= 0 ? '立即报名' : '报名截止'}}
+			</view>
+
+			<view class="footer-btn disabled" v-else>
+				{{detail.errorState === 'delay' ? '立即报名' : '考试已取消'}}
+			</view>
 		</view>
 		<view class="footer" v-if="type === 1">
 			<view class="footer-btn" @click="submitNoTap" :class="!detail.errorState ? '' : 'disabled'">去考试</view>
@@ -162,7 +166,7 @@
 
 <script>
 	import TopTips from './components/top-tips.vue'
-	
+
 	import moment from '@/common/moment.js'
 	import {
 		examDetail
@@ -200,7 +204,8 @@
 					id: this.id
 				}).then(res => {
 					this.detail = res.data;
-					this.examAddressList = this.$mHelper.segSort(this.detail.examAddressList, 'examAddress')
+
+					this.examAddressList = this.$mHelper.segSort(this.detail.examAddressList, 'province')
 					this.isSignUp = this.diffSignUp();
 					this.loading = false;
 				}).catch(err => {
@@ -208,14 +213,20 @@
 				})
 			},
 			submitTap() {
-				if(!this.isSignUp){
+				if (!this.isSignUp) {
 					return
 				}
 				const checked = uni.getStorageSync('examChecked')
 				if (checked) {
-					this.$mRouter.push({
-						route: `/pages/public/top/signUp?id=${this.id}`
-					})
+					
+					if(this.detail.auditState !== 'auditing') {
+						this.$mRouter.push({
+							route: `/pages/public/top/signUp?id=${this.id}`
+						})
+					} else {
+						this.$mHelper.toast('审核中')
+					}
+					
 				} else {
 					this.$refs.TopTips.open();
 				}
@@ -247,14 +258,15 @@
 				})
 			},
 			// 去考试
-			submitNoTap(){
+			submitNoTap() {
 				this.$mRouter.push({
 					route: `/pages/public/top/studentList?id=${this.id}&type=${this.type}`
 				})
 			},
 			// 是否可以报名
 			diffSignUp() {
-				return this.$mHelper.timeInByDate(`${this.detail.enrollStartTime} 00:00:00`, `${this.detail.enrollEndTime} 23:59:59`) > 0
+				return this.$mHelper.timeInByDate(`${this.detail.enrollStartTime} 00:00:00`,
+					`${this.detail.enrollEndTime} 23:59:59`) > 0
 			},
 		}
 	}

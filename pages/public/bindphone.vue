@@ -58,7 +58,7 @@
 					code: ''
 				},
 				tips: '获取验证码',
-				seconds: 60,
+				seconds: 120,
 				clearable: false,
 				placeholderStyle: {
 					fontSize: '26rpx !important',
@@ -87,9 +87,8 @@
 				this.$http.post(loginOrRegisterBySmsCode, data).then(async r => {
 					const data = r.data;
 					await this.$mStore.commit('setToken', data.token);
-					await this.$mStore.commit('login', Object.assign(data.user, {
-						openid: data.openid
-					}));
+					await this.$mStore.commit('setOpenId', data.openid);
+					await this.$mStore.commit('login', data.user);
 					this.$mHelper.toast('已为您授权登录');
 					if (data.user.roleSelect) {
 						this.$mRouter.reLaunch({

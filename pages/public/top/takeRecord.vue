@@ -104,7 +104,7 @@
 					this.examDetail = res.data
 					this.tabList = this.examDetail.examSubjectList;
 					this.examSubjectItem = this.examDetail.examSubjectList[0]
-					// this.getList();
+					this.getList();
 				}).catch(err => {
 					console.log(err)
 				})

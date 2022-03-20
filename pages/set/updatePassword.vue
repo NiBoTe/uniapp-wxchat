@@ -53,7 +53,7 @@
 					password: '',
 				},
 				tips: '获取验证码',
-				seconds: 60,
+				seconds: 120,
 				clearable: false,
 				placeholderStyle: {
 					fontSize: '26rpx !important',
@@ -146,9 +146,10 @@
 				await this.$http
 					.post(getMyInfo)
 					.then(async r => {
-						let user = r.data.user;
-						this.userInfo = r.data.user;
-						this.$mStore.commit('login', this.userInfo);
+						
+						let data = r.data;
+						this.userInfo = data.user;
+						this.$mStore.commit('login', data.user);
 						uni.$emit('update', this.userInfo.passwordIsset)
 						this.$mRouter.back();
 					});
@@ -159,7 +160,7 @@
 
 <style lang="scss" scoped>
 	.password {
-		
+
 		min-height: 100vh;
 		background-color: #F3F3F3;
 		padding: 0 34rpx;

@@ -42,6 +42,7 @@
 				swiperCurrentIndex: 0,
 				height: 0,
 				description: '',
+				btnLoading: false,
 				params: {
 					description: '',
 					expressContent: '',
@@ -76,6 +77,8 @@
 			},
 			// 提交
 			submitTap() {
+				if(this.btnLoading) return 
+				this.btnLoading = true;
 				if (this.params.expressContent === '') {
 					return this.$mHelper.toast('请输入详细内容')
 				}
@@ -89,6 +92,9 @@
 					}, 1500)
 				}).catch(err => {
 					this.$mHelper.toast(err.msg);
+					setTimeout(() => {
+						this.btnLoading = false;
+					}, 500)
 				})
 			},
 
