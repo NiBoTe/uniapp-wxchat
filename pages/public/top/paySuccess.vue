@@ -65,7 +65,9 @@
 					<view class="main-item u-flex u-row-between">
 						<view class="left">支付方式</view>
 						<view class="right">
-							<text class="suceess">微信支付</text>
+							<text class="suceess" v-if="orderDetail.type === 1">微信支付</text>
+							<text class="suceess" v-else-if="orderDetail.type === 2">支付宝支付</text>
+							<text class="suceess" v-else-if="orderDetail.type === 3">免费订单</text>
 						</view>
 					</view>
 				</view>

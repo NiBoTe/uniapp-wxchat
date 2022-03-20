@@ -403,6 +403,7 @@
 					payType: 1,
 					tradeType: 'JSAPI'
 				}).then(res => {
+
 					let params = res.data
 					uni.hideLoading()
 					uni.requestPayment({
@@ -431,6 +432,13 @@
 						}
 					});
 				}).catch(err => {
+					if (err.code === 201) {
+						uni.redirectTo({
+							url: `/pages/public/top/paySuccess?orderId=${orderId}&payStatus=1`
+						})
+					} else {
+						this.$mHelper.toast(err.msg)
+					}
 					uni.hideLoading()
 				})
 			}
