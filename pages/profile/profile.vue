@@ -49,9 +49,9 @@
 						</view>
 					</view>
 
-					<view class="subheader-text u-line-2">
+					<view class="subheader-text" v-if="userInfo.introduce">
 						<expandable-text :line="2" expandText="全文" foldText="收起">
-							{{userInfo.introduce || ''}}
+							{{userInfo.introduce}}
 						</expandable-text>
 					</view>
 				</view>
@@ -163,6 +163,7 @@
 	import Order from './components/order/index.vue'
 	import Collection from './components/collection/index.vue'
 	import Message from './components/message/index.vue'
+	
 	import {
 		getMyInfo,
 		updateBgUrl
@@ -225,7 +226,6 @@
 		onLoad() {
 
 		},
-
 		async onShow() {
 			await this.initData();
 		},
@@ -234,7 +234,6 @@
 				this.hasLogin = this.$mStore.getters.hasLogin;
 				if (this.hasLogin) {
 					await this.getMemberInfo();
-					this.refresh();
 				} else {
 					uni.navigateTo({
 						url: '/pages/public/logintype'
@@ -266,6 +265,7 @@
 						this.userInfo = r.data.user;
 						this.title = this.userInfo.fullName
 						this.$mStore.commit('login', data.user);
+						this.refresh();
 					})
 					.catch((err) => {
 						console.log(err)

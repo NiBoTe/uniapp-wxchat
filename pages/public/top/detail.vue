@@ -122,7 +122,7 @@
 				<view class="card-address">
 					<view class="card-address-item" v-for="(item, index) in examAddressList" :key="index">
 						<view class="card-address-code">{{item.letter}}</view>
-						<view class="card-address-text" v-for="(itemc, indexc) in item.data">{{itemc.examAddress}}
+						<view class="card-address-text" v-for="(itemc, indexc) in item.data">{{itemc.province}}{{itemc.examAddress}}
 						</view>
 					</view>
 				</view>

@@ -3,8 +3,7 @@
 		<view class="top">
 
 			<u-navbar title=" " :border-bottom="false">
-
-				<view class="search u-flex">
+				<view class="search u-flex" @click="searchTap">
 					<u-icon name="search" color="#5D6086" size="32"></u-icon>
 					<text>梵高名画</text>
 				</view>
@@ -37,7 +36,7 @@
 
 		<u-waterfall v-model="list" ref="uWaterfall">
 			<template v-slot:left="{leftList}">
-				<view class="item" v-for="(item, index) in leftList" :key="index" @click="detailTap(item)">
+				<view class="item" v-for="(item, index) in leftList" :key="index">
 					<textbook-item :item="item"></textbook-item>
 					
 					<view class="play" v-if="type === 'video'">
@@ -46,7 +45,7 @@
 				</view>
 			</template>
 			<template v-slot:right="{rightList}">
-				<view class="item" v-for="(item, index) in rightList" :key="index" @click="detailTap(item)">
+				<view class="item" v-for="(item, index) in rightList" :key="index">
 					<textbook-item :item="item"></textbook-item>
 					<view class="play" v-if="type === 'video'">
 						<image src="/static/public/video_icon.png"></image>
@@ -90,6 +89,11 @@
 			this.getMenuList();
 		},
 		methods: {
+			searchTap(){
+				uni.navigateTo({
+					url: '/pages/public/search'
+				})
+			},
 			getMenuList() {
 				this.$http.post(menuList).then(res => {
 					this.menusList = res.data;
@@ -145,19 +149,6 @@
 				this.current = 1;
 				this.$refs.uWaterfall.clear();
 				this.getList();
-			},
-			detailTap(item){
-				
-				if(item.type === 'image') {
-					uni.navigateTo({
-						url: `/pages/public/highScore/teachingMaterialDetail?id=${item.id}`
-					})
-				} else {
-					uni.navigateTo({
-						url: `/pages/public/highScore/videoDetail?id=${item.id}`
-					})
-				}
-				
 			}
 		},
 		onReachBottom() {

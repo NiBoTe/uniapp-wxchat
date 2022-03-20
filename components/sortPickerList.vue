@@ -11,7 +11,7 @@
 				<view class="t-index-address__list">
 					<view class="t-index-address__cell" v-for="(item, index) in group.data" :key="index"
 						@click="selectTap(item, index)">
-						<text>{{ item.examAddress }}</text>
+						<text>{{ item.province }}{{ item.examAddress }}</text>
 					</view>
 				</view>
 			</view>

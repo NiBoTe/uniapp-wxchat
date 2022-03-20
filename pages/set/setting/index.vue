@@ -93,6 +93,7 @@
 					<view class="menu-title">当前版本</view>
 					<view class="right">
 						<view class="subtitle">
+							当前版本：{{version_number}}
 						</view>
 						<image src="/static/public/arrow_right.png"></image>
 					</view>
@@ -100,9 +101,7 @@
 				<view class="item" @click="navTo('/pages/set/about/index')">
 					<view class="menu-title">关于易考绘</view>
 					<view class="right">
-						<view class="subtitle">
-							当前版本：{{version_number}}
-						</view>
+						<view class="subtitle"></view>
 						<image src="/static/public/arrow_right.png"></image>
 					</view>
 				</view>

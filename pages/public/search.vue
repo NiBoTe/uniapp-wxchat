@@ -158,11 +158,14 @@
 		methods: {
 			// 搜索
 			searchTap() {
-				this.historyList.push(this.keyword);
-				uni.setStorageSync('historyList', this.historyList);
-
-				this.searchConentStatus = true;
-				this.seachContent(this.keyword)
+				let text = this.keyword.replace(/ /g, '');
+				if(this.keyword !== '' && text !== ''){
+					this.historyList.push(this.keyword);
+					uni.setStorageSync('historyList', this.historyList);
+					
+					this.searchConentStatus = true;
+					this.seachContent(this.keyword)
+				}
 
 			},
 			// 热门搜索

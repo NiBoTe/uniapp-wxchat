@@ -67,7 +67,7 @@
 			if (this.userInfo) {
 				this.fullName = this.userInfo.fullName;
 				this.headUrl = this.userInfo.headUrl;
-				this.introduce = this.userInfo.introduce;
+				this.introduce = this.userInfo.introduce || '';
 				this.skilledMajorId = this.userInfo.skilledMajorId;
 			}
 			this.initData();
