@@ -79,9 +79,10 @@
 			submitTap() {
 				if(this.btnLoading) return 
 				this.btnLoading = true;
-				if (this.params.expressContent === '') {
-					return this.$mHelper.toast('请输入详细内容')
-				}
+				// if (this.params.isNeedExpress && this.params.expressContent === '') {
+				// 	return this.$mHelper.toast('请输入发货内容')
+				// 	this.btnLoading = false;
+				// }
 				console.log(this.params)
 				this.$http.post(myAddTeachingMaterial, this.params).then(res => {
 					this.$mHelper.toast('发布成功')

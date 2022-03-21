@@ -163,7 +163,7 @@
 	import Order from './components/order/index.vue'
 	import Collection from './components/collection/index.vue'
 	import Message from './components/message/index.vue'
-	
+
 	import {
 		getMyInfo,
 		updateBgUrl
@@ -223,11 +223,16 @@
 				title: ''
 			}
 		},
-		onLoad() {
-
+		async onLoad() {
+			await this.initData();
 		},
 		async onShow() {
-			await this.initData();
+
+			uni.$on('isRefresh', async (bool) => {
+				if (bool) {
+					await this.initData();
+				}
+			})
 		},
 		methods: {
 			async initData() {
@@ -275,8 +280,14 @@
 						uni.stopPullDownRefresh();
 					});
 			},
+			goLogin(){
+				uni.navigateTo({
+					url: '/pages/public/logintype'
+				})
+			},
 			// 更换背景图
 			updateBgTap() {
+				if(!this.hasLogin) return this.goLogin()
 				// 从相册选择图片
 				const _this = this;
 				if (!this.userInfo.bgUrl || this.userInfo.bgUrl === '') {
@@ -289,9 +300,7 @@
 						}
 					});
 				} else {
-
 					uni.$on('updateUrl', () => {
-						console.log('123123更新')
 						this.getMemberInfo()
 					})
 					uni.navigateTo({
@@ -356,6 +365,7 @@
 				this.$refs.Message.noScroll(this.isFixed)
 			},
 			toSetting: function() {
+				if(!this.hasLogin) return this.goLogin()
 				uni.navigateTo({
 					url: '/pages/set/setting/index',
 				});
@@ -364,12 +374,14 @@
 			 * @desc 点击关注和粉丝跳转至列表页
 			 */
 			checkfocusList(type) {
+				if(!this.hasLogin) return this.goLogin()
 				uni.navigateTo({
 					url: `/pages/profile/fansList?type=${type}`,
 				});
 			},
 			// 完善资料
 			userInfoTap() {
+				if(!this.hasLogin) return this.goLogin()
 				uni.navigateTo({
 					url: '/pages/set/userInfo'
 				})

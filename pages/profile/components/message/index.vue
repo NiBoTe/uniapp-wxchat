@@ -12,8 +12,8 @@
 				<view class="subtitle" :class="item.type === 0 ? 'order' : ''">{{item.content}}</view>
 
 				<view class="content u-flex" v-if="item.type === 2">
-					<image :src="item.extraData.snsImgs[0].hdImg"></image>
-					<text class="u-line-1">{{item.extraData.content}}</text>
+					<image :src="item.extData.image"></image>
+					<text class="u-line-1">{{item.extData.title}}</text>
 				</view>
 
 				<view class="item-footer u-flex u-row-between">
@@ -50,6 +50,9 @@
 				}, {
 					name: '动态提醒',
 					value: 2
+				}, {
+					name: '系统通知',
+					value: 3
 				}],
 				loadStatus: 'loadmore',
 				current: 1,
@@ -102,7 +105,7 @@
 
 				switch (item.type) {
 					case 0:
-
+						this.orderDetail(item)
 						break;
 
 					case 1:
@@ -119,6 +122,30 @@
 				}
 
 			},
+			orderDetail(item) {
+				switch (item.targetType) {
+					case 0:
+						uni.navigateTo({
+							url: `/pages/set/order/highScoreDetail?orderId=${item.targetId}`
+						})
+						break;
+					case 1:
+						uni.navigateTo({
+							url: `/pages/set/order/registrationDetails?orderId=${item.targetId}`
+						})
+						break;
+					case 2:
+						uni.navigateTo({
+							url: `/pages/set/order/paintingEvaluationDetail?orderId=${item.targetId}`
+						})
+						break;
+					case 3:
+						uni.navigateTo({
+							url: `/pages/set/order/textbookDetail?orderId=${item.targetId}`
+						})
+						break;
+				}
+			},
 			lower() {
 				console.log('=====')
 				this.loadStatus = 'loading';
@@ -127,11 +154,11 @@
 			noScroll(bool) {
 				this.isFixed = bool
 			},
-			refresh(){
+			refresh() {
 				this.current = 1;
 				this.getList()
 			},
-			
+
 		}
 	}
 </script>

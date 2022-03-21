@@ -35,6 +35,8 @@ const store = new Vuex.Store({
 	mutations: {
 		login(state, provider) {
 			state.userInfo = provider;
+			
+			console.log(provider)
 			uni.setStorageSync('userInfo', provider);
 		},
 		logout(state) {

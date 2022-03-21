@@ -76,16 +76,18 @@
 						"text": "我的"
 					}
 				],
-				userInfo: this.$mStore.state.userInfo
+				userInfo: {}
 			}
+		},
+		mounted() {
+			this.userInfo = this.$mStore.state.userInfo
 		},
 		methods: {
 			switchTab(item, index) {
 				let url = item.pagePath;
 				if (index === 2) {
 					this.popShow = true
-
-
+					this.userInfo = this.$mStore.state.userInfo
 				} else {
 					this.popShow = false
 					uni.switchTab({
@@ -115,7 +117,7 @@
 					case 3:
 						this.navTo('/pages/centers/myApplication')
 						break;
-						
+
 				}
 			},
 			navTo(url) {

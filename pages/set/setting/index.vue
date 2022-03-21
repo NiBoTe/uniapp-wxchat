@@ -196,6 +196,11 @@
 							let prePage = pages[pages.length - 2] //获取上一页
 							prePage.$vm.needRefresh = true // 需要刷新
 							_this.$mRouter.back();
+							
+							uni.$emit('isRefresh', true)
+							// uni.redirectTo({
+							// 	url: '/pages/public/logintype'
+							// })
 						}
 					}
 				});

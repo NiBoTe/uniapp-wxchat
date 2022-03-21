@@ -134,6 +134,7 @@
 					skilledMajorId: this.skilledMajorId,
 				}).then(res => {
 					this.$mHelper.toast('保存成功')
+					uni.$emit('isRefresh', true)
 				}).catch(err => {
 					this.$mHelper.toast(err.msg)
 				})

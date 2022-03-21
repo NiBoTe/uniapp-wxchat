@@ -212,6 +212,8 @@
 							await this.$mStore.commit('setOpenId', data.openid);
 							await this.$mStore.commit('login', data.user);
 							this.$mHelper.toast('已为您授权登录');
+							
+							uni.$emit('isRefresh', true)
 							this.$mRouter.back()
 							// this.$mRouter.reLaunch({
 							// 	route: '/pages/index/index'
@@ -244,7 +246,7 @@
 						openid: data.openid
 					}));
 					this.$mHelper.toast('已为您授权登录');
-					
+					uni.$emit('isRefresh', true)
 					if(data.user.roleSelect) {
 						this.$mRouter.back()
 					} else {
@@ -268,8 +270,10 @@
 					await this.$mStore.commit('setOpenId', data.openid);
 					await this.$mStore.commit('login', data.user);
 					this.$mHelper.toast('已为您授权登录');
+					uni.$emit('isRefresh', true)
 					if(data.user.roleSelect) {
 						this.$mRouter.back()
+						
 						// this.$mRouter.reLaunch({
 						// 	route: '/pages/index/index'
 						// });

@@ -86,6 +86,8 @@
 			},
 			refresh(keyword) {
 				this.keyword = keyword;
+				this.current = 1;
+				this.list = []
 				this.getList()
 			}
 		}

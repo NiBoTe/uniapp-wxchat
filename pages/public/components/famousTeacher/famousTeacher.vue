@@ -9,9 +9,6 @@
 			</view>
 			<nodata v-if="!loadStatus !== 'loading' && !list.length"></nodata>
 			<u-loadmore margin-top="30" margin-bottom="30" v-else bg-color="rgb(240, 240, 240)" :status="loadStatus" @loadmore="addRandomData"></u-loadmore>
-		
-			
-			
 		</scroll-view>
 	</view>
 </template>
@@ -61,6 +58,8 @@
 					} else {
 						this.loadStatus = 'loadmore';
 					}
+					
+					console.log(this.list)
 			
 				}).catch(err => {
 					console.log(err)
@@ -69,6 +68,8 @@
 			
 			refresh(keyword) {
 				this.keyword = keyword;
+				this.current = 1;
+				this.list = []
 				this.getList()
 			}
 		}
