@@ -187,15 +187,14 @@
 			},
 
 			thirdPartyAuthLogin() {
-				const data = {
+				const params = {
 					mobile: this.form.phone,
 					platform: 'miniapp',
-					code: this.form.code
+					code: this.form.code,
+					jsCode: this.wxcode
 				}
 				
-				this.$http.post(mpWechatLogin, {
-					code: this.wxcode
-				}).then(async r => {
+				this.$http.post(loginOrRegisterBySmsCode, params).then(async r => {
 					const data = r.data;
 					await this.$mStore.commit('setToken', data.token);
 					await this.$mStore.commit('setOpenId', data.openid);
