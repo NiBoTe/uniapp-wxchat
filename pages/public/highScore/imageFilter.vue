@@ -1,11 +1,15 @@
 <template>
 	<view class="drawingBoard-body">
-		<canvas :canvas-id="cid" :id="cid" @touchstart="touchstart" @touchmove="touchmove"
-			@touchend="touchend"></canvas>
+
+		<scroll-view :style="{top: top+'px', left: left+'px'}" class="scroll-view_H" scroll-x="true">
+			<canvas canvas-id="canvas" class="canvas"
+				:style="{width: upx2px(canvas.width)+ 'px', height: upx2px(canvas.height) +'px'}"
+				@touchstart="touchstart" @touchmove="touchmove" @touchend="touchend"></canvas>
+		</scroll-view>
 		<view class="drawingBoard-fixed-bottom">
 
-			<view class="drawingBoard-fixed-bottom-handle">
-				<view class="drawingBoard-text" v-if="selectActive === 2">
+			<view class="drawingBoard-fixed-bottom-handle" v-if="selectActive === 2">
+				<view class="drawingBoard-text">
 					<view class="drawingBoard-color">
 						<color-picker ref="colorPicker" :color="colorRgb" @confirm="colorConfirm"></color-picker>
 					</view>
@@ -13,26 +17,28 @@
 			</view>
 			<view class="drawingBoard-fixed-bottom-item drawingBoard-tools">
 				<view class="drawingBoard-tools-item" @click="selectHandle(0)">
-					<image v-if="selectActive === 0" :src="setSrc('painting/voice_active.png')"></image>
-					<image v-else :src="setSrc('painting/voice.png')"></image>
+					<image :src="setSrc('highScore/icon01.png')"></image>
+					<text>黑白</text>
 				</view>
 
 				<view class="drawingBoard-tools-item" @click="selectHandle(1)">
-					<image v-if="selectActive === 1" :src="setSrc('painting/words_active.png')"></image>
-					<image v-else :src="setSrc('painting/words.png')"></image>
+					<image v-if="selectActive === 1" :src="setSrc('highScore/icon02_active.png')"></image>
+					<image v-else :src="setSrc('highScore/icon02.png')"></image>
+					<text>画笔</text>
 				</view>
 				<view class="drawingBoard-tools-item" @click="selectHandle(2)">
-					<image v-if="selectActive === 2" :src="setSrc('painting/pen_active.png')"></image>
-					<image v-else :src="setSrc('painting/pen.png')"></image>
+					<image v-if="selectActive === 2" :src="setSrc('highScore/icon03_active.png')"></image>
+					<image v-else :src="setSrc('highScore/icon03.png')"></image>
+					<text>对比度</text>
 				</view>
-				<view class="drawingBoard-tools-item" @click="lineWidth">
-					<image :src="setSrc('painting/arrow.png')"></image>
-				</view>
-				<view class="drawingBoard-tools-item" @click="color">
-					<image :src="setSrc('painting/circle.png')"></image>
+				<view class="drawingBoard-tools-item" @click="selectHandle(3)">
+					<image v-if="selectActive === 3" :src="setSrc('highScore/icon04_active.png')"></image>
+					<image v-else :src="setSrc('highScore/icon04.png')"></image>
+					<text>色调</text>
 				</view>
 				<view class="drawingBoard-tools-item" @click="revoke">
-					<image :src="setSrc('painting/esc.png')"></image>
+					<image :src="setSrc('highScore/icon05.png')"></image>
+					<text>撤销</text>
 				</view>
 				<!-- <view class="drawingBoard-tools-item" @click="clear">
 					<image src="../../static/drawingBoard/qingkong_1.png"></image>
@@ -67,19 +73,35 @@
 
 <script>
 	import ColorPicker from '@/components/color-picker/color-picker.vue'
+	const transverse_canvas_width = 1000;
+	const lengthways_canvas_height = 1000;
+	import ImageFilters from '@/utils/weImageFilters.js';
+	import Helper from '@/utils/weImageFiltersHelper.js';
+	let helper = '';
 	export default {
-		name: 'DrawingBoard',
 		components: {
 			ColorPicker
 		},
-		props: {
-			cid: {
-				type: String,
-				default: '',
-			},
-		},
 		data() {
 			return {
+				top: -99999,
+				left: -99999,
+				canvas: { //upx
+					width: 0,
+					height: 0,
+					origin_width: 0,
+					origin_height: 0,
+				},
+				render_src: '',
+				render_image: { //px
+					width: 0,
+					height: 0,
+					rotate_width: 0,
+					rotate_height: 0,
+					max_width: 375,
+					max_height: 0
+				},
+				src: 'https://img1.baidu.com/it/u=147756509,42215431&fm=253&fmt=auto&app=120&f=JPEG?w=801&h=800',
 				selectActive: 0,
 				id: '',
 				Strokes: [],
@@ -123,6 +145,7 @@
 					name: 'grey',
 					value: '#a5a5a5',
 				}],
+
 				lineWidthShow: false,
 				lineWidthIndex: 0,
 				lineWidthData: ['3', '6', '9', '12', '15', '18']
@@ -136,13 +159,83 @@
 				}
 			});
 
+			this.init_image()
+
 		},
 
 		onReady() {
-			this.dom = uni.createCanvasContext(this.cid, this);
+			this.dom = uni.createCanvasContext('canvas', this);
 		},
 		methods: {
+			init_image() {
+				uni.getImageInfo({
+					src: this.src,
+					success: (image) => {
+						console.log(image);
+						if (image.width >= image.height) {
+							//初始化canvas尺寸
+							this.canvas.width = image.width > transverse_canvas_width ?
+								transverse_canvas_width : image.width
+							this.canvas.height = parseInt(this.canvas.width * image.height / image.width);
+							this.canvas.origin_height = this.canvas.height
+							this.canvas.origin_width = this.canvas.width
 
+							//初始化预览图尺寸
+							this.render_image.width = this.render_image.max_width;
+							this.render_image.height = parseInt(this.render_image.width * image.height / image
+								.width);
+
+						} else {
+							//初始化canvas尺寸
+							this.canvas.height = image.height > lengthways_canvas_height ?
+								lengthways_canvas_height : image.height
+							this.canvas.width = parseInt(this.canvas.height * image.width / image.height);
+							this.canvas.origin_width = this.canvas.width;
+							this.canvas.origin_height = this.canvas.height
+
+							//初始化预览图尺寸
+							this.render_image.width = this.render_image.max_width
+							this.render_image.height = parseInt(this.render_image.width * image.height / image
+								.width);
+							if (this.render_image.height > this.render_image.max_height) {
+								this.render_image.height = this.render_image.max_height
+								this.render_image.width = parseInt(this.render_image.height * image.width /
+									image.height);
+							}
+						}
+
+
+						console.log(this.canvas);
+						console.log(this.render_image);
+						helper = new Helper({
+							canvasId: 'canvas',
+							width: this.upx2px(this.canvas.width),
+							height: this.upx2px(this.canvas.height)
+						})
+						// this.ctx = uni.createCanvasContext('canvas');
+						helper.initCanvas(image.path, () => {
+							console.log('initCanvas');
+							this.Strokes.push({
+								imageData: image.path,
+								type: 'image',
+							})
+							uni.hideLoading();
+						})
+
+						// this.ctx.drawImage(this.src, 0, 0, this.px_width, this.px_height);
+						// this.ctx.draw();
+					},
+					fail: (e) => {
+						console.log(e);
+					}
+				})
+			},
+			upx2px(value) {
+				if (!value) {
+					return 0;
+				}
+				return uni.upx2px(value);
+			},
 			touchmoveEnd(e) {
 				e.preventDefault();
 				e.stopPropagation();
@@ -181,6 +274,10 @@
 				this.colorShow = false;
 			},
 			revoke() { //撤销上一步
+
+				console.log(this.Strokes)
+
+				if (this.Strokes.length <= 1) return
 				var delItem = this.Strokes.pop();
 				// if (delItem) {
 				// 	delItem.points.forEach((item, index) => {
@@ -222,23 +319,32 @@
 			drawCanves() {
 				//this.dom.draw();
 				this.Strokes.forEach((item, index) => {
-					let StrokesItem = item;
-					//console.log(index, this.Strokes.length)
-					if (StrokesItem.points.length > 1) {
-						this.dom.beginPath();
-						this.dom.setLineCap('round');
-						this.dom.setStrokeStyle(item.style.color);
-						this.dom.setLineWidth(item.style.lineWidth);
-						StrokesItem.points.forEach((sitem, sindex) => {
-							if (sitem.type == "touchstart") {
-								this.dom.moveTo(sitem.x, sitem.y)
-							} else {
-								this.dom.lineTo(sitem.x, sitem.y)
-							}
-							//console.log('dom', sitem)
-						})
-						this.dom.stroke();
 
+					if (!item.type) {
+						let StrokesItem = item;
+						if (StrokesItem.points.length > 1) {
+							this.dom.beginPath();
+							this.dom.setLineCap('round');
+							this.dom.setStrokeStyle(item.style.color);
+							this.dom.setLineWidth(item.style.lineWidth);
+							StrokesItem.points.forEach((sitem, sindex) => {
+								if (sitem.type == "touchstart") {
+									this.dom.moveTo(sitem.x, sitem.y)
+								} else {
+									this.dom.lineTo(sitem.x, sitem.y)
+								}
+								//console.log('dom', sitem)
+							})
+							this.dom.stroke();
+
+						}
+					} else {
+						console.log(item)
+						this.dom.drawImage(item.imageData, 0, 0, this.render_image.width, this.render_image
+							.height)
+						// helper.ctx.draw(false, () => {
+						// 	helper.saveImageData()
+						// })
 					}
 				})
 				this.dom.draw();
@@ -309,6 +415,16 @@
 				}
 			},
 			selectHandle(index) {
+				switch (index) {
+					case 0:
+						let imageData = helper.createImageData()
+						let filtered = ImageFilters.GrayScale(imageData)
+						helper.putImageData(filtered, (tempFilePath) => {
+							this.render_src = tempFilePath;
+						})
+						break;
+				}
+
 				if (this.selectActive === index) {
 					this.selectActive = -1;
 				} else {
@@ -367,22 +483,23 @@
 	}
 
 	.drawingBoard-tools-item {
-		text-align: center;
-		-webkit-box-flex: 1;
-		-webkit-flex-grow: 1;
-		flex-grow: 1;
-		line-height: 35rpx;
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+
+		image {
+			width: 48rpx;
+			height: 48rpx;
+		}
+
+		text {
+			font-size: 28rpx;
+			color: #3A3D71;
+		}
 
 	}
 
-	.drawingBoard-fixed-bottom-item view image {
-		width: 76rpx;
-		height: 76rpx;
-	}
-
-	.drawingBoard-tools-item view {
-		font-size: 22rpx;
-	}
 
 	.drawingBoard-color-main {
 		position: fixed;

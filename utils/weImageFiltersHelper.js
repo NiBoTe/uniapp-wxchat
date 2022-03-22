@@ -46,7 +46,6 @@ Helper.prototype.initCanvas = function(tempFilePath, cb) {
 	
     this.ctx.drawImage(tempFilePath, 0, 0, z.canvasInfo.width, z.canvasInfo.height)
     this.ctx.draw(false, () => {
-        
         z.saveImageData(cb)
     })
 }
