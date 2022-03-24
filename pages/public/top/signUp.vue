@@ -233,7 +233,10 @@
 				}
 			}
 			uni.$on('examineeInfoChange', (data) => {
+				console.log(data)
 				if (data) {
+					
+					
 					if (data.index < 0) {
 						this.examineeInfos.push(data.params)
 					} else {
@@ -443,6 +446,9 @@
 				})
 			}
 		},
+		onUnload() {
+			uni.$off('examineeInfoChange');
+		}
 
 	}
 </script>

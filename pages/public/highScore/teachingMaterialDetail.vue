@@ -77,10 +77,10 @@
 			<view class="tabs">
 				特效可编辑画面效果
 				<view class="tabs-in">
-					<view class="left coms tabs-active">
+					<view class="left coms tabs-active" @click="switchTap(0)">
 						原图
 					</view>
-					<view class="right coms">
+					<view class="right coms" @click="switchTap(1)">
 						特效
 					</view>
 				</view>
@@ -435,8 +435,24 @@
 						}
 					}
 				});
-
-
+			},
+			switchTap(type){
+				
+				console.log(this.detail)
+				
+				switch(type) {
+					case 1:
+					
+					if(this.detail.hdImgViewCount === 1 || this.detail.isPayed) {
+						uni.navigateTo({
+							url: `/pages/public/highScore/imageFilter?url=${this.detail.items[this.activeIndex].hdImg}`
+						})
+					} else {
+						this.$mHelper.toast('请先购买该教材')
+					}
+					
+					break;
+				}
 			}
 		},
 		onReachBottom() {
@@ -775,6 +791,7 @@
 				.tabs-active {
 					background: #FFFFFF;
 					border-radius: 36rpx;
+					color: #3A3D71;
 				}
 			}
 		}

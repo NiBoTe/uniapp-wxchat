@@ -79,13 +79,15 @@
 			submitTap() {
 				if(this.btnLoading) return 
 				this.btnLoading = true;
+				
+				uni.showLoading()
 				// if (this.params.isNeedExpress && this.params.expressContent === '') {
 				// 	return this.$mHelper.toast('请输入发货内容')
 				// 	this.btnLoading = false;
 				// }
-				console.log(this.params)
 				this.$http.post(myAddTeachingMaterial, this.params).then(res => {
 					this.$mHelper.toast('发布成功')
+					
 					setTimeout(() => {
 						uni.navigateBack({
 							delta: 2
@@ -95,6 +97,7 @@
 					this.$mHelper.toast(err.msg);
 					setTimeout(() => {
 						this.btnLoading = false;
+						
 					}, 500)
 				})
 			},

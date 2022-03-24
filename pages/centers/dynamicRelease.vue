@@ -91,12 +91,7 @@
 						})
 						.then(r => {
 							_this.imgsList.push(r)
-							console.log(list.length)
-							console.log(i)
 							if (list.length - 1 > i) {
-								console.log('=========')
-								
-								
 								if(_this.imgsList.length < 9) {
 									_this.handleUploadFile(list, i + 1);
 								} else {

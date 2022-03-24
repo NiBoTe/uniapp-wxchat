@@ -181,6 +181,9 @@
 				if (this.content === '') {
 					return this.$mHelper.toast('请输入作品描述')
 				}
+				if (this.imgsList.length <= 0) {
+					return this.$mHelper.toast('商品个数不能小于1')
+				}
 				if (!this.checked) {
 					return this.$mHelper.toast('请先勾选阅读付费内容使用协议')
 				}

@@ -1,18 +1,62 @@
 <template>
 	<view class="drawingBoard-body">
-
-		<scroll-view :style="{top: top+'px', left: left+'px'}" class="scroll-view_H" scroll-x="true">
+		
+		<view class="back" :style="{top: StatusBar + 6 + 'px'}" @click="toBack">
+			<image src="/static/public/arrow_left.png"></image>
+		</view>
+		<!-- <scroll-view :style="{top: top+'px', left: left+'px'}" class="scroll-view_H" scroll-x="true"> -->
 			<canvas canvas-id="canvas" class="canvas"
 				:style="{width: upx2px(canvas.width)+ 'px', height: upx2px(canvas.height) +'px'}"
 				@touchstart="touchstart" @touchmove="touchmove" @touchend="touchend"></canvas>
-		</scroll-view>
+		<!-- </scroll-view> -->
 		<view class="drawingBoard-fixed-bottom">
 
-			<view class="drawingBoard-fixed-bottom-handle" v-if="selectActive === 2">
+			<view class="drawingBoard-fixed-bottom-handle" v-if="selectActive === 1">
 				<view class="drawingBoard-text">
 					<view class="drawingBoard-color">
 						<color-picker ref="colorPicker" :color="colorRgb" @confirm="colorConfirm"></color-picker>
 					</view>
+
+					<view class="thickness u-flex">
+						<text>细</text>
+						<view class="slider">
+							<u-slider height="10" block-width="40" inactive-color="#D8D8D8" active-color="#999090"
+								v-model="thicknessValue"></u-slider>
+						</view>
+						<text>粗</text>
+					</view>
+				</view>
+			</view>
+			<view class="drawingBoard-fixed-bottom-handle" v-if="selectActive === 2">
+				<view class="drawingBoard-text">
+
+					<view class="thickness u-flex">
+						<text>0</text>
+						<view class="slider">
+							<u-slider height="10" block-width="40"  inactive-color="#D8D8D8" active-color="#999090"
+								v-model="contrastRatio"></u-slider>
+						</view>
+						<view class="refresh u-flex" @click="resetTap(2)">
+							<image src="/static/public/reset.png"></image>
+							<text>重置</text>
+						</view>
+					</view>
+				</view>
+			</view>
+
+			<view class="drawingBoard-fixed-bottom-handle" v-if="selectActive === 3">
+				<view class="drawingBoard-text u-flex">
+					<view class="drawingBoard-color" style="flex: 1;">
+						<color-picker ref="colorPicker" :color="colorRgbThree" @confirm="colorThreeConfirm">
+						</color-picker>
+					</view>
+					<view class="u-flex">
+						<view class="refresh u-flex" style="margin: 0 40rpx 10rpx 0;" @click="resetTap(3)">
+							<image src="/static/public/reset.png"></image>
+							<text>重置</text>
+						</view>
+					</view>
+
 				</view>
 			</view>
 			<view class="drawingBoard-fixed-bottom-item drawingBoard-tools">
@@ -20,23 +64,22 @@
 					<image :src="setSrc('highScore/icon01.png')"></image>
 					<text>黑白</text>
 				</view>
-
 				<view class="drawingBoard-tools-item" @click="selectHandle(1)">
 					<image v-if="selectActive === 1" :src="setSrc('highScore/icon02_active.png')"></image>
 					<image v-else :src="setSrc('highScore/icon02.png')"></image>
-					<text>画笔</text>
+					<text :class="selectActive === 1 ? 'active' : ''">画笔</text>
 				</view>
-				<view class="drawingBoard-tools-item" @click="selectHandle(2)">
+				<view class="drawingBoard-tools-item two" @click="selectHandle(2)">
 					<image v-if="selectActive === 2" :src="setSrc('highScore/icon03_active.png')"></image>
 					<image v-else :src="setSrc('highScore/icon03.png')"></image>
-					<text>对比度</text>
+					<text :class="selectActive === 2 ? 'active' : ''">对比度</text>
 				</view>
-				<view class="drawingBoard-tools-item" @click="selectHandle(3)">
+				<view class="drawingBoard-tools-item three" @click="selectHandle(3)">
 					<image v-if="selectActive === 3" :src="setSrc('highScore/icon04_active.png')"></image>
 					<image v-else :src="setSrc('highScore/icon04.png')"></image>
-					<text>色调</text>
+					<text :class="selectActive === 3 ? 'active' : ''">色调</text>
 				</view>
-				<view class="drawingBoard-tools-item" @click="revoke">
+				<view class="drawingBoard-tools-item four" @click="revoke">
 					<image :src="setSrc('highScore/icon05.png')"></image>
 					<text>撤销</text>
 				</view>
@@ -45,29 +88,11 @@
 				</view> -->
 			</view>
 
-			<view class="drawingBoard-next" @click="sumbit()">
-				<view class="drawingBoard-btn">下一步</view>
+			<view class="drawingBoard-next" @click="submitTap()">
+				<view class="drawingBoard-btn">保存</view>
 			</view>
-			<!-- <view class="drawingBoard-fixed-bottom-item sumbit" @click="sumbit">提交</view> -->
+			<!-- <view class="drawingBoard-fixed-bottom-item submit" @click="submitTap">提交</view> -->
 		</view>
-
-		<!-- <cover-view class="drawingBoard-color-main" v-if="colorShow">
-			<cover-view @click="selColor(index)"
-				:class="index==colorIndex?'drawingBoard-color-item on ':'drawingBoard-color-item '"
-				:style="'background-color:'+item.value" v-for="(item,index) in colorData" :key="index">
-				<cover-image class="drawingBoard-color-item-icon" src="../../static/drawingBoard/on.png">
-				</cover-image>
-			</cover-view>
-		</cover-view> -->
-		<cover-view class="drawingBoard-color-main" v-if="lineWidthShow">
-			<cover-view @click="selLineWidth(index)"
-				:class="index==lineWidthIndex?'drawingBoard-lineWidth-item on':'drawingBoard-lineWidth-item'"
-				v-for="(item,index) in lineWidthData" :key="index">
-				<cover-view
-					:style="'width:60%;height:'+item+'px;background-color:#000000;position: absolute;top: 50%;left: 20%;margin-top:-'+item/2+'px'">
-				</cover-view>
-			</cover-view>
-		</cover-view>
 	</view>
 </template>
 
@@ -78,6 +103,9 @@
 	import ImageFilters from '@/utils/weImageFilters.js';
 	import Helper from '@/utils/weImageFiltersHelper.js';
 	let helper = '';
+	let strokes = [];
+	
+	let initImageData = {}
 	export default {
 		components: {
 			ColorPicker
@@ -86,6 +114,7 @@
 			return {
 				top: -99999,
 				left: -99999,
+				StatusBar: this.StatusBar,
 				canvas: { //upx
 					width: 0,
 					height: 0,
@@ -101,16 +130,20 @@
 					max_width: 375,
 					max_height: 0
 				},
-				src: 'https://img1.baidu.com/it/u=147756509,42215431&fm=253&fmt=auto&app=120&f=JPEG?w=801&h=800',
+				src: null,
 				selectActive: 0,
 				id: '',
 				Strokes: [],
 				dom: null,
 				width: 0,
 				height: 0,
-				colorShow: false,
-				colorIndex: 0,
 				colorRgb: {
+					r: 255,
+					g: 0,
+					b: 0,
+					a: 0.6
+				},
+				colorRgbThree: {
 					r: 255,
 					g: 0,
 					b: 0,
@@ -122,45 +155,51 @@
 					b: 0,
 					a: 0.6
 				},
-				lineColor: '#000000',
-				colorData: [{
-					name: 'black',
-					value: '#000000'
-				}, {
-					name: 'red',
-					value: '#f34336',
-				}, {
-					name: 'blue',
-					value: '#0238d0',
-				}, {
-					name: 'green',
-					value: '#8bc24b',
-				}, {
-					name: 'yellow',
-					value: '#ffeb3c',
-				}, {
-					name: 'purple',
-					value: '#a603d0',
-				}, {
-					name: 'grey',
-					value: '#a5a5a5',
-				}],
-
-				lineWidthShow: false,
-				lineWidthIndex: 0,
-				lineWidthData: ['3', '6', '9', '12', '15', '18']
+				thicknessValue: 3, // 线条粗细
+				contrastRatio: 50, // 对比度
 			}
 		},
-		onLoad() {
+		watch: {
+			contrastRatio(val) {
+				setTimeout(() => {
+					let imageData = strokes.length > 0 ? strokes[strokes.length - 1].imageData : initImageData
+					let filtered = ImageFilters.BrightnessContrastPhotoshop(imageData, val - 50, 13)
+					helper.putImageData(filtered, (tempFilePath) => {
+						this.render_src = tempFilePath;
+						if (strokes.length > 0) {
+							if (strokes[strokes.length - 1].type === 2) {
+								strokes[strokes.length - 1].imageData = imageData
+							} else {
+								strokes.push({
+									type: 2,
+									imageData,
+								})
+							}
+						} else {
+							strokes.push({
+								type: 2,
+								imageData,
+							})
+						}
+					})
+				}, 500)
+				// ImageFilters.BrightnessContrastPhotoshop(data, 26, 13)
+			}
+		},
+		onLoad(options) {
 			uni.getSystemInfo({
 				success: (res) => {
+					console.log(res)
 					this.width = res.windowWidth;
 					this.height = res.windowHeight;
+					
+					if(options.url) {
+						this.src = options.url
+						this.init_image()
+					}
 				}
 			});
-
-			this.init_image()
-
+		
 		},
 
 		onReady() {
@@ -172,6 +211,7 @@
 					src: this.src,
 					success: (image) => {
 						console.log(image);
+						console.log(this.width);
 						if (image.width >= image.height) {
 							//初始化canvas尺寸
 							this.canvas.width = image.width > transverse_canvas_width ?
@@ -189,10 +229,11 @@
 							//初始化canvas尺寸
 							this.canvas.height = image.height > lengthways_canvas_height ?
 								lengthways_canvas_height : image.height
-							this.canvas.width = parseInt(this.canvas.height * image.width / image.height);
+							this.canvas.width = this.width/(uni.upx2px(100)/100) // parseInt(this.canvas.height * image.width / image.height);
 							this.canvas.origin_width = this.canvas.width;
 							this.canvas.origin_height = this.canvas.height
-
+							
+							
 							//初始化预览图尺寸
 							this.render_image.width = this.render_image.max_width
 							this.render_image.height = parseInt(this.render_image.width * image.height / image
@@ -202,11 +243,9 @@
 								this.render_image.width = parseInt(this.render_image.height * image.width /
 									image.height);
 							}
+							
+							console.log(this.canvas)
 						}
-
-
-						console.log(this.canvas);
-						console.log(this.render_image);
 						helper = new Helper({
 							canvasId: 'canvas',
 							width: this.upx2px(this.canvas.width),
@@ -215,10 +254,15 @@
 						// this.ctx = uni.createCanvasContext('canvas');
 						helper.initCanvas(image.path, () => {
 							console.log('initCanvas');
-							this.Strokes.push({
-								imageData: image.path,
-								type: 'image',
-							})
+							initImageData = {
+								data: helper.originalImageData,
+								width: helper.canvasInfo.width,
+								height: helper.canvasInfo.height,
+							}
+							// strokes.push({
+							// 	imageData: image.path,
+							// 	type: 'image',
+							// })
 							uni.hideLoading();
 						})
 
@@ -240,126 +284,53 @@
 				e.preventDefault();
 				e.stopPropagation();
 			},
-			sumbit() {
-				uni.canvasToTempFilePath({
-					canvasId: this.cid,
-					success: (res) => {
-						this.$emit('sumbit', res)
-					},
-					fail: (err) => {
-						//console.log('fail', err)
-						this.$emit('fail', err)
-					}
-				}, this)
+			submitTap() {
+				let _this = this;
+				uni.showToast({
+					icon: 'loading',
+					title:'保存中...'
+				})
+				helper.getImageTempFilePath((tempFilePath)=> {
+					console.log(tempFilePath)
+					uni.saveImageToPhotosAlbum({
+						filePath: tempFilePath,
+						success: function() {
+							_this.$mHelper.toast('保存成功')
+						},
+						fail: function() {
+							_this.$mHelper.toast('保存失败')
+						}
+					});
+					uni.hideToast();
+				})
 			},
 			clear() { //清空
 				this.Strokes = [];
 				this.dom.clearRect(0, 0, this.width, this.height)
 				this.dom.draw();
 			},
-			lineWidth() {
-				this.lineWidthShow = !this.lineWidthShow;
-				this.colorShow = false;
-			},
-			selLineWidth(index) {
-				this.lineWidthIndex = index;
-				this.lineWidthShow = false;
-			},
-			color() {
-				this.colorShow = !this.colorShow;
-				this.lineWidthShow = false;
-			},
-			selColor(index) {
-				this.colorIndex = index;
-				this.colorShow = false;
-			},
 			revoke() { //撤销上一步
-
-				console.log(this.Strokes)
-
-				if (this.Strokes.length <= 1) return
-				var delItem = this.Strokes.pop();
-				// if (delItem) {
-				// 	delItem.points.forEach((item, index) => {
-				// 		if (index < (delItem.points.length - 1)) {
-				// 			this.dom.setStrokeStyle('#FFFFFF')
-				// 			this.dom.moveTo(delItem.points[index].x, delItem.points[index].y);
-				// 			this.dom.lineTo(delItem.points[index + 1].x, delItem.points[index + 1].y);
-				// 			this.dom.stroke();
-				// 			this.dom.draw(true);
-				// 			// this.dom.clearRect(delItem.points[index].x, delItem.points[index].y, 10, 10);
-				// 			// this.dom.draw(true)
-				// 		}
-				// 	})
-
-				// }
-
-
-
-				// this.dom.draw();
-				// if(this.Strokes.length>0){
-				// 	var lastItem = this.Strokes[this.Strokes.length - 1];
-				// 	uni.canvasPutImageData({
-				// 		canvasId: this.cid,
-				// 		data: lastItem.imageData.data,
-				// 		x: 0,
-				// 		y: 0,
-				// 		width: lastItem.imageData.width,
-				// 		height: lastItem.imageData.height,
-				// 		success:(res)=> {
-				// 			console.log('success',res)
-				// 		}
-				// 	},this)
-				// }
-
-				//console.log('delItem', delItem)
-				//this.dom.drawImage(delItem.x, delItem.y, 0, 0)
+				if (!strokes.length) return
+				strokes.pop();
 				this.drawCanves();
 			},
 			drawCanves() {
-				//this.dom.draw();
-				this.Strokes.forEach((item, index) => {
-
-					if (!item.type) {
-						let StrokesItem = item;
-						if (StrokesItem.points.length > 1) {
-							this.dom.beginPath();
-							this.dom.setLineCap('round');
-							this.dom.setStrokeStyle(item.style.color);
-							this.dom.setLineWidth(item.style.lineWidth);
-							StrokesItem.points.forEach((sitem, sindex) => {
-								if (sitem.type == "touchstart") {
-									this.dom.moveTo(sitem.x, sitem.y)
-								} else {
-									this.dom.lineTo(sitem.x, sitem.y)
-								}
-								//console.log('dom', sitem)
-							})
-							this.dom.stroke();
-
-						}
-					} else {
-						console.log(item)
-						this.dom.drawImage(item.imageData, 0, 0, this.render_image.width, this.render_image
-							.height)
-						// helper.ctx.draw(false, () => {
-						// 	helper.saveImageData()
-						// })
-					}
+				console.log(helper)
+				console.log(initImageData)
+				let imageData = strokes.length > 0 ? strokes[strokes.length - 1].imageData : initImageData;
+				helper.putImageData(imageData, (tempFilePath) => {
+					this.render_src = tempFilePath;
 				})
-				this.dom.draw();
-			},
-			createId() {
-				var d = new Date();
-				return 'can' + d.getTime();
 			},
 			touchstart(e) {
-
-				this.Strokes.push({
+				if (this.selectActive !== 1) return
+				strokes.push({
 					imageData: null,
+					type: 1,
 					style: {
 						color: this.colorValue,
-						lineWidth: this.lineWidthData[this.lineWidthIndex],
+						lineWidth: parseInt((18 / 100 * this.thicknessValue) < 3 ? 3 : (18 / 100 * this
+							.thicknessValue)),
 					},
 					points: [{
 						x: e.touches[0].x,
@@ -367,61 +338,85 @@
 						type: e.type,
 					}]
 				})
-				this.drawLine(this.Strokes[this.Strokes.length - 1], e.type);
+				this.drawLine(strokes[strokes.length - 1], e.type);
 			},
 			touchmove(e) {
-				this.Strokes[this.Strokes.length - 1].points.push({
+				if (this.selectActive !== 1) return
+				strokes[strokes.length - 1].points.push({
 					x: e.touches[0].x,
 					y: e.touches[0].y,
 					type: e.type,
 				})
-				this.drawLine(this.Strokes[this.Strokes.length - 1], e.type);
+				this.drawLine(strokes[strokes.length - 1], e.type);
 			},
 			touchend(e) {
-				if (this.Strokes[this.Strokes.length - 1].points.length < 2) { //当此路径只有一个点的时候
-					this.Strokes.pop();
-				}
-				//this.drawLine(this.Strokes[this.Strokes.length - 1], e.type);
-				// uni.canvasGetImageData({
-				// 	canvasId: this.cid,
-				// 	x: 0,
-				// 	y: 0,
-				// 	width: this.width,
-				// 	height: this.height,
-				// 	success: (res) => {
-				// 		 console.log(res.width) // 100
-				// 		// console.log(res.height) // 100
-				// 		// console.log(res.data instanceof Uint8ClampedArray) // true
-				// 		// console.log(res.data.length) // 100 * 100 * 4
-				// 		this.Strokes[this.Strokes.length - 1].imageData = res;
-				// 	}
-				// },this)
-				//this.drawCanves();
+				if (this.selectActive !== 1) return
+				helper.saveImageData(() => {
+					strokes[strokes.length - 1].imageData = {
+						data: helper.originalImageData,
+						width: helper.canvasInfo.width,
+						height: helper.canvasInfo.height,
+					}
+					helper.putImageData(strokes[strokes.length - 1].imageData, (tempFilePath) => {
+						this.render_src = tempFilePath;
+					})
+					// strokes.[strokes.length - 1].imageData = helper.originalImageData;
+					if (strokes[strokes.length - 1].points.length < 2) { //当此路径只有一个点的时候
+						strokes.pop();
+						helper.putImageData(strokes[strokes.length - 1].imageData, (tempFilePath) => {
+							this.render_src = tempFilePath;
+						})
+					}
+				})
 			},
 			drawLine(StrokesItem, type) {
 				if (StrokesItem.points.length > 1) {
-					this.dom.beginPath();
-					this.dom.setLineCap('round')
-					this.dom.setStrokeStyle(StrokesItem.style.color);
-					this.dom.setLineWidth(StrokesItem.style.lineWidth);
-					this.dom.moveTo(StrokesItem.points[StrokesItem.points.length - 2].x, StrokesItem.points[StrokesItem
+					helper.ctx.beginPath();
+					helper.ctx.setLineCap('round')
+					helper.ctx.setStrokeStyle(StrokesItem.style.color);
+					helper.ctx.setLineWidth(StrokesItem.style.lineWidth);
+					helper.ctx.moveTo(StrokesItem.points[StrokesItem.points.length - 2].x, StrokesItem.points[StrokesItem
 						.points.length -
 						2].y);
-					this.dom.lineTo(StrokesItem.points[StrokesItem.points.length - 1].x, StrokesItem.points[StrokesItem
+					helper.ctx.lineTo(StrokesItem.points[StrokesItem.points.length - 1].x, StrokesItem.points[StrokesItem
 						.points.length -
 						1].y);
-					this.dom.stroke();
-					this.dom.draw(true);
+					helper.ctx.stroke();
+					// helper.ctx.draw(true);
+					helper.ctx.draw(true, () => {
+						// helper.saveImageData()
+						
+					})
 				}
 			},
 			selectHandle(index) {
 				switch (index) {
 					case 0:
-						let imageData = helper.createImageData()
-						let filtered = ImageFilters.GrayScale(imageData)
-						helper.putImageData(filtered, (tempFilePath) => {
-							this.render_src = tempFilePath;
+						let isGrayScale = false,
+							isGrayScaleIndex = -1;
+						strokes.map((item, index) => {
+							if (item.type === 0) {
+								isGrayScale = true
+								isGrayScaleIndex = index
+							}
 						})
+						if (isGrayScale) {
+							let imageData = strokes.length > 0 ? strokes[strokes.length - 1].imageData : initImageData;
+							helper.putImageData(imageData, (tempFilePath) => {
+								this.render_src = tempFilePath;
+								if (isGrayScaleIndex >= 0) strokes.splice(isGrayScaleIndex, 1)
+							})
+						} else {
+							let imageData = strokes.length > 0 ? strokes[strokes.length - 1].imageData : initImageData
+							let filtered = ImageFilters.GrayScale(imageData)
+							helper.putImageData(filtered, (tempFilePath) => {
+								this.render_src = tempFilePath;
+								strokes.push({
+									type: 0,
+									imageData
+								})
+							})
+						}
 						break;
 				}
 
@@ -437,6 +432,70 @@
 				console.log(e)
 				this.colorRgb = e.rgba
 				this.colorValue = e.hex
+			},
+			// 色调选择颜色
+			colorThreeConfirm(e) {
+				this.colorRgbThree = e.rgba
+				console.log(this.colorRgbThree)
+				this.setTone();
+			},
+			// 色调改变
+			setTone(bool) {
+				// ImageFilters.ColorTransformFilter (srcImageData, redMultiplier, greenMultiplier, blueMultiplier, alphaMultiplier, redOffset, greenOffset, blueOffset, alphaOffset)
+				if (bool) {
+					if (strokes.length === 0) return
+					if (strokes[strokes.length - 1].type === 3) {
+						let imageData = strokes[strokes.length - 1].imageData
+						strokes.splice(strokes.length - 1, 1)
+						helper.putImageData(imageData, (tempFilePath) => {
+							this.render_src = tempFilePath;
+						})
+					}
+					return
+				}
+				let imageData = strokes.length > 0 ? strokes[strokes.length - 1].imageData : initImageData
+				let filtered = ImageFilters.ColorTransformFilter(imageData, 1, 1, 1, 5, this.colorRgbThree.r, this
+					.colorRgbThree.g, this.colorRgbThree.b, 255)
+				helper.putImageData(filtered, (tempFilePath) => {
+					this.render_src = tempFilePath;
+					if (strokes.length > 0) {
+						if (strokes[strokes.length - 1].type === 3) {
+							strokes[strokes.length - 1].imageData = imageData
+						} else {
+							strokes.push({
+								type: 3,
+								imageData,
+							})
+						}
+					} else {
+						strokes.push({
+							type: 3,
+							imageData,
+						})
+					}
+
+				})
+			},
+			// 重置对比度
+			resetTap(type) {
+				switch (type) {
+					case 2:
+						this.contrastRatio = 50;
+						break;
+
+					case 3:
+						this.colorRgbThree = {
+							r: 255,
+							g: 0,
+							b: 0,
+							a: 0.6
+						}
+						this.setTone(true);
+						break;
+				}
+			},
+			toBack(){
+				this.$mRouter.back()
 			}
 		}
 	}
@@ -445,8 +504,28 @@
 <style scoped lang="scss">
 	.drawingBoard-body {
 		height: 100vh;
+		background-color: #F3F3F3;
 	}
-
+	
+	
+	.back{
+		position: fixed;
+		z-index: 20;
+		left: 36rpx;
+		width: 62rpx;
+		height: 62rpx;
+		border-radius: 50%;
+		background-color: #fff;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		
+		image{
+			width: 32rpx;
+			height: 32rpx;
+		}
+		
+	}
 	.drawingBoard-body canvas {
 		width: 100%;
 		height: 100%;
@@ -458,10 +537,11 @@
 		left: 0;
 		width: 100%;
 		text-align: center;
-		color: #000;
 		z-index: 11;
-		display: flex;
-		flex-direction: column;
+		border-radius: 40rpx 40rpx 0px 0px;
+		padding: 34rpx 0 14rpx;
+		padding-bottom: calc(14rpx + constant(safe-area-inset-bottom));
+		padding-bottom: calc(14rpx + env(safe-area-inset-bottom));
 		background-color: #fff;
 	}
 
@@ -469,7 +549,7 @@
 		padding: 12rpx;
 	}
 
-	.drawingBoard-fixed-bottom view.sumbit {
+	.drawingBoard-fixed-bottom view.submit {
 		-webkit-box-flex: 1;
 		-webkit-flex-grow: 1;
 		flex-grow: 1;
@@ -493,9 +573,37 @@
 			height: 48rpx;
 		}
 
+		&.two {
+			image {
+				width: 46rpx;
+				height: 46rpx;
+			}
+		}
+
+		&.three {
+			image {
+				width: 48rpx;
+				height: 46rpx;
+			}
+		}
+
+		&.four{
+			image {
+				width: 42rpx;
+				height: 44rpx;
+			}
+		}
+
+
 		text {
+			display: inline-block;
+			margin-top: 8rpx;
 			font-size: 28rpx;
 			color: #3A3D71;
+
+			&.active {
+				color: $u-type-primary;
+			}
 		}
 
 	}
@@ -568,12 +676,12 @@
 	// 操作面板
 
 	.drawingBoard-fixed-bottom-handle {
+
+		padding-top: 20rpx;
 		height: 128rpx;
 		display: flex;
 		justify-content: center;
 		align-items: center;
-		background-color: #F3F3F3;
-
 
 		// 按钮
 		.drawingBoard-btn {
@@ -599,12 +707,38 @@
 		}
 
 		// 颜色
-
 		.drawingBoard-text {
 			width: 100%;
-			padding: 0 40rpx;
+			.drawingBoard-color {
+				padding: 0 40rpx 0 50rpx;
+			}
+			.thickness {
+				padding: 40rpx 40rpx 0 22rpx;
 
-			.drawingBoard-color {}
+				text {
+					font-size: 24rpx;
+					font-weight: 500;
+					color: #909399;
+				}
+
+				.slider {
+					margin: 0 26rpx;
+					flex: 1;
+				}
+			}
+		}
+	}
+
+	// 重置
+	.refresh {
+		image {
+			width: 22rpx;
+			height: 22rpx;
+		}
+
+		text {
+			margin-left: 6rpx;
+			color: #909399;
 		}
 	}
 

@@ -43,9 +43,9 @@ Helper.prototype.saveImageData = function(cb) {
 Helper.prototype.initCanvas = function(tempFilePath, cb) {
     const z = this
     this.ctx = uni.createCanvasContext(z.canvasInfo.canvasId)
-	
     this.ctx.drawImage(tempFilePath, 0, 0, z.canvasInfo.width, z.canvasInfo.height)
     this.ctx.draw(false, () => {
+		console.log('========')
         z.saveImageData(cb)
     })
 }

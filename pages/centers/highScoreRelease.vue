@@ -426,7 +426,7 @@
 					}
 				});
 			},
-			// 上传头像
+			// 上传
 			handleUploadFile(list, i, type) {
 				const _this = this;
 				let filePath = list[i].tempFilePath;
@@ -459,7 +459,11 @@
 							}
 							_this.mediaType = [_this.type]
 							if (list.length - 1 > i) {
-								_this.handleUploadFile(list, i + 1, type);
+								if (_this.imgsList.length < 9) {
+									_this.handleUploadFile(list, i + 1, type);
+								} else {
+									return _this.$mHelper.toast('最多只能上传9张图片')
+								}
 							}
 						});
 				}).catch(err => {

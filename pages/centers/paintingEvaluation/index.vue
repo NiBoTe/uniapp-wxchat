@@ -131,12 +131,13 @@
 			},
 			tabTap(index) {
 				this.tabIndex = index;
+				this.$refs.uWaterfall.clear()
 				this.current = 1;
 				this.getList()
 			},
 			tabChange(e) {
-				console.log(e)
 				this.skilledMajorId = e.item.id
+				this.$refs.uWaterfall.clear()
 				this.current = 1;
 				this.getList()
 			},

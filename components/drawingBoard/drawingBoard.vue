@@ -1,9 +1,9 @@
 <template>
 	<view class="drawingBoard-body">
-		<canvas :canvas-id="cid" :id="cid" @touchstart="touchstart" @touchmove="touchmove"
-			@touchend="touchend"></canvas>
+		<canvas canvas-id="canvas" class="canvas"
+			:style="{width: upx2px(canvas.width)+ 'px', height: upx2px(canvas.height) +'px'}"
+			@touchstart="touchstart" @touchmove="touchmove" @touchend="touchend"></canvas>
 		<view class="drawingBoard-fixed-bottom">
-			
 			<view class="drawingBoard-fixed-bottom-handle">
 				<view class="drawingBoard-btn" v-if="selectActive === 0">
 					<image :src="setSrc('painting/voice_start.png')"></image>
@@ -46,7 +46,6 @@
 			<view class="drawingBoard-next" @click="sumbit()">
 				<view class="drawingBoard-btn">下一步</view>
 			</view>
-			<!-- <view class="drawingBoard-fixed-bottom-item sumbit" @click="sumbit">提交</view> -->
 		</view>
 
 		<!-- <cover-view class="drawingBoard-color-main" v-if="colorShow">
@@ -71,6 +70,13 @@
 
 <script>
 	import ColorPicker from '@/components/color-picker/color-picker.vue'
+	import ImageFilters from '@/utils/weImageFilters.js';
+	import Helper from '@/utils/weImageFiltersHelper.js';
+	const transverse_canvas_width = 1000;
+	const lengthways_canvas_height = 1000;
+	let helper = '';
+	let strokes = [];
+	let initImageData = {}
 	export default {
 		name: 'DrawingBoard',
 		components:{
@@ -81,9 +87,32 @@
 				type: String,
 				default: '',
 			},
+			url: {
+				type: String,
+				default: '',
+			}
 		},
 		data() {
 			return {
+				top: -99999,
+				left: -99999,
+				StatusBar: this.StatusBar,
+				canvas: { //upx
+					width: 0,
+					height: 0,
+					origin_width: 0,
+					origin_height: 0,
+				},
+				render_src: '',
+				render_image: { //px
+					width: 0,
+					height: 0,
+					rotate_width: 0,
+					rotate_height: 0,
+					max_width: 375,
+					max_height: 0
+				},
+				src: null,
 				selectActive: 0,
 				id: '',
 				Strokes: [],
@@ -122,21 +151,97 @@
 				lineWidthData: ['3', '6', '9', '12', '15', '18']
 			}
 		},
+		
+		
+		created() {
+			uni.getSystemInfo({
+				success: (res) => {
+					this.width = res.windowWidth;
+					this.height = res.windowHeight;
+					this.src = this.url
+					this.init_image()
+				}
+			});
+		},
 		mounted: function() {
 			this.$nextTick(function() {
-				uni.getSystemInfo({
-					success: (res) => {
-						this.width = res.windowWidth;
-						this.height = res.windowHeight;
-					}
-				});
-
-				this.dom = uni.createCanvasContext(this.cid, this);
-
+				
 			});
 		},
 		methods: {
+			init_image() {
+				uni.getImageInfo({
+					src: this.src,
+					success: (image) => {
+						console.log(image);
+						console.log(this.width);
+						if (image.width >= image.height) {
+							//初始化canvas尺寸
+							this.canvas.width = image.width > transverse_canvas_width ?
+								transverse_canvas_width : image.width
+							this.canvas.height = parseInt(this.canvas.width * image.height / image.width);
+							this.canvas.origin_height = this.canvas.height
+							this.canvas.origin_width = this.canvas.width
 			
+							//初始化预览图尺寸
+							this.render_image.width = this.render_image.max_width;
+							this.render_image.height = parseInt(this.render_image.width * image.height / image
+								.width);
+			
+						} else {
+							//初始化canvas尺寸
+							this.canvas.height = image.height > lengthways_canvas_height ?
+								lengthways_canvas_height : image.height
+							this.canvas.width = this.width/(uni.upx2px(100)/100) // parseInt(this.canvas.height * image.width / image.height);
+							this.canvas.origin_width = this.canvas.width;
+							this.canvas.origin_height = this.canvas.height
+							
+							
+							//初始化预览图尺寸
+							this.render_image.width = this.render_image.max_width
+							this.render_image.height = parseInt(this.render_image.width * image.height / image
+								.width);
+							if (this.render_image.height > this.render_image.max_height) {
+								this.render_image.height = this.render_image.max_height
+								this.render_image.width = parseInt(this.render_image.height * image.width /
+									image.height);
+							}
+							
+							console.log(this.canvas)
+						}
+						helper = new Helper({
+							canvasId: 'canvas',
+							width: this.upx2px(this.canvas.width),
+							height: this.upx2px(this.canvas.height)
+						})
+						
+						console.log(helper)
+						console.log(image)
+						// this.ctx = uni.createCanvasContext('canvas');
+						helper.initCanvas(image.path, () => {
+							console.log('initCanvas');
+							initImageData = {
+								data: helper.originalImageData,
+								width: helper.canvasInfo.width,
+								height: helper.canvasInfo.height,
+							}
+							uni.hideLoading();
+						})
+			
+						// this.ctx.drawImage(this.src, 0, 0, this.px_width, this.px_height);
+						// this.ctx.draw();
+					},
+					fail: (e) => {
+						console.log(e);
+					}
+				})
+			},
+			upx2px(value) {
+				if (!value) {
+					return 0;
+				}
+				return uni.upx2px(value);
+			},
 			touchmoveEnd(e) {
 				e.preventDefault();
 				e.stopPropagation();
@@ -308,7 +413,6 @@
 				} else {
 					this.selectActive = index;
 				}
-				
 			},
 			// 选择颜色
 			colorConfirm(e){

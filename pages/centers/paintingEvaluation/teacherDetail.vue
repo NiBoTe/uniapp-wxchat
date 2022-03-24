@@ -55,7 +55,7 @@
 		min-height: 100vh;
 		background: #F3F3F3;
 		padding-top: 28rpx;
-
+		padding-bottom: 210rpx;
 		.content {
 			margin: 0 34rpx;
 			background: #FFFFFF;

@@ -245,9 +245,7 @@
 				this.province = this.provinceList[e].name
 			}
 		},
-		onUnload() {
-			uni.$off('examineeInfoChange');
-		}
+		
 	}
 </script>
 

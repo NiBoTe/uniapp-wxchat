@@ -61,7 +61,7 @@
 
 
 			<!-- 考试成绩分析 -->
-			<view class="card">
+			<view class="card" v-if="examNameList.length">
 				<view class="card-header">考试成绩分析</view>
 				<view class="card-item" v-for="(item, index) in examNameList" :key="index">
 					<view class="card-style" :style="{backgroundColor: colorsList[index%4]}"></view>
@@ -151,8 +151,12 @@
 				this.chartsDataColumns = []
 				this.$http.post(scoreQuery, this.scoreItem).then(res => {
 					this.newestScoreQuery = res.data.newestScoreQuery;
-					this.courseList = res.data.courseList;
-					this.examNameList = res.data.examNameList;
+
+					let historyScore = res.data.historyScore
+					if (historyScore) {
+						this.courseList = historyScore.courseList;
+						this.examNameList = historyScore.examNameList;
+					}
 					subjects.map((item, index) => {
 						let scoreList = item.scoreList;
 						let arr = []

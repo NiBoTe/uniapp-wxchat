@@ -221,6 +221,10 @@
 				if (!this.isSignUp) {
 					return
 				}
+				
+				if(this.detail.errorState !== '') {
+					return
+				}
 				if(this.detail.auditState === 'auditing') {
 					return this.$mHelper.toast('审核中')
 				}

@@ -1501,6 +1501,8 @@ ImageFilters.Gamma = function(srcImageData, gamma) {
 };
 
 ImageFilters.GrayScale = function(srcImageData) {
+	
+	console.log(srcImageData)
     var srcPixels = srcImageData.data,
         srcWidth = srcImageData.width,
         srcHeight = srcImageData.height,
@@ -1509,13 +1511,13 @@ ImageFilters.GrayScale = function(srcImageData) {
         dstPixels = dstImageData.data;
 
     for (var i = 0; i < srcLength; i += 4) {
-        var intensity = (srcPixels[i] * 19595 + srcPixels[i + 1] * 38470 + srcPixels[i + 2] * 7471) >> 16;
-        //var intensity = (srcPixels[i] * 0.3086 + srcPixels[i + 1] * 0.6094 + srcPixels[i + 2] * 0.0820) | 0;
-        dstPixels[i] = dstPixels[i + 1] = dstPixels[i + 2] = intensity;
+        // var intensity = (srcPixels[i] * 19595 + srcPixels[i + 1] * 38470 + srcPixels[i + 2] * 7471) >> 16;
+        var intensity = (srcPixels[i] * 0.3086 + srcPixels[i + 1] * 0.6094 + srcPixels[i + 2] * 0.0820) | 0;
+        dstPixels[i] = dstPixels[i + 1] = dstPixels[i + 2] = parseInt(intensity);
         dstPixels[i + 3] = srcPixels[i + 3];
     }
     
-
+console.log(dstImageData)
     return dstImageData;
 };
 

@@ -121,11 +121,14 @@
 						}
 					});
 				}).catch(err => {
-					uni.hideLoading()
-					
-					setTimeout(() => {
-						this.$mHelper.toast(err.msg)
-					},500)
+					this.$mHelper.toast(err.msg)
+					if(err.code === 201) {
+						setTimeout(() => {
+							uni.navigateBack({
+								delta: 2
+							})
+						}, 1500)
+					}
 				})
 			},
 		}
