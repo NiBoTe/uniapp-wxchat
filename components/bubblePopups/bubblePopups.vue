@@ -131,9 +131,12 @@
 				let statusBar = await this.getStatusBar()
 				let promise = new Promise((resolve, reject) => {
 					let popupsDom = uni.createSelectorQuery().in(this).select(".popups")
+					
+					
 					popupsDom.fields({
 						size: true,
 					}, (data) => {
+						console.log(data)
 						let width = data.width
 						let height = data.height
 

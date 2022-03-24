@@ -16,7 +16,11 @@
 						<image src="/static/public/dynamic_menu.png"></image>
 					</view>
 				</view>
-				<view class="paragraph">{{detail.content}}</view>
+				<view class="paragraph" v-if="detail.content">
+					<expandable-text :line="3" expandText="全文" foldText="收起">
+						{{detail.content}}
+					</expandable-text>
+				</view>
 				<!-- 照片 -->
 				<view class="thumbnails">
 					<view :class="detail.snsImgs.length === 1?'my-gallery':'thumbnail'"
@@ -41,13 +45,13 @@
 					<view class="name">
 						<text>{{item.user.fullName}}</text>
 					</view>
-					
+
 					<view class="text">
 						<expandable-text :line="3" expandText="全文" foldText="收起">
-						  {{item.content}}
+							{{item.content}}
 						</expandable-text>
 					</view>
-					
+
 					<view class="time">
 						{{(moment(item.createTime).format('MM-DD'))}} <text @click="replyTap(item, index)">回复</text>
 					</view>

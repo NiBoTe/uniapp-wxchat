@@ -57,9 +57,9 @@
 									placeholder="说一下你的想法..." focus @confirm="confirmTap(item, index)" />
 							</view>
 							<view class="right u-flex">
-								<image src="/static/public/applause.png"></image>
-								<image src="/static/public/laugh.png"></image>
-								<image src="/static/public/cool.png"></image>
+								<image src="/static/public/applause.png" @click="sendExpression(index,0)"></image>
+								<image src="/static/public/laugh.png" @click="sendExpression(index,1)"></image>
+								<image src="/static/public/cool.png" @click="sendExpression(index,2)"></image>
 							</view>
 						</view>
 					</view>
@@ -211,6 +211,21 @@
 				}).catch(err => {
 					this.$mHelper.toast(err.msg)
 				})
+			},
+			// 发送表情
+			sendExpression(index, type) {
+				this.commentIndex = index
+				switch (type) {
+					case 0:
+						this.content += '👏'
+						break;
+					case 1:
+						this.content += '😁'
+						break;
+					case 2:
+						this.content += '😎'
+						break;
+				}
 			},
 			lower() {
 				this.loadStatus = 'loading';

@@ -3,24 +3,28 @@
 		<view class="form">
 			<view class="form-item">
 				<view class="ipt">
-					<u-input v-model="form.phone" placeholder-style="placeholderStyle" type="number" maxlength="11" :clearable="clearable" placeholder="请输入您的手机号" />
+					<u-input v-model="form.phone" placeholder-style="placeholderStyle" type="number" maxlength="11"
+						:clearable="clearable" placeholder="请输入您的手机号" />
 				</view>
 				<view class="code" @click="getCode()">
 					<text>{{tips}}</text>
-					<u-verification-code :seconds="seconds" change-text="XS后重新获取" @end="end" @start="start" ref="uCode" @change="codeChange">
+					<u-verification-code :seconds="seconds" change-text="XS后重新获取" @end="end" @start="start" ref="uCode"
+						@change="codeChange">
 					</u-verification-code>
 				</view>
 			</view>
 
 			<view class="form-item">
 				<view class="ipt">
-					<u-input type="number" maxlength="6" placeholder-style="placeholderStyle" :clearable="clearable" v-model="form.code" placeholder="请输入您的验证码" />
+					<u-input type="number" maxlength="6" placeholder-style="placeholderStyle" :clearable="clearable"
+						v-model="form.code" placeholder="请输入您的验证码" />
 				</view>
 			</view>
-			
+
 			<view class="form-item">
 				<view class="ipt">
-					<u-input type="password" placeholder-style="placeholderStyle" :clearable="clearable" v-model="form.password" placeholder="请输入新密码（最少8位数字+字母）" />
+					<u-input type="password" placeholder-style="placeholderStyle" :clearable="clearable"
+						v-model="form.password" placeholder="请输入新密码（最少8位数字+字母）" />
 				</view>
 			</view>
 		</view>
@@ -92,7 +96,7 @@
 				this.appAgreementDefaultSelect = true;
 			}
 		},
-		
+
 		onShow() {
 			this.getWxCode()
 		},
@@ -114,14 +118,25 @@
 			},
 			// 注册
 			toSubmit(e) {
-				this.btnLoading = true;
+
+				if (!this.$mHelper.checkMobile(this.form.phone)) {
+					return this.$mHelper.toast('手机号码格式有误');
+				}
+
+				if (this.form.code === '') {
+					return this.$mHelper.toast('请输入短信验证码')
+				}
+
+				if (this.form.password === '') {
+					return this.$mHelper.toast('请输入密码')
+				}
+
 				if (!this.appAgreementDefaultSelect) {
 					this.$mHelper.toast('请阅读并同意协议', 1.5 * 1000);
-					this.btnLoading = false;
 					return;
 				}
+				this.btnLoading = true;
 				this.thirdPartyRegister();
-
 			},
 			thirdPartyRegister() {
 				const data = {
@@ -138,7 +153,7 @@
 					await this.$mStore.commit('login', data.user);
 					this.$mHelper.toast('已为您授权登录');
 					console.log(data.user)
-					if(data.user.roleSelect) {
+					if (data.user.roleSelect) {
 						console.log('===========')
 						this.$mRouter.back()
 					} else {
@@ -158,9 +173,9 @@
 							await this.$mStore.commit('setOpenId', data.openid);
 							await this.$mStore.commit('login', data.user);
 							this.$mHelper.toast('已为您授权登录');
-							
+
 							console.log(data.user)
-							if(data.user.roleSelect) {
+							if (data.user.roleSelect) {
 								this.$mRouter.back()
 							} else {
 								this.$mRouter.push({
@@ -212,7 +227,7 @@
 			start() {
 				// this.$u.toast('倒计时开始');
 			},
-			toBack(){
+			toBack() {
 				this.$mRouter.back()
 			}
 		}
@@ -225,7 +240,7 @@
 
 		.form {
 			&-item {
-				
+
 				margin-top: 48rpx;
 				font-size: 26rpx;
 				color: #1B1B1B;
@@ -284,8 +299,8 @@
 		/deep/ .u-checkbox__label {
 			margin-right: 0 !important;
 		}
-		
-		/deep/ .u-input__input{
+
+		/deep/ .u-input__input {
 			font-size: 30rpx;
 			font-weight: 500;
 			color: #333;

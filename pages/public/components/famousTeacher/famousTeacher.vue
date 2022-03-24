@@ -3,8 +3,8 @@
 
 		<scroll-view scroll-y="true" class="scroll-warper" @scrolltolower="lower">
 			<view class="list">
-				<view class="item" v-for="(item, index) in list" :key="index">
-					<famous-teacher-item :item="item"></famous-teacher-item>
+				<view class="item" v-for="(item, index) in list" :key="index" @click="detailTap(item, index)">
+					<famous-teacher-item :ref="'FamousTeacherItem' + index" :item="item" :index="index"></famous-teacher-item>
 				</view>
 			</view>
 			<nodata v-if="!loadStatus !== 'loading' && !list.length"></nodata>
@@ -71,7 +71,19 @@
 				this.current = 1;
 				this.list = []
 				this.getList()
-			}
+			},
+			detailTap(item, index){
+				uni.$on('update', (data) => {
+					this.$set(this.list[index], 'isFollow' , data)
+					this.$refs['FamousTeacherItem' + index][0].refresh({
+						index,
+						isFollow: data
+					})
+				})
+				this.$mRouter.push({
+					route: `/pages/teachers/dynamicHomePage?id=${item.id}&index=${index}`
+				})
+			},
 		}
 	}
 </script>

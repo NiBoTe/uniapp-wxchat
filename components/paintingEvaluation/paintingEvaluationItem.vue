@@ -2,7 +2,7 @@
 	<view class="container">
 		<view class="item" @click="detailTap">
 			<view class="item-image">
-				<u-lazy-load threshold="-450" :image="item.evaluateUrl"></u-lazy-load>
+				<u-lazy-load threshold="-450" :image="type === 'teacherInfo' ? item.url : item.evaluateUrl"></u-lazy-load>
 				<!-- <voice-playback></voice-playback> -->
 			</view>
 
@@ -26,7 +26,7 @@
 					</view>
 				</view>
 				<view class="footer-text">{{item.title}}</view>
-				<view class="footer-subtitle u-flex u-row-between">
+				<view class="footer-subtitle u-flex u-row-between" v-if="item.state !== 'wait_evaluate'">
 					<view class="left">
 						<text>{{item.score || 0}}</text>
 						<text class="unit">分</text>
@@ -60,6 +60,10 @@
 			type: {
 				type: String,
 				default: 'default'
+			},
+			source: {
+				type: String,
+				default: 'list'
 			}
 		},
 		data() {
@@ -82,7 +86,7 @@
 			},
 			detailTap(){
 				uni.navigateTo({
-					url: `/pages/centers/paintingEvaluation/detail?id=${this.item.id}`
+					url: `/pages/centers/paintingEvaluation/detail?id=${this.item.id}&source=${this.source}`
 				})
 			}
 		}

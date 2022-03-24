@@ -90,10 +90,9 @@
 						</u-navbar>
 					</view>
 					<view class="tabs">
-						<u-tabs ref="tabs" :is-scroll="true"
-							:list="userInfo.roleSelect === 'teacher' && userInfo.authStatus === 1 ? tabList : tabList1"
-							:current="current" bar-width="62" bar-height="8" gutter="40" active-color="#1B1B1B"
-							inactive-color="#9E9E9E" font-size="30" @change="tabChange">
+						<u-tabs ref="tabs" :is-scroll="true" :list="tabList" :current="current" bar-width="62"
+							bar-height="8" gutter="40" active-color="#1B1B1B" inactive-color="#9E9E9E" font-size="30"
+							@change="tabChange">
 						</u-tabs>
 					</view>
 				</u-sticky>
@@ -104,8 +103,7 @@
 				</view>
  -->
 
-				<view class="content-box"
-					v-if="userInfo.roleSelect=== 'teacher' && hasLogin && userInfo.authStatus === 1">
+				<view class="content-box" v-if="isTabActive === 1">
 					<!-- 评画 -->
 					<PaintingEvaluation v-show="current === 0" ref="PaintingEvaluation"></PaintingEvaluation>
 
@@ -129,7 +127,23 @@
 
 				</view>
 
-				<view class="content-box" v-else-if="hasLogin">
+				<view class="content-box" v-if="isTabActive === 3">
+
+					<!-- 动态 -->
+					<dynamic v-show="current === 0" ref="Dynamic"></dynamic>
+
+					<!-- 订单 -->
+					<order v-show="current === 1" ref="Order"></order>
+
+					<!-- 收藏 -->
+					<collection v-show="current === 2" ref="Collection"></collection>
+
+					<!-- 消息 -->
+					<message v-show="current === 3" ref="Message"></message>
+
+				</view>
+				<view class="content-box" v-if="isTabActive === 2">
+
 					<!-- 评画 -->
 					<PaintingEvaluation v-show="current === 0" ref="PaintingEvaluation"></PaintingEvaluation>
 
@@ -191,7 +205,8 @@
 				userInfo: {},
 				foldText: '展开',
 				textEtc: '...',
-				tabList: [{
+				tabList: [],
+				tabList1: [{
 					name: '评画'
 				}, {
 					name: '动态'
@@ -206,9 +221,18 @@
 				}, {
 					name: '消息',
 				}],
-				tabList1: [{
+				tabList2: [{
 					name: '评画'
 				}, {
+					name: '动态'
+				}, {
+					name: '订单',
+				}, {
+					name: '收藏',
+				}, {
+					name: '消息',
+				}],
+				tabList3: [{
 					name: '动态'
 				}, {
 					name: '订单',
@@ -220,6 +244,7 @@
 				current: 0,
 				swiperCurrent: 0,
 				isFixed: false,
+				isTabActive: -1,
 				title: ''
 			}
 		},
@@ -236,7 +261,11 @@
 		},
 		methods: {
 			async initData() {
+
+
 				this.hasLogin = this.$mStore.getters.hasLogin;
+
+				this.tabList = this.tabList3
 				if (this.hasLogin) {
 					await this.getMemberInfo();
 				} else {
@@ -248,15 +277,20 @@
 			},
 
 			refresh() {
-				this.$refs.PaintingEvaluation.refresh();
-				this.$refs.Dynamic.refresh()
-				if (this.userInfo.roleSelect === 'teacher' && this.userInfo.authStatus === 1) {
-					this.$refs.Textbook.refresh()
-					this.$refs.Profit.refresh()
-				}
-				this.$refs.Order.refresh()
-				this.$refs.Collection.refresh()
-				this.$refs.Message.refresh()
+
+				this.$nextTick(() => {
+					if (this.isTabActive === 1 || this.isTabActive === 2) {
+						this.$refs.PaintingEvaluation.refresh();
+					}
+					this.$refs.Dynamic.refresh()
+					if (this.isTabActive === 1) {
+						this.$refs.Textbook.refresh()
+						this.$refs.Profit.refresh()
+					}
+					this.$refs.Order.refresh()
+					this.$refs.Collection.refresh()
+					this.$refs.Message.refresh()
+				})
 			},
 			// 获取用户信息
 			async getMemberInfo() {
@@ -267,7 +301,18 @@
 						let data = r.data
 						let user = r.data.user;
 						user.skilledMajor = user.skilledMajor ? user.skilledMajor.split(",") : []
-						this.userInfo = r.data.user;
+						this.userInfo = user;
+
+						if (user.roleSelect === 'teacher' && user.authStatus === 1) {
+							this.tabList = this.tabList1
+							this.isTabActive = 1
+						} else if (user.roleSelect === 'teacher' && user.authStatus === 0) {
+							this.tabList = this.tabList3
+							this.isTabActive = 3
+						} else {
+							this.tabList = this.tabList2
+							this.isTabActive = 2
+						}
 						this.title = this.userInfo.fullName
 						this.$mStore.commit('login', data.user);
 						this.refresh();
@@ -280,14 +325,14 @@
 						uni.stopPullDownRefresh();
 					});
 			},
-			goLogin(){
+			goLogin() {
 				uni.navigateTo({
 					url: '/pages/public/logintype'
 				})
 			},
 			// 更换背景图
 			updateBgTap() {
-				if(!this.hasLogin) return this.goLogin()
+				if (!this.hasLogin) return this.goLogin()
 				// 从相册选择图片
 				const _this = this;
 				if (!this.userInfo.bgUrl || this.userInfo.bgUrl === '') {
@@ -354,9 +399,12 @@
 				this.noScroll()
 			},
 			noScroll() {
-				this.$refs.PaintingEvaluation.noScroll(this.isFixed)
+				if (this.isTabActive === 1 || this.isTabActive === 2) {
+					this.$refs.PaintingEvaluation.noScroll(this.isFixed)
+				}
+
 				this.$refs.Dynamic.noScroll(this.isFixed)
-				if (this.userInfo.roleSelect === 'teacher' && this.userInfo.authStatus === 1) {
+				if (this.isTabActive === 1) {
 					this.$refs.Textbook.noScroll(this.isFixed)
 					this.$refs.Profit.noScroll(this.isFixed)
 				}
@@ -365,7 +413,7 @@
 				this.$refs.Message.noScroll(this.isFixed)
 			},
 			toSetting: function() {
-				if(!this.hasLogin) return this.goLogin()
+				if (!this.hasLogin) return this.goLogin()
 				uni.navigateTo({
 					url: '/pages/set/setting/index',
 				});
@@ -374,14 +422,14 @@
 			 * @desc 点击关注和粉丝跳转至列表页
 			 */
 			checkfocusList(type) {
-				if(!this.hasLogin) return this.goLogin()
+				if (!this.hasLogin) return this.goLogin()
 				uni.navigateTo({
 					url: `/pages/profile/fansList?type=${type}`,
 				});
 			},
 			// 完善资料
 			userInfoTap() {
-				if(!this.hasLogin) return this.goLogin()
+				if (!this.hasLogin) return this.goLogin()
 				uni.navigateTo({
 					url: '/pages/set/userInfo'
 				})

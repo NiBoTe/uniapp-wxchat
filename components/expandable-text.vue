@@ -3,7 +3,7 @@
 		<view class="text" :class="{'expandable': !collapse}" :style="{'--lineheight':lineHeight + 'rpx',
 			'line-height': lineHeight + 'rpx',
 			'max-height': collapse ? (lineHeight * line) + 'rpx' : '1000px'}">
-			<view class="btn" v-if="lines > line" @click="collapse = !collapse"
+			<view class="btn" v-if="lines > line" @click.stop="collapse = !collapse"
 				:class="{'clearboth': !collapse || line > 1}" :style="{'height': lineHeight + 'rpx'}">
 				<template v-if="useExpandSlot">
 					<slot v-if="collapse" name="expand-icon"></slot>

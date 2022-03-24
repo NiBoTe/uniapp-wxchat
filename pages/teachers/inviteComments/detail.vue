@@ -111,8 +111,8 @@
 				})
 			},
 			addTap() {
-				
-				if(this.imgsList.length >= 9){
+
+				if (this.imgsList.length >= 9) {
 					return this.$mHelper.toast('最多只能上传9张')
 				}
 				// 从相册选择图片
@@ -151,14 +151,14 @@
 							console.log(i)
 							if (list.length - 1 > i) {
 								console.log('=========')
-								
-								
-								if(_this.imgsList.length < 9) {
+
+
+								if (_this.imgsList.length < 9) {
 									_this.handleUploadFile(list, i + 1);
 								} else {
 									return _this.$mHelper.toast('最多只能上传9张图片')
 								}
-								
+
 							}
 						});
 				}).catch(err => {
@@ -178,6 +178,9 @@
 			},
 			// 去支付
 			async submitTap() {
+				if (this.content === '') {
+					return this.$mHelper.toast('请输入作品描述')
+				}
 				if (!this.checked) {
 					return this.$mHelper.toast('请先勾选阅读付费内容使用协议')
 				}
@@ -188,33 +191,29 @@
 					remark: this.content,
 					total: this.imgsList.length
 				}
-				
-				
+
 				this.createOrder(params)
-				
+
 			},
 			async createOrder(params) {
 				this.$http.post(orderLaunch,
 					params).then(res => {
-						
 					const data = res.data;
 					let obj = {
 						amount: data.amount,
 						productName: data.productName,
 						total: data.total,
 						orderId: data.id,
-						fullName: this.detail.fullName 
+						fullName: this.detail.fullName
 					}
-					console.log(obj)
 					uni.navigateTo({
 						url: `/pages/teachers/inviteComments/comfirmOrder?params=${JSON.stringify(obj)}`
 					})
 				}).catch(err => {
 					this.$mHelper.toast(err.msg)
-					uni.hideLoading()
 				})
 			},
-			navTo(){
+			navTo() {
 				uni.navigateTo({
 					url: '/pages/set/about/paymentAgreement'
 				})

@@ -34,6 +34,10 @@
 				default: function() {
 					return {}
 				}
+			},
+			index: {
+				type: Number,
+				default: 0
 			}
 		},
 		data() {
@@ -45,6 +49,12 @@
 			this.detail = this.item
 		},
 		methods: {
+			refresh(data){
+				console.log(data)
+				if(data.index === this.index) {
+					this.$set(this.detail, 'isFollow', data.isFollow)
+				}
+			},
 			followTap() {
 				this.$http.post(addFollow, null, {
 					params: {
@@ -57,7 +67,8 @@
 				}).catch(err => {
 					this.$mHelper.toast(err.msg)
 				})
-			}
+			},
+			
 		}
 	}
 </script>

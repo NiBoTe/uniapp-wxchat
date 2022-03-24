@@ -56,9 +56,10 @@
 						</view>
 					</view>
 
-					<view class="subheader-text u-line-2">
-						{{userInfo.introduce}}
-						<!-- <view class="fold" bindtap="fold" :data-text="foldText" :data-etc="textEtc"></view> -->
+					<view class="subheader-text" v-if="userInfo.introduce">
+						<expandable-text :line="2" expandText="全文" foldText="收起">
+							{{userInfo.introduce}}
+						</expandable-text>
 					</view>
 				</view>
 
@@ -176,11 +177,14 @@
 				userInfo: {},
 				tagPaintList: [], // 评画统计标签
 				tagTeachingMaterialList: [], // 高分教材统计标签
+				activeIndex: 0
 			}
 		},
 		onLoad(options) {
 			if (options.id) {
 				this.id = options.id;
+				
+				this.activeIndex = options.index || 0;
 				this.initData();
 				this.getPaint();
 				this.getTeachingMaterial();
@@ -191,10 +195,8 @@
 				this.$http.get(teacherDetail, {
 					teacherId: this.id
 				}).then(res => {
-					console.log(res)
 					this.userInfo = res.data
 					this.lableList = this.userInfo.skilledMajor ? this.userInfo.skilledMajor.split(',') : []
-					console.log(this.userInfo)
 				}).catch(err => {
 					console.log(err)
 				})
@@ -204,7 +206,6 @@
 				this.$http.get(teacherTagPaintEvaluate, {
 					teacherId: this.id
 				}).then(res => {
-					console.log(res)
 					this.tagPaintList = res.data;
 				})
 			},
@@ -213,13 +214,11 @@
 				this.$http.get(teacherTagTeachingMaterial, {
 					teacherId: this.id
 				}).then(res => {
-					console.log(res)
 					this.tagTeachingMaterialList = res.data;
 				})
 			},
 			tabChange(index) {
 				this.current = index
-				console.log(this.current)
 			},
 			fixedTap(e) {
 				this.isFixed = true
@@ -251,6 +250,7 @@
 				}).then(res => {
 					this.$mHelper.toast(!this.userInfo.isFollow ? '关注成功' : '取消关注成功');
 					this.$set(this.userInfo, 'isFollow', !this.userInfo.isFollow)
+					uni.$emit('update', this.userInfo.isFollow)
 				}).catch(err => {
 					this.$mHelper.toast(err.msg)
 				})

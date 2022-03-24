@@ -33,12 +33,12 @@
 							<view class="left-style"></view>
 							<view class="left-text">{{item.name}}</view>
 						</view>
-						<view class="right" v-if="examSubjectItem.isFaceDetect && type !== 4">
+						<view class="right" v-if="type !== 4">
 							<text class="success" v-if="item.state === 'tested'">已考试</text>
 							<text class="no" v-else-if="item.state === 'untested'">未考试</text>
 							<text class="no" v-else-if="item.state === 'not_pay'">未支付</text>
 						</view>
-						<view class="right" v-else-if="examSubjectItem.isFaceDetect && type === 4">
+						<view class="right" v-else-if="type === 4">
 							<text class="success" v-if="item.state === 'tested'">已考</text>
 							<text class="error" v-else-if="item.state === 'untested'">未考</text>
 							<text class="no" v-else-if="item.state === 'not_pay'">未支付</text>

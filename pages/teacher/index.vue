@@ -16,9 +16,9 @@
 				<!-- option end-->
 				<scroll-view scroll-y class="right-box-scroll" @scrolltolower="lower">
 					<view class="page-view">
-						<view class="class-item" v-for="(item , index) in list" :key="index" @click="detailTap(item)">
+						<view class="class-item" v-for="(item , index) in list" :key="index" @click="detailTap(item, index)">
 							<view class="item-container">
-								<famous-teacher-item :item="item"></famous-teacher-item>
+								<famous-teacher-item :ref="'FamousTeacherItem' + index" :item="item" :index="index"></famous-teacher-item>
 							</view>
 						</view>
 					</view>
@@ -100,9 +100,18 @@
 				this.current++;
 				this.getList();
 			},
-			detailTap(item){
+			detailTap(item, index){
+				uni.$on('update', (data) => {
+					this.$set(this.list[index], 'isFollow' , data)
+					
+					console.log()
+					this.$refs['FamousTeacherItem' + index][0].refresh({
+						index,
+						isFollow: data
+					})
+				})
 				this.$mRouter.push({
-					route: `/pages/teachers/dynamicHomePage?id=${item.id}`
+					route: `/pages/teachers/dynamicHomePage?id=${item.id}&index=${index}`
 				})
 			},
 			// 点击左边的栏目切换

@@ -14,7 +14,11 @@
 						<view class="time-month">{{moment(item.createTime).format('M')}}月</view>
 					</view>
 					<view class="item">
-						<view class="paragraph">{{item.content}}</view>
+						<view class="paragraph" v-if="item.content">
+							<expandable-text :line="2" expandText="展开" foldText="收起">
+								{{item.content}}
+							</expandable-text>
+						</view>
 						<!-- 照片 -->
 						<view class="thumbnails">
 							<view :class="item.snsImgs.length === 1?'my-gallery':'thumbnail'"
@@ -60,11 +64,12 @@
 						</view>
 					</view>
 				</view>
+				<u-gap height="16" bg-color="#F0F0F1"></u-gap>
 			</view>
 
-			<u-loadmore margin-top="30" margin-bottom="30" :status="loadStatus" @loadmore="addData"></u-loadmore>
+			<nodata v-if="!loadStatus !== 'loading' && !list.length"></nodata>
+			<u-loadmore v-else margin-top="30" margin-bottom="30" :status="loadStatus" @loadmore="addData"></u-loadmore>
 		</scroll-view>
-
 
 	</view>
 </template>
@@ -103,7 +108,6 @@
 				reportIndex: 0,
 				commentIndex: -1,
 				content: '',
-
 			};
 		},
 		watch: {
@@ -281,11 +285,10 @@
 		}
 
 		.item {
-			display: flex;
-			align-items: center;
-			flex-direction: column;
-			padding: 24rpx 32rpx;
-			border-bottom: 16rpx solid #F5F5F5;
+			// width: 0;
+			flex: 1;
+			padding: 24rpx 32rpx 0;
+			// border-bottom: 16rpx solid #F5F5F5;
 
 			.item-top {
 				width: 100%;
@@ -328,17 +331,17 @@
 						height: 100%;
 					}
 				}
-
 			}
 
 			.paragraph {
 				width: 100%;
-				margin-top: 12rpx;
-				margin-bottom: 18rpx;
-				font-size: 26rpx;
-				color: #3A3D71;
-				line-height: 23px;
-				word-break: break-all;
+				// width: 100%;
+				// margin-top: 12rpx;
+				// margin-bottom: 18rpx;
+				// font-size: 26rpx;
+				// color: #3A3D71;
+				// line-height: 23px;
+				// word-break: break-all;
 			}
 
 
@@ -354,8 +357,8 @@
 			}
 
 			.thumbnails .thumbnail {
-				width: 220rpx;
-				height: 220rpx;
+				width: 175rpx;
+				height: 175rpx;
 				margin: 4rpx;
 				background: #757575;
 				overflow: hidden;

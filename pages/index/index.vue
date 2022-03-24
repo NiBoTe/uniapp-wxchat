@@ -201,12 +201,12 @@
 					<u-waterfall v-model="hotList[hotIndex].list" ref="uWaterfall">
 						<template v-slot:left="{leftList}">
 							<view class="item" v-for="(item, index) in leftList" :key="index">
-								<painting-evaluation-item :item="item"></painting-evaluation-item>
+								<painting-evaluation-item :item="item" source="home"></painting-evaluation-item>
 							</view>
 						</template>
 						<template v-slot:right="{rightList}">
 							<view class="item" v-for="(item, index) in rightList" :key="index">
-								<painting-evaluation-item :item="item"></painting-evaluation-item>
+								<painting-evaluation-item :item="item" source="home"></painting-evaluation-item>
 							</view>
 						</template>
 					</u-waterfall>

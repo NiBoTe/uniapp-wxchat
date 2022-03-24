@@ -202,15 +202,15 @@
 			},
 			// 去支付
 			async submitTap() {
-				uni.showLoading({
-					title: '支付中'
-				})
 				if (!this.checked) {
 					return this.$mHelper.toast('请先勾选阅读付费内容使用协议')
 				}
 				if (this.detail.isNeedExpress && !this.addressDetail) {
 					return this.$mHelper.toast('请选择收货地址')
 				}
+				uni.showLoading({
+					title: '支付中'
+				})
 				await this.createOrder();
 			},
 			async createOrder() {
@@ -235,9 +235,7 @@
 					tradeType: 'JSAPI'
 				}).then(res => {
 					console.log(res)
-
 					let params = res.data
-
 					uni.hideLoading()
 					uni.requestPayment({
 						provider: 'wxpay',
@@ -260,6 +258,18 @@
 					});
 				}).catch(err => {
 					uni.hideLoading()
+					setTimeout(() => {
+						this.$mHelper.toast(err.msg)
+						if(err.code === 201) {
+							setTimeout(() => {
+								uni.navigateBack({
+									delta: 2
+								})
+							}, 1500)
+						}
+					},500)
+					
+					
 				})
 			},
 

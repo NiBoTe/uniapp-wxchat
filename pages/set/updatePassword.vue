@@ -83,6 +83,15 @@
 			},
 			// 注册
 			toSubmit(e) {
+				
+				if (this.form.code === '') {
+					return this.$mHelper.toast('请输入短信验证码')
+				}
+				
+				if (this.form.password === '') {
+					return this.$mHelper.toast('请输入密码')
+				}
+				
 				this.btnLoading = true;
 				const data = {
 					code: this.form.code,
@@ -124,7 +133,6 @@
 						// 通知验证码组件内部开始倒计时
 						this.$refs.uCode.start();
 					}).catch(err => {
-						console.log(err)
 						uni.hideLoading();
 						this.$mHelper.toast(err.msg);
 					})

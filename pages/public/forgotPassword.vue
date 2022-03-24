@@ -77,6 +77,14 @@
 			},
 			// 注册
 			toSubmit(e) {
+				if(!this.$mHelper.checkMobile(this.form.phone)){
+					return this.$mHelper.toast('手机号码格式有误');
+				}
+				
+				if(this.form.code === ''){
+					return this.$mHelper.toast('请输入短信验证码')
+				}
+				
 				this.btnLoading = true;
 				const data = {
 					mobile: this.form.phone,
@@ -117,7 +125,6 @@
 						// 通知验证码组件内部开始倒计时
 						this.$refs.uCode.start();
 					}).catch(err => {
-						console.log(err)
 						uni.hideLoading();
 						this.$mHelper.toast(err.msg);
 					})

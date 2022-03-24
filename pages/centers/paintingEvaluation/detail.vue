@@ -10,7 +10,7 @@
 					</swiper-item>
 				</swiper>
 				<!-- <view class="dots u-flex u-row-center">{{currentIndex}}/3</view> -->
-				<view class="score u-flex u-row-center" v-if="detail.score >= 0">
+				<view class="score u-flex u-row-center" v-if="detail.score >= 0 && detail.state !== 'wait_evaluate'">
 					<text>{{detail.score || 0}}</text>
 					<text class="unit">分</text>
 				</view>
@@ -51,12 +51,12 @@
 				</view>
 			</view>
 
-			<view class="card-subtitle" :class="detail.wait_evaluate === 'wait_evaluate' ? 'disabled' : ''">
-				<text v-if="detail.wait_evaluate === 'wait_evaluate'">系统已为您提醒该老师进行评画，如长时间未有评画请点击提醒点评按钮让TA为您评画哦！</text>
+			<view class="card-subtitle" :class="state === 'wait_evaluate' ? 'disabled' : ''">
+				<text v-if="detail.state === 'wait_evaluate'">系统已为您提醒该老师进行评画，如长时间未有评画请点击提醒点评按钮让TA为您评画哦！</text>
 				<text v-else>{{detail.textComment || ''}}</text>
 			</view>
 
-			<view class="tips u-flex u-row-between" v-if="detail.wait_evaluate === 'wait_evaluate'">
+			<view class="tips u-flex u-row-between" v-if="detail.state === 'wait_evaluate'">
 				<view class="left">提醒TA来评画吧！</view>
 				<view class="right" @click="tipsTap">提醒点评</view>
 			</view>
@@ -147,9 +147,9 @@
 				</view>
 
 				<view class="right u-flex">
-					<image src="/static/public/applause.png"></image>
-					<image src="/static/public/laugh.png"></image>
-					<image src="/static/public/cool.png"></image>
+					<image src="/static/public/applause.png" @click="sendExpression(0)"></image>
+					<image src="/static/public/laugh.png" @click="sendExpression(1)"></image>
+					<image src="/static/public/cool.png" @click="sendExpression(2)"></image>
 				</view>
 			</view>
 		</view>
@@ -174,9 +174,9 @@
 		orderItemPaintEvaluateDetail,
 		notifyTeacherPaintEvaluate,
 		commentList,
-		addComment
+		addComment,
+		publicOrderItemPaintEvaluateDetail
 	} from '@/api/paint_evaluate_v2.js'
-
 
 	import moment from '@/common/moment.js'
 	export default {
@@ -201,28 +201,34 @@
 				current: 1,
 				size: 10,
 				list: [], // 考试列表
+				source: "list"
 			};
 		},
 		onLoad(options) {
 			if (options.id) {
 				this.id = options.id
+				this.source = options.source
 				
 			}
 		},
 		
 		onShow(){
-			this.hasLogin = this.$mStore.getters.hasLogin
-			if(this.hasLogin) {
-				this.initData()
+			if(this.source !== 'home'){
+				this.hasLogin = this.$mStore.getters.hasLogin
+				if(this.hasLogin) {
+					this.initData()
+				} else {
+					uni.navigateTo({
+						url: '/pages/public/logintype'
+					})
+				}
 			} else {
-				uni.navigateTo({
-					url: '/pages/public/logintype'
-				})
+				this.initData()
 			}
 		},
 		methods: {
 			initData() {
-				this.$http.get(orderItemPaintEvaluateDetail, {
+				this.$http.get(this.source === 'home' ? publicOrderItemPaintEvaluateDetail : orderItemPaintEvaluateDetail, {
 					id: this.id
 				}).then(res => {
 					this.detail = res.data
@@ -242,8 +248,10 @@
 			},
 			// 提醒点评
 			tipsTap() {
-				this.$http.post(notifyTeacherPaintEvaluate, {
-					id: this.id
+				this.$http.post(notifyTeacherPaintEvaluate, null, {
+					params: {
+						id: this.id
+					}
 				}).then(res => {
 					this.$mHelper.toast('提醒成功！')
 				}).catch(err => {
@@ -324,6 +332,21 @@
 					item.isMore = !item.isMore
 				}
 
+			},
+			// 发送表情
+			sendExpression(type) {
+				this.isFocus = true
+				switch (type) {
+					case 0:
+						this.content += '👏'
+						break;
+					case 1:
+						this.content += '😁'
+						break;
+					case 2:
+						this.content += '😎'
+						break;
+				}
 			},
 			// 评论
 			commentTap() {

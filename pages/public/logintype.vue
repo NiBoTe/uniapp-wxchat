@@ -158,6 +158,11 @@
 					return;
 				}
 				
+				if(!this.$mHelper.checkMobile(this.form.phone)){
+					this.btnLoading = false;
+					return this.$mHelper.toast('手机号码格式有误');
+				}
+				
 				if(this.loginType === 'code') {
 					this.thirdPartyAuthLogin();
 				} else {
@@ -187,6 +192,12 @@
 			},
 
 			thirdPartyAuthLogin() {
+				
+				if(this.form.code === ''){
+					this.btnLoading = false;
+					return this.$mHelper.toast('请输入短信验证码')
+				}
+				
 				const params = {
 					mobile: this.form.phone,
 					platform: 'miniapp',
@@ -233,6 +244,10 @@
 			
 			// 手机号密码登录
 			passwordLogin(){
+				if(this.form.password === ''){
+					this.btnLoading = false;
+					return this.$mHelper.toast('请输入密码')
+				}
 				const data = {
 					mobile: this.form.phone,
 					platform: 'miniapp',
@@ -318,7 +333,8 @@
 						// 通知验证码组件内部开始倒计时
 						this.$refs.uCode.start();
 					}).catch(err => {
-						console.log(err)
+						uni.hideLoading();
+						this.$mHelper.toast(err.msg)
 					})
 
 				} else {

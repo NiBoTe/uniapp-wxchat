@@ -99,9 +99,7 @@
 					tradeType: 'JSAPI'
 				}).then(res => {
 					console.log(res)
-
 					let params = res.data
-
 					uni.hideLoading()
 					uni.requestPayment({
 						provider: 'wxpay',
@@ -124,6 +122,10 @@
 					});
 				}).catch(err => {
 					uni.hideLoading()
+					
+					setTimeout(() => {
+						this.$mHelper.toast(err.msg)
+					},500)
 				})
 			},
 		}

@@ -185,7 +185,6 @@
 						// 通知验证码组件内部开始倒计时
 						this.$refs.uCode.start();
 					}).catch(err => {
-						console.log(err)
 						uni.hideLoading();
 						this.$mHelper.toast(err.msg);
 					})

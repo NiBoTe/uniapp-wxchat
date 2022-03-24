@@ -64,12 +64,8 @@
 				<view class="borderBottom"></view>
 
 				<view class="main-box">
-
-
 					<!-- 考试 -->
 					<examination ref="Examination" v-show="current === 0"></examination>
-
-
 					<!-- 历年考题 -->
 					<examination-paper ref="ExaminationPaper" v-show="current === 1"></examination-paper>
 
@@ -84,7 +80,7 @@
 					<famous-teacher ref="FamousTeacher" v-show="current === 4"></famous-teacher>
 
 					<!-- 动态 -->
-					<dynamic ref="Dynamic" v-show="current === 5"></dynamic>
+					<dynamic ref="Dynamic" v-if="current === 5"></dynamic>
 
 				</view>
 			</view>
@@ -193,7 +189,7 @@
 				this.$refs.TextBook.refresh(keyword);
 				this.$refs.PaintingEvaluation.refresh(keyword);
 				this.$refs.FamousTeacher.refresh(keyword);
-				this.$refs.Dynamic.refresh(keyword);
+				
 			},
 			// 删除历史记录
 			deleteTap() {
@@ -234,6 +230,13 @@
 			tabChange(index) {
 				this.current = index
 				this.swiperCurrent = index;
+				
+				if(index === 5) {
+					
+					this.$nextTick(() => {
+						this.$refs.Dynamic.refresh(this.keyword);
+					})
+				}
 			},
 			// swiper-item左右移动，通知tabs的滑块跟随移动
 			transition(e) {
@@ -257,7 +260,8 @@
 	.container {
 
 		position: relative;
-
+		height: 100vh;
+		overflow: hidden;
 		.panel {
 			position: absolute;
 			z-index: 99;
@@ -399,7 +403,6 @@
 
 			.main {
 				border-top: 2px solid #E9E9E9;
-
 				.tabs {
 					padding-top: 4rpx;
 				}

@@ -32,7 +32,11 @@
 						<image src="/static/public/dynamic_menu.png"></image>
 					</view>
 				</view>
-				<view class="paragraph">{{item.content}}</view>
+				<view class="paragraph">
+					<expandable-text :line="3" expandText="全文" foldText="收起">
+						{{item.content}}
+					</expandable-text>
+				</view>
 				<!-- 照片 -->
 				<view class="thumbnails">
 					<view :class="item.snsImgs.length === 1?'my-gallery':'thumbnail'"
@@ -83,9 +87,9 @@
 							@confirm="confirmTap(item, index)" />
 					</view>
 					<view class="right u-flex">
-						<image src="/static/public/applause.png"></image>
-						<image src="/static/public/laugh.png"></image>
-						<image src="/static/public/cool.png"></image>
+						<image src="/static/public/applause.png" @click="sendExpression(index,0)"></image>
+						<image src="/static/public/laugh.png" @click="sendExpression(index,1)"></image>
+						<image src="/static/public/cool.png" @click="sendExpression(index,2)"></image>
 					</view>
 				</view>
 			</view>
@@ -220,8 +224,7 @@
 
 			};
 		},
-		onLoad() {
-		},
+		onLoad() {},
 		onShow() {
 			this.hasLogin = this.$mStore.getters.hasLogin
 			this.current = 1;
@@ -236,6 +239,12 @@
 			},
 			// 收藏
 			favoriteTap(item, index) {
+				if (!this.hasLogin) {
+					uni.navigateTo({
+						url: '/pages/public/logintype'
+					})
+					return
+				}
 				this.$http.post(addFavorite, null, {
 					params: {
 						snsId: item.id,
@@ -251,6 +260,12 @@
 			},
 			// 点赞
 			likeTap(item, index) {
+				if (!this.hasLogin) {
+					uni.navigateTo({
+						url: '/pages/public/logintype'
+					})
+					return
+				}
 				this.$http.post(addLike, null, {
 					params: {
 						snsId: item.id,
@@ -312,13 +327,19 @@
 			},
 			// 操作面板
 			handleTap(index, e) {
+				if (!this.hasLogin) {
+					uni.navigateTo({
+						url: '/pages/public/logintype'
+					})
+					return
+				}
 				this.itemIndex = index
 				this.positionY = e.detail.y - this.scrollTop
 				this.$set(this.popData[1], 'title', `不看：${this.list[index].user['fullName']}`)
 				this.popShow = true;
 			},
 			goDetail(item, index) {
-			
+
 				uni.navigateTo({
 					url: `/pages/module/circleDetail/index?id=${item.id}`
 				})
@@ -334,7 +355,7 @@
 						isLike: true,
 						targetUserId: this.list[this.itemIndex].user.id,
 					}).then(res => {
-						if(res.data){
+						if (res.data) {
 							this.current = 1;
 							this.getList()
 						} else {
@@ -358,6 +379,12 @@
 			},
 			// 评论
 			commentTap(index) {
+				if (!this.hasLogin) {
+					uni.navigateTo({
+						url: '/pages/public/logintype'
+					})
+					return
+				}
 				this.commentIndex = index
 			},
 			confirmTap(item, index) {
@@ -376,6 +403,32 @@
 				}).catch(err => {
 					this.$mHelper.toast(err.msg)
 				})
+			},
+
+			// 发送表情
+			sendExpression(index, type) {
+				if (!this.hasLogin) {
+					uni.navigateTo({
+						url: '/pages/public/logintype'
+					})
+					return
+				}
+				if(this.commentIndex !== index) {
+					this.content = ''
+				}
+				
+				this.commentIndex = index
+				switch (type) {
+					case 0:
+						this.content += '👏'
+						break;
+					case 1:
+						this.content += '😁'
+						break;
+					case 2:
+						this.content += '😎'
+						break;
+				}
 			}
 
 		},
@@ -397,12 +450,11 @@
 </script>
 
 <style lang="scss" scoped>
-	
-	
-	.container{
+	.container {
 		width: 100vw;
 		overflow-x: hidden;
 	}
+
 	.list-view {
 		padding-bottom: 160rpx;
 		position: relative;

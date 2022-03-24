@@ -144,9 +144,9 @@
 					admissionTicketCode: this.code,
 					course: this.examSubjectItem.subjectName
 				}).then(res => {
-					
+
 					this.studentDetail = res.data ? res.data[0] : {},
-					this.id = this.studentDetail.examId
+						this.id = this.studentDetail.examId
 				}).catch(err => {
 					this.$mHelper.toast(err.msg)
 				})
@@ -163,7 +163,15 @@
 				const _this = this
 				uni.scanCode({
 					success: function(res) {
-						_this.code = res.result;
+						let result = res.result;
+						if (result.indexOf("#") !== -1) {
+							let arr = result.split("#");
+							_this.$set(_this.examSubjectItem, 'subjectName', arr[0])
+							_this.code = arr[1]
+						} else {
+							_this.code = result
+						}
+
 						_this.searchTap();
 					}
 				});
@@ -223,7 +231,8 @@
 			testUpload(url) {
 				this.$http.post(examPaperUpload, {
 					admissionTicketCode: this.code,
-					course: this.examSubjectItem.subjectName ? this.examSubjectItem.subjectName : this.studentDetail.course,
+					course: this.examSubjectItem.subjectName ? this.examSubjectItem.subjectName : this
+						.studentDetail.course,
 					examId: this.id,
 					img: url
 				}).then(res => {
@@ -405,7 +414,7 @@
 				border-radius: 16rpx;
 				border: 2rpx solid #EDEFF2;
 				text-align: center;
-				
+
 				.badge {
 					position: absolute;
 					right: 0;

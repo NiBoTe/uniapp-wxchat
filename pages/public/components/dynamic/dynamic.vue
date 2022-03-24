@@ -67,9 +67,9 @@
 							@confirm="confirmTap(item, index)" />
 					</view>
 					<view class="right u-flex">
-						<image src="/static/public/applause.png"></image>
-						<image src="/static/public/laugh.png"></image>
-						<image src="/static/public/cool.png"></image>
+						<image src="/static/public/applause.png" @click="sendExpression(index,0)"></image>
+						<image src="/static/public/laugh.png" @click="sendExpression(index,1)"></image>
+						<image src="/static/public/cool.png" @click="sendExpression(index,2)"></image>
 					</view>
 				</view>
 			</view>
@@ -101,8 +101,10 @@
 		addComment,
 		followSnsList
 	} from '@/api/sns.js'
-	
-	import { searchSnsList } from '@/api/search.js'
+
+	import {
+		searchSnsList
+	} from '@/api/search.js'
 	export default {
 		components: {
 			tabBar,
@@ -236,7 +238,7 @@
 				this.popShow = true;
 			},
 			goDetail(item, index) {
-			
+
 				uni.navigateTo({
 					url: `/pages/module/circleDetail/index?id=${item.id}`
 				})
@@ -252,7 +254,7 @@
 						isLike: true,
 						targetUserId: this.list[this.itemIndex].user.id,
 					}).then(res => {
-						if(res.data){
+						if (res.data) {
 							this.current = 1;
 							this.getList()
 						} else {
@@ -295,6 +297,22 @@
 					this.$mHelper.toast(err.msg)
 				})
 			},
+
+			// 发送表情
+			sendExpression(index, type) {
+				this.commentIndex = index
+				switch (type) {
+					case 0:
+						this.content += '👏'
+						break;
+					case 1:
+						this.content += '😁'
+						break;
+					case 2:
+						this.content += '😎'
+						break;
+				}
+			},
 			refresh(keyword) {
 				this.keyword = keyword;
 				this.current = 1;
@@ -315,13 +333,12 @@
 </script>
 
 <style lang="scss" scoped>
-	
-	
-	.container{
+	.container {
 		width: 100vw;
 		overflow-x: hidden;
 		background-color: #fff;
 	}
+
 	.list-view {
 		padding-bottom: 160rpx;
 		position: relative;

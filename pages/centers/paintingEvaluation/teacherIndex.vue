@@ -28,19 +28,19 @@
 				</view>
 
 				<view class="right u-flex" @click="popShow = true">
-					<text>{{selectName}}</text>
+					<text>{{selectName || '选择科目'}}</text>
 					<image src="/static/public/arrow_down.png"></image>
 				</view>
 			</view>
 
 			<u-waterfall v-model="list" ref="uWaterfall">
 				<template v-slot:left="{leftList}">
-					<view class="item" v-for="(item, index) in leftList" :key="index" @click="detailTap(item)">
+					<view class="item" v-for="(item, index) in leftList" :key="index">
 						<painting-evaluation-item :item="item" type="teacherInfo"></painting-evaluation-item>
 					</view>
 				</template>
 				<template v-slot:right="{rightList}">
-					<view class="item" v-for="(item, index) in rightList" :key="index" @click="detailTap(item)">
+					<view class="item" v-for="(item, index) in rightList" :key="index">
 						<painting-evaluation-item :item="item" type="teacherInfo"></painting-evaluation-item>
 					</view>
 				</template>
@@ -58,9 +58,6 @@
 
 		<u-picker mode="selector" v-model="popShow" :range="selectList" range-key="name" @confirm="popTap">
 		</u-picker>
-
-
-
 	</view>
 </template>
 
@@ -97,7 +94,7 @@
 				tabCurrent: 0,
 				popShow: false,
 				selectList: [],
-				selectName: '选择科目'
+				selectName: null
 
 			};
 		},
@@ -111,13 +108,27 @@
 					.then(res => {
 						this.evaluatedList = res.data.evaluatedList
 						this.notEvaluatedList = res.data.notEvaluatedList
-						this.selectList = this.evaluatedList
-						if (this.evaluatedList.length) {
-							this.skilledMajorId = this.evaluatedList[0].id
-							this.getList()
+						if(this.tabCurrent === 0) {
+							this.selectList = this.evaluatedList
+							if (this.evaluatedList.length) {
+								this.skilledMajorId = this.evaluatedList[0].id
+								this.getList()
+							} else {
+								this.loading = false;
+							}
 						} else {
-							this.loading = false;
+							console.log('=========')
+							this.selectList = this.notEvaluatedList
+							if (this.notEvaluatedList.length) {
+								this.skilledMajorId = this.notEvaluatedList[0].id
+								this.getList()
+							} else {
+								this.loading = false;
+							}
 						}
+						
+						
+						
 					}).catch(err => {
 						console.log(err)
 					})
@@ -151,17 +162,20 @@
 			tabTap(index) {
 				this.tabIndex = index;
 				this.current = 1;
+				this.skilledMajorId = '';
+				this.selectName = null;
 				this.$refs.uWaterfall.clear();
 				this.initData()
 			},
 			tabChange(index) {
 				this.tabCurrent = index
-
 				if (this.tabCurrent === 0) {
 					this.selectList = this.evaluatedList
 				} else {
 					this.selectList = this.notEvaluatedList
 				}
+				this.skilledMajorId = '';
+				this.selectName = null;
 				this.current = 1;
 				this.$refs.uWaterfall.clear();
 				this.getList()
@@ -175,16 +189,18 @@
 
 			// 选择科目
 			popTap(e) {
+				e = e[0]
 				if (this.tabCurrent === 0 && this.evaluatedList.length <= 0) return
 				if (this.tabCurrent === 1 && this.notEvaluatedList.length <= 0) return
 				if(this.tabCurrent === 0 && this.evaluatedList.length > 0) {
-					
 					this.selectName = this.evaluatedList[e].name;
 				}
 				if(this.tabCurrent === 1 && this.notEvaluatedList.length > 0) {
-					this.selectName = this.evaluatedList[e].name;
+					this.selectName = this.notEvaluatedList[e].name;
 				}
+				
 				this.skilledMajorId = this.tabCurrent === 0 ? this.evaluatedList[e].id : this.notEvaluatedList[e].id;
+				this.$refs.uWaterfall.clear();
 				this.current = 1;
 				this.getList()
 			},
@@ -251,6 +267,7 @@
 		}
 
 		.content {
+			padding-bottom: 160rpx;
 			&-tabs {
 				padding: 0 34rpx 0 36rpx;
 				background-color: #fff;

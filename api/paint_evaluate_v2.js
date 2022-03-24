@@ -25,6 +25,9 @@ const notifyTeacherPaintEvaluate = `${paint_evaluate_v2}user/notifyTeacherPaintE
 // 评论列表
 const commentList = `${paint_evaluate_v2}commentList`;
 
+// 评画详情
+const publicOrderItemPaintEvaluateDetail = `${paint_evaluate_v2}public/orderItemPaintEvaluateDetail`;
+
 export {
 	addComment,
 	orderItemPaintEvaluateSkilledMajorList,
@@ -33,5 +36,6 @@ export {
 	paintEvaluateCommentTagList,
 	confirmCompleted,
 	notifyTeacherPaintEvaluate,
-	commentList
+	commentList,
+	publicOrderItemPaintEvaluateDetail
 };

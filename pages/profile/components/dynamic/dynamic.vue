@@ -12,7 +12,11 @@
 						<view class="time-month">{{moment(item.createTime).format('M')}}月</view>
 					</view>
 					<view class="item">
-						<view class="paragraph">{{item.content}}</view>
+						<view class="paragraph" v-if="item.content">
+							<expandable-text :line="2" expandText="展开" foldText="收起">
+								{{item.content}}
+							</expandable-text>
+						</view>
 						<!-- 照片 -->
 						<view class="thumbnails">
 							<view :class="item.snsImgs.length === 1?'my-gallery':'thumbnail'"
@@ -215,7 +219,7 @@
 			noScroll(bool) {
 				this.isFixed = bool
 			},
-			refresh(){
+			refresh() {
 				this.current = 1;
 				this.getList()
 			}
@@ -250,12 +254,12 @@
 
 			.item-box {
 				align-items: flex-start;
+				border-bottom: 2rpx solid #F3F3F3;
 
 				.time {
-					
-					
 					margin: 16rpx 44rpx 0 34rpx;
 					padding-top: 20rpx;
+
 					&-day {
 						font-size: 48rpx;
 						font-weight: 600;
@@ -273,9 +277,9 @@
 
 		.item {
 			flex: 1;
-			display: flex;
-			align-items: center;
-			flex-direction: column;
+			// display: flex;
+			// align-items: center;
+			// flex-direction: column;
 			padding: 24rpx 32rpx;
 
 			.item-top {
@@ -347,8 +351,8 @@
 			}
 
 			.thumbnails .thumbnail {
-				width: 220rpx;
-				height: 220rpx;
+				width: 175rpx;
+				height: 175rpx;
 				margin: 4rpx;
 				background: #757575;
 				overflow: hidden;

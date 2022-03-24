@@ -212,7 +212,8 @@
 								policy: data.policy,
 								OSSAccessKeyId: data.accessid,
 								signature: data.signature,
-							}
+							},
+							getTask:this.getTask
 						})
 						.then(r => {
 							_this.recordVideoUpload(r)
@@ -220,6 +221,10 @@
 				}).catch(err => {
 					console.log(err)
 				})
+			},
+			getTask(res, err){
+				console.log(res)
+				console.log(err)
 			},
 			recordVideoUpload(url) {
 				this.$http.post(recordVideoSave, {
