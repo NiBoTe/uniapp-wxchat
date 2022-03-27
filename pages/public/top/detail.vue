@@ -218,11 +218,12 @@
 				})
 			},
 			submitTap() {
+				
+				
 				if (!this.isSignUp) {
 					return
 				}
-				
-				if(this.detail.errorState !== '') {
+				if(this.detail.errorState) {
 					return
 				}
 				if(this.detail.auditState === 'auditing') {

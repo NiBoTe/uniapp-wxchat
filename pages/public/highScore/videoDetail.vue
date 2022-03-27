@@ -5,7 +5,7 @@
 				title-color="#ffffff">
 			</u-navbar>
 
-			<video id="myVideo" :src="videoUrl" @loadedmetadata="videoLoadedmetadata" @error="videoErrorCallback"
+			<video id="myVideo" :custom-cache="false" :src="videoUrl" @loadedmetadata="videoLoadedmetadata" @error="videoErrorCallback"
 				@timeupdate='videoUpdate' @ended="videoEnded" :controls="false" object-fit="contain"
 				enable-play-gesture>
 			</video>
@@ -241,6 +241,9 @@
 
 		onShow() {
 			this.hasLogin = this.$mStore.getters.hasLogin;
+			uni.$on('detailRefresh', () => {
+				this.initData()
+			})
 		},
 		onReady: function(res) {
 			this.videoContext = uni.createVideoContext('myVideo')
@@ -252,6 +255,8 @@
 				}).then(res => {
 					this.detail = res.data
 					console.log(this.detail.notCommentOrderIds)
+					
+					this.detail.videoTrialDuration = this.detail.videoTrialDuration ? this.detail.videoTrialDuration * 60 : 0
 					this.videoUrl = this.detail.items[0].hdImg
 				}).catch(err => {
 					console.log(err)

@@ -99,7 +99,7 @@
 					}
 				}
 				uni.navigateTo({
-					url: `/pages/centers/paintingEvaluation/detail?id=${this.item.id}&source=${this.source}`
+					url: `/pages/centers/paintingEvaluation/detail?id=${this.item.id}&source=${this.source}&type=${this.type}`
 				})
 			}
 		}

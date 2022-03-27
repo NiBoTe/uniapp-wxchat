@@ -71,7 +71,8 @@
                     "NSPhotoLibraryAddUsageDescription" : "商品评价",
                     "NSCameraUsageDescription" : "核销虚拟商品",
                     "NSMicrophoneUsageDescription" : ""
-                }
+                },
+                "UIBackgroundModes" : "audio"
             },
             /* ios打包配置 */
             "sdkConfigs" : {

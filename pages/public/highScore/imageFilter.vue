@@ -6,6 +6,7 @@
 		</view>
 		<!-- <scroll-view :style="{top: top+'px', left: left+'px'}" class="scroll-view_H" scroll-x="true"> -->
 			<canvas canvas-id="canvas" class="canvas"
+				 disable-scroll="true" 
 				:style="{width: upx2px(canvas.width)+ 'px', height: upx2px(canvas.height) +'px'}"
 				@touchstart="touchstart" @touchmove="touchmove" @touchend="touchend"></canvas>
 		<!-- </scroll-view> -->

@@ -103,6 +103,10 @@
 				this.getList();
 			},
 			detailTap(item){
+				uni.$on('textbookRefresh', () => {
+					this.current = 1;
+					this.getList();
+				})
 				uni.navigateTo({
 					url: `/pages/set/order/textbookDetail?orderId=${item.id}`
 				})

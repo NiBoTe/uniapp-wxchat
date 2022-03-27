@@ -468,6 +468,7 @@
 			.paragraph {
 				width: 100%;
 				margin-top: 12rpx;
+				margin-bottom: 24rpx;
 				font-size: 26rpx;
 				font-family: PingFangSC-Regular, PingFang SC;
 				font-weight: 400;

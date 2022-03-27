@@ -2,13 +2,28 @@
 	<view class="detail">
 		<view class="swiper-wrapper">
 			<view class="swiper">
-				<swiper @change="swiperChange">
+				
+				<view class="swiper-item">
+					<image :src="detail.evaluateUrl || detail.url" mode="widthFix"></image>
+					<view class="evaluateParams" v-for="(item, index) in evaluateParams" :key="index" :style="{top: (item.y / (upx2px(100) /100) - 124) + 'px', left:(item.x / (upx2px(100) / 100) - 64) + 'px'}">
+						<view class="evaluateParams-box">
+							<voicePlayback :item="item"></voicePlayback>
+						</view>
+					</view>
+				</view>
+				<!-- <swiper @change="swiperChange">
 					<swiper-item>
 						<view class="swiper-item">
-							<image :src="detail.url"></image>
+							<image :src="detail.evaluateUrl || detail.url" mode="widthFix"></image>
+							<view class="evaluateParams" v-for="(item, index) in evaluateParams" :key="index" :style="{top: item.y / (upx2px(100) /
+								100) + 'px', left:(item.x / (upx2px(100) / 100)) + 'px'}">
+								<view class="evaluateParams-box">
+									<voicePlayback :item="item"></voicePlayback>
+								</view>
+							</view>
 						</view>
 					</swiper-item>
-				</swiper>
+				</swiper> -->
 				<!-- <view class="dots u-flex u-row-center">{{currentIndex}}/3</view> -->
 				<view class="score u-flex u-row-center" v-if="detail.score >= 0 && detail.state !== 'wait_evaluate'">
 					<text>{{detail.score || 0}}</text>
@@ -178,8 +193,14 @@
 		publicOrderItemPaintEvaluateDetail
 	} from '@/api/paint_evaluate_v2.js'
 
+import { orderItemPaintEvaluateTeacherDetail } from '@/api/paint_evaluate_v2_teacher.js'
 	import moment from '@/common/moment.js'
+	
+	import VoicePlayback from '@/components/voicePlayback/voicePlayback.vue'
 	export default {
+		components:{
+			VoicePlayback
+		},
 		data() {
 			return {
 				moment,
@@ -201,14 +222,16 @@
 				current: 1,
 				size: 10,
 				list: [], // 考试列表
-				source: "list"
+				type: 'default',
+				source: "list",
+				evaluateParams: []
 			};
 		},
 		onLoad(options) {
 			if (options.id) {
 				this.id = options.id
 				this.source = options.source
-				
+				this.type = options.type
 			}
 		},
 		
@@ -227,18 +250,45 @@
 			}
 		},
 		methods: {
+			upx2px(value) {
+				if (!value) {
+					return 0;
+				}
+				return uni.upx2px(value);
+			},
 			initData() {
-				this.$http.get(this.source === 'home' ? publicOrderItemPaintEvaluateDetail : orderItemPaintEvaluateDetail, {
-					id: this.id
-				}).then(res => {
-					this.detail = res.data
-					this.getComment();
-				}).catch(err => {
-					this.$mHelper.toast(err.msg)
-					setTimeout(() => {
-						this.$mRouter.back()
-					}, 1500)
-				})
+				
+				if(this.type !== 'teacherInfo') {
+					this.$http.get(this.source === 'home' ? publicOrderItemPaintEvaluateDetail : orderItemPaintEvaluateDetail, {
+						id: this.id
+					}).then(res => {
+						this.detail = res.data
+						this.evaluateParams = this.detail.evaluateParams ? JSON.parse(this.detail.evaluateParams) : []
+						this.getComment();
+					}).catch(err => {
+						this.$mHelper.toast(err.msg)
+						setTimeout(() => {
+							this.$mRouter.back()
+						}, 1500)
+					})
+				} else {
+					this.$http.get(this.source === 'home' ? publicOrderItemPaintEvaluateDetail : orderItemPaintEvaluateTeacherDetail, {
+						id: this.id
+					}).then(res => {
+						this.detail = res.data
+						this.evaluateParams = this.detail.evaluateParams ? JSON.parse(this.detail.evaluateParams) : [],
+						
+						
+						console.log(this.evaluateParams)
+						this.getComment();
+					}).catch(err => {
+						this.$mHelper.toast(err.msg)
+						setTimeout(() => {
+							this.$mRouter.back()
+						}, 1500)
+					})
+				}
+				
 			},
 			swiperChange(e) {
 				this.currentIndex = e.detail.current;
@@ -405,7 +455,7 @@
 
 		.swiper {
 			position: relative;
-			height: 910rpx;
+			height: auto;
 
 
 			&>swiper {
@@ -413,12 +463,19 @@
 			}
 
 			.swiper-item {
+				position: relative;
 				height: 100%;
 
 				&>image {
 					width: 100%;
 					height: 100%;
 					border-radius: 24rpx;
+				}
+				
+				
+				.evaluateParams{
+					position: absolute;
+					z-index: 99;
 				}
 			}
 

@@ -105,7 +105,23 @@
 
 				switch (item.type) {
 					case 0:
-						this.orderDetail(item)
+						
+						if(item.targetType === 9) {
+							uni.navigateTo({
+								url: `/pages/centers/paintingEvaluation/detail?id=${item.targetId}&source=list&type=teacherInfo`
+							})
+						}
+						if(item.targetType === 10) {
+							uni.navigateTo({
+								url: `/pages/centers/paintingEvaluation/teacherIndex?tabCurrent=1`
+							})
+						}
+						
+						if(item.targetType === 11) {
+							uni.navigateTo({
+								url: `/pages/centers/paintingEvaluation/detail?id=${item.targetId}&source=list&type=teacherInfo`
+							})
+						}
 						break;
 
 					case 1:

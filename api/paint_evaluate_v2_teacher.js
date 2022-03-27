@@ -12,6 +12,7 @@ const paintEvaluate = `${paint_evaluate_v2}teacher/paintEvaluate`;
 
 // 评话详情
 const orderItemPaintEvaluateDetail = `${paint_evaluate_v2}teacher/orderItemPaintEvaluateDetail`;
+const orderItemPaintEvaluateTeacherDetail = `${paint_evaluate_v2}teacher/orderItemPaintEvaluateDetail`;
 
 // 专业评画价格
 const paintEvaluatePriceList = `${paint_evaluate_v2}teacher/paintEvaluateList`;
@@ -24,6 +25,7 @@ export {
 	paintEvaluateList,
 	paintEvaluate,
 	orderItemPaintEvaluateDetail,
+	orderItemPaintEvaluateTeacherDetail,
 	paintEvaluatePriceList,
 	paintEvaluateSaveOrUpdate
 };

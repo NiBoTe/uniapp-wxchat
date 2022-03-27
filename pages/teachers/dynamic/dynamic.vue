@@ -335,6 +335,7 @@
 
 			.paragraph {
 				width: 100%;
+				margin-bottom: 24rpx;
 				// width: 100%;
 				// margin-top: 12rpx;
 				// margin-bottom: 18rpx;

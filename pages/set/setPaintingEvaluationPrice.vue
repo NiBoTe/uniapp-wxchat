@@ -51,11 +51,8 @@
 					isDelete: false,
 					skilledMajorId: this.detail.skilledMajorId
 				}).then(res => {
-					console.log(res)
 					this.$mRouter.back()
 				}).catch(err => {
-					console.log(err)
-
 					this.$mHelper.toast(err.msg)
 				})
 			}

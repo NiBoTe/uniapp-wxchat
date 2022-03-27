@@ -192,7 +192,7 @@
 	.studentList {
 		background: #F3F3F3;
 		min-height: 100vh;
-
+		padding-bottom: 160rpx;
 		.header {
 			padding-top: 36rpx;
 			background-color: #fff;

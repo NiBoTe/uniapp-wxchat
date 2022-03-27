@@ -237,6 +237,9 @@
 
 		onShow() {
 			this.hasLogin = this.$mStore.getters.hasLogin;
+			uni.$on('detailRefresh', () => {
+				this.initData()
+			})
 		},
 		methods: {
 
@@ -365,7 +368,7 @@
 					})
 				} else {
 					uni.navigateTo({
-						url: `/pages/public/highScore/evaluate?id=${this.id}&index=${this.activeIndex}`
+						url: `/pages/public/highScore/evaluate?id=${this.id}&index=${this.activeIndex}&orderId=${this.detail.notCommentOrderIds.length ? this.detail.notCommentOrderIds[0] : '' }`
 					})
 				}
 

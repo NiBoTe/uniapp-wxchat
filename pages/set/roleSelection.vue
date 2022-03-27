@@ -49,6 +49,8 @@
 					this.$mStore.commit('login', Object.assign(this.$mStore.state.userInfo, {
 						roleSelect: type
 					}))
+					
+					uni.$emit('roleSelect', type)
 				}).catch(err => {
 					this.$mHelper.toast(err.msg)
 				})

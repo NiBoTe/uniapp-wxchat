@@ -87,7 +87,7 @@
 				// }
 				this.$http.post(myAddTeachingMaterial, this.params).then(res => {
 					this.$mHelper.toast('发布成功')
-					
+					uni.$emit('detailRefresh',true);
 					setTimeout(() => {
 						uni.navigateBack({
 							delta: 2

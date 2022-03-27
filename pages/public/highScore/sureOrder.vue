@@ -352,7 +352,7 @@
 				this.druationTime = this.formatSeconds(this.duration);
 
 				if (!this.detail.isPayed) {
-					this.sliderMax = ((this.detail.videoTrialDuration / this.duration) * 100).toFixed(2);
+					this.sliderMax = ((this.detail.videoTrialDuration * 60 / this.duration) * 100).toFixed(2);
 				}
 			},
 			navTo(){

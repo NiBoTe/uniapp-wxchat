@@ -143,7 +143,7 @@
 			<view class="footer-btn" @click="submitTap">立即支付</view>
 		</view>
 
-		<view class="footer" v-if="orderDetail.state === 'DELIVERED'">
+		<view class="footer" v-if="orderDetail.state === 'DELIVERED' && orderDetail.teacherId !== userInfo.id">
 			<view class="footer-btn" @click="receivingTap">确认收货</view>
 		</view>
 
@@ -430,6 +430,8 @@
 					expressNumber: this.expressNumber,
 					orderId: this.orderId
 				}).then(res => {
+					uni.$emit('textbookRefresh', true)
+					this.$mHelper.toast('发货成功')
 					this.initData()
 					this.selectShow = false;
 				}).catch(err => {
@@ -530,7 +532,7 @@
 				this.druationTime = this.formatSeconds(this.duration);
 
 				if (this.orderDetail.status !== 1) {
-					this.sliderMax = ((this.productDetail.videoTrialDuration / this.duration) * 100).toFixed(2);
+					this.sliderMax = ((this.productDetail.videoTrialDuration * 60 / this.duration) * 100).toFixed(2);
 				}
 			}
 

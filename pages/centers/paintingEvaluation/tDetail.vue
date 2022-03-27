@@ -5,7 +5,12 @@
 				<swiper @change="swiperChange">
 					<swiper-item>
 						<view class="swiper-item">
-							<image :src="detail.evaluateUrl"></image>
+							<image :src="detail.evaluateUrl" mode="widthFix"></image>
+							<view class="evaluateParams" v-for="(item, index) in evaluateParams" :key="index" :style="{top: item.y + 'px', left: item.x + 'px'}">
+								<view class="evaluateParams-box">
+									<voicePlayback :item="item"></voicePlayback>
+								</view>
+							</view>
 						</view>
 					</swiper-item>
 				</swiper>
@@ -88,6 +93,7 @@
 					color: '#1B1B1B'
 				},
 				playStatus: 0, //录音播放状态 0:未播放 1:正在播放
+				evaluateParams: []
 			};
 		},
 		onLoad(options) {
@@ -103,6 +109,7 @@
 				}).then(res => {
 					console.log(res)
 					this.detail = res.data
+					this.evaluateParams = this.detail.evaluateParams ? JSON.parse(this.detail.evaluateParams) : []
 				})
 			},
 			swiperChange(e) {
@@ -170,6 +177,11 @@
 					width: 100%;
 					height: 100%;
 					border-radius: 24rpx;
+				}
+				
+				.evaluateParams{
+					position: absolute;
+					z-index: 99;
 				}
 			}
 

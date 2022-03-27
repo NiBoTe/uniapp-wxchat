@@ -74,16 +74,20 @@ import TextbookItem from './textbookItem.vue'
 			this.getList();
 			
 			uni.$on('removeHighScore', () => {
+				this.$refs.uWaterfall.clear();
 				this.current = 1
 				this.getList()
 			})
 			
 			uni.$on('offHighScore', () => {
+				console.log('=======')
+				this.$refs.uWaterfall.clear();
 				this.current = 1
 				this.getList()
 			})
 			
 			uni.$on('updateHighScore', () => {
+				this.$refs.uWaterfall.clear();
 				this.current = 1
 				this.getList()
 			})

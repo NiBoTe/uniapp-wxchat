@@ -252,7 +252,9 @@
 			await this.initData();
 		},
 		async onShow() {
-
+			if(this.hasLogin){
+				await this.getMemberInfo();
+			}
 			uni.$on('isRefresh', async (bool) => {
 				if (bool) {
 					await this.initData();
@@ -290,6 +292,10 @@
 					this.$refs.Order.refresh()
 					this.$refs.Collection.refresh()
 					this.$refs.Message.refresh()
+					
+					setTimeout(() => {
+						uni.stopPullDownRefresh()
+					}, 1500)
 				})
 			},
 			// 获取用户信息
@@ -301,21 +307,24 @@
 						let data = r.data
 						let user = r.data.user;
 						user.skilledMajor = user.skilledMajor ? user.skilledMajor.split(",") : []
-						this.userInfo = user;
-
-						if (user.roleSelect === 'teacher' && user.authStatus === 1) {
-							this.tabList = this.tabList1
-							this.isTabActive = 1
-						} else if (user.roleSelect === 'teacher' && user.authStatus === 0) {
-							this.tabList = this.tabList3
-							this.isTabActive = 3
-						} else {
-							this.tabList = this.tabList2
-							this.isTabActive = 2
+						
+						if(user.roleSelect !== this.userInfo.roleSelect) {
+							if (user.roleSelect === 'teacher' && user.authStatus === 1) {
+								this.tabList = this.tabList1
+								this.isTabActive = 1
+							} else if (user.roleSelect === 'teacher' && user.authStatus === 0) {
+								this.tabList = this.tabList3
+								this.isTabActive = 3
+							} else {
+								this.tabList = this.tabList2
+								this.isTabActive = 2
+							}
+							this.refresh();
 						}
+						this.userInfo = user;
 						this.title = this.userInfo.fullName
 						this.$mStore.commit('login', data.user);
-						this.refresh();
+					
 					})
 					.catch((err) => {
 						console.log(err)
@@ -414,6 +423,22 @@
 			},
 			toSetting: function() {
 				if (!this.hasLogin) return this.goLogin()
+				
+				uni.$on('roleSelect', (role) => {
+					console.log(role)
+					this.userInfo.roleSelect = role
+					
+					if (role === 'teacher' && this.userInfo.authStatus === 1) {
+						this.tabList = this.tabList1
+						this.isTabActive = 1
+					} else if (role === 'teacher' && this.userInfo.authStatus === 0) {
+						this.tabList = this.tabList3
+						this.isTabActive = 3
+					} else {
+						this.tabList = this.tabList2
+						this.isTabActive = 2
+					}
+				})
 				uni.navigateTo({
 					url: '/pages/set/setting/index',
 				});
@@ -433,7 +458,10 @@
 				uni.navigateTo({
 					url: '/pages/set/userInfo'
 				})
-			}
+			},
+		},
+		onPullDownRefresh() {
+			this.refresh();
 		}
 	}
 </script>

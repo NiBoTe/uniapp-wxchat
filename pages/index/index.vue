@@ -431,9 +431,11 @@
 			},
 			// 不同意
 			cancelTap() {
-				console.log('====')
-				uni.navigateBack({
-					delta: 1
+				// uni.navigateBack({
+				// 	delta: 1
+				// })
+				uni.navigateTo({
+					url: '/pages/public/logintype'
 				})
 			},
 			// 同意

@@ -36,12 +36,12 @@
 			<u-waterfall v-model="list" ref="uWaterfall">
 				<template v-slot:left="{leftList}">
 					<view class="item" v-for="(item, index) in leftList" :key="index">
-						<painting-evaluation-item :item="item" type="teacherInfo"></painting-evaluation-item>
+						<painting-evaluation-item :item="item" :type="tabIndex === 0 ? 'teacherInfo' : 'default'"></painting-evaluation-item>
 					</view>
 				</template>
 				<template v-slot:right="{rightList}">
 					<view class="item" v-for="(item, index) in rightList" :key="index">
-						<painting-evaluation-item :item="item" type="teacherInfo"></painting-evaluation-item>
+						<painting-evaluation-item :item="item" :type="tabIndex === 0 ? 'teacherInfo' : 'default'"></painting-evaluation-item>
 					</view>
 				</template>
 			</u-waterfall>
@@ -98,7 +98,8 @@
 
 			};
 		},
-		onLoad() {
+		onLoad(options) {
+			if(options.tabCurrent) this.tabCurrent = Number(options.tabCurrent)
 			this.initData()
 		},
 		methods: {

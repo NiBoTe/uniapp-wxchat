@@ -29,10 +29,10 @@
 						{{addressDetail.areaNames.replace(/,/g, ' ')}}{{addressDetail.address}}
 					</view>
 					<view class="line">
-					
+
 					</view>
 				</view>
-				
+
 
 				<view class="parameter-list">
 					商品名称 ：{{detail.question.title}}
@@ -87,6 +87,7 @@
 				addressList: [],
 				addressDetail: null,
 				productDetail: null,
+				btnLoading: false,
 			}
 		},
 		onLoad(options) {
@@ -119,7 +120,7 @@
 				}).then(res => {
 					this.productDetail = res.data
 					this.goPay();
-					
+
 				})
 			},
 			// 选择地址
@@ -138,6 +139,9 @@
 			},
 			// 去支付
 			async submitTap() {
+				
+				
+				
 				uni.showLoading({
 					title: '支付中'
 				})
@@ -147,44 +151,65 @@
 				if (this.detail.isNeedExpress && !this.addressDetail) {
 					return this.$mHelper.toast('请选择收货地址')
 				}
+				
+				if(this.btnLoading) return
+				this.btnLoading = true;
 				await this.createOrder();
 			},
-			goPay(){
+			goPay() {
 				this.$http.post(orderPay, {
 					openid: this.$mStore.state.openid,
 					orderId: this.productDetail.id,
 					payType: 1,
 					tradeType: 'JSAPI'
 				}).then(res => {
-					console.log(res)
-					
 					let params = res.data
-					
 					uni.hideLoading()
+					this.btnLoading = false;
 					uni.requestPayment({
-					    provider: 'wxpay',
-					    timeStamp: params.timeStamp,
-					    nonceStr: params.nonceStr,
-					    package: params.packageValue,
-					    signType: params.signType,
-					    paySign: params.paySign,
-					    success: (res) =>  {
+						provider: 'wxpay',
+						timeStamp: params.timeStamp,
+						nonceStr: params.nonceStr,
+						package: params.packageValue,
+						signType: params.signType,
+						paySign: params.paySign,
+						success: (res) => {
 							this.$mHelper.toast('支付成功')
 							setTimeout(() => {
 								uni.navigateBack({
 									delta: 2
 								})
 							}, 1500)
-					    },
-					    fail: (err) => {
-							this.$mHelper.toast('支付失败')
-					    }
+						},
+						fail: (err) => {
+							if (err.code === 201) {
+								this.$mHelper.toast('支付成功')
+								setTimeout(() => {
+									uni.navigateBack({
+										delta: 2
+									})
+								}, 1500)
+							} else {
+								this.$mHelper.toast('支付失败')
+							}
+						}
 					});
 				}).catch(err => {
+					this.btnLoading = false;
+					if (err.code === 201) {
+						this.$mHelper.toast('支付成功')
+						setTimeout(() => {
+							uni.navigateBack({
+								delta: 2
+							})
+						}, 1500)
+					} else {
+						this.$mHelper.toast('支付失败')
+					}
 					uni.hideLoading()
 				})
 			},
-			navTo(){
+			navTo() {
 				uni.navigateTo({
 					url: '/pages/set/about/paymentAgreement'
 				})

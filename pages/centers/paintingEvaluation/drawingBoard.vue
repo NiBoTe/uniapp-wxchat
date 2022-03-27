@@ -1,26 +1,27 @@
 <template>
-	<view class="container" v-if="detail">
-		
-		<scroll-view class="scroll-view_H" scroll-y="true">
+	<view class="container">
+		<canvas-drag ref="canvasRef" id="canvas-drag" :graph="graph" enableUndo="true" :active="selectActive"
+			@actionChange="actionChange">
+		</canvas-drag>
+		<!-- <scroll-view class="scroll-view_H" scroll-y="true">
 			<canvas canvas-id="canvas" class="canvas"
 				:style="{width: upx2px(canvas.width)+ 'px', height: upx2px(canvas.height) +'px'}"
 				@touchstart="touchstart" @touchmove="touchmove" @touchend="touchend"></canvas>
-		</scroll-view>
-		
-		<!-- <drawing-board :url="detail.url" cid="drawingBoard" @sumbit="submitTap"></drawing-board> -->
-		
-		
+		</scroll-view> -->
+
 		<view class="drawingBoard-fixed-bottom">
-			<view class="drawingBoard-fixed-bottom-handle">
-				<view class="drawingBoard-btn" v-if="selectActive === 0">
+			<view class="drawingBoard-fixed-bottom-handle"
+				v-if="selectActive !== 1 && selectActive !== 3 && selectActive !== -1">
+				<view class="drawingBoard-btn" v-if="selectActive === 0" @longpress="longpressBtn()"
+					@touchend="touchendBtn()">
 					<image :src="setSrc('painting/voice_start.png')"></image>
 					<text>长按添加评语</text>
 				</view>
-				<view class="drawingBoard-text" v-if="selectActive === 2">
+				<view class="drawingBoard-text" v-if="selectActive === 2" style="padding-top: 20rpx;">
 					<view class="drawingBoard-color">
 						<color-picker ref="colorPicker" :color="colorRgb" @confirm="colorConfirm"></color-picker>
 					</view>
-					
+
 					<view class="thickness u-flex">
 						<text>细</text>
 						<view class="slider">
@@ -30,26 +31,34 @@
 						<text>粗</text>
 					</view>
 				</view>
+
+				<view class="drawingBoard-text" v-if="selectActive === 4">
+					<view class="drawingBoard-color">
+						<color-picker ref="colorPicker" :color="colorCircleRgb" @confirm="colorCircleConfirm">
+						</color-picker>
+					</view>
+				</view>
 			</view>
 			<view class="drawingBoard-fixed-bottom-item drawingBoard-tools">
 				<view class="drawingBoard-tools-item" @click="selectHandle(0)">
 					<image v-if="selectActive === 0" :src="setSrc('painting/voice_active.png')"></image>
 					<image v-else :src="setSrc('painting/voice.png')"></image>
 				</view>
-				
+
 				<view class="drawingBoard-tools-item" @click="selectHandle(1)">
-					<image v-if="selectActive === 1" :src="setSrc('painting/words_active.png')"></image>
-					<image v-else :src="setSrc('painting/words.png')"></image>
+					<!-- <image v-if="selectActive === 1" :src="setSrc('painting/words_active.png')"></image> -->
+					<image :src="setSrc('painting/words.png')"></image>
 				</view>
 				<view class="drawingBoard-tools-item" @click="selectHandle(2)">
 					<image v-if="selectActive === 2" :src="setSrc('painting/pen_active.png')"></image>
 					<image v-else :src="setSrc('painting/pen.png')"></image>
 				</view>
-				<view class="drawingBoard-tools-item" @click="lineWidth">
+				<view class="drawingBoard-tools-item" @click="selectHandle(3)">
 					<image :src="setSrc('painting/arrow.png')"></image>
 				</view>
-				<view class="drawingBoard-tools-item" @click="color">
-					<image :src="setSrc('painting/circle.png')"></image>
+				<view class="drawingBoard-tools-item" @click="selectHandle(4)">
+					<image v-if="selectActive === 4" :src="setSrc('painting/circle_active.png')"></image>
+					<image v-else :src="setSrc('painting/circle.png')"></image>
 				</view>
 				<view class="drawingBoard-tools-item" @click="revoke">
 					<image :src="setSrc('painting/esc.png')"></image>
@@ -58,24 +67,45 @@
 					<image src="../../static/drawingBoard/qingkong_1.png"></image>
 				</view> -->
 			</view>
-			
+
 			<view class="drawingBoard-next" @click="submitTap()">
 				<view class="drawingBoard-btn">下一步</view>
+			</view>
+		</view>
+
+		<u-popup v-model="audioShow" mode="center">
+			<view class="prompt-layer">
+				<view class="prompt-loader">
+					<view class="em" v-for="(item,index) in 15" :key="index"></view>
+				</view>
+				<text class="span">松手结束录音</text>
+			</view>
+		</u-popup>
+
+
+		<view class="mask" v-if="maskShow">
+			<view class="mask-header u-flex u-row-between">
+				<view class="left" @click="maskShow = false">取消</view>
+				<view class="right u-flex u-row-center" @click="textConfirm">保存</view>
+			</view>
+			<view class="mask-content">
+				<textarea placeholder="请输入" v-model="textValue" :cursor-spacing="20" placeholder-style="font-size:14px;"
+					:style="{color: textColor}" />
+			</view>
+
+			<view class="mask-footer">
+				<color-picker ref="colorPicker" :color="textRgb" @confirm="colorTextConfirm"></color-picker>
 			</view>
 		</view>
 	</view>
 </template>
 
 <script>
-	import DrawingBoard from '@/components/drawingBoard/drawingBoard.vue'
-	const transverse_canvas_width = 1000;
-	const lengthways_canvas_height = 1000;
-	import ImageFilters from '@/utils/weImageFilters.js';
-	import Helper from '@/utils/weImageFiltersHelper.js';
-	let helper = '';
-	let strokes = [];
-	
-	let initImageData = {}
+	import canvasDrag from "@/components/canvas-drag/index";
+	const recorderManager = uni.getRecorderManager()
+	const innerAudioContext = uni.createInnerAudioContext()
+	var init; // 录制时长计时器
+	var timer; // 播放 录制倒计时
 	import {
 		generatePostPolicy
 	} from '@/api/basic.js'
@@ -83,32 +113,30 @@
 		orderItemPaintEvaluateDetail
 	} from '@/api/paint_evaluate_v2_teacher.js'
 	export default {
-		components:{
-			DrawingBoard
-		},
+
 		data() {
 			return {
-				top: -99999,
-				left: -99999,
+
+				graph: {},
+				audioShow: false, // 音频
+				maskShow: false, // 文字
 				StatusBar: this.StatusBar,
-				canvas: { //upx
-					width: 0,
-					height: 0,
-					origin_width: 0,
-					origin_height: 0,
-				},
-				render_src: '',
-				render_image: { //px
-					width: 0,
-					height: 0,
-					rotate_width: 0,
-					rotate_height: 0,
-					max_width: 375,
-					max_height: 0
-				},
-				width: 0,
-				height: 0,
 				selectActive: 0,
+
+				// 画板
+
+				id: null,
+				url: '',
+				detail: null,
+				// 录音
+				audioShow: false,
+				count: null, // 录制倒计时
+				time: 0, //录音时长
+				duration: 600000, //录音最大值ms 60000/1分钟
+				audioLength: 0,
+				playStatus: 0, //录音播放状态 0:未播放 1:正在播放
+
+				tempFilePath: '', //音频路径
 				colorRgb: {
 					r: 255,
 					g: 0,
@@ -122,214 +150,265 @@
 					a: 0.6
 				},
 				thicknessValue: 3, // 线条粗细
-				// 画板
-				
-				id: null,
-				url: '',
-				detail: null
+				textRgb: {
+					r: 255,
+					g: 0,
+					b: 0,
+					a: 0.6
+				},
+				textColor: {
+					r: 255,
+					g: 0,
+					b: 0,
+					a: 0.6
+				},
+				colorCircleRgb: {
+					r: 255,
+					g: 0,
+					b: 0,
+					a: 0.6
+				},
+				colorCircleColor: {
+					r: 255,
+					g: 0,
+					b: 0,
+					a: 0.6
+				},
+
+				textValue: ''
 			};
 		},
-		onLoad(options) {
-			if(options.id){
-				 this.id = options.id;
-				 
-				 uni.getSystemInfo({
-				 	success: (res) => {
-				 		console.log(res)
-				 		this.width = res.windowWidth;
-				 		this.height = res.windowHeight;
-				 		 this.initData()
-				 		
-				 	}
-				 });
-				
+		components: {
+			canvasDrag
+		},
+
+		watch: {
+			thicknessValue(val) {
+				this.$refs.canvasRef.changeLineWidth(val)
 			}
 		},
-		methods:{
+		onLoad(options) {
+			if (options.id) {
+				uni.removeStorageSync('paintingEvaluationJson')
+				this.id = options.id;
+				this.initData()
+			}
+		},
+		methods: {
+			// /**
+			//  * 添加测试图片
+			//  */
+			// onAddTest() {
+			// 	this.graph = {
+			// 		type: 'text',
+			// 		text: 'helloworld'
+			// 	}
+			// 	// this.graph = {
+			// 	// 	w: 120,
+			// 	// 	h: 120,
+			// 	// 	type: 'image',
+			// 	// 	url: "/static/public/add_people.png"
+			// 	// }
+			// },
+
+			// 倒计时
+			countdown(val) {
+				let _then = this;
+				_then.count = Number(val);
+				timer = setInterval(function() {
+					if (_then.count > 0) {
+						_then.count--
+					} else {
+						_then.longPress = '1';
+						clearInterval(timer);
+					}
+				}, 1000);
+			},
+			// 长按录音事件
+			longpressBtn() {
+
+				this.audioShow = true;
+				this.countdown(60 * 10); // 倒计时
+				clearInterval(init) // 清除定时器
+				recorderManager.onStop((res) => {
+					console.log(res.tempFilePath)
+					this.tempFilePath = res.tempFilePath;
+					this.recordingTimer(this.time);
+				})
+				const options = {
+					duration: this.duration, // 指定录音的时长，单位 ms
+					sampleRate: 16000, // 采样率
+					numberOfChannels: 1, // 录音通道数
+					encodeBitRate: 96000, // 编码码率
+					format: 'mp3', // 音频格式，有效值 aac/mp3
+					frameSize: 50, // 指定帧大小，单位 KB
+				}
+				this.recordingTimer();
+				recorderManager.start(options);
+				// 监听音频开始事件
+				recorderManager.onStart((res) => {
+					console.log(res)
+				})
+			},
+			// 长按松开录音事件
+			touchendBtn() {
+				this.audioShow = false;
+				recorderManager.onStop((res) => {
+					console.log(res)
+					this.tempFilePath = res.tempFilePath
+					this.audioLength = res.duration
+					this.uploadAudioFile()
+				})
+				this.recordingTimer(this.time)
+				recorderManager.stop()
+			},
+			// 上传语音
+			async uploadAudioFile() {
+				const _this = this;
+				const filePath = this.tempFilePath;
+
+				console.log(filePath)
+				await _this.$http.get(generatePostPolicy, {
+					app_token: uni.getStorageSync('accessToken')
+				}).then(async res => {
+					console.log(res)
+					let data = res.data;
+					await _this.$http
+						.upload(data.host, {
+							filePath,
+							formData: {
+								key: data.dir,
+								policy: data.policy,
+								OSSAccessKeyId: data.accessid,
+								signature: data.signature,
+							}
+						})
+						.then(async r => {
+							this.graph = {
+								type: 'audio',
+								color: '#ffffff',
+								text: this.$mHelper.formatSeconds(this.audioLength / 1000,
+									'seconds'),
+								tempFilePath: r
+							}
+						});
+				}).catch(err => {
+					console.log(err)
+				})
+			},
+			recordingTimer(time) {
+				var that = this;
+				if (time == undefined) {
+					// 将计时器赋值给init
+					init = setInterval(function() {
+						that.time++
+					}, 1000);
+				} else {
+					clearInterval(init)
+				}
+			},
+
 			initData() {
 				this.$http.get(orderItemPaintEvaluateDetail, {
 					id: this.id
 				}).then(res => {
 					console.log(res)
 					this.detail = res.data;
-					this.init_image()
+					this.$refs.canvasRef.init_image(this.detail.url)
 				})
 			},
-			// 初始化画板
-			init_image() {
-				uni.getImageInfo({
-					src: this.detail.url,
-					success: (image) => {
-						if (image.width >= image.height) {
-							//初始化canvas尺寸
-							this.canvas.width = image.width > transverse_canvas_width ?
-								transverse_canvas_width : image.width
-							this.canvas.height = parseInt(this.canvas.width * image.height / image.width);
-							this.canvas.origin_height = this.canvas.height
-							this.canvas.origin_width = this.canvas.width
-			
-							//初始化预览图尺寸
-							this.render_image.width = this.render_image.max_width;
-							this.render_image.height = parseInt(this.render_image.width * image.height / image
-								.width);
-			
-						} else {
-							//初始化canvas尺寸
-							this.canvas.height = image.height > lengthways_canvas_height ?
-								lengthways_canvas_height : image.height
-							this.canvas.width = this.width/(uni.upx2px(100)/100) // parseInt(this.canvas.height * image.width / image.height);
-							this.canvas.origin_width = this.canvas.width;
-							this.canvas.origin_height = this.canvas.height
-							
-							
-							//初始化预览图尺寸
-							this.render_image.width = this.render_image.max_width
-							this.render_image.height = parseInt(this.render_image.width * image.height / image
-								.width);
-							if (this.render_image.height > this.render_image.max_height) {
-								this.render_image.height = this.render_image.max_height
-								this.render_image.width = parseInt(this.render_image.height * image.width /
-									image.height);
-							}
-							
-							console.log(this.canvas)
-						}
-						helper = new Helper({
-							canvasId: 'canvas',
-							width: this.upx2px(this.canvas.width),
-							height: this.upx2px(this.canvas.height)
-						})
-						// this.ctx = uni.createCanvasContext('canvas');
-						helper.initCanvas(image.path, () => {
-							console.log('initCanvas');
-							initImageData = {
-								data: helper.originalImageData,
-								width: helper.canvasInfo.width,
-								height: helper.canvasInfo.height,
-							}
-							// strokes.push({
-							// 	imageData: image.path,
-							// 	type: 'image',
-							// })
-							uni.hideLoading();
-						})
-			
-						// this.ctx.drawImage(this.src, 0, 0, this.px_width, this.px_height);
-						// this.ctx.draw();
-					},
-					fail: (e) => {
-						console.log(e);
-					}
-				})
-			},
-			upx2px(value) {
-				if (!value) {
-					return 0;
+
+			// 选择项
+			selectHandle(index) {
+				if (this.selectActive === index) {
+					this.selectActive = -1;
+				} else {
+					this.selectActive = index;
 				}
-				return uni.upx2px(value);
+
+				switch (index) {
+					case 1:
+						this.textValue = ''
+						this.maskShow = true;
+						break;
+					case 3:
+						this.graph = {
+							w: 120,
+							h: 120,
+							timestamp: new Date().getTime(),
+							type: 'image',
+							url: "/static/public/1.png"
+						}
+						break;
+				}
 			},
-			touchstart(e) {
-				if (this.selectActive !== 2) return
-				strokes.push({
-					imageData: null,
-					type: 1,
-					style: {
-						color: this.colorValue,
-						lineWidth: parseInt((18 / 100 * this.thicknessValue) < 3 ? 3 : (18 / 100 * this
-							.thicknessValue)),
-					},
-					points: [{
-						x: e.touches[0].x,
-						y: e.touches[0].y,
-						type: e.type,
-					}]
-				})
-				this.drawLine(strokes[strokes.length - 1], e.type);
+			// 选择颜色
+			colorConfirm(e) {
+				console.log(e)
+				this.colorRgb = e.rgba
+				this.colorValue = e.hex
+				this.$refs.canvasRef.changeLineColor(this.colorValue)
 			},
-			touchmove(e) {
-				if (this.selectActive !== 2) return
-				strokes[strokes.length - 1].points.push({
-					x: e.touches[0].x,
-					y: e.touches[0].y,
-					type: e.type,
-				})
-				this.drawLine(strokes[strokes.length - 1], e.type);
+			// 选择字体颜色
+			colorTextConfirm(e) {
+				this.textRgb = e.rgba
+				this.textColor = e.hex
+				this.$refs.canvasRef.changColor(e.hex);
 			},
-			touchend(e) {
-				if (this.selectActive !== 2) return
-				helper.saveImageData(() => {
-					strokes[strokes.length - 1].imageData = {
-						data: helper.originalImageData,
-						width: helper.canvasInfo.width,
-						height: helper.canvasInfo.height,
+			// 选择圆颜色
+			colorCircleConfirm(e) {
+				this.colorCircleRgb = e.rgba
+				this.colorCircleColor = e.hex
+				this.$refs.canvasRef.changCircleColor(e.hex);
+			},
+			// 下一步
+			async submitTap() {
+				const response = await this.$refs.canvasRef.exportJson();
+				console.log(response)
+				uni.setStorageSync('paintingEvaluationJson', response)
+				this.$refs.canvasRef.exportFun().then(filePath => {
+					this.handleUploadFile(filePath)
+				}).catch(e => {
+					console.error(e);
+				});
+			},
+			// 保存文字
+			textConfirm() {
+				this.graph = {
+					type: 'text',
+					color: this.textColor,
+					text: this.textValue
+				}
+				this.maskShow = false;
+			},
+			// 选中修改
+			actionChange(e) {
+				console.log(e)
+				if (e.selectActive === 1) {
+					console.log(e.item)
+				} else if (e.selectActive === 0) {
+					innerAudioContext.src = e.item.tempFilePath
+					//在ios下静音时播放没有声音，默认为true，改为false就好了。encodeURI
+					innerAudioContext.obeyMuteSwitch = false
+					//点击播放
+					if (this.playStatus == 0) {
+						this.playStatus = 1;
+						innerAudioContext.play();
+						this.countdown(this.time); // 倒计时
+					} else {
+						this.playStatus = 0;
+						innerAudioContext.pause()
 					}
-					helper.putImageData(strokes[strokes.length - 1].imageData, (tempFilePath) => {
-						this.render_src = tempFilePath;
-					})
-					// strokes.[strokes.length - 1].imageData = helper.originalImageData;
-					if (strokes[strokes.length - 1].points.length < 2) { //当此路径只有一个点的时候
-						strokes.pop();
-						helper.putImageData(strokes[strokes.length - 1].imageData, (tempFilePath) => {
-							this.render_src = tempFilePath;
-						})
-					}
-				})
-			},
-			drawLine(StrokesItem, type) {
-				if (StrokesItem.points.length > 1) {
-					helper.ctx.beginPath();
-					helper.ctx.setLineCap('round')
-					helper.ctx.setStrokeStyle(StrokesItem.style.color);
-					helper.ctx.setLineWidth(StrokesItem.style.lineWidth);
-					helper.ctx.moveTo(StrokesItem.points[StrokesItem.points.length - 2].x, StrokesItem.points[StrokesItem
-						.points.length -
-						2].y);
-					helper.ctx.lineTo(StrokesItem.points[StrokesItem.points.length - 1].x, StrokesItem.points[StrokesItem
-						.points.length -
-						1].y);
-					helper.ctx.stroke();
-					// helper.ctx.draw(true);
-					helper.ctx.draw(true, () => {
-						// helper.saveImageData()
-						
+					// //播放结束
+					innerAudioContext.onEnded(() => {
+						this.playStatus = 0;
+						innerAudioContext.stop();
 					})
 				}
 			},
 			//撤销上一步
 			revoke() {
-				if (!strokes.length) return
-				strokes.pop();
-				this.drawCanves();
-			},
-			drawCanves() {
-				console.log(helper)
-				console.log(initImageData)
-				let imageData = strokes.length > 0 ? strokes[strokes.length - 1].imageData : initImageData;
-				helper.putImageData(imageData, (tempFilePath) => {
-					this.render_src = tempFilePath;
-				})
-			},
-			// 选择项
-			selectHandle(index){
-				if(this.selectActive === index) {
-					this.selectActive = -1;
-				} else {
-					this.selectActive = index;
-				}
-			},
-			// 选择颜色
-			colorConfirm(e){
-				console.log(e)
-				this.colorRgb = e.rgba
-				this.colorValue = e.hex
-			},
-			// 下一步
-			async submitTap(){
-				
-				helper.getImageTempFilePath((tempFilePath)=> {
-					this.handleUploadFile(tempFilePath)
-				})
-			
+				this.$refs.canvasRef.undo();
 			},
 			// 上传图片
 			async handleUploadFile(tempFilePath) {
@@ -341,7 +420,7 @@
 					let data = res.data;
 					await _this.$http
 						.upload(data.host, {
-							filePath:tempFilePath,
+							filePath: tempFilePath,
 							formData: {
 								key: data.dir,
 								policy: data.policy,
@@ -364,56 +443,59 @@
 </script>
 
 <style lang="scss" scoped>
-	
+	.container {
+		position: relative;
+	}
+
 	.drawingBoard-fixed-bottom {
 		position: fixed;
 		bottom: 0;
 		left: 0;
 		width: 100%;
 		text-align: center;
-		z-index: 11;
-		padding: 14rpx 0;
+		z-index: 999;
+		padding: 0 0 14rpx 0;
 		padding-bottom: calc(14rpx + constant(safe-area-inset-bottom));
 		padding-bottom: calc(14rpx + env(safe-area-inset-bottom));
 		background-color: #F3F3F3;
-		
+
 		.drawingBoard-fixed-bottom-item {
 			padding: 12rpx;
 		}
-		
+
 		view.sumbit {
 			-webkit-box-flex: 1;
 			-webkit-flex-grow: 1;
 			flex-grow: 1;
 			color: #fff;
 		}
-		
-		
+
+
 		.drawingBoard-tools {
 			display: -webkit-box;
 			display: -webkit-flex;
 			display: flex;
 			background-color: #fff;
 		}
-		
+
 		.drawingBoard-tools-item {
 			text-align: center;
 			-webkit-box-flex: 1;
 			-webkit-flex-grow: 1;
 			flex-grow: 1;
 			line-height: 35rpx;
-		
+
 		}
-		
+
 		.drawingBoard-fixed-bottom-item view image {
 			width: 76rpx;
 			height: 76rpx;
 		}
-		
+
 		.drawingBoard-tools-item view {
 			font-size: 22rpx;
 		}
-		
+
 		.drawingBoard-color-main {
 			position: fixed;
 			bottom: 120rpx;
@@ -435,7 +517,7 @@
 			/* Safari 和 Chrome */
 			-o-transition: display 2s;
 		}
-		
+
 		.drawingBoard-color-item {
 			width: 80rpx;
 			height: 80rpx;
@@ -444,7 +526,7 @@
 			margin: 5px;
 			position: relative;
 		}
-		
+
 		.drawingBoard-lineWidth-item {
 			width: 80rpx;
 			height: 80rpx;
@@ -453,15 +535,15 @@
 			margin: 5px;
 			position: relative;
 		}
-		
+
 		.drawingBoard-lineWidth-item.on {
 			border: 1px solid #d4a39e;
 		}
-		
+
 		.drawingBoard-color-item .drawingBoard-color-item-icon {
 			display: none;
 		}
-		
+
 		.drawingBoard-color-item.on .drawingBoard-color-item-icon {
 			display: block;
 			position: absolute;
@@ -472,18 +554,18 @@
 			margin-top: -25rpx;
 			margin-left: -25rpx;
 		}
-		
+
 		// 操作面板
-		
-		.drawingBoard-fixed-bottom-handle{
+
+		.drawingBoard-fixed-bottom-handle {
 			height: 128rpx;
 			display: flex;
 			justify-content: center;
 			align-items: center;
 			background-color: #F3F3F3;
-			
+
 			// 按钮
-			.drawingBoard-btn{
+			.drawingBoard-btn {
 				width: 324rpx;
 				height: 80rpx;
 				display: flex;
@@ -491,34 +573,37 @@
 				align-items: center;
 				background: $u-type-primary;
 				border-radius: 44rpx;
-				image{
+
+				image {
 					width: 52rpx;
 					height: 36rpx;
 				}
-				text{
+
+				text {
 					margin-left: 10rpx;
 					font-size: 28rpx;
 					font-weight: 500;
 					color: #FFFFFF;
 				}
 			}
-			
+
 			// 颜色
 			.drawingBoard-text {
 				width: 100%;
+
 				.drawingBoard-color {
 					padding: 0 40rpx 0 50rpx;
 				}
-			
+
 				.thickness {
 					padding: 40rpx 40rpx 0 22rpx;
-			
+
 					text {
 						font-size: 24rpx;
 						font-weight: 500;
 						color: #909399;
 					}
-			
+
 					.slider {
 						margin: 0 26rpx;
 						flex: 1;
@@ -526,16 +611,17 @@
 				}
 			}
 		}
-		
-		
+
+
 		// 下一步
-		
-		.drawingBoard-next{
+
+		.drawingBoard-next {
 			padding: 24rpx 48rpx;
 			padding-bottom: constant(safe-area-inset-bottom);
 			padding-bottom: env(safe-area-inset-bottom);
 			background-color: #fff;
-			.drawingBoard-btn{
+
+			.drawingBoard-btn {
 				height: 80rpx;
 				line-height: 80rpx;
 				background: $u-type-primary;
@@ -545,6 +631,195 @@
 				color: #FFFFFF;
 			}
 		}
+
+
 	}
 
+
+
+	// 录音
+	/deep/ .u-mode-center-box {
+		background-color: transparent !important;
+	}
+
+	/* 提示小弹窗 */
+	.prompt-layer {
+		margin-bottom: 260rpx;
+		border-radius: 24rpx;
+		background: rgba($color: #000000, $alpha: .8);
+		padding: 40rpx 32rpx;
+		box-sizing: border-box;
+	}
+
+	.prompt-layer .span {
+		font-size: 26rpx;
+		color: #fff;
+	}
+
+	.prompt-loader .em {}
+
+	/* 语音音阶------------- */
+	.prompt-loader {
+		width: 96px;
+		height: 20px;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin-bottom: 6px;
+	}
+
+	.prompt-loader .em {
+		display: block;
+		background: #ffffff;
+		width: 1px;
+		height: 10%;
+		margin-right: 2.5px;
+		float: left;
+	}
+
+	.prompt-loader .em:last-child {
+		margin-right: 0px;
+	}
+
+	.prompt-loader .em:nth-child(1) {
+		animation: load 2.5s 1.4s infinite linear;
+	}
+
+	.prompt-loader .em:nth-child(2) {
+		animation: load 2.5s 1.2s infinite linear;
+	}
+
+	.prompt-loader .em:nth-child(3) {
+		animation: load 2.5s 1s infinite linear;
+	}
+
+	.prompt-loader .em:nth-child(4) {
+		animation: load 2.5s 0.8s infinite linear;
+	}
+
+	.prompt-loader .em:nth-child(5) {
+		animation: load 2.5s 0.6s infinite linear;
+	}
+
+	.prompt-loader .em:nth-child(6) {
+		animation: load 2.5s 0.4s infinite linear;
+	}
+
+	.prompt-loader .em:nth-child(7) {
+		animation: load 2.5s 0.2s infinite linear;
+	}
+
+	.prompt-loader .em:nth-child(8) {
+		animation: load 2.5s 0s infinite linear;
+	}
+
+	.prompt-loader .em:nth-child(9) {
+		animation: load 2.5s 0.2s infinite linear;
+	}
+
+	.prompt-loader .em:nth-child(10) {
+		animation: load 2.5s 0.4s infinite linear;
+	}
+
+	.prompt-loader .em:nth-child(11) {
+		animation: load 2.5s 0.6s infinite linear;
+	}
+
+	.prompt-loader .em:nth-child(12) {
+		animation: load 2.5s 0.8s infinite linear;
+	}
+
+	.prompt-loader .em:nth-child(13) {
+		animation: load 2.5s 1s infinite linear;
+	}
+
+	.prompt-loader .em:nth-child(14) {
+		animation: load 2.5s 1.2s infinite linear;
+	}
+
+	.prompt-loader .em:nth-child(15) {
+		animation: load 2.5s 1.4s infinite linear;
+	}
+
+	@keyframes load {
+		0% {
+			height: 10%;
+		}
+
+		50% {
+			height: 100%;
+		}
+
+		100% {
+			height: 10%;
+		}
+	}
+
+	/* 语音音阶-------------------- */
+	.prompt-layer-2 {
+		top: -40px;
+	}
+
+	.prompt-layer-2 .text {
+		color: rgba(0, 0, 0, 1);
+		font-size: 12px;
+	}
+
+	/* 语音录制结束---------------------------------------------------------------- */
+
+
+
+
+	/**
+	 * 文字
+	 */
+	.mask {
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		z-index: 999;
+		background: rgba(0, 0, 0, 0.51);
+		backdrop-filter: blur(4rpx);
+
+
+		&-header {
+
+			padding: 28rpx 30rpx 28rpx 24rpx;
+
+			.left {
+				font-size: 32rpx;
+				font-weight: 500;
+				color: #FFFFFF;
+			}
+
+			.right {
+				width: 120rpx;
+				height: 52rpx;
+				background: #2C3AFF;
+				border-radius: 26rpx;
+				font-size: 28rpx;
+				font-weight: 500;
+				color: #FFFFFF;
+			}
+		}
+
+		&-content {
+			padding: 0 30rpx 28rpx 24rpx;
+
+			textarea {
+				font-size: 32rpx;
+				color: #ffffff;
+			}
+		}
+
+		&-footer {
+			position: fixed;
+			left: 40rpx;
+			right: 40rpx;
+			bottom: 0;
+			padding: 28rpx 0 20rpx 0;
+		}
+	}
 </style>

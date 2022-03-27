@@ -76,18 +76,32 @@
 						"text": "我的"
 					}
 				],
-				userInfo: {}
+				userInfo: {},
+				hasLogin: false
 			}
 		},
 		mounted() {
+			
 			this.userInfo = this.$mStore.state.userInfo
 		},
 		methods: {
 			switchTab(item, index) {
+				this.hasLogin = this.$mStore.getters.hasLogin
 				let url = item.pagePath;
 				if (index === 2) {
 					this.popShow = true
 					this.userInfo = this.$mStore.state.userInfo
+				} else if(index === 4) {
+					this.popShow = false
+					if(this.hasLogin) {
+						uni.switchTab({
+							url
+						})
+					} else {
+						uni.navigateTo({
+							url: '/pages/public/logintype'
+						})
+					}
 				} else {
 					this.popShow = false
 					uni.switchTab({

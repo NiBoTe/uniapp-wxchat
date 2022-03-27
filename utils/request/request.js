@@ -300,6 +300,7 @@ export default class Request {
 			formData = {},
 			custom = {},
 			params = {},
+			timeout = 60000 * 5,
 			getTask
 		}
 	) {

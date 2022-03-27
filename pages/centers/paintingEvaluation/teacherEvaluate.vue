@@ -47,8 +47,8 @@
 					<view class="label">文字评语</view>
 					<view class="header-box u-flex u-row-between">
 						<view class="right">
-							<textarea style="text-align: left;" v-model="textComment" auto-height type="text" placeholder="请输入总评语"
-								maxlength="200" />
+							<textarea style="text-align: left;" v-model="textComment" auto-height type="text"
+								placeholder="请输入总评语" maxlength="200" />
 						</view>
 					</view>
 				</view>
@@ -138,8 +138,10 @@
 	import {
 		generatePostPolicy
 	} from '@/api/basic.js'
-	
-	import { paintEvaluate } from '@/api/paint_evaluate_v2_teacher.js'
+
+	import {
+		paintEvaluate
+	} from '@/api/paint_evaluate_v2_teacher.js'
 	export default {
 		data() {
 			return {
@@ -200,15 +202,29 @@
 				voiceComment: ''
 			};
 		},
-		
+
 		onLoad(options) {
-			if(options.id) {
+			if (options.id) {
 				this.id = options.id;
 				this.evaluateUrl = options.evaluateUrl;
+
+				uni.authorize({
+					scope: 'scope.record',
+					success(res) {
+						console.log(res)
+					},
+					fail(err) {
+						console.log(err)
+					}
+				})
 			}
 		},
 		methods: {
 			async submitTap() {
+				
+				let evaluateParams = uni.getStorageSync('paintingEvaluationJson') || [];
+				evaluateParams = evaluateParams.filter(item => item.type === 'text' || item.type === 'audio')
+				console.log(evaluateParams)
 				await this.handleUploadFile();
 				this.$http.post(paintEvaluate, {
 					dimensions: this.selectList,
@@ -217,7 +233,8 @@
 					score: this.score,
 					textComment: this.textComment,
 					voiceComment: this.voiceComment,
-					voiceCommentDuration: parseInt(this.audioLength / 1000)
+					voiceCommentDuration: parseInt(this.audioLength / 1000),
+					evaluateParams: JSON.stringify(evaluateParams)
 				}).then(res => {
 					uni.navigateTo({
 						url: `/pages/centers/paintingEvaluation/tDetail?id=${this.id}`
@@ -254,6 +271,7 @@
 			},
 			// 长按录音事件
 			longpressBtn() {
+
 				this.audioShow = true;
 				this.countdown(60 * 10); // 倒计时
 				clearInterval(init) // 清除定时器
@@ -281,7 +299,6 @@
 			touchendBtn() {
 				this.audioShow = false;
 				recorderManager.onStop((res) => {
-
 					console.log(res)
 					this.tempFilePath = res.tempFilePath
 					this.audioLength = res.duration
@@ -303,8 +320,9 @@
 			// 播放
 			playBtn() {
 				innerAudioContext.src = this.tempFilePath
-				//在ios下静音时播放没有声音，默认为true，改为false就好了。
-				// innerAudioContext.obeyMuteSwitch = false
+				console.log(innerAudioContext.src)
+				//在ios下静音时播放没有声音，默认为true，改为false就好了。encodeURI
+				innerAudioContext.obeyMuteSwitch = false
 				//点击播放
 				if (this.playStatus == 0) {
 					this.playStatus = 1;
@@ -374,9 +392,9 @@
 
 <style lang="scss" scoped>
 	.evaluate {
+		padding-bottom: 160rpx;
+		
 		.content {
-
-
 			.card {
 				padding: 0 32rpx;
 			}
