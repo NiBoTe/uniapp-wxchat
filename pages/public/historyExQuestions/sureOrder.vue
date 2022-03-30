@@ -120,7 +120,6 @@
 				}).then(res => {
 					this.productDetail = res.data
 					this.goPay();
-
 				})
 			},
 			// 选择地址
@@ -139,8 +138,6 @@
 			},
 			// 去支付
 			async submitTap() {
-				
-				
 				
 				uni.showLoading({
 					title: '支付中'
@@ -206,7 +203,7 @@
 					} else {
 						this.$mHelper.toast('支付失败')
 					}
-					uni.hideLoading()
+					
 				})
 			},
 			navTo() {
