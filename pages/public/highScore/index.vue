@@ -1,7 +1,6 @@
 <template>
 	<view class="high-score">
 		<view class="top">
-
 			<u-navbar title=" " :border-bottom="false">
 				<view class="search u-flex" @click="searchTap">
 					<u-icon name="search" color="#5D6086" size="32"></u-icon>
@@ -10,10 +9,11 @@
 			</u-navbar>
 			<view class="h-tabs" scroll-x="true">
 				<u-tabs :list="menusList" :current="tabActive" @change="handelTabs" :is-scroll="true" bar-width="62"
-					bar-height="8" gutter="40" active-color="#1B1B1B" inactive-color="#9E9E9E" font-size="30"></u-tabs>
+					bar-height="8" gutter="40" active-color="#1B1B1B" inactive-color="#9E9E9E" font-size="30">
+				</u-tabs>
 			</view>
-
-			<drawingColumn ref="DrawingColumn" :list="childMenus" key-name="name" @change="tabChange"></drawingColumn>
+			<drawingColumn ref="DrawingColumn" :list="childMenus" key-name="name" @change="tabChange">
+			</drawingColumn>
 			<view class="line">
 			</view>
 			<view class="p-v">
@@ -22,8 +22,7 @@
 				</view>
 				<view class="r">
 					<view class="p-v-tabs">
-						<view class="p-item" :class="type === 'image' ? 'active' : ''"
-							@click="typeChange('image')">
+						<view class="p-item" :class="type === 'image' ? 'active' : ''" @click="typeChange('image')">
 							图片
 						</view>
 						<view class="p-item" :class="type === 'video' ? 'active' : ''" @click="typeChange('video')">
@@ -34,28 +33,31 @@
 			</view>
 		</view>
 
-		<u-waterfall v-model="list" ref="uWaterfall">
-			<template v-slot:left="{leftList}">
-				<view class="item" v-for="(item, index) in leftList" :key="index">
-					<textbook-item :item="item"></textbook-item>
-					
-					<view class="play" v-if="type === 'video'">
-						<image src="/static/public/video_icon.png"></image>
-					</view>
-				</view>
-			</template>
-			<template v-slot:right="{rightList}">
-				<view class="item" v-for="(item, index) in rightList" :key="index">
-					<textbook-item :item="item"></textbook-item>
-					<view class="play" v-if="type === 'video'">
-						<image src="/static/public/video_icon.png"></image>
-					</view>
-				</view>
-			</template>
-		</u-waterfall>
+		<scroll-view :scroll-y="true" class="scroll-warper" @scrolltolower="lower">
+			<u-waterfall v-model="list" ref="uWaterfall">
+				<template v-slot:left="{leftList}">
+					<view class="item" v-for="(item, index) in leftList" :key="index">
+						<textbook-item :item="item"></textbook-item>
 
-		<nodata v-if="!loading && !list.length"></nodata>
-		<u-loadmore v-else bg-color="rgb(240, 240, 240)" :status="loadStatus" @loadmore="addData"></u-loadmore>
+						<view class="play" v-if="type === 'video'">
+							<image src="/static/public/video_icon.png"></image>
+						</view>
+					</view>
+				</template>
+				<template v-slot:right="{rightList}">
+					<view class="item" v-for="(item, index) in rightList" :key="index">
+						<textbook-item :item="item"></textbook-item>
+						<view class="play" v-if="type === 'video'">
+							<image src="/static/public/video_icon.png"></image>
+						</view>
+					</view>
+				</template>
+			</u-waterfall>
+
+			<nodata v-if="!loading && !list.length"></nodata>
+			<u-loadmore v-else bg-color="rgb(240, 240, 240)" :status="loadStatus" @loadmore="addData" margin-top="30" margin-bottom="30"></u-loadmore>
+		</scroll-view>
+
 	</view>
 </template>
 
@@ -89,7 +91,7 @@
 			this.getMenuList();
 		},
 		methods: {
-			searchTap(){
+			searchTap() {
 				uni.navigateTo({
 					url: '/pages/public/search'
 				})
@@ -98,7 +100,7 @@
 				this.$http.post(menuList).then(res => {
 					this.menusList = res.data;
 					this.childMenus = res.data.length ? res.data[0].childMenus : [];
-					
+
 					this.getList();
 				}).catch(err => {
 					console.log(err)
@@ -149,19 +151,20 @@
 				this.current = 1;
 				this.$refs.uWaterfall.clear();
 				this.getList();
+			},
+			lower() {
+				this.loadStatus = 'loading';
+				this.getList()
 			}
-		},
-		onReachBottom() {
-			this.loadStatus = 'loading';
-			this.getList()
-		},
+		}
 	}
 </script>
 
 <style lang="scss" scoped>
 	.high-score {
-		min-height: 100vh;
+		height: 100vh;
 		background: #F3F3F3;
+		overflow: hidden;
 
 		.top {
 			background: #FFFFFF;
@@ -251,18 +254,23 @@
 	}
 
 
-	.item{
+	.item {
 		position: relative;
-		
-		.play{
+
+		.play {
 			position: absolute;
 			top: 20rpx;
 			right: 20rpx;
-			image{
+
+			image {
 				width: 42rpx;
 				height: 32rpx;
 			}
 		}
+	}
+
+	.scroll-warper {
+		height: calc(100% - 400rpx);
 	}
 
 	/deep/ .u-tab-item {

@@ -52,8 +52,8 @@
 
 			<view class="navbar" v-if="detail.type === 'video'">
 
-				<video id="myVideo" :src="videoUrl" @loadedmetadata="videoLoadedmetadata" @error="videoErrorCallback"
-					@timeupdate='videoUpdate' @ended="videoEnded" :controls="false" object-fit="contain"
+				<video id="myVideo" :direction="90" :src="videoUrl" @loadedmetadata="videoLoadedmetadata" @error="videoErrorCallback"
+					@timeupdate='videoUpdate' @play="palyFlag = true" @ended="videoEnded" :controls="false" object-fit="contain"
 					enable-play-gesture>
 				</video>
 
@@ -92,11 +92,25 @@
 			</view>
 
 
-			<view class="works" v-if="detail.type === 'image'">
+			<!-- <view class="works" v-if="detail.type === 'image'">
 				<view class="works-img">
 					<image :src="detail.items[activeIndex].thumbImg" mode="widthFix"></image>
 				</view>
 				<view class="mask u-flex u-row-center">
+					<image :src="setSrc('highScore/highScore_mask.png')"></image>
+				</view>
+			</view> -->
+			
+			<view class="works" v-if="detail.type === 'image'">
+				<view class="works-img" v-if="detail.isPayed || activeIndex < detail.hdImgViewCount">
+					<image :src="detail.items[activeIndex].hdImg" mode="widthFix"></image>
+				</view>
+				<view v-else class="works-img filter">
+					<image :src="detail.items[activeIndex].thumbImg" mode="widthFix"></image>
+				</view>
+			
+				<view v-if="detail.isPayed || activeIndex < detail.hdImgViewCount"></view>
+				<view v-else class="mask u-flex u-row-center">
 					<image :src="setSrc('highScore/highScore_mask.png')"></image>
 				</view>
 			</view>
@@ -218,7 +232,7 @@
 					productId: this.id,
 					productType: 3,
 					receiveAddressId: this.addressDetail ? this.addressDetail.id : '',
-					total: this.detail.items.length,
+					total: 1, // this.detail.items.length,
 				}).then(res => {
 					this.productDetail = res.data
 					this.goPay();
@@ -718,8 +732,10 @@
 
 			&-img {
 				border-radius: 24rpx;
-				background: rgba($color: #D8D8D8, $alpha: .6);
-				filter: blur(2rpx);
+				&.filter {
+					background: rgba($color: #D8D8D8, $alpha: .6);
+					filter: blur(2rpx);
+				}
 
 				image {
 					width: 100%;

@@ -274,6 +274,9 @@
 			},
 			// 去考试
 			submitNoTap() {
+				if(this.detail.errorState) {
+					return
+				}
 				this.$mRouter.push({
 					route: `/pages/public/top/studentList?id=${this.id}&type=${this.type}`
 				})

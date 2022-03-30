@@ -160,7 +160,7 @@
 		<u-mask :show="maskShow" @click="maskShow = false">
 			<view class="video u-flex u-row-center">
 				<view class="video-box" @click.stop="">
-					<video id="videoContext" :src="imgsList[selectIndex].url" controls
+					<video id="videoContext" :direction="90" :src="imgsList[selectIndex].url" controls
 						:poster="imgsList[selectIndex].cover"></video>
 				</view>
 			</view>
@@ -442,13 +442,15 @@
 								policy: data.policy,
 								OSSAccessKeyId: data.accessid,
 								signature: data.signature,
-							}
+							},
+							getTask: this.getTask
 						})
 						.then(r => {
 							if (!_this.imgsList.length) {
 								_this.type = type
 							}
 							if (_this.imgsList.length && _this.type === 'video') {
+								_this.$mHelper.toast('上传成功')
 								_this.cover = r
 							} else {
 								_this.imgsList.push({
@@ -469,6 +471,17 @@
 				}).catch(err => {
 					console.log(err)
 				})
+			},
+			getTask(requestTask, handleRe) {
+				// requestTask.onProgressUpdate((res) => {
+				// 	if(res.progress < 100) {
+				// 		uni.showLoading({
+				// 			title: `上传进度${res.progress}%`
+				// 		})
+				// 	}else {
+				// 		uni.hideLoading()
+				// 	}
+				// });
 			},
 			// 删除
 			deleteTap(index) {

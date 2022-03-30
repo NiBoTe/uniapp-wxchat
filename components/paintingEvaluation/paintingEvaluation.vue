@@ -1,8 +1,20 @@
 <template>
 	<view class="container">
 
-		<scroll-view :scroll-y="isFixed" class="scroll-warper" @scrolltolower="lower">
-			<u-waterfall v-model="list" ref="uWaterfall">
+		<scroll-view :scroll-y="isFixed" class="scroll-warper" @scrolltolower="lower" @scroll="scrollTap">
+			<u-waterfall v-model="list" ref="uWaterfall" v-if="source === 'home'">
+				<template v-slot:left="{leftList}">
+					<view class="item" v-for="(item, index) in leftList" :key="index">
+						<painting-evaluation-item :item="item" source="home"></painting-evaluation-item>
+					</view>
+				</template>
+				<template v-slot:right="{rightList}">
+					<view class="item" v-for="(item, index) in rightList" :key="index">
+						<painting-evaluation-item :item="item" source="home"></painting-evaluation-item>
+					</view>
+				</template>
+			</u-waterfall>
+			<u-waterfall v-model="list" ref="uWaterfall" v-else>
 				<template v-slot:left="{leftList}">
 					<view class="item" v-for="(item, index) in leftList" :key="index">
 						<painting-evaluation-item :item="item"></painting-evaluation-item>
@@ -14,7 +26,6 @@
 					</view>
 				</template>
 			</u-waterfall>
-			
 			
 			<nodata v-if="!loadStatus !== 'loading' && !list.length"></nodata>
 			<u-loadmore margin-top="30" margin-bottom="30" v-else bg-color="rgb(240, 240, 240)" :status="loadStatus" @loadmore="addRandomData"></u-loadmore>
@@ -37,6 +48,10 @@
 			teacherId: {
 				type: String,
 				default: ''
+			},
+			source: {
+				type: String,
+				default: 'list'
 			}
 		},
 		watch:{
@@ -56,10 +71,17 @@
 			}
 		},
 		methods: {
+			scrollTap(e){
+				if(e.detail.scrollTop <= 0) {
+					this.isFixed = false
+					this.$emit('unfixedTap', true)
+				}
+			},
 			lower() {
 				this.loadStatus = 'loading';
 				this.addRandomData();
 			},
+			
 			getList() {
 				this.loadStatus = 'loading';
 				this.$http.post(paintEvaluateList, {

@@ -5,7 +5,7 @@
 				
 				<view class="swiper-item">
 					<image :src="detail.evaluateUrl || detail.url" mode="widthFix"></image>
-					<view class="evaluateParams" v-for="(item, index) in evaluateParams" :key="index" :style="{top: (item.y / (upx2px(100) /100) - 124) + 'px', left:(item.x / (upx2px(100) / 100) - 64) + 'px'}">
+					<view class="evaluateParams" v-for="(item, index) in evaluateParams" :key="index" :style="{top: (item.y / (upx2px(100) /100) - 20) + 'rpx', left:(item.x / (upx2px(100) / 100) - 48) + 'rpx'}">
 						<view class="evaluateParams-box">
 							<voicePlayback :item="item"></voicePlayback>
 						</view>
@@ -104,9 +104,10 @@
 						<text>{{item.user.fullName}}</text>
 					</view>
 					<view class="text">
-						<expandable-text :line="3" expandText="全文" foldText="收起">
+						<rich-text :nodes="$mHelper.messageemoj(item.content)"></rich-text>
+						<!-- <expandable-text :line="3" expandText="全文" foldText="收起">
 						  {{item.content}}
-						</expandable-text>
+						</expandable-text> -->
 					</view>
 					<view class="time">
 						{{(moment(item.createTime).format('MM-DD'))}} <text @click="replyTap(item, index)">回复</text>
@@ -138,8 +139,8 @@
 					<view class="more u-flex u-row-between" v-if="item.replyList.length">
 						<view class="left" @click="moreTap(item, index, true)">
 							<text v-if="!item.isMore">展开{{item.replyList.length}}条回复</text>
-							<text v-else>查看更多回复</text>
-							<image src="/static/public/arrow_down_text.png"></image>
+							<!-- <text v-else>查看更多回复</text> -->
+							<!-- <image src="/static/public/arrow_down_text.png"></image> -->
 						</view>
 
 						<view class="right" v-if="item.isMore" @click="moreTap(item, index)">
@@ -158,7 +159,7 @@
 				</view>
 				<view class="left u-flex" v-else>
 					<input type="text" :cursor-spacing="20" v-model="content" placeholder="说一下你的想法…" focus
-						@confirm="confirmCommentTap()" @blur="isFocus = false" />
+						@confirm="confirmCommentTap()" @blur="isFocus = false"  confirm-type="done" />
 				</view>
 
 				<view class="right u-flex">
@@ -224,7 +225,7 @@ import { orderItemPaintEvaluateTeacherDetail } from '@/api/paint_evaluate_v2_tea
 				list: [], // 考试列表
 				type: 'default',
 				source: "list",
-				evaluateParams: []
+				evaluateParams: [],
 			};
 		},
 		onLoad(options) {
@@ -266,10 +267,11 @@ import { orderItemPaintEvaluateTeacherDetail } from '@/api/paint_evaluate_v2_tea
 						this.evaluateParams = this.detail.evaluateParams ? JSON.parse(this.detail.evaluateParams) : []
 						this.getComment();
 					}).catch(err => {
+						console.log(err)
 						this.$mHelper.toast(err.msg)
-						setTimeout(() => {
-							this.$mRouter.back()
-						}, 1500)
+						// setTimeout(() => {
+						// 	this.$mRouter.back()
+						// }, 1500)
 					})
 				} else {
 					this.$http.get(this.source === 'home' ? publicOrderItemPaintEvaluateDetail : orderItemPaintEvaluateTeacherDetail, {
@@ -278,14 +280,13 @@ import { orderItemPaintEvaluateTeacherDetail } from '@/api/paint_evaluate_v2_tea
 						this.detail = res.data
 						this.evaluateParams = this.detail.evaluateParams ? JSON.parse(this.detail.evaluateParams) : [],
 						
-						
-						console.log(this.evaluateParams)
 						this.getComment();
 					}).catch(err => {
+						console.log(err)
 						this.$mHelper.toast(err.msg)
-						setTimeout(() => {
-							this.$mRouter.back()
-						}, 1500)
+						// setTimeout(() => {
+						// 	this.$mRouter.back()
+						// }, 1500)
 					})
 				}
 				
@@ -388,13 +389,13 @@ import { orderItemPaintEvaluateTeacherDetail } from '@/api/paint_evaluate_v2_tea
 				this.isFocus = true
 				switch (type) {
 					case 0:
-						this.content += '👏'
+						this.content += '[鼓掌]'
 						break;
 					case 1:
-						this.content += '😁'
+						this.content += '[高兴]'
 						break;
 					case 2:
-						this.content += '😎'
+						this.content += '[得意]'
 						break;
 				}
 			},
@@ -790,6 +791,7 @@ import { orderItemPaintEvaluateTeacherDetail } from '@/api/paint_evaluate_v2_tea
 					color: #3A3D71;
 					line-height: 40rpx;
 					margin-top: 16rpx;
+					word-break: break-all;
 				}
 
 				.time {

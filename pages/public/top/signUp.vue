@@ -181,6 +181,7 @@
 			return {
 				id: null,
 				loading: true,
+				btnLoading: false,
 				detail: {},
 				themeColor: this.$mConstDataConfig.themeColor,
 				showCancelButton: true,
@@ -305,7 +306,12 @@
 				this.detail.examSubjectList.map(item => {
 					subjects.push(item.subjectName);
 				})
-
+				
+				if(this.btnLoading) return
+				this.btnLoading = true;
+				uni.showLoading({
+					title:'支付中'
+				})
 				this.$http.post(examOrderCreate, {
 					address: this.address,
 					examId: this.id,
@@ -315,9 +321,12 @@
 					subject: subjects.join('+')
 				}).then(res => {
 					console.log(res)
+					this.btnLoading = false;
 					this.goPay(res.data.examOrderId)
 				}).catch(err => {
 					this.$mHelper.toast(err.msg)
+					this.btnLoading = false;
+					uni.hideLoading()
 				})
 			},
 			focus() {

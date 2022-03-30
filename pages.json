@@ -22,7 +22,8 @@
 			"style": {
 				"navigationBarTitleText": "广场",
 				"navigationStyle": "custom", // 隐藏系统导航栏
-				"navigationBarTextStyle": "black"
+				"navigationBarTextStyle": "black",
+				"enablePullDownRefresh": true
 			}
 
 		}, {
@@ -257,6 +258,14 @@
 					"style": {
 						"navigationBarTitleText": "",
 						"navigationStyle": "custom",
+						"enablePullDownRefresh": false
+					}
+
+				}, {
+					"path": "bannerView/bannerView",
+					"style": {
+						"navigationBarTitleText": "",
+						"navigationBarTextStyle": "black",
 						"enablePullDownRefresh": false
 					}
 
@@ -785,7 +794,7 @@
 			},
 			{
 				"pagePath": "pages/circle/index",
-				"text": "圈子"
+				"text": "广场"
 			},
 			{
 				"pagePath": "pages/center/index",

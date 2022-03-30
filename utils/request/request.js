@@ -19,7 +19,7 @@ export default class Request {
 		// #endif
 		custom: {},
 		// #ifdef MP-ALIPAY
-		timeout: 30000,
+		timeout: 120000,
 		// #endif
 		// #ifdef APP-PLUS
 		sslVerify: true
@@ -184,9 +184,12 @@ export default class Request {
 						} else {
 							console.log(data.code)
 							if (data.code === 401) {
-								uni.navigateTo({
-									url: '/pages/public/logintype'
-								})
+								if(_config.url.indexOf('checkToken') === -1){
+									uni.navigateTo({
+										url: '/pages/public/logintype'
+									})
+								}
+								
 							}
 							reject(data);
 						}
@@ -300,7 +303,6 @@ export default class Request {
 			formData = {},
 			custom = {},
 			params = {},
-			timeout = 60000 * 5,
 			getTask
 		}
 	) {

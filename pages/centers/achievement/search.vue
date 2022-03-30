@@ -116,7 +116,7 @@
 					this.queryKey = res.data.records.length ? this.configureDetail.queryKey : ''
 
 				}).catch(err => {
-					console.log(err)
+					this.$mHelper.toast(err.msg)
 				})
 			},
 			isFilter(key) {

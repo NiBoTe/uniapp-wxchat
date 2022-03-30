@@ -35,7 +35,7 @@
 								{{item.favoriteCount}}
 							</view>
 						</view>
-						<view class="tool-item" v-if="!item.noComment" @click.stop="commentTap(index)">
+						<view class="tool-item" v-if="!item.noComment">
 							<image src="/static/public/dynamic_comment.png"></image>
 							<view class="num">
 								{{item.commentCount}}
@@ -49,7 +49,7 @@
 							</view>
 						</view>
 					</view>
-					<button open-type="share" class="right" @tap="share(item)">
+					<button open-type="share" class="right" @click.stop="share(item)">
 						<view class="tool-item">
 							<image src="/static/public/dynamic_share.png"></image>
 							<view class="num">
@@ -64,7 +64,7 @@
 					<view class="left">
 						<text v-if="commentIndex !== index">说一下你的想法...</text>
 						<input v-else type="text" :cursor-spacing="20" v-model="content" placeholder="说一下你的想法..." focus
-							@confirm="confirmTap(item, index)" />
+							@confirm="confirmTap(item, index)"  confirm-type="done" />
 					</view>
 					<view class="right u-flex">
 						<image src="/static/public/applause.png" @click="sendExpression(index,0)"></image>
@@ -303,13 +303,13 @@
 				this.commentIndex = index
 				switch (type) {
 					case 0:
-						this.content += '👏'
+						this.content += '[鼓掌]'
 						break;
 					case 1:
-						this.content += '😁'
+						this.content += '[高兴]'
 						break;
 					case 2:
-						this.content += '😎'
+						this.content += '[得意]'
 						break;
 				}
 			},

@@ -1,7 +1,7 @@
 <template>
 	<view class="container">
 
-		<scroll-view :scroll-y="isFixed" class="scroll-warper" @scrolltolower="lower">
+		<scroll-view :scroll-y="isFixed" class="scroll-warper" @scrolltolower="lower" @scroll="scrollTap">
 			<u-waterfall v-model="list" ref="uWaterfall">
 				<template v-slot:left="{leftList}">
 					<view class="item" v-for="(item, index) in leftList" :key="index">
@@ -69,6 +69,12 @@ import TextbookItemMy from '@/components/textbook/textbookItemMy.vue'
 			}
 		},
 		methods: {
+			scrollTap(e){
+				if(e.detail.scrollTop <= 0) {
+					this.isFixed = false
+					this.$emit('unfixedTap', true)
+				}
+			},
 			lower() {
 				this.loadStatus = 'loading';
 				this.addRandomData();

@@ -35,6 +35,8 @@ const followSnsList = `${sns}followSnsList`;
 // 我的动态列表
 const mySnsList = `${sns}mySnsList`;
 
+// 更多评论
+const getReplyList = `${sns}getReplyList`;
 
 export {
 	snsList,
@@ -47,5 +49,6 @@ export {
 	snsDetail,
 	commentList,
 	followSnsList,
-	mySnsList
+	mySnsList,
+	getReplyList
 };

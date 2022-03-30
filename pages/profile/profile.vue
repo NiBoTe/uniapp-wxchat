@@ -18,8 +18,8 @@
 								<u-avatar size="186" :src="userInfo.headUrl"></u-avatar>
 							</view>
 
-							<view class="head-auth" v-if="userInfo.roleSelect === 'teacher'">
-								<image src="/static/my/no_auth.png" v-if="userInfo.authStatus === 0"></image>
+							<view class="head-auth" v-if="userInfo.roleSelect === 'teacher'" >
+								<image src="/static/my/no_auth.png" @click="goAuth" v-if="userInfo.authStatus === 0"></image>
 								<image src="/static/my/auth.png" v-else-if="userInfo.authStatus === 1"></image>
 							</view>
 						</view>
@@ -102,7 +102,6 @@
 					<drawingColumn></drawingColumn>
 				</view>
  -->
-
 				<view class="content-box" v-if="isTabActive === 1">
 					<!-- 评画 -->
 					<PaintingEvaluation v-show="current === 0" ref="PaintingEvaluation"></PaintingEvaluation>
@@ -124,9 +123,8 @@
 
 					<!-- 消息 -->
 					<message v-show="current === 6" ref="Message"></message>
-
 				</view>
-
+				
 				<view class="content-box" v-if="isTabActive === 3">
 
 					<!-- 动态 -->
@@ -142,6 +140,8 @@
 					<message v-show="current === 3" ref="Message"></message>
 
 				</view>
+				
+				
 				<view class="content-box" v-if="isTabActive === 2">
 
 					<!-- 评画 -->
@@ -255,18 +255,21 @@
 			if(this.hasLogin){
 				await this.getMemberInfo();
 			}
+			
 			uni.$on('isRefresh', async (bool) => {
 				if (bool) {
 					await this.initData();
 				}
 			})
+			uni.$on('isRefresh', async (bool) => {
+				if (bool) {
+					await this.getMemberInfo();
+				}
+			})
 		},
 		methods: {
 			async initData() {
-
-
 				this.hasLogin = this.$mStore.getters.hasLogin;
-
 				this.tabList = this.tabList3
 				if (this.hasLogin) {
 					await this.getMemberInfo();
@@ -459,6 +462,12 @@
 					url: '/pages/set/userInfo'
 				})
 			},
+			// 去认证
+			goAuth(){
+				uni.navigateTo({
+					url: '/pages/set/teacherAuth'
+				})
+			}
 		},
 		onPullDownRefresh() {
 			this.refresh();

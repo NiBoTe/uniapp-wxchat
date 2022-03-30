@@ -5,10 +5,12 @@
 			<image src="/static/public/arrow_left.png"></image>
 		</view>
 		<!-- <scroll-view :style="{top: top+'px', left: left+'px'}" class="scroll-view_H" scroll-x="true"> -->
-			<canvas canvas-id="canvas" class="canvas"
-				 disable-scroll="true" 
-				:style="{width: upx2px(canvas.width)+ 'px', height: upx2px(canvas.height) +'px'}"
-				@touchstart="touchstart" @touchmove="touchmove" @touchend="touchend"></canvas>
+			<view class="canvas">
+				<canvas canvas-id="canvas" class="canvas"
+					 disable-scroll="true" 
+					:style="{width: upx2px(canvas.width)+ 'px', height: upx2px(canvas.height) +'px'}"
+					@touchstart="touchstart" @touchmove="touchmove" @touchend="touchend"></canvas>
+			</view>
 		<!-- </scroll-view> -->
 		<view class="drawingBoard-fixed-bottom">
 
@@ -62,8 +64,9 @@
 			</view>
 			<view class="drawingBoard-fixed-bottom-item drawingBoard-tools">
 				<view class="drawingBoard-tools-item" @click="selectHandle(0)">
-					<image :src="setSrc('highScore/icon01.png')"></image>
-					<text>黑白</text>
+					<image v-if="isBlack" :src="setSrc('highScore/icon01_active.png')"></image>
+					<image v-else :src="setSrc('highScore/icon01.png')"></image>
+					<text :class="isBlack ? 'active' : ''">黑白</text>
 				</view>
 				<view class="drawingBoard-tools-item" @click="selectHandle(1)">
 					<image v-if="selectActive === 1" :src="setSrc('highScore/icon02_active.png')"></image>
@@ -115,6 +118,7 @@
 			return {
 				top: -99999,
 				left: -99999,
+				isBlack: false, // 是否黑白
 				StatusBar: this.StatusBar,
 				canvas: { //upx
 					width: 0,
@@ -132,7 +136,7 @@
 					max_height: 0
 				},
 				src: null,
-				selectActive: 0,
+				selectActive: -1,
 				id: '',
 				Strokes: [],
 				dom: null,
@@ -158,6 +162,7 @@
 				},
 				thicknessValue: 3, // 线条粗细
 				contrastRatio: 50, // 对比度
+				
 			}
 		},
 		watch: {
@@ -188,9 +193,11 @@
 			}
 		},
 		onLoad(options) {
+			helper = '';
+			strokes = [];
+			initImageData = {}
 			uni.getSystemInfo({
 				success: (res) => {
-					console.log(res)
 					this.width = res.windowWidth;
 					this.height = res.windowHeight;
 					
@@ -211,12 +218,13 @@
 				uni.getImageInfo({
 					src: this.src,
 					success: (image) => {
-						console.log(image);
-						console.log(this.width);
+						console.log(image)
 						if (image.width >= image.height) {
 							//初始化canvas尺寸
-							this.canvas.width = image.width > transverse_canvas_width ?
-								transverse_canvas_width : image.width
+							this.canvas.width = this.width / (uni.upx2px(100) /
+								100)
+							// this.canvas.width = image.width > transverse_canvas_width ?
+							// 	transverse_canvas_width : image.width
 							this.canvas.height = parseInt(this.canvas.width * image.height / image.width);
 							this.canvas.origin_height = this.canvas.height
 							this.canvas.origin_width = this.canvas.width
@@ -228,8 +236,12 @@
 
 						} else {
 							//初始化canvas尺寸
+							// this.canvas.height = this.height / (uni.upx2px(100) /
+							// 	100)
+							this.canvas.width = this.width / (uni.upx2px(100) /
+								100)
 							this.canvas.height = image.height > lengthways_canvas_height ?
-								lengthways_canvas_height : image.height
+								lengthways_canvas_height : (image.height * 2 > lengthways_canvas_height) ? lengthways_canvas_height : image.height
 							this.canvas.width = this.width/(uni.upx2px(100)/100) // parseInt(this.canvas.height * image.width / image.height);
 							this.canvas.origin_width = this.canvas.width;
 							this.canvas.origin_height = this.canvas.height
@@ -244,8 +256,6 @@
 								this.render_image.width = parseInt(this.render_image.height * image.width /
 									image.height);
 							}
-							
-							console.log(this.canvas)
 						}
 						helper = new Helper({
 							canvasId: 'canvas',
@@ -254,7 +264,6 @@
 						})
 						// this.ctx = uni.createCanvasContext('canvas');
 						helper.initCanvas(image.path, () => {
-							console.log('initCanvas');
 							initImageData = {
 								data: helper.originalImageData,
 								width: helper.canvasInfo.width,
@@ -292,7 +301,6 @@
 					title:'保存中...'
 				})
 				helper.getImageTempFilePath((tempFilePath)=> {
-					console.log(tempFilePath)
 					uni.saveImageToPhotosAlbum({
 						filePath: tempFilePath,
 						success: function() {
@@ -316,8 +324,8 @@
 				this.drawCanves();
 			},
 			drawCanves() {
-				console.log(helper)
-				console.log(initImageData)
+				let findIndex = strokes.findIndex(item => item.type === 0);
+				this.isBlack = findIndex !== -1;
 				let imageData = strokes.length > 0 ? strokes[strokes.length - 1].imageData : initImageData;
 				helper.putImageData(imageData, (tempFilePath) => {
 					this.render_src = tempFilePath;
@@ -393,30 +401,35 @@
 			selectHandle(index) {
 				switch (index) {
 					case 0:
-						let isGrayScale = false,
-							isGrayScaleIndex = -1;
-						strokes.map((item, index) => {
-							if (item.type === 0) {
-								isGrayScale = true
-								isGrayScaleIndex = index
-							}
-						})
-						if (isGrayScale) {
-							let imageData = strokes.length > 0 ? strokes[strokes.length - 1].imageData : initImageData;
-							helper.putImageData(imageData, (tempFilePath) => {
-								this.render_src = tempFilePath;
-								if (isGrayScaleIndex >= 0) strokes.splice(isGrayScaleIndex, 1)
+						try{
+							this.isBlack = !this.isBlack;
+							let isGrayScale = false,
+								isGrayScaleIndex = -1;
+							strokes.map((item, index) => {
+								if (item.type === 0) {
+									isGrayScale = true
+									isGrayScaleIndex = index
+								}
 							})
-						} else {
-							let imageData = strokes.length > 0 ? strokes[strokes.length - 1].imageData : initImageData
-							let filtered = ImageFilters.GrayScale(imageData)
-							helper.putImageData(filtered, (tempFilePath) => {
-								this.render_src = tempFilePath;
-								strokes.push({
-									type: 0,
-									imageData
+							if (isGrayScale) {
+								let imageData = strokes.length > 0 ? strokes[strokes.length - 1].imageData : initImageData;
+								helper.putImageData(imageData, (tempFilePath) => {
+									this.render_src = tempFilePath;
+									if (isGrayScaleIndex >= 0) strokes.splice(isGrayScaleIndex, 1)
 								})
-							})
+							} else {
+								let imageData = strokes.length > 0 ? strokes[strokes.length - 1].imageData : initImageData
+								let filtered = ImageFilters.GrayScale(imageData)
+								helper.putImageData(filtered, (tempFilePath) => {
+									this.render_src = tempFilePath;
+									strokes.push({
+										type: 0,
+										imageData
+									})
+								})
+							}
+						}catch(err){
+							console.log(err)
 						}
 						break;
 				}
@@ -430,14 +443,12 @@
 			},
 			// 选择颜色
 			colorConfirm(e) {
-				console.log(e)
 				this.colorRgb = e.rgba
 				this.colorValue = e.hex
 			},
 			// 色调选择颜色
 			colorThreeConfirm(e) {
 				this.colorRgbThree = e.rgba
-				console.log(this.colorRgbThree)
 				this.setTone();
 			},
 			// 色调改变
@@ -498,6 +509,11 @@
 			toBack(){
 				this.$mRouter.back()
 			}
+		},
+		onUnload() {
+			helper = '';
+			strokes = [];
+			initImageData = {}
 		}
 	}
 </script>
@@ -760,5 +776,12 @@
 			font-weight: 500;
 			color: #FFFFFF;
 		}
+	}
+	
+	.canvas{
+		height: calc(100% - 270rpx - constant(safe-area-inset-bottom));
+		height: calc(100% - 270rpx - env(safe-area-inset-bottom));
+		display: flex;
+		align-items: center;
 	}
 </style>

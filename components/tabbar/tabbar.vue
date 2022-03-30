@@ -61,7 +61,7 @@
 					},
 					{
 						"pagePath": "/pages/circle/index",
-						"text": "圈子"
+						"text": "广场"
 					},
 					{
 						"pagePath": "/pages/center/index",
@@ -81,7 +81,7 @@
 			}
 		},
 		mounted() {
-			
+
 			this.userInfo = this.$mStore.state.userInfo
 		},
 		methods: {
@@ -91,9 +91,9 @@
 				if (index === 2) {
 					this.popShow = true
 					this.userInfo = this.$mStore.state.userInfo
-				} else if(index === 4) {
+				} else if (index === 4) {
 					this.popShow = false
-					if(this.hasLogin) {
+					if (this.hasLogin) {
 						uni.switchTab({
 							url
 						})
@@ -114,6 +114,7 @@
 
 			itemTap(index) {
 				this.popShow = false
+				this.hasLogin = this.$mStore.getters.hasLogin
 				switch (index) {
 					case 0:
 						if (this.userInfo && this.userInfo.roleSelect !== 'teacher') {
@@ -123,9 +124,20 @@
 						}
 						break;
 					case 1:
+
+						if (!this.hasLogin) {
+							uni.navigateTo({
+								url: '/pages/public/logintype'
+							})
+						}
 						this.navTo('/pages/centers/highScoreRelease')
 						break;
 					case 2:
+						if (!this.hasLogin) {
+							uni.navigateTo({
+								url: '/pages/public/logintype'
+							})
+						}
 						this.navTo('/pages/centers/dynamicRelease')
 						break;
 					case 3:

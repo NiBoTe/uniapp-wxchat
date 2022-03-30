@@ -57,10 +57,15 @@
 
 
 			<view class="works" v-if="type === 'default'">
-				<view class="works-img" :class="!detail.isPayed ? 'filter' : ''">
+				<view class="works-img" v-if="detail.isPayed || activeIndex < detail.hdImgViewCount">
+					<image :src="detail.items[activeIndex].hdImg" mode="widthFix"></image>
+				</view>
+				<view v-else class="works-img filter">
 					<image :src="detail.items[activeIndex].thumbImg" mode="widthFix"></image>
 				</view>
-				<view class="mask u-flex u-row-center" v-if="!detail.isPayed">
+
+				<view v-if="detail.isPayed || activeIndex < detail.hdImgViewCount"></view>
+				<view v-else class="mask u-flex u-row-center">
 					<image :src="setSrc('highScore/highScore_mask.png')"></image>
 				</view>
 			</view>
@@ -119,9 +124,10 @@
 							<text>{{item.user.fullName}}</text>
 						</view>
 						<view class="text">
-							<expandable-text :line="3" expandText="全文" foldText="收起">
-							  {{item.content}}
-							</expandable-text>
+							<rich-text :nodes="$mHelper.messageemoj(item.content)"></rich-text>
+						<!-- 	<expandable-text :line="3" expandText="全文" foldText="收起">
+								{{item.content}}
+							</expandable-text> -->
 						</view>
 						<view class="time">
 							{{(moment(item.createTime).format('MM-DD'))}} <text @click="replyTap(item, index)">回复</text>
@@ -153,8 +159,8 @@
 						<view class="more u-flex u-row-between" v-if="item.replyList.length">
 							<view class="left" @click="moreTap(item, index, true)">
 								<text v-if="!item.isMore">展开{{item.replyList.length}}条回复</text>
-								<text v-else>查看更多回复</text>
-								<image src="/static/public/arrow_down_text.png"></image>
+								<!-- <text v-else>查看更多回复</text> -->
+								<!-- <image src="/static/public/arrow_down_text.png"></image> -->
 							</view>
 
 							<view class="right" v-if="item.isMore" @click="moreTap(item, index)">
@@ -388,7 +394,7 @@
 							}).then(res => {
 								this.$mHelper.toast('下架成功')
 								uni.$emit('offHighScore', true)
-								
+
 								this.initData()
 								// setTimeout(() => {
 								// 	uni.navigateBack({
@@ -439,22 +445,21 @@
 					}
 				});
 			},
-			switchTap(type){
-				
-				console.log(this.detail)
-				
-				switch(type) {
+			switchTap(type) {
+
+
+				switch (type) {
 					case 1:
-					
-					if(this.detail.hdImgViewCount === 1 || this.detail.isPayed) {
-						uni.navigateTo({
-							url: `/pages/public/highScore/imageFilter?url=${this.detail.items[this.activeIndex].hdImg}`
-						})
-					} else {
-						this.$mHelper.toast('请先购买该教材')
-					}
-					
-					break;
+
+						if ((this.activeIndex + 1) <= this.detail.hdImgViewCount || this.detail.isPayed) {
+							uni.navigateTo({
+								url: `/pages/public/highScore/imageFilter?url=${this.detail.items[this.activeIndex].hdImg}`
+							})
+						} else {
+							this.$mHelper.toast('请先购买该教材')
+						}
+
+						break;
 				}
 			}
 		},
@@ -822,6 +827,7 @@
 				font-weight: 400;
 				color: #3A3D71;
 				line-height: 36rpx;
+				word-break: break-all;
 			}
 		}
 

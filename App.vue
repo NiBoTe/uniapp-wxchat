@@ -2,7 +2,7 @@
 	/* eslint-disable */
 	import Vue from 'vue';
 	import {
-		verifyAccessToken
+		checkToken
 	} from '@/api/login'
 	import {
 		mapMutations
@@ -56,7 +56,7 @@
 				// 获取系统title高度
 				await this.initSystemInfo();
 				if (token) {
-					// await this.handleVerifyAccessToken(token); // 验证token
+					await this.handleVerifyAccessToken(token); // 验证token
 				}
 			},
 
@@ -75,12 +75,10 @@
 			},
 			// 检验token是否有效
 			async handleVerifyAccessToken(token) {
-				await this.$http.post(verifyAccessToken, {
-					token
-				}).then(r => {
-					if (!r.data.token) {
-						this.$mStore.commit('logout');
-					}
+				await this.$http.post(checkToken).then(r => {
+					
+				}).catch(err =>{
+					this.$mStore.commit('logout');
 				});
 			}
 		}
@@ -90,4 +88,10 @@
 	// 导入uviewUI
 	@import "uview-ui/index.scss";
 	@import './static/css/reset.scss';
+	
+	
+	.emojoStyle{
+		width: 32rpx;
+		height: 32rpx;
+	}
 </style>

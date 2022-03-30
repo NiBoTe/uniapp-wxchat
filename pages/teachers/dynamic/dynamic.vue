@@ -1,6 +1,6 @@
 <template>
 	<view class="container">
-		<scroll-view class="list-view" :scroll-y="isFixed" @scrolltolower="lower">
+		<scroll-view class="list-view" :scroll-y="isFixed" @scrolltolower="lower" @scroll="scrollTap">
 
 
 			<view class="item-main" v-for="(item,index) in list" :key="index" @click="goDetail(item, index)">
@@ -38,7 +38,7 @@
 										{{item.favoriteCount}}
 									</view>
 								</view>
-								<view class="tool-item" v-if="!item.noComment" @click.stop="commentTap(index)">
+								<view class="tool-item" v-if="!item.noComment">
 									<image src="/static/public/dynamic_comment.png"></image>
 									<view class="num">
 										{{item.commentCount}}
@@ -52,7 +52,7 @@
 									</view>
 								</view>
 							</view>
-							<button open-type="share" class="right" @tap="share(item)">
+							<button open-type="share" class="right" @click.stop="share(item)">
 								<view class="tool-item">
 									<image src="/static/public/dynamic_share.png"></image>
 									<view class="num">
@@ -118,6 +118,12 @@
 			}
 		},
 		methods: {
+			scrollTap(e){
+				if(e.detail.scrollTop <= 0) {
+					this.isFixed = false
+					this.$emit('unfixedTap', true)
+				}
+			},
 			// 收藏
 			favoriteTap(item, index) {
 				this.$http.post(addFavorite, null, {

@@ -160,7 +160,7 @@
 				}).then(res => {
 					this.yearSpecialtyList = res.data
 					// this.$refs.DrawingColumn.timeShow(this.yearSpecialtyList)
-					this.rightTabList = this.yearSpecialtyList.length ? this.yearSpecialtyList[0].specialtys : []
+					this.rightTabList = this.yearSpecialtyList.length ? this.yearSpecialtyList[this.rightTimeNum].specialtys : []
 					this.current = 1;
 					this.getList()
 				}).catch(err => {
@@ -205,6 +205,7 @@
 				this.getTabList();
 			},
 			handleItemListClick(item, index) {
+				console.log(item)
 				this.leftItemNum = index
 				this.leftItemName = item.name
 				this.rightTabNum = 0;

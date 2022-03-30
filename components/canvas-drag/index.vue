@@ -1,5 +1,6 @@
 <template>
 	<view class="container-canvas">
+		
 		<canvas canvas-id="canvas-drag" disable-scroll="true" @touchstart="start" @touchmove="move" @touchend="end"
 			:style="{width: upx2px(upx2px(canvas.width))+ 'px', height: upx2px(canvas.height) +'px'}"></canvas>
 	</view>
@@ -815,8 +816,10 @@
 					success: (image) => {
 						if (image.width >= image.height) {
 							//初始化canvas尺寸
-							this.canvas.width = image.width > transverse_canvas_width ?
-								transverse_canvas_width : image.width
+							this.canvas.width = this.width / (uni.upx2px(100) /
+								100)
+							// this.canvas.width = image.width > transverse_canvas_width ?
+							// 	transverse_canvas_width : image.width
 							this.canvas.height = parseInt(this.canvas.width * image.height / image.width);
 							this.canvas.origin_height = this.canvas.height
 							this.canvas.origin_width = this.canvas.width
@@ -1431,8 +1434,10 @@
 	@import "./index.css";
 
 	.container-canvas {
-		padding-bottom: 365rpx;
-		
+		// padding-bottom: 365rpx;
+		display: flex;
+		justify-content: center;
+		align-items: center;
 		canvas{
 			z-index: 2 !important;
 		}

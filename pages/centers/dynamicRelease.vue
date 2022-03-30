@@ -48,7 +48,7 @@
 		data() {
 			return {
 				content: '',
-				checked: true,
+				checked: false,
 				themeColor: this.$mConstDataConfig.themeColor,
 				imgsList: []
 			};

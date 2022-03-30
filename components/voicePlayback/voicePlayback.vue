@@ -106,9 +106,7 @@
 
 <style scoped lang="scss">
 	.container {
-		position: absolute;
 		z-index: 2;
-		top: 0;
 
 		.left {
 			height: 64rpx;

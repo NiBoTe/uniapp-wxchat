@@ -23,7 +23,8 @@
 					<view class="search-btn">搜索</view>
 				</view>
 				<view class="swipers">
-					<u-swiper name="imgUrl" :list="bannerList" height="240" border-radius="16"></u-swiper>
+					<u-swiper name="imgUrl" :list="bannerList" height="240" border-radius="16" @click="bannerDetail">
+					</u-swiper>
 				</view>
 			</view>
 
@@ -66,12 +67,12 @@
 
 								<swiper class="left-item-sublabel u-line-1" :circular="true" :autoplay="true"
 									:disable-touch="true">
-									<swiper-item class="u-line-1" v-for="(item, index) in recentExam" :key="index">
+									<swiper-item class="u-line-1" v-for="(item, index) in testedExam" :key="index">
 										<text>{{item.name}}</text>
 									</swiper-item>
 								</swiper>
 							</view>
-							<view class="left-item" @click="testTap(1)">
+							<view class="left-item" @click="testTap(1)" style="position: relative;z-index: 10;">
 								<view class="left-item-label u-flex">
 									<image src="/static/public/home_nottested_style.png"></image>
 									<text>我的未考</text>
@@ -294,7 +295,7 @@
 		onShow() {
 			this.hasLogin = this.$mStore.getters.hasLogin;
 			let agreement = uni.getStorageSync('agreement');
-			if(agreement != 'true') {
+			if (agreement != 'true') {
 				this.modalShow = true
 			}
 		},
@@ -308,17 +309,15 @@
 				this.$http.get(banner, {
 					crowed: 0
 				}).then(res => {
-					console.log(res)
 					this.bannerList = res.data ?? []
 				})
 
 				this.$http.get(exam).then(res => {
-					console.log(res.data)
 					const data = res.data;
-
 					this.recentExam = data.recentExam;
 					this.testedExam = data.testedExam;
 					this.untestedExam = data.untestedExam;
+					uni.stopPullDownRefresh()
 				})
 				// this.$http.get(moduleConfigure).then(res => {
 				// 	console.log(res.data)
@@ -399,9 +398,22 @@
 			// 近期考试
 			testTap(index) {
 
-				uni.navigateTo({
-					url: `/pages/public/top/top?type=${index}`
-				})
+				if (index === 0) {
+					uni.navigateTo({
+						url: `/pages/public/top/top?type=${index}`
+					})
+				} else {
+					if (!this.hasLogin) {
+						uni.navigateTo({
+							url: '/pages/public/logintype'
+						})
+					} else {
+						console.log(index)
+						uni.navigateTo({
+							url: `/pages/public/top/top?type=${index}`
+						})
+					}
+				}
 			},
 			// 名师推荐
 			teacherTap(item, index) {
@@ -442,7 +454,50 @@
 			confirmTap() {
 				uni.setStorageSync('agreement', 'true')
 				this.modalShow = false;
+			},
+			// 轮播图指向
+			bannerDetail(index) {
+				console.log(index)
+
+				let item = this.bannerList[index];
+				switch (item.type) {
+					case 0:
+						uni.navigateTo({
+							url: `/pages/public/top/detail?id=${item.url}&type=0`,
+						})
+						break;
+
+					case 1:
+						uni.navigateTo({
+							url: `/pages/public/historyExQuestions/detail?id=${item.url}`,
+						})
+						break;
+
+					case 2:
+						uni.navigateTo({
+							url: `/pages/public/highScore/teachingMaterialDetail?id=${item.url}`,
+						})
+						break;
+					case 3:
+						uni.navigateTo({
+							url: `/pages/centers/paintingEvaluation/detail?id=${item.url}&source=home&type=default`,
+						})
+						break;
+					case 4:
+						uni.navigateTo({
+							url: `/pages/teachers/dynamicHomePage?id=${item.url}`,
+						})
+						break;
+					case 5:
+						uni.navigateTo({
+							url: `/pages/set/bannerView/bannerView?url=${item.url}&name=${item.name}`
+						})
+						break;
+				}
 			}
+		},
+		onPullDownRefresh() {
+			this.initData()
 		}
 	}
 </script>

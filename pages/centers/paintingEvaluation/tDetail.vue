@@ -2,18 +2,27 @@
 	<view class="detail">
 		<view class="swiper-wrapper">
 			<view class="swiper">
-				<swiper @change="swiperChange">
+				
+				<view class="swiper-item">
+					<image :src="detail.evaluateUrl" mode="widthFix"></image>
+					<view class="evaluateParams" v-for="(item, index) in evaluateParams" :key="index" :style="{top: (item.y / (upx2px(100) /100) - 20) + 'rpx', left:(item.x / (upx2px(100) / 100) - 48) + 'rpx'}">
+						<view class="evaluateParams-box">
+							<voicePlayback :item="item"></voicePlayback>
+						</view>
+					</view>
+				</view>
+				<!-- <swiper @change="swiperChange">
 					<swiper-item>
 						<view class="swiper-item">
 							<image :src="detail.evaluateUrl" mode="widthFix"></image>
-							<view class="evaluateParams" v-for="(item, index) in evaluateParams" :key="index" :style="{top: item.y + 'px', left: item.x + 'px'}">
+							<view class="evaluateParams" v-for="(item, index) in evaluateParams" :key="index" :style="{top: (item.y / (upx2px(100) /100) - 20) + 'rpx', left:(item.x / (upx2px(100) / 100) - 48) + 'rpx'}">
 								<view class="evaluateParams-box">
 									<voicePlayback :item="item"></voicePlayback>
 								</view>
 							</view>
 						</view>
 					</swiper-item>
-				</swiper>
+				</swiper> -->
 				<!-- <view class="dots u-flex u-row-center">{{currentIndex}}/3</view> -->
 				<view class="score u-flex u-row-center" v-if="detail.score >= 0">
 					<text>{{detail.score}}</text>
@@ -103,6 +112,12 @@
 			}
 		},
 		methods: {
+			upx2px(value) {
+				if (!value) {
+					return 0;
+				}
+				return uni.upx2px(value);
+			},
 			initData() {
 				this.$http.get(orderItemPaintEvaluateDetail, {
 					id: this.id
@@ -163,7 +178,7 @@
 
 		.swiper {
 			position: relative;
-			height: 910rpx;
+			// height: 910rpx;
 
 
 			&>swiper {

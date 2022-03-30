@@ -149,8 +149,13 @@
 			// 是否可以开始考试
 			isStartExam() {
 				let start= moment(`${this.examSubjectItem.subjectDate} ${this.examSubjectItem.subjectStarttime}`).subtract(this.examSubjectItem.seenQuestionBeforeMinute, 'm').format('YYYY-MM-DD HH:mm:ss')
-				let end = `${this.examSubjectItem.subjectDate} ${this.examSubjectItem.subjectEndtime}`
-				return this.$mHelper.timeInByDate(start, end) > 0
+				
+				console.log(start)
+				// let end = `${this.examSubjectItem.subjectDate} ${this.examSubjectItem.subjectEndtime}`
+				let end = moment().format('YYYY-MM-DD HH:mm:ss')
+				
+				console.log(this.$mHelper.timeInByDate(start, end))
+				return moment().diff(moment(start)) > 0
 			},
 			// 是否可以上传试卷
 			diffUpload() {

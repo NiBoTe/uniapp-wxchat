@@ -98,13 +98,13 @@
 
 
 			<view class="video" v-if="productDetail.type === 'video'">
-				<video id="myVideo" :src="videoUrl" @loadedmetadata="videoLoadedmetadata" @error="videoErrorCallback"
-					@timeupdate='videoUpdate' @ended="videoEnded" :controls="false" object-fit="contain"
+				<video id="myVideo" :direction="90" :src="videoUrl" @loadedmetadata="videoLoadedmetadata" @error="videoErrorCallback"
+					@timeupdate='videoUpdate' @ended="videoEnded" @play="palyFlag = true" :controls="false" object-fit="contain"
 					enable-play-gesture>
 				</video>
 
 				<view class="try u-flex u-row-center" v-if="orderDetail.status !== 1 && !isTrialEnd" @click="submitTap">
-					<text>正在试看，购买后观看完整视频</text>
+					<text>{{palyFlag ? '正在试看，购买后观看完整视频' : '内容可试看'}}</text>
 					<view class="try-btn">购买</view>
 				</view>
 

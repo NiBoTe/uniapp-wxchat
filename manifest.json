@@ -5,6 +5,9 @@
     "versionName" : "1.2.9",
     "versionCode" : 1,
     "transformPx" : false,
+    "networkTimeout" : {
+        "uploadFile" : 120000
+    },
     "app-plus" : {
         "compatible" : {
             "ignoreVersion" : true

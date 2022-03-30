@@ -91,7 +91,6 @@
 				let ll = 0
 				if (this.textHeight > 0 && this.lineHeight > 0) {
 					const actual = uni.upx2px(this.lineHeight)
-					console.log('actual', actual)
 					ll = Math.ceil(this.textHeight / actual)
 				}
 				return ll
@@ -153,6 +152,8 @@
 		float: right;
 		position: relative;
 		margin-left: 1em;
+		display: flex;
+		align-items: center;
 	}
 
 	.jj-expandable-text .btn .opt-hint {

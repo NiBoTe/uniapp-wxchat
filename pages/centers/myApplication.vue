@@ -8,7 +8,7 @@
 
 
 		<view class="tabs u-flex">
-			<view class="tab" @click="navTo('/pages/public/top/top?type=0')">
+			<view class="tab" @click="navTo('/pages/public/top/top?type=0', true)">
 				<image :src="setSrc('myApplication/tab01.png')"></image>
 				<text>考试信息</text>
 			</view>
@@ -88,12 +88,25 @@
 	export default {
 		data() {
 			return {
-
+				hasLogin: false,
 			}
 		},
 		methods: {
-
-			navTo(url) {
+			navTo(url, status) {
+				
+				if(status) {
+					uni.navigateTo({
+						url
+					})
+					return
+				}
+				this.hasLogin = this.$mStore.getters.hasLogin
+				if(!this.hasLogin) {
+					uni.navigateTo({
+						url: '/pages/public/logintype'
+					})
+					return 
+				}
 				uni.navigateTo({
 					url
 				})

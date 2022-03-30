@@ -1,7 +1,7 @@
 <template>
 	<view class="top">
 		<view>
-			<camera :device-position="devicePosition" flash="off" @error="error" class="camera"></camera>
+			<camera :device-position="devicePosition" resolution="low" 	frame-size="small" flash="off" @error="error" class="camera"></camera>
 
 			<view class="content">
 				<view class="header" :style="{paddingTop: StatusBar + 'px'}">
@@ -216,15 +216,23 @@
 							getTask:this.getTask
 						})
 						.then(r => {
+							_this.$mHelper.toast('上传成功')
 							_this.recordVideoUpload(r)
 						});
 				}).catch(err => {
 					console.log(err)
 				})
 			},
-			getTask(res, err){
-				console.log(res)
-				console.log(err)
+			getTask(requestTask, handleRe) {
+				// requestTask.onProgressUpdate((res) => {
+				// 	if(res.progress < 100) {
+				// 		uni.showLoading({
+				// 			title: `上传进度${res.progress}%`
+				// 		})
+				// 	}else {
+				// 		uni.hideLoading()
+				// 	}
+				// });
 			},
 			recordVideoUpload(url) {
 				this.$http.post(recordVideoSave, {

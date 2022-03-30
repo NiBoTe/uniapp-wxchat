@@ -24,7 +24,7 @@
 
 		<view class="item u-flex u-row-between" style="border-bottom: 0;">
 			<view class="textarea">
-				<textarea v-model="introduce" placeholder="请介绍自己的教育或任职经历..." maxlength="150" />
+				<textarea v-model="introduce" :placeholder="userInfo.roleSelect === 'teacher' ? '请介绍自己的教育或任职经历...' : '请输入个性签名'" maxlength="150" />
 				<view class="textarea-length" :class="introduce.length ? 'active' : ''">{{introduce.length}}/150
 				</view>
 			</view>

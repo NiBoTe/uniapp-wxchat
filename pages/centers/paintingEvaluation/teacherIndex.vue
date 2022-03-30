@@ -33,15 +33,27 @@
 				</view>
 			</view>
 
-			<u-waterfall v-model="list" ref="uWaterfall">
+			<u-waterfall v-model="list" ref="uWaterfall" v-if="tabIndex === 0">
 				<template v-slot:left="{leftList}">
 					<view class="item" v-for="(item, index) in leftList" :key="index">
-						<painting-evaluation-item :item="item" :type="tabIndex === 0 ? 'teacherInfo' : 'default'"></painting-evaluation-item>
+						<painting-evaluation-item :item="item" type="teacherInfo"></painting-evaluation-item>
 					</view>
 				</template>
 				<template v-slot:right="{rightList}">
 					<view class="item" v-for="(item, index) in rightList" :key="index">
-						<painting-evaluation-item :item="item" :type="tabIndex === 0 ? 'teacherInfo' : 'default'"></painting-evaluation-item>
+						<painting-evaluation-item :item="item" type="teacherInfo"></painting-evaluation-item>
+					</view>
+				</template>
+			</u-waterfall>
+			<u-waterfall v-model="list" ref="uWaterfall" v-else>
+				<template v-slot:left="{leftList}">
+					<view class="item" v-for="(item, index) in leftList" :key="index">
+						<painting-evaluation-item :item="item" type="default"></painting-evaluation-item>
+					</view>
+				</template>
+				<template v-slot:right="{rightList}">
+					<view class="item" v-for="(item, index) in rightList" :key="index">
+						<painting-evaluation-item :item="item" type="default"></painting-evaluation-item>
 					</view>
 				</template>
 			</u-waterfall>
@@ -94,7 +106,8 @@
 				tabCurrent: 0,
 				popShow: false,
 				selectList: [],
-				selectName: null
+				selectName: null,
+				itemType: 'teacherInfo'
 
 			};
 		},
@@ -162,6 +175,7 @@
 			},
 			tabTap(index) {
 				this.tabIndex = index;
+				this.itemType = this.tabIndex === 0 ? 'teacherInfo' : 'default';
 				this.current = 1;
 				this.skilledMajorId = '';
 				this.selectName = null;

@@ -8,9 +8,9 @@
 				<view class="navbar">
 					<u-navbar title=" " immersive back-icon-color="#ffffff" :background="background"
 						:border-bottom="false" title-color="#ffffff">
-						<view slot="right" class="navbar-right">
+						<!-- <view slot="right" class="navbar-right">
 							<image src="/static/public/teacherDynamic/d_icon_fx.png"></image>
-						</view>
+						</view> -->
 					</u-navbar>
 				</view>
 				<!-- <view class="settings" :style="{top: StatusBar + 44 + 'px'}">
@@ -87,14 +87,16 @@
 				</view>
 
 				<u-gap height="16" bg-color="#F7F7F7" margin-top="40"></u-gap>
-				<u-sticky :offset-top="0" bg-color="#fff" @fixed="fixedTap" @unfixed="unfixedTap">
-					<view class="tabs" :style="{paddingTop: isFixed ? StatusBar + 'px' : '0'}">
-						<u-tabs ref="tabs" :is-scroll="true" :list="tabList" :current="current" bar-width="62"
-							bar-height="8" gutter="40" active-color="#1B1B1B" inactive-color="#9E9E9E" font-size="30"
-							@change="tabChange">
-						</u-tabs>
-					</view>
-				</u-sticky>
+				<view class="content-tabs">
+					<u-sticky :offset-top="0" bg-color="#fff" @fixed="fixedTap" @unfixed="unfixedTap">
+						<view class="tabs" :style="{paddingTop: isFixed ? StatusBar + 'px' : '0'}">
+							<u-tabs ref="tabs" :is-scroll="true" :list="tabList" :current="current" bar-width="62"
+								bar-height="8" gutter="40" active-color="#1B1B1B" inactive-color="#9E9E9E" font-size="30"
+								@change="tabChange">
+							</u-tabs>
+						</view>
+					</u-sticky>
+				</view>
 
 				<!-- 评画tabs -->
 				<view class="" v-show="current == 0">
@@ -106,7 +108,7 @@
 					</view>
 					<view class="content-box">
 						<!-- 评画-内容 -->
-						<painting-evaluation ref="PaintingEvaluation" :teacherId="id"></painting-evaluation>
+						<painting-evaluation ref="PaintingEvaluation" :teacherId="id" @unfixedTap="unfixedTap" source="home"></painting-evaluation>
 					</view>
 				</view>
 				<!-- 高分教材 -->
@@ -119,13 +121,13 @@
 					</view>
 					<!-- 高分教材-评论类型 -->
 					<view class="content-box">
-						<Textbook ref="TextBook" :teacherId="id" type="user"></Textbook>
+						<Textbook ref="TextBook" :teacherId="id" type="user" @unfixedTap="unfixedTap"></Textbook>
 					</view>
 				</view>
 				<!-- 评论 -->
 				<view class="" v-show="current == 2">
 					<view class="content-box">
-						<dynamic ref="Dynamic" :teacherId="id"></dynamic>
+						<dynamic ref="Dynamic" :teacherId="id" @unfixedTap="unfixedTap"></dynamic>
 					</view>
 				</view>
 			</view>
@@ -160,6 +162,7 @@
 		data() {
 			return {
 				id: null,
+				hasLogin: false,
 				StatusBar: this.StatusBar,
 				foldText: '展开',
 				textEtc: '...',
@@ -237,9 +240,16 @@
 			},
 			// 邀请评画
 			submitTap() {
-				uni.navigateTo({
-					url: `/pages/teachers/inviteComments/index?teacherId=${this.id}`
-				})
+				this.hasLogin = this.$mStore.getters.hasLogin
+				if(this.hasLogin) {
+					uni.navigateTo({
+						url: `/pages/teachers/inviteComments/index?teacherId=${this.id}`
+					})
+				} else {
+					uni.navigateTo({
+						url: '/pages/public/logintype'
+					})
+				}
 			},
 			followTap() {
 				this.$http.post(addFollow, null, {
@@ -430,42 +440,6 @@
 
 					.subheader-text {
 						margin-top: 14rpx;
-						position: relative;
-						line-height: 46rpx;
-						font-size: 26rpx;
-						color: #3A3D71;
-
-						.fold::before {
-							//设置在文本下面的展开按钮那一部分，此部分的前面设置——...省略号，并通过绝对定位设置在超出部分的后面
-							content: attr(data-etc);
-							position: absolute;
-							left: 0;
-							transform: translateX(4rpx);
-
-						}
-
-						.fold::after {
-							//设置文本下面的展开按钮的那一部分，此部分的后面设置——展开  展开按钮，并通过绝对定位设置在省略号的后面
-							content: attr(data-text);
-							position: absolute;
-							right: 0;
-							color: $u-type-primary;
-						}
-
-						.fold {
-							//展开按钮的那一部分，同样设置绝对定位，并设置宽高，将通过样式实现的省略号遮住，同时将::before和::after展开的内容设置在里面
-							width: 110rpx;
-							height: 45rpx;
-							position: absolute;
-							right: 0;
-							bottom: 0;
-							background-color: #fff;
-						}
-
-						.foldIntroduct {
-							//出现此样式名时，设置不出现省略号和展开按钮
-							-webkit-line-clamp: inherit !important;
-						}
 					}
 				}
 
@@ -517,7 +491,11 @@
 					padding-top: 4rpx;
 					background-color: #fff;
 				}
-
+				
+				.content-tabs{
+					position: relative;
+					z-index: 999;
+				}
 				.borderBottom {
 					margin-top: -10rpx;
 					height: 2rpx;
@@ -575,5 +553,10 @@
 
 	/deep/ .u-tab-bar {
 		background-color: $u-type-primary !important;
+	}
+	
+	/deep/ .u-back-wrap{
+		position: relative;
+		z-index: 10000;
 	}
 </style>

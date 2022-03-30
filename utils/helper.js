@@ -3,6 +3,8 @@ import mRouter from '@/utils/router';
 import mConstDataConfig from '@/config/constData.config';
 import mStore from '@/store';
 import moment from '@/common/moment.js'
+
+import PY from './PY.js'
 //常用方法集合
 export default {
 	/**
@@ -219,39 +221,48 @@ export default {
 		return RegExp(/^1[34578]\d{9}$/).test(mobile);
 	},
 	// 验证身份证号码
-	checkIdCard(idcard){
+	checkIdCard(idcard) {
 		return RegExp(/(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/).test(idcard);
 	},
-	// 首字母分组
-	segSort(arr, key = 'examAddress') {
-		if (!String.prototype.localeCompare) return null
-		let letters = 'abcdefghjklmnopqrstwxyz1234567890'.split('')
-		let zh = '阿八嚓哒妸发旮哈讥咔垃痳拏噢妑七呥扨它穵夕丫帀'.split('')
-		let segs = []
-		letters.map((item, i) => {
-			let cur = {
-				letter: item.toUpperCase(),
-				data: []
-			}
-			arr.map((item) => {
-				if (item[key].localeCompare(zh[i]) >= 0 && item[key].localeCompare(zh[i + 1]) < 0) {
-					cur.data.push(item)
-				}
+	segSort(arr, keyName = 'examAddress') {
+		let letters = "*ABCDEFGHJKLMNOPQRSTWXYZ".split('');
+		let segs = {};
+		let indexedList = []
+		// 创建一个以26个为key的对象
+		letters.forEach(item => {
+			segs[item] = [];
+		})
+		arr.forEach(item => {
+			// 取姓氏并返回姓氏的拼音首字母
+			let a = PY.ConvertPinyin(item[keyName]).substr(0, 1);
+			console.log(a)
+			// 在A-z之中写入对应字母的对象数组中，否则传入*对象数组里
+			let rep = new RegExp(/[A-z]/)
+			rep.test(a) ? segs[a.toLocaleUpperCase()].push(item) : segs['*'].push(item)
+
+		})
+		// 循环segs对象，转换为indexList组件需要的格式
+		for (const [key, value] of Object.entries(segs)) {
+			value.length && indexedList.push({
+				letter: key,
+				data: value
 			})
-			
-			if (cur.data.length) {
-				cur.data.sort(function(a, b) {
-					return a[key].localeCompare(b[key], 'zh')
+		}
+
+		console.log(indexedList)
+		indexedList.forEach(item => {
+			if (item.data.length > 1) {
+				// 这里是给相同拼音首字母进行排序
+				item.data = item.data.sort((a, b) => {
+					return a[keyName].localeCompare(b[keyName])
 				})
-				segs.push(cur)
 			}
 		})
-
-		return segs
+		return indexedList;
 	},
 	// 身份证脱敏
-	certificatecode(code, bagin = 4, end = 3){
-		return code.replace(/^(.{4})(?:\d+)(.{3})$/,  "\$1****\$2")
+	certificatecode(code, bagin = 4, end = 3) {
+		return code.replace(/^(.{4})(?:\d+)(.{3})$/, "\$1****\$2")
 	},
 	// 格式化时间
 	formatSeconds(value, type = 'hour') {
@@ -260,7 +271,7 @@ export default {
 		let m = Math.floor((result / 60 % 60)) < 10 ? '0' + Math.floor((result / 60 % 60)) : Math.floor((result /
 			60 % 60));
 		let s = Math.floor((result % 60)) < 10 ? '0' + Math.floor((result % 60)) : Math.floor((result % 60));
-	
+
 		let res = '';
 		if (h !== '00') res += `${h}h`;
 		if (m !== '00') res += `${m}min`;
@@ -276,14 +287,93 @@ export default {
 	},
 	// 时间段内
 	timeInByDate(start, end) {
-	  if (moment().diff(moment(start)) > 0 && moment(end).diff(moment()) > 0) {
-	    return true
-	  }
-	  return false
+		if (moment().diff(moment(start)) > 0 && moment(end).diff(moment()) > 0) {
+			return true
+		}
+		return false
 	},
 	// 类型筛选
-	listFilters(id, list){
+	listFilters(id, list) {
 		return list.filter(item => item.firstMenuId === id)
 	},
-	
+	// 表情处理
+	messageemoj(message) {
+		const emojiList = [
+			[{
+					"url": "applause.png",
+					alt: "[鼓掌]"
+				},
+				{
+					"url": "laugh.png",
+					alt: "[高兴]"
+				},
+				{
+					"url": "cool.png",
+					alt: "[得意]"
+				},
+			]
+		]
+		let msg = '';
+		let bgn = message.indexOf("[")
+		let end = message.indexOf("]")
+		let iq = 0
+		//死循环
+		while (bgn != -1 && end != -1) {
+			iq += 1;
+			//不存在跳出
+			if (bgn == -1 || end == -1) {
+				msg += message
+				break;
+			}
+			//防止死循环
+			if (iq > 99) {
+				break;
+			}
+			//是否是表情格式
+			if (bgn < end && end <= bgn + 3) {
+				let ok = false
+				for (let i = 0; i < emojiList.length; i++) {
+					//匹配到表情退出
+					if (ok) {
+						break;
+					}
+					//未匹配到表情退出
+					if (i == emojiList.length) {
+						msg += message.substring(0, message.indexOf("]"));
+						message = message.substring(message.indexOf("]") + 1);
+						break;
+					}
+					for (let j = 0; j < emojiList[i].length; j++) {
+						if (emojiList[i][j].alt == message.substring(message.indexOf("["), message.indexOf(
+								"]") + 1)) {
+							//匹配表情替换
+							msg += message.substring(0, message.indexOf("["));
+							//格式很重要，不要出现"",用''
+							msg += "<img src='https://ykh-wxapp.oss-cn-hangzhou.aliyuncs.com/wx_applet_img/" + emojiList[i][j].url +
+								"' style='width: 32rpx;height: 32rpx;display:inline-block;' class='emojoStyle' />"
+							message = message.substring(message.indexOf("]") + 1);
+							ok = true;
+							break;
+						}
+					}
+				}
+			} else {
+				msg += message.substring(0, message.indexOf("["));
+				message = message.substring(message.indexOf("[") + 1);
+			}
+			//从新获取
+			bgn = message.indexOf("[")
+			end = message.indexOf("]")
+			// break
+		}
+		if (bgn == -1 || end == -1) {
+			//消息不存在表情格式，直接赋值
+			if (msg.length == 0) {
+				msg = message
+			}
+
+		}
+		return msg
+	}
+
 };

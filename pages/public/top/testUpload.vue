@@ -58,11 +58,11 @@
 
 			<view class="examples-content">
 				<image v-if="tempFilePath === ''"
-					src="https://img0.baidu.com/it/u=1721391133,702358773&fm=253&fmt=auto&app=120&f=JPEG?w=500&h=625">
+					src="https://img0.baidu.com/it/u=1721391133,702358773&fm=253&fmt=auto&app=120&f=JPEG?w=500&h=625" mode="widthFix">
 				</image>
-				<image v-else :src="tempFilePath"></image>
+				<image v-else :src="tempFilePath" mode="widthFix" @click.stop="prevViewTap"></image>
 
-				<view class="badge u-flex u-row-center" v-if="tempFilePath !== ''" @click="prevViewTap">
+				<view class="badge u-flex u-row-center" v-if="tempFilePath !== ''" @click.stop="prevViewTap">
 					<image src="/static/public/search_white.png"></image>
 				</view>
 			</view>
@@ -183,7 +183,7 @@
 				uni.chooseImage({
 					count: 1, //默认9
 					sizeType: ['original', 'compressed'], //可以指定是原图还是压缩图，默认二者都有
-					sourceType: ['album'], //从相册选择
+					sourceType: ['album', 'camera'], //从相册选择
 					success: function(res) {
 						_this.tempFilePath = res.tempFilePaths[0]
 					}
@@ -414,7 +414,10 @@
 				border-radius: 16rpx;
 				border: 2rpx solid #EDEFF2;
 				text-align: center;
-
+				
+				& > image{
+					width: 100%;
+				}
 				.badge {
 					position: absolute;
 					right: 0;

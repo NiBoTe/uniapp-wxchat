@@ -47,9 +47,9 @@
 					</view>
 
 					<view class="text">
-						<expandable-text :line="3" expandText="全文" foldText="收起">
-							{{item.content}}
-						</expandable-text>
+						<rich-text :nodes="$mHelper.messageemoj(item.content)"></rich-text>
+					<!-- 	<expandable-text :line="3" expandText="全文" foldText="收起" :longText="item.content">
+						</expandable-text> -->
 					</view>
 
 					<view class="time">
@@ -63,7 +63,7 @@
 						<view class="c-r">
 							<view class="name">
 								<text>{{itemc.user.fullName}}</text>
-								<view class="author" v-if="itemc.appUserId === detail.user.id">作品作者</view>
+								<!-- <view class="author" v-if="itemc.appUserId === detail.user.id">作品作者</view> -->
 								<view class="to" v-if="itemc.replyUser">
 									<u-icon name="play-right-fill" color="#9E9E9E" size="26"></u-icon>
 								</view>
@@ -80,10 +80,11 @@
 					</view>
 
 					<view class="more u-flex u-row-between" v-if="item.replyList.length">
-						<view class="left" @click="moreTap(item, index, true)">
-							<text v-if="!item.isMore">展开{{item.replyList.length}}条回复</text>
-							<text v-else>查看更多回复</text>
-							<image src="/static/public/arrow_down_text.png"></image>
+						<view class="left" @click="moreTap(item, index, true)" v-if="item.replyCount > 5">
+							<text v-if="!item.isMore">展开{{item.replyCount}}条回复</text>
+							<text v-else-if="item.replyCount > item.replyList.length" @click="itemMoreTap(item, itemc, index)">查看更多回复</text>
+							<image v-if="!item.isMore" src="/static/public/arrow_down_text.png"></image>
+							<image v-else-if="item.replyCount > item.replyList.length" @click="itemMoreTap(item, itemc, index)" src="/static/public/arrow_down_text.png"></image>
 						</view>
 
 						<view class="right" v-if="item.isMore" @click="moreTap(item, index)">
@@ -160,7 +161,8 @@
 		addLike,
 		snsBlackSave,
 		snsReportSave,
-		addComment
+		addComment,
+		getReplyList
 	} from '@/api/sns.js'
 	import moment from '@/common/moment.js'
 	import bubblePopups from "@/components/bubblePopups/bubblePopups";
@@ -389,6 +391,21 @@
 					this.$mHelper.toast(err.msg)
 				})
 
+			},
+			
+			// 查看更多回复
+			itemMoreTap(item, itemc, index){
+				this.$http.post(getReplyList, {
+					offsetId: item.replyList[item.replyList.length - 1].id,
+					parentId: item.id,
+					size: 5,
+					targetId: this.id
+				}).then(res => {
+					if(res.data.length > 0 ){
+						item.replyList =  item.replyList.concat(res.data)
+						item.moreList = item.replyList
+					}
+				})
 			}
 		},
 		onReachBottom() {

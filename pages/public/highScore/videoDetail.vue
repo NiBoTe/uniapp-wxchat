@@ -5,14 +5,14 @@
 				title-color="#ffffff">
 			</u-navbar>
 
-			<video id="myVideo" :custom-cache="false" :src="videoUrl" @loadedmetadata="videoLoadedmetadata" @error="videoErrorCallback"
-				@timeupdate='videoUpdate' @ended="videoEnded" :controls="false" object-fit="contain"
+			<video id="myVideo" :direction="90" :custom-cache="false" :src="videoUrl" @loadedmetadata="videoLoadedmetadata" @error="videoErrorCallback"
+				@timeupdate='videoUpdate' @ended="videoEnded" @play="palyFlag = true" :controls="false" object-fit="contain"
 				enable-play-gesture>
 			</video>
 
 			<view class="try u-flex u-row-center" v-if="!detail.isPayed && !isTrialEnd" @click="submitTap">
-				<text>正在试看，购买后观看完整视频</text>
-				<view class="try-btn">购买</view>
+				<text>{{palyFlag ? '正在试看，购买后观看完整视频' : '内容可试看'}}</text>
+				<view v-if="palyFlag" class="try-btn">购买</view>
 			</view>
 
 			<view class="trial u-flex u-row-center" v-if="!detail.isPayed && isTrialEnd">
@@ -126,9 +126,10 @@
 							<text>{{item.user.fullName}}</text>
 						</view>
 						<view class="text">
-							<expandable-text :line="3" expandText="全文" foldText="收起">
+							<rich-text :nodes="$mHelper.messageemoj(item.content)"></rich-text>
+				<!-- 			<expandable-text :line="3" expandText="全文" foldText="收起">
 							  {{item.content}}
-							</expandable-text>
+							</expandable-text> -->
 						</view>
 						<view class="time">
 							{{(moment(item.createTime).format('MM-DD'))}} <text @click="replyTap(item, index)">回复</text>
@@ -160,8 +161,8 @@
 						<view class="more u-flex u-row-between" v-if="item.replyList.length">
 							<view class="left" @click="moreTap(item, index, true)">
 								<text v-if="!item.isMore">展开{{item.replyList.length}}条回复</text>
-								<text v-else>查看更多回复</text>
-								<image src="/static/public/arrow_down_text.png"></image>
+								<!-- <text v-else>查看更多回复</text> -->
+								<!-- <image src="/static/public/arrow_down_text.png"></image> -->
 							</view>
 
 							<view class="right" v-if="item.isMore" @click="moreTap(item, index)">
@@ -807,6 +808,7 @@
 				font-weight: 400;
 				color: #3A3D71;
 				line-height: 36rpx;
+				word-break: break-all;
 			}
 		}
 

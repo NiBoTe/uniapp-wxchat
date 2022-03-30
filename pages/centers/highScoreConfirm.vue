@@ -27,7 +27,7 @@
 		</view>
 
 		<view class="footer">
-			<view class="footer-btn" :class="title === '' ? 'disabled' : ''" @click="submitTap">发布</view>
+			<view class="footer-btn" :class="title === '' ? 'disabled' : ''" @click="submitTap">确认</view>
 		</view>
 	</view>
 </template>

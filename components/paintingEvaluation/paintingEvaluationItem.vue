@@ -2,7 +2,7 @@
 	<view class="container">
 		<view class="item" @click="detailTap">
 			<view class="item-image">
-				<u-lazy-load threshold="-450" :image="type === 'teacherInfo' ? item.url : item.evaluateUrl">
+				<u-lazy-load threshold="-450" :image="item.evaluateUrl || item.url">
 				</u-lazy-load>
 				<!-- <voice-playback></voice-playback> -->
 			</view>
@@ -86,10 +86,7 @@
 				}).exec();
 			},
 			detailTap() {
-
-				console.log(this.item)
 				this.userInfo = this.$mStore.state.userInfo;
-
 				if (this.type === 'teacherInfo') {
 					if (this.userInfo.roleSelect === 'teacher' && this.item.state === 'wait_evaluate') {
 						uni.navigateTo({
@@ -98,9 +95,17 @@
 						return
 					}
 				}
-				uni.navigateTo({
-					url: `/pages/centers/paintingEvaluation/detail?id=${this.item.id}&source=${this.source}&type=${this.type}`
-				})
+				
+				if (this.type === 'teacherInfo') {
+					uni.navigateTo({
+						url: `/pages/centers/paintingEvaluation/tDetail?id=${this.item.id}&source=${this.source}&type=${this.type}`
+					})
+				} else {
+					uni.navigateTo({
+						url: `/pages/centers/paintingEvaluation/detail?id=${this.item.id}&source=${this.source}&type=${this.type}`
+					})
+				}
+				
 			}
 		}
 	}

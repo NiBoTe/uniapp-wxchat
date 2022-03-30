@@ -88,6 +88,7 @@
 	export default {
 		data() {
 			return {
+				isToken: false,
 				btnLoading: false,
 				appAgreementDefaultSelect: this.$mSettingConfig.appAgreementDefaultSelect, // 是否允许点击登录按钮
 				appName: this.$mSettingConfig.appName,
@@ -112,15 +113,16 @@
 			this.getWxCode()
 			this.btnLoading = false;
 			if (uni.getStorageSync('accessToken')) {
-				this.$mRouter.back()
+				// this.$mRouter.back()
+				this.isToken = true
 				// this.$mRouter.reLaunch({
 				// 	route: '/pages/index/index'
 				// });
 			}
 		},
 		onLoad(options) {
-			this.$mStore.commit('logout');
-
+			
+			// this.$mStore.commit('logout');
 			// 如果不是第一次进来 就不需要强制阅读协议
 			if (!uni.getStorageSync('notFirstTimeLogin')) {
 				if (!this.appAgreementDefaultSelect) {
@@ -209,9 +211,22 @@
 					const data = r.data;
 					await this.$mStore.commit('setToken', data.token);
 					await this.$mStore.commit('setOpenId', data.openid);
-					await this.$mStore.commit('login', data.user);
+					await this.$mStore.commit('login',  Object.assign(data.user, {
+						openid: data.openid
+					}));
 					this.$mHelper.toast('已为您授权登录');
-					this.$mRouter.back()
+					uni.$emit('isRefresh', true)
+					if(data.user.roleSelect) {
+						if(this.isToken) {
+							this.$mRouter.back(2)
+						} else {
+							this.$mRouter.back()
+						}
+					} else {
+						this.$mRouter.push({
+							route: '/pages/public/roleSelection'
+						});
+					}
 					this.btnLoading = false;
 				}).catch(err => {
 					if (err.code === 201) {
@@ -223,12 +238,17 @@
 							await this.$mStore.commit('setOpenId', data.openid);
 							await this.$mStore.commit('login', data.user);
 							this.$mHelper.toast('已为您授权登录');
-							
 							uni.$emit('isRefresh', true)
-							this.$mRouter.back()
 							// this.$mRouter.reLaunch({
 							// 	route: '/pages/index/index'
 							// });
+							if(this.isToken) {
+								this.$mRouter.back(2)
+							} else {
+								this.$mRouter.back()
+							}
+							
+							
 							this.btnLoading = false;
 						}).catch(e => {
 							this.$mHelper.toast(e.msg)
@@ -263,7 +283,11 @@
 					this.$mHelper.toast('已为您授权登录');
 					uni.$emit('isRefresh', true)
 					if(data.user.roleSelect) {
-						this.$mRouter.back()
+						if(this.isToken) {
+							this.$mRouter.back(2)
+						} else {
+							this.$mRouter.back()
+						}
 					} else {
 						this.$mRouter.push({
 							route: '/pages/public/roleSelection'
@@ -287,11 +311,11 @@
 					this.$mHelper.toast('已为您授权登录');
 					uni.$emit('isRefresh', true)
 					if(data.user.roleSelect) {
-						this.$mRouter.back()
-						
-						// this.$mRouter.reLaunch({
-						// 	route: '/pages/index/index'
-						// });
+						if(this.isToken) {
+							this.$mRouter.back(2)
+						} else {
+							this.$mRouter.back()
+						}
 					} else {
 						this.$mRouter.push({
 							route: '/pages/public/roleSelection'

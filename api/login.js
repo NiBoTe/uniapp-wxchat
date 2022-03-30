@@ -1,5 +1,7 @@
 const login = '/login/'
 
+const user = '/user/'
+
 // 发送验证码
 const sendSmsCode = `${login}sendSmsCode`;
 
@@ -28,7 +30,7 @@ const bindMobile = `${login}bindMobile`;
 const refreshToken = ''; // TODO
 
 // 登录令牌有效性检测
-const verifyAccessToken = ''; // TODO
+const checkToken = `${user}checkToken`;
 
 export {
 	mpWechatLogin,
@@ -38,7 +40,7 @@ export {
 	resetPassword,
 	register,
 	refreshToken,
-	verifyAccessToken,
+	checkToken,
 	newSetPassword,
 	bindMobile
 };

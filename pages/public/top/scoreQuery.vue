@@ -121,11 +121,10 @@
 				this.$http.post(scoreExamList).then(res => {
 					this.testList = res.data.records;
 				}).catch(err => {
-					console.log(err)
+					this.$mHelper.toast(err.msg)
 				})
 			},
 			submitTap() {
-
 				if (this.testName === '') {
 					return this.$mHelper.toast('请选择考试名称')
 				}

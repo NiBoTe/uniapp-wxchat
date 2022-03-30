@@ -1,8 +1,16 @@
 <template>
 	<view class="container">
-		<canvas-drag ref="canvasRef" id="canvas-drag" :graph="graph" enableUndo="true" :active="selectActive"
-			@actionChange="actionChange">
-		</canvas-drag>
+
+		<scroll-view scroll-y="true">
+			<view class="canvas-box" v-show="!maskShow">
+				<canvas-drag ref="canvasRef" id="canvas-drag" :graph="graph" enableUndo="true" :active="selectActive"
+					@actionChange="actionChange">
+				</canvas-drag>
+			</view>
+			<view class="canvas-box" v-show="maskShow">
+				<image :src="canvasImage" mode="widthFix"></image>
+			</view>
+		</scroll-view>
 		<!-- <scroll-view class="scroll-view_H" scroll-y="true">
 			<canvas canvas-id="canvas" class="canvas"
 				:style="{width: upx2px(canvas.width)+ 'px', height: upx2px(canvas.height) +'px'}"
@@ -12,10 +20,10 @@
 		<view class="drawingBoard-fixed-bottom">
 			<view class="drawingBoard-fixed-bottom-handle"
 				v-if="selectActive !== 1 && selectActive !== 3 && selectActive !== -1">
-				<view class="drawingBoard-btn" v-if="selectActive === 0" @longpress="longpressBtn()"
-					@touchend="touchendBtn()">
+				<view class="drawingBoard-btn" :class="audioShow ? 'active' : ''" v-if="selectActive === 0"
+					@longpress="longpressBtn()" @touchend="touchendBtn()">
 					<image :src="setSrc('painting/voice_start.png')"></image>
-					<text>长按添加评语</text>
+					<text>{{audioShow ? '松手结束语音录制' : '长按添加评语'}}</text>
 				</view>
 				<view class="drawingBoard-text" v-if="selectActive === 2" style="padding-top: 20rpx;">
 					<view class="drawingBoard-color">
@@ -73,7 +81,7 @@
 			</view>
 		</view>
 
-		<u-popup v-model="audioShow" mode="center">
+		<!-- 		<u-popup v-model="audioShow" mode="center">
 			<view class="prompt-layer">
 				<view class="prompt-loader">
 					<view class="em" v-for="(item,index) in 15" :key="index"></view>
@@ -81,7 +89,7 @@
 				<text class="span">松手结束录音</text>
 			</view>
 		</u-popup>
-
+ -->
 
 		<view class="mask" v-if="maskShow">
 			<view class="mask-header u-flex u-row-between">
@@ -89,11 +97,11 @@
 				<view class="right u-flex u-row-center" @click="textConfirm">保存</view>
 			</view>
 			<view class="mask-content">
-				<textarea placeholder="请输入" v-model="textValue" :cursor-spacing="20" placeholder-style="font-size:14px;"
+				<textarea placeholder="请输入" :focus="maskShow" v-model="textValue" :cursor-spacing="20" placeholder-style="font-size:14px;"
 					:style="{color: textColor}" />
 			</view>
 
-			<view class="mask-footer">
+			<view class="mask-footer" :style="{bottom: KeyboardHeight + 'px'}">
 				<color-picker ref="colorPicker" :color="textRgb" @confirm="colorTextConfirm"></color-picker>
 			</view>
 		</view>
@@ -122,7 +130,7 @@
 				maskShow: false, // 文字
 				StatusBar: this.StatusBar,
 				selectActive: 0,
-
+				canvasImage: '',
 				// 画板
 
 				id: null,
@@ -175,7 +183,8 @@
 					a: 0.6
 				},
 
-				textValue: ''
+				textValue: '',
+				KeyboardHeight: 0
 			};
 		},
 		components: {
@@ -193,6 +202,11 @@
 				this.id = options.id;
 				this.initData()
 			}
+
+			uni.onKeyboardHeightChange(res => {
+				console.log('log', res);
+				this.KeyboardHeight = res.height
+			})
 		},
 		methods: {
 			// /**
@@ -329,7 +343,14 @@
 				switch (index) {
 					case 1:
 						this.textValue = ''
-						this.maskShow = true;
+						this.$refs.canvasRef.exportFun().then(filePath => {
+							this.canvasImage = filePath;
+							this.maskShow = true;
+						}).catch(e => {
+							console.error(e);
+						});
+
+
 						break;
 					case 3:
 						this.graph = {
@@ -447,10 +468,16 @@
 		position: relative;
 	}
 
+	.canvas-box {
+		image {
+			width: 100%;
+		}
+	}
+
 	.drawingBoard-fixed-bottom {
-		position: fixed;
-		bottom: 0;
-		left: 0;
+		// position: fixed;
+		// bottom: 0;
+		// left: 0;
 		width: 100%;
 		text-align: center;
 		z-index: 999;
@@ -584,6 +611,14 @@
 					font-size: 28rpx;
 					font-weight: 500;
 					color: #FFFFFF;
+				}
+
+				&.active {
+					background: #9E9E9E;
+
+					text {
+						color: #FFFFFF;
+					}
 				}
 			}
 
@@ -767,14 +802,11 @@
 
 	/* 语音录制结束---------------------------------------------------------------- */
 
-
-
-
 	/**
 	 * 文字
 	 */
 	.mask {
-		position: absolute;
+		position: fixed;
 		top: 0;
 		left: 0;
 		right: 0;
@@ -820,6 +852,8 @@
 			right: 40rpx;
 			bottom: 0;
 			padding: 28rpx 0 20rpx 0;
+			padding-bottom: calc(20rpx + constant(safe-area-inset-bottom));
+			padding-bottom: calc(20rpx + env(safe-area-inset-bottom));
 		}
 	}
 </style>

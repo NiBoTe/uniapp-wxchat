@@ -378,7 +378,8 @@
 
 <style lang="scss" scoped>
 	.top {
-		height: calc(100vh);
+		height: 100vh;
+		overflow: hidden;
 	}
 
 	.navbar {
@@ -477,7 +478,7 @@
 			width: 176rpx;
 			height: 100%;
 			background-color: #F2F2F2;
-
+			padding-bottom: 400rpx;
 			&-item {
 				&-box {
 					height: 80rpx;
@@ -557,6 +558,7 @@
 			background-color: #F9FAF9;
 
 			.list {
+				padding-bottom: 300rpx;
 				.item {
 					margin: 26rpx 28rpx 0 20rpx;
 					background: #FFFFFF;

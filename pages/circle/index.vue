@@ -55,7 +55,7 @@
 								{{item.favoriteCount}}
 							</view>
 						</view>
-						<view class="tool-item" v-if="!item.noComment" @click.stop="commentTap(index)">
+						<view class="tool-item" v-if="!item.noComment">
 							<image src="/static/public/dynamic_comment.png"></image>
 							<view class="num">
 								{{item.commentCount}}
@@ -69,7 +69,7 @@
 							</view>
 						</view>
 					</view>
-					<button open-type="share" class="right" @tap="share(item)">
+					<button open-type="share" class="right" @click.stop="share(item)">
 						<view class="tool-item">
 							<image src="/static/public/dynamic_share.png"></image>
 							<view class="num">
@@ -84,7 +84,7 @@
 					<view class="left">
 						<text v-if="commentIndex !== index">说一下你的想法...</text>
 						<input v-else type="text" :cursor-spacing="20" v-model="content" placeholder="说一下你的想法..." focus
-							@confirm="confirmTap(item, index)" />
+							@confirm="confirmTap(item, index)" 	:hold-keyboard="holdKeyboard"  confirm-type="done" />
 					</view>
 					<view class="right u-flex">
 						<image src="/static/public/applause.png" @click="sendExpression(index,0)"></image>
@@ -221,12 +221,13 @@
 				reportIndex: 0,
 				commentIndex: -1,
 				content: '',
-
+				holdKeyboard: false,
 			};
 		},
 		onLoad() {},
 		onShow() {
 			this.hasLogin = this.$mStore.getters.hasLogin
+			this.list = []
 			this.current = 1;
 			this.getList();
 		},
@@ -300,6 +301,8 @@
 					} else {
 						this.loadStatus = 'loadmore';
 					}
+					
+					uni.stopPullDownRefresh()
 				})
 
 			},
@@ -385,6 +388,7 @@
 					})
 					return
 				}
+				this.holdKeyboard = true;
 				this.commentIndex = index
 			},
 			confirmTap(item, index) {
@@ -396,6 +400,7 @@
 					content: this.content,
 					targetId: item.id
 				}).then(res => {
+					this.holdKeyboard = false;
 					this.$mHelper.toast('评论成功')
 					this.commentIndex = -1;
 					this.$set(this.list[index], 'commentCount', Number(item.commentCount) + 1)
@@ -416,23 +421,26 @@
 				if(this.commentIndex !== index) {
 					this.content = ''
 				}
-				
+				this.holdKeyboard = true;
 				this.commentIndex = index
 				switch (type) {
 					case 0:
-						this.content += '👏'
+						this.content += '[鼓掌]'
 						break;
 					case 1:
-						this.content += '😁'
+						this.content += '[高兴]'
 						break;
 					case 2:
-						this.content += '😎'
+						this.content += '[得意]'
 						break;
 				}
 			}
 
 		},
-
+		onPullDownRefresh() {
+			this.current = 1;
+			this.getList()
+		},
 		onPageScroll(e) {
 			this.scrollTop = e.scrollTop
 		},
@@ -515,12 +523,6 @@
 				width: 100%;
 				margin-top: 12rpx;
 				margin-bottom: 24rpx;
-				font-size: 26rpx;
-				font-family: PingFangSC-Regular, PingFang SC;
-				font-weight: 400;
-				color: #3A3D71;
-				line-height: 23px;
-				word-break: break-all;
 			}
 
 
