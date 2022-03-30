@@ -1,6 +1,8 @@
 <template>
 	<view class="detail">
-		<u-parse :html="detail.detail"></u-parse>
+		<scroll-view scroll-y="true">
+			<u-parse :html="detail.detail"></u-parse>
+		</scroll-view>
 	</view>
 </template>
 
@@ -37,6 +39,7 @@
 
 <style lang="scss" scoped>
 	.detail{
+		height: 100vh;
 		border-top: 2rpx solid #E9E9E9;
 		padding: 26rpx 32rpx 26rpx 36rpx;
 	}
