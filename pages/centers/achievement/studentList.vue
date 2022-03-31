@@ -123,6 +123,7 @@
 					examId: this.id,
 					current: this.current,
 					size: this.size,
+					faceDetectState: this.faceDetectState
 				}).then(res => {
 					let data = res.data
 					this.untestedCount = data.untestedCount;

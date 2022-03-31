@@ -132,6 +132,8 @@
 					snsImgs: imgs
 				}).then(res => {
 					this.$mHelper.toast('发布成功')
+					
+					uni.$emit('refreshList', true)
 					setTimeout(() => {
 						uni.switchTab({
 							url: '/pages/circle/index'

@@ -8,7 +8,7 @@
 
 
 		<view class="content" v-if="!isNodata">
-			<image :src="url" v-if="url !== ''" mode="widthFix"></image>
+			<image v-for="(item,index) in urlList" :key="index" :src="item" v-if="item !== ''" mode="widthFix"></image>
 			
 			<view class="table" v-if="type === 3">
 				<view class="tr t-head">
@@ -70,7 +70,7 @@
 			return {
 				id: null,
 				isNodata: false,
-				url: '',
+				urlList: [],
 				status: 'single',
 				item: null,
 				type: 1,
@@ -112,7 +112,7 @@
 					console.log(res)
 
 					if(this.type !== 3) {
-						this.url = res.data.result[0];
+						this.urlList = res.data.result;
 						this.status = res.data.type;
 						this.isNodata = false;
 					} else {
@@ -125,25 +125,37 @@
 				})
 			},
 			submitTap() {
-
+				this.saveImage(0)
+			},
+			saveImage(i){
 				let _this = this;
 				uni.downloadFile({
-					url: this.url, //图片地址
+					url: this.urlList[i], //图片地址
 					success: (res) => {
 						if (res.statusCode === 200) {
 							uni.saveImageToPhotosAlbum({
 								filePath: res.tempFilePath,
 								success: function() {
-									_this.$mHelper.toast('保存成功')
+									if(_this.urlList.length - 1 === i) {
+										_this.$mHelper.toast('保存成功')
+									} else {
+										_this.saveImage(i + 1)
+									}
+									
 								},
-								fail: function() {
-									_this.$mHelper.toast('保存失败')
+								fail: function(err) {
+									if(err.errMsg === "saveImageToPhotosAlbum:fail:auth denied" || err.errMsg === "saveImageToPhotosAlbum:fail auth deny" || err.errMsg === "saveImageToPhotosAlbum:fail authorize no response"){
+										_this.$mHelper.getAuth()
+									} else {
+										_this.$mHelper.toast('保存失败')
+									}
 								}
 							});
 						}
 					}
 				})
 			}
+			
 		}
 	}
 </script>

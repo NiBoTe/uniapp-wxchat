@@ -1,16 +1,23 @@
 <template>
 	<view class="drawingBoard-body">
-		
+
 		<view class="back" :style="{top: StatusBar + 6 + 'px'}" @click="toBack">
 			<image src="/static/public/arrow_left.png"></image>
 		</view>
 		<!-- <scroll-view :style="{top: top+'px', left: left+'px'}" class="scroll-view_H" scroll-x="true"> -->
-			<view class="canvas">
-				<canvas canvas-id="canvas" class="canvas"
-					 disable-scroll="true" 
+		<view class="canvas">
+			<view :style="{top: top+'px', left: left+'px'}" class="scroll-view_H" scroll-x="true">
+				<canvas canvas-id="canvas" class="canvas" disable-scroll="true"
 					:style="{width: upx2px(canvas.width)+ 'px', height: upx2px(canvas.height) +'px'}"
 					@touchstart="touchstart" @touchmove="touchmove" @touchend="touchend"></canvas>
 			</view>
+
+
+			<view class="render-area" @touchstart="startPen">
+				<image v-if="render_src" :src="render_src"
+					:style="{width: render_image.width + 'px', height: render_image.height +'px'}"></image>
+			</view>
+		</view>
 		<!-- </scroll-view> -->
 		<view class="drawingBoard-fixed-bottom">
 
@@ -36,7 +43,7 @@
 					<view class="thickness u-flex">
 						<text>0</text>
 						<view class="slider">
-							<u-slider height="10" block-width="40"  inactive-color="#D8D8D8" active-color="#999090"
+							<u-slider height="10" block-width="40" inactive-color="#D8D8D8" active-color="#999090"
 								v-model="contrastRatio"></u-slider>
 						</view>
 						<view class="refresh u-flex" @click="resetTap(2)">
@@ -108,7 +115,8 @@
 	import Helper from '@/utils/weImageFiltersHelper.js';
 	let helper = '';
 	let strokes = [];
-	
+	let strokes_easy = [];
+
 	let initImageData = {}
 	export default {
 		components: {
@@ -136,9 +144,9 @@
 					max_height: 0
 				},
 				src: null,
+				ctx: null,
 				selectActive: -1,
 				id: '',
-				Strokes: [],
 				dom: null,
 				width: 0,
 				height: 0,
@@ -162,7 +170,7 @@
 				},
 				thicknessValue: 3, // 线条粗细
 				contrastRatio: 50, // 对比度
-				
+
 			}
 		},
 		watch: {
@@ -188,7 +196,7 @@
 							})
 						}
 					})
-				}, 500)
+				}, 600)
 				// ImageFilters.BrightnessContrastPhotoshop(data, 26, 13)
 			}
 		},
@@ -198,16 +206,17 @@
 			initImageData = {}
 			uni.getSystemInfo({
 				success: (res) => {
+					this.render_image.max_height = res.windowHeight
 					this.width = res.windowWidth;
 					this.height = res.windowHeight;
-					
-					if(options.url) {
-						this.src = options.url
+					if (options.url) {
+						this.src = decodeURIComponent(options.url)
+						this.render_src = decodeURIComponent(options.url);
 						this.init_image()
 					}
 				}
 			});
-		
+
 		},
 
 		onReady() {
@@ -218,13 +227,11 @@
 				uni.getImageInfo({
 					src: this.src,
 					success: (image) => {
-						console.log(image)
+
 						if (image.width >= image.height) {
 							//初始化canvas尺寸
-							this.canvas.width = this.width / (uni.upx2px(100) /
-								100)
-							// this.canvas.width = image.width > transverse_canvas_width ?
-							// 	transverse_canvas_width : image.width
+							this.canvas.width = image.width > transverse_canvas_width ?
+								transverse_canvas_width : image.width
 							this.canvas.height = parseInt(this.canvas.width * image.height / image.width);
 							this.canvas.origin_height = this.canvas.height
 							this.canvas.origin_width = this.canvas.width
@@ -236,17 +243,12 @@
 
 						} else {
 							//初始化canvas尺寸
-							// this.canvas.height = this.height / (uni.upx2px(100) /
-							// 	100)
-							this.canvas.width = this.width / (uni.upx2px(100) /
-								100)
 							this.canvas.height = image.height > lengthways_canvas_height ?
-								lengthways_canvas_height : (image.height * 2 > lengthways_canvas_height) ? lengthways_canvas_height : image.height * 2
-							this.canvas.width = this.width/(uni.upx2px(100)/100) // parseInt(this.canvas.height * image.width / image.height);
+								lengthways_canvas_height : image.height
+							this.canvas.width = parseInt(this.canvas.height * image.width / image.height);
 							this.canvas.origin_width = this.canvas.width;
 							this.canvas.origin_height = this.canvas.height
-							
-							
+
 							//初始化预览图尺寸
 							this.render_image.width = this.render_image.max_width
 							this.render_image.height = parseInt(this.render_image.width * image.height / image
@@ -257,11 +259,50 @@
 									image.height);
 							}
 						}
+						// if (image.width >= image.height) {
+						// 	//初始化canvas尺寸
+						// 	this.canvas.width = this.width / (uni.upx2px(100) /
+						// 		100)
+						// 	// this.canvas.width = image.width > transverse_canvas_width ?
+						// 	// 	transverse_canvas_width : image.width
+						// 	this.canvas.height = parseInt(this.canvas.width * image.height / image.width);
+						// 	this.canvas.origin_height = this.canvas.height
+						// 	this.canvas.origin_width = this.canvas.width
+
+						// 	//初始化预览图尺寸
+						// 	this.render_image.width = this.render_image.max_width;
+						// 	this.render_image.height = parseInt(this.render_image.width * image.height / image
+						// 		.width);
+
+						// } else {
+						// 	//初始化canvas尺寸
+						// 	// this.canvas.height = this.height / (uni.upx2px(100) /
+						// 	// 	100)
+						// 	this.canvas.width = this.width / (uni.upx2px(100) /
+						// 		100)
+						// 	this.canvas.height = image.height > lengthways_canvas_height ?
+						// 		lengthways_canvas_height : (image.height * 2 > lengthways_canvas_height) ? lengthways_canvas_height : image.height * 2
+						// 	this.canvas.width = this.width/(uni.upx2px(100)/100) // parseInt(this.canvas.height * image.width / image.height);
+						// 	this.canvas.origin_width = this.canvas.width;
+						// 	this.canvas.origin_height = this.canvas.height
+
+
+						// 	//初始化预览图尺寸
+						// 	this.render_image.width = this.render_image.max_width
+						// 	this.render_image.height = parseInt(this.render_image.width * image.height / image
+						// 		.width);
+						// 	if (this.render_image.height > this.render_image.max_height) {
+						// 		this.render_image.height = this.render_image.max_height
+						// 		this.render_image.width = parseInt(this.render_image.height * image.width /
+						// 			image.height);
+						// 	}
+						// }
 						helper = new Helper({
 							canvasId: 'canvas',
 							width: this.upx2px(this.canvas.width),
 							height: this.upx2px(this.canvas.height)
 						})
+
 						// this.ctx = uni.createCanvasContext('canvas');
 						helper.initCanvas(image.path, () => {
 							initImageData = {
@@ -269,6 +310,8 @@
 								width: helper.canvasInfo.width,
 								height: helper.canvasInfo.height,
 							}
+							this.ctx = helper.ctx;
+							console.log(this.ctx)
 							// strokes.push({
 							// 	imageData: image.path,
 							// 	type: 'image',
@@ -290,17 +333,13 @@
 				}
 				return uni.upx2px(value);
 			},
-			touchmoveEnd(e) {
-				e.preventDefault();
-				e.stopPropagation();
-			},
 			submitTap() {
 				let _this = this;
 				uni.showToast({
 					icon: 'loading',
-					title:'保存中...'
+					title: '保存中...'
 				})
-				helper.getImageTempFilePath((tempFilePath)=> {
+				helper.getImageTempFilePath((tempFilePath) => {
 					uni.saveImageToPhotosAlbum({
 						filePath: tempFilePath,
 						success: function() {
@@ -314,7 +353,6 @@
 				})
 			},
 			clear() { //清空
-				this.Strokes = [];
 				this.dom.clearRect(0, 0, this.width, this.height)
 				this.dom.draw();
 			},
@@ -331,8 +369,16 @@
 					this.render_src = tempFilePath;
 				})
 			},
+			startPen() {
+				if (this.selectActive !== 1) return
+				this.top = 0;
+				this.left = 0
+			},
 			touchstart(e) {
 				if (this.selectActive !== 1) return
+
+				this.top = 0;
+				this.left = 0
 				strokes.push({
 					imageData: null,
 					type: 1,
@@ -350,6 +396,7 @@
 				this.drawLine(strokes[strokes.length - 1], e.type);
 			},
 			touchmove(e) {
+				console.log('======')
 				if (this.selectActive !== 1) return
 				strokes[strokes.length - 1].points.push({
 					x: e.touches[0].x,
@@ -368,40 +415,44 @@
 					}
 					helper.putImageData(strokes[strokes.length - 1].imageData, (tempFilePath) => {
 						this.render_src = tempFilePath;
+						this.top = -99999;
+						this.left = -99999;
 					})
 					// strokes.[strokes.length - 1].imageData = helper.originalImageData;
 					if (strokes[strokes.length - 1].points.length < 2) { //当此路径只有一个点的时候
 						strokes.pop();
 						helper.putImageData(strokes[strokes.length - 1].imageData, (tempFilePath) => {
 							this.render_src = tempFilePath;
+							this.top = -99999;
+							this.left = -99999;
 						})
 					}
 				})
 			},
 			drawLine(StrokesItem, type) {
 				if (StrokesItem.points.length > 1) {
-					helper.ctx.beginPath();
-					helper.ctx.setLineCap('round')
-					helper.ctx.setStrokeStyle(StrokesItem.style.color);
-					helper.ctx.setLineWidth(StrokesItem.style.lineWidth);
-					helper.ctx.moveTo(StrokesItem.points[StrokesItem.points.length - 2].x, StrokesItem.points[StrokesItem
+					this.ctx.beginPath();
+					this.ctx.setLineCap('round')
+					this.ctx.setStrokeStyle(StrokesItem.style.color);
+					this.ctx.setLineWidth(StrokesItem.style.lineWidth);
+					this.ctx.moveTo(StrokesItem.points[StrokesItem.points.length - 2].x, StrokesItem.points[StrokesItem
 						.points.length -
 						2].y);
-					helper.ctx.lineTo(StrokesItem.points[StrokesItem.points.length - 1].x, StrokesItem.points[StrokesItem
+					this.ctx.lineTo(StrokesItem.points[StrokesItem.points.length - 1].x, StrokesItem.points[StrokesItem
 						.points.length -
 						1].y);
-					helper.ctx.stroke();
+					this.ctx.stroke();
 					// helper.ctx.draw(true);
-					helper.ctx.draw(true, () => {
+					this.ctx.draw(true, () => {
 						// helper.saveImageData()
-						
+
 					})
 				}
 			},
 			selectHandle(index) {
 				switch (index) {
 					case 0:
-						try{
+						try {
 							this.isBlack = !this.isBlack;
 							let isGrayScale = false,
 								isGrayScaleIndex = -1;
@@ -419,7 +470,11 @@
 								})
 							} else {
 								let imageData = strokes.length > 0 ? strokes[strokes.length - 1].imageData : initImageData
+								// let imageData = helper.createImageData()
 								let filtered = ImageFilters.GrayScale(imageData)
+								console.log('filtered=========================')
+								console.log(filtered)
+								console.log('filtered=========================')
 								helper.putImageData(filtered, (tempFilePath) => {
 									this.render_src = tempFilePath;
 									strokes.push({
@@ -428,7 +483,7 @@
 									})
 								})
 							}
-						}catch(err){
+						} catch (err) {
 							console.log(err)
 						}
 						break;
@@ -506,7 +561,7 @@
 						break;
 				}
 			},
-			toBack(){
+			toBack() {
 				this.$mRouter.back()
 			}
 		},
@@ -523,9 +578,9 @@
 		height: 100vh;
 		background-color: #F3F3F3;
 	}
-	
-	
-	.back{
+
+
+	.back {
 		position: fixed;
 		z-index: 20;
 		left: 36rpx;
@@ -536,13 +591,14 @@
 		display: flex;
 		justify-content: center;
 		align-items: center;
-		
-		image{
+
+		image {
 			width: 32rpx;
 			height: 32rpx;
 		}
-		
+
 	}
+
 	.drawingBoard-body canvas {
 		width: 100%;
 		height: 100%;
@@ -604,7 +660,7 @@
 			}
 		}
 
-		&.four{
+		&.four {
 			image {
 				width: 42rpx;
 				height: 44rpx;
@@ -726,9 +782,11 @@
 		// 颜色
 		.drawingBoard-text {
 			width: 100%;
+
 			.drawingBoard-color {
 				padding: 0 40rpx 0 50rpx;
 			}
+
 			.thickness {
 				padding: 40rpx 40rpx 0 22rpx;
 
@@ -777,11 +835,30 @@
 			color: #FFFFFF;
 		}
 	}
-	
-	.canvas{
-		height: calc(100% - 270rpx - constant(safe-area-inset-bottom));
-		height: calc(100% - 270rpx - env(safe-area-inset-bottom));
+
+	.canvas {
 		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
+
+	.scroll-view_H {
+		position: fixed;
+		white-space: nowrap;
+		width: 100%;
+		height: calc(100vh - 200rpx);
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+	}
+
+	.render-area {
+		width: 750rpx;
+		height: calc(100vh - 200rpx);
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
 		align-items: center;
 	}
 </style>

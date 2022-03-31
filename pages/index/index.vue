@@ -497,7 +497,10 @@
 			}
 		},
 		onPullDownRefresh() {
-			this.initData()
+			this.initData();
+			this.getMaterialList();
+			this.getTeacherList();
+			this.getHotList();
 		}
 	}
 </script>
@@ -564,7 +567,7 @@
 			.header {
 				margin: 0;
 				height: 600rpx;
-				background: linear-gradient(360deg, rgba(255, 255, 255, 0) 0%, #FEDCB6 100%);
+				background: linear-gradient(360deg, rgba(255, 255, 255, 0) 0%, $u-type-primary 100%);
 
 				.search {
 					margin: 40rpx 32rpx 30rpx;
@@ -594,7 +597,7 @@
 						height: 56rpx;
 						line-height: 56rpx;
 						text-align: center;
-						background: #FA9E28;
+						background: $u-type-primary;
 						border-radius: 30rpx;
 						font-size: 28rpx;
 						font-weight: 600;

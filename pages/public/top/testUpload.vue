@@ -18,25 +18,48 @@
 			<drawingColumn v-if="examDetail.examSubjectList" ref="DrawingColumn" :list="examDetail.examSubjectList"
 				key-name="subjectName" @change="tabChange"></drawingColumn>
 		</view>
-
-		<view class="table">
-			<view class="tr t-head">
-				<view class="td">姓名</view>
-				<view class="td">科目</view>
-				<view class="td">准考证号</view>
-			</view>
-			<view class="tr">
-				<view class="td">{{studentDetail.name || ''}}</view>
-				<view class="td">{{studentDetail.course || ''}}</view>
-				<view class="td">{{studentDetail.admissionTicketCode || ''}}</view>
-			</view>
-
-			<view class="tr t-footer">
-				<view class="td">{{studentDetail.examName || ''}}</view>
+			
+		<view v-if="studentList.length && !isEnter">
+			<view v-for="(item, index) in studentList" :key="index">
+				<view class="table">
+					<view class="tr t-head">
+						<view class="td">姓名</view>
+						<view class="td">科目</view>
+						<view class="td">准考证号</view>
+					</view>
+					<view class="tr">
+						<view class="td">{{item.name || ''}}</view>
+						<view class="td">{{item.course || ''}}</view>
+						<view class="td">{{item.admissionTicketCode || ''}}</view>
+					</view>
+				
+					<view class="tr t-footer">
+						<view class="td">{{item.examName || ''}}</view>
+					</view>
+				</view>
+				<view v-if="!isEnter && Object.keys(item).length && item.faceDetectState === 1"
+					class="submit u-flex u-row-center" @click="enterTap(item)">确认</view>
 			</view>
 		</view>
-
-
+		
+		<view v-else>
+			<view class="table">
+				<view class="tr t-head">
+					<view class="td">姓名</view>
+					<view class="td">科目</view>
+					<view class="td">准考证号</view>
+				</view>
+				<view class="tr">
+					<view class="td">{{studentDetail.name || ''}}</view>
+					<view class="td">{{studentDetail.course || ''}}</view>
+					<view class="td">{{studentDetail.admissionTicketCode || ''}}</view>
+				</view>
+			
+				<view class="tr t-footer">
+					<view class="td">{{studentDetail.examName || ''}}</view>
+				</view>
+			</view>
+		</view>
 		<!-- 拍摄要求 -->
 		<view class="tips" v-if="isEnter">
 			<view class="title">
@@ -58,7 +81,8 @@
 
 			<view class="examples-content">
 				<image v-if="tempFilePath === ''"
-					src="https://img0.baidu.com/it/u=1721391133,702358773&fm=253&fmt=auto&app=120&f=JPEG?w=500&h=625" mode="widthFix">
+					src="https://img0.baidu.com/it/u=1721391133,702358773&fm=253&fmt=auto&app=120&f=JPEG?w=500&h=625"
+					mode="widthFix">
 				</image>
 				<image v-else :src="tempFilePath" mode="widthFix" @click.stop="prevViewTap"></image>
 
@@ -68,8 +92,7 @@
 			</view>
 		</view>
 
-		<view v-if="!isEnter && Object.keys(this.studentDetail).length" class="submit u-flex u-row-center"
-			@click="enterTap">确认</view>
+
 		<view class="footer u-flex" v-if="isEnter && uploadState === 'not_uploaded'">
 			<view class="footer-btn" @click="submitTap">{{tempFilePath === '' ? '拍摄试卷' : '重新拍摄'}}</view>
 			<view class="footer-btn" style="margin-left: 30rpx;" v-if="tempFilePath !== ''" @click="uploadTap">上传试卷
@@ -104,7 +127,9 @@
 				drawList: [],
 				type: 0,
 				examSubjectItem: {},
+				course: null,
 				code: '',
+				studentList: [],
 				studentDetail: {},
 				isEnter: false,
 				tempFilePath: '',
@@ -115,6 +140,7 @@
 			if (options.id) {
 				this.id = options.id;
 				this.type = options.type;
+				this.course = options.course;
 				if (options.code) this.code = options.code;
 				if (options.uploadState) this.uploadState = options.uploadState;
 				this.initData()
@@ -127,12 +153,22 @@
 					id: this.id
 				}).then(res => {
 					this.examDetail = res.data
-					this.examSubjectItem = this.examDetail.examSubjectList[0]
+					this.examSubjectItem = this.course ? {
+							subjectName: this.course
+						} :
+						this.examDetail.examSubjectList[0]
 					if (this.code !== '') {
 						this.searchTap();
 					}
 				}).catch(err => {
-					console.log(err)
+					if (this.course) {
+						this.examSubjectItem = {
+							subjectName: this.course
+						}
+						if (this.code !== '') {
+							this.searchTap();
+						}
+					}
 				})
 			},
 			tabChange(e) {
@@ -140,21 +176,30 @@
 			},
 			// 搜索
 			searchTap() {
+				if (this.code === '' || this.code === null) {
+					return this.$mHelper.toast('请输入准考证号...')
+				}
 				this.$http.post(searchByAdmissionTicketCode, {
 					admissionTicketCode: this.code,
 					course: this.examSubjectItem.subjectName
 				}).then(res => {
-
-					this.studentDetail = res.data ? res.data[0] : {},
-						this.id = this.studentDetail.examId
+					this.studentList = res.data
+					if (this.examSubjectItem.subjectName) {
+						this.studentDetail = res.data ? res.data[0] : {};
+						this.id = this.studentDetail.examId;
+						if (this.course && this.studentDetail.faceDetectState === 1) {
+							this.isEnter = true;
+						}
+					}
 				}).catch(err => {
 					this.$mHelper.toast(err.msg)
 				})
 			},
 
 			// 确认
-			enterTap() {
-				if (Object.keys(this.studentDetail).length) {
+			enterTap(item) {
+				if (Object.keys(item).length) {
+					this.studentDetail = item
 					this.isEnter = true;
 				}
 			},
@@ -233,7 +278,7 @@
 					admissionTicketCode: this.code,
 					course: this.examSubjectItem.subjectName ? this.examSubjectItem.subjectName : this
 						.studentDetail.course,
-					examId: this.id,
+					examId: this.id || this.studentDetail.examId,
 					img: url
 				}).then(res => {
 					this.$mRouter.back()
@@ -414,10 +459,11 @@
 				border-radius: 16rpx;
 				border: 2rpx solid #EDEFF2;
 				text-align: center;
-				
-				& > image{
+
+				&>image {
 					width: 100%;
 				}
+
 				.badge {
 					position: absolute;
 					right: 0;

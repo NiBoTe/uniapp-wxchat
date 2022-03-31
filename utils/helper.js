@@ -374,6 +374,27 @@ export default {
 
 		}
 		return msg
+	},
+	getAuth(){
+		uni.showModal({
+		  title: '提示',
+		  content: '需要您授权保存相册',
+		  success: res => {
+			  if(res.confirm) {
+				  wx.openSetting({
+				    success(settingdata) {
+				      console.log("settingdata", settingdata)
+				    },
+				    fail(failData) {
+				      console.log("failData", failData)
+				    },
+				    complete(finishData) {
+				      console.log("finishData", finishData)
+				    }
+				  })
+			  }
+		  }
+		})
 	}
 
 };

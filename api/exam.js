@@ -69,6 +69,9 @@ const examineeDetail = `${exam}examineeDetail`;
 // 编辑考生信息
 const examineeUpdate = `${exam}examineeUpdate`;
 
+// 获取跟这个账号有关的所有科目
+const getSubjectNameList = `${exam}getSubjectNameList`;
+
 export {
 	proviceList,
 	examMenuList,
@@ -92,5 +95,6 @@ export {
 	batchExportQrcode,
 	batchExportExaminationRoomInfo,
 	examineeDetail,
-	examineeUpdate
+	examineeUpdate,
+	getSubjectNameList
 };

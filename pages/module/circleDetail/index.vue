@@ -35,7 +35,7 @@
 		<!-- 查看评论 -->
 		<view class="comment">
 			<view class="title">
-				{{total}}条评论
+				{{detail.commentCount}}条评论
 			</view>
 			<view class="list" v-for="(item, index) in list" :key="index">
 				<view class="left">
@@ -248,7 +248,7 @@
 					let data = res.data.records
 					data.map(item => {
 						item['isMore'] = false;
-						item['moreList'] = []
+						item['moreList'] = item.replyList
 					})
 					if (this.current === 1) {
 						this.list = data;
@@ -383,6 +383,8 @@
 					targetId: this.id
 				}).then(res => {
 					this.$mHelper.toast('评论成功')
+					
+					this.$set(this.detail, 'commentCount', Number(this.detail.commentCount || 0) + 1)
 					this.content = ''
 					this.isFocus = false
 					this.current = 1;

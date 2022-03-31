@@ -9,7 +9,7 @@
 		<view class="tabs">
 			<view class="tabs-header">{{examDetail.name}}</view>
 			<view class="tabs-content">
-				<u-tabs ref="tabs" :is-scroll="true" :list="tabList" name="subjectName" :current="current"
+				<u-tabs ref="tabs" :is-scroll="true" :list="tabList" name="subjectName" :current="tabCurrent"
 					bar-width="62" bar-height="8" gutter="40" active-color="#1B1B1B" inactive-color="#9E9E9E"
 					font-size="30" @change="tabChange">
 				</u-tabs>
@@ -58,7 +58,8 @@
 <script>
 	import {
 		examDetail,
-		examPaperList
+		examPaperList,
+		getSubjectNameList
 	} from '@/api/exam.js'
 	export default {
 		data() {
@@ -69,7 +70,7 @@
 				tabList: [],
 				type: 0,
 				examSubjectItem: {},
-				current: 0,
+				tabCurrent: 0,
 				statusList: [{
 						name: '未上传',
 						value: 'not_uploaded'
@@ -92,22 +93,42 @@
 				this.type = options.type;
 				this.initData()
 			} else {
+				this.initData()
 				this.getList();
 			}
+
 		},
 		methods: {
 			initData() {
-				this.$http.post(examDetail, {
-					id: this.id
-				}).then(res => {
-					console.log(res)
-					this.examDetail = res.data
-					this.tabList = this.examDetail.examSubjectList;
-					this.examSubjectItem = this.examDetail.examSubjectList[0]
-					this.getList();
-				}).catch(err => {
-					console.log(err)
-				})
+				console.log(this.id)
+				if (this.id != null) {
+					this.$http.post(examDetail, {
+						id: this.id
+					}).then(res => {
+						this.examDetail = res.data
+						this.tabList = this.examDetail.examSubjectList;
+						this.examSubjectItem = this.examDetail.examSubjectList[0]
+						this.getList();
+					}).catch(err => {
+						console.log(err)
+					})
+				} else {
+					this.$http.post(getSubjectNameList).then(res => {
+						let list = []
+						let data = res.data;
+						data.map(item => {
+							list.push({
+								subjectName: item
+							})
+						})
+						
+						this.tabList = list;
+						this.examSubjectItem = list[0]
+					}).catch(err => {
+						console.log(err)
+					})
+				}
+
 			},
 			getList() {
 				this.loadStatus = 'loading';
@@ -134,12 +155,11 @@
 			},
 			// tab切换
 			tabChange(e) {
-				this.current = e;
+				this.tabCurrent = e;
 				this.examSubjectItem = this.tabList[e];
 				this.current == 1;
 				this.getList();
 			},
-
 			// 状态
 			tabDrawChange(e) {
 				this.statusIndex = e.index
@@ -156,8 +176,10 @@
 			},
 			// 查看详情
 			detailTap(item, index) {
+
+				console.log(item)
 				uni.navigateTo({
-					url: `/pages/public/top/testUpload?id=${this.id}&type=${this.type}&code=${item.admissionTicketCode}&uploadState=${item.uploadState}`
+					url: `/pages/public/top/testUpload?id=${this.id}&type=${this.type}&code=${item.admissionTicketCode}&uploadState=${item.uploadState}&course=${item.course}`
 				})
 			}
 		}

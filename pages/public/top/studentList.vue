@@ -3,7 +3,7 @@
 		<view class="header">
 			<drawingColumn v-if="examDetail.examSubjectList" ref="DrawingColumn" :list="examDetail.examSubjectList"
 				key-name="subjectName" @change="tabChange"></drawingColumn>
-			<view class="tabs u-flex">
+			<view class="tabs u-flex" v-if="examSubjectItem.isFaceDetect">
 				<view class="tab" :class="faceDetectState === '' ? 'active' : ''" @click="tabClick('')">
 					<view class="tab-num">{{total}}</view>
 					<view class="tab-name">全部</view>
@@ -24,6 +24,11 @@
 					<view class="tab-name">未验证</view>
 					<view class="tab-border"></view>
 				</view>
+			</view>
+			
+			<view class="all" v-else>
+				<text>全部</text>
+				<text>{{total}}人</text>
 			</view>
 
 		</view>
@@ -117,9 +122,7 @@
 				this.$http.post(examDetail, {
 					id: this.id
 				}).then(res => {
-					console.log(res)
 					this.examDetail = res.data
-
 					this.examSubjectItem = this.examDetail.examSubjectList[0]
 					this.course = this.examDetail.examSubjectList[0].subjectName;
 					this.getList()
@@ -134,9 +137,8 @@
 					examId: this.id,
 					current: this.current,
 					size: this.size,
+					faceDetectState: this.faceDetectState
 				}).then(res => {
-
-
 					let data = res.data
 					this.failCount = data.failCount;
 					this.notDetecteCount = data.notDetecteCount;
@@ -166,7 +168,6 @@
 				this.getList();
 			},
 			tabChange(e) {
-				console.log(e)
 				this.course = e.item.subjectName;
 				this.examSubjectItem = e.item;
 				this.current = 1;
@@ -399,6 +400,8 @@
 				}
 			}
 		}
+		
+		
 	}
 
 	.footer {
@@ -424,6 +427,21 @@
 			&.disabled {
 				background: #EDEFF2;
 				color: #8F9091;
+			}
+		}
+	}
+	
+	// 全部
+	.all{
+		padding: 26rpx 0 24rpx 32rpx;
+		text{
+			font-size: 22rpx;
+			font-weight: bold;
+			color: #3A3D71;
+			
+			&:last-of-type{
+				margin-left: 14rpx;
+				font-size: 28rpx;
 			}
 		}
 	}

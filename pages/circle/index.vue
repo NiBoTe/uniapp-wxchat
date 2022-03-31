@@ -224,12 +224,18 @@
 				holdKeyboard: false,
 			};
 		},
-		onLoad() {},
-		onShow() {
+		onLoad() {
 			this.hasLogin = this.$mStore.getters.hasLogin
-			this.list = []
 			this.current = 1;
 			this.getList();
+		},
+		onShow() {
+			uni.$on('refreshList', (bool) => {
+				if(bool) {
+					this.current = 1;
+					this.getList();
+				}
+			})
 		},
 		methods: {
 			// tab

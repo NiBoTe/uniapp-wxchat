@@ -831,10 +831,17 @@
 
 						} else {
 							//初始化canvas尺寸
-							this.canvas.height = this.height / (uni.upx2px(100) /
-								100)
+							// this.canvas.height = this.height / (uni.upx2px(100) /
+							// 	100)
+							// this.canvas.width = this.width / (uni.upx2px(100) /
+							// 	100)
+							
 							this.canvas.width = this.width / (uni.upx2px(100) /
-								100) // parseInt(this.canvas.height * image.width / image.height);
+								100)
+							this.canvas.height = image.height > lengthways_canvas_height ?
+								lengthways_canvas_height : (image.height * 2 > lengthways_canvas_height) ? lengthways_canvas_height : image.height * 2
+								
+								 // parseInt(this.canvas.height * image.width / image.height);
 							this.canvas.origin_width = this.canvas.width;
 							this.canvas.origin_height = this.canvas.height
 

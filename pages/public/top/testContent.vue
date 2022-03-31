@@ -40,12 +40,17 @@
 		</scroll-view>
 
 		<view class="footer u-flex u-row-center" v-if="type !== 2">
-			<view class="footer-btn disabled" v-if="!isStart">考试时间未到</view>
-			<view class="footer-btn" v-if="isStart && examDetail.isRecordVideo" style="margin-right: 24rpx;"
-				@click="submitTap">录制作画步骤</view>
-			<view class="footer-btn" v-if="isStart" :class="!isUpload ? 'disabled' : '' " @click="uploadTap">上传试卷图片
+			<view class="u-flex u-row-center" style="flex: 1;" v-if="!isHours" >
+				<view class="footer-btn disabled" v-if="!isStart">考试时间未到</view>
+				<view class="footer-btn" v-if="isStart && examDetail.isRecordVideo && recordVideoCount <= 0" style="margin-right: 24rpx;"
+					@click="submitTap">录制作画步骤</view>
+				<view class="footer-btn" v-if="isStart" :class="!isUpload ? 'disabled' : '' " @click="uploadTap">
+					{{!examDetail.isRecordVideo ? '请点击上传试卷图片' : '上传试卷图片'}}
+				</view>
 			</view>
-			<view class="footer-btn" v-if="isHours" :class="isHours ? 'disabled' : '' ">该科目考试已经结束</view>
+			<view class="u-flex u-row-center" style="flex: 1;" v-else>
+				<view class="footer-btn":class="isHours ? 'disabled' : '' ">该科目考试已经结束</view>
+			</view>
 		</view>
 
 		<view class="nodata" v-if="isBegin">
@@ -86,6 +91,7 @@
 				isHours: false,
 				isStart: false,
 				isUpload: false,
+				recordVideoCount: 0
 			};
 		},
 		onLoad(options) {
@@ -109,6 +115,7 @@
 				}).then(res => {
 					this.examName = res.data.examName
 					this.examQuestion = res.data.examQuestion;
+					this.recordVideoCount = res.data.recordVideoCount;
 					this.loading = false;
 				}).catch(err => {
 					console.log(err)
@@ -149,12 +156,8 @@
 			// 是否可以开始考试
 			isStartExam() {
 				let start= moment(`${this.examSubjectItem.subjectDate} ${this.examSubjectItem.subjectStarttime}`).subtract(this.examSubjectItem.seenQuestionBeforeMinute, 'm').format('YYYY-MM-DD HH:mm:ss')
-				
-				console.log(start)
 				// let end = `${this.examSubjectItem.subjectDate} ${this.examSubjectItem.subjectEndtime}`
 				let end = moment().format('YYYY-MM-DD HH:mm:ss')
-				
-				console.log(this.$mHelper.timeInByDate(start, end))
 				return moment().diff(moment(start)) > 0
 			},
 			// 是否可以上传试卷
