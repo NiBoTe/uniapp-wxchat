@@ -1,8 +1,7 @@
 <template>
 	<view class="container-canvas">
-		
 		<canvas canvas-id="canvas-drag" disable-scroll="true" @touchstart="start" @touchmove="move" @touchend="end"
-			:style="{width: upx2px(upx2px(canvas.width))+ 'px', height: upx2px(canvas.height) +'px'}"></canvas>
+			:style="{width: upx2px(canvas.width)+ 'px', height: upx2px(canvas.height) +'px'}"></canvas>
 	</view>
 </template>
 
@@ -71,7 +70,7 @@
 			[this.x, this.y + this.h],
 			[this.x - 30, this.y + this.h + 10],
 		]
-		if(this.type === 'circle'){
+		if (this.type === 'circle') {
 			this.square.push([this.x - this.w, this.y - this.h, this.w * 2, this.h * 2])
 		}
 		this.points = points || [];
@@ -96,13 +95,11 @@
 		/**
 		 * 绘制元素
 		 */
-		paint() {
+		paint(status) {
 			this.ctx.save(); // 由于measureText获取文字宽度依赖于样式，所以如果是文字元素需要先设置样式
 			let textWidth = 0;
 			let textHeight = 0;
-
 			if (this.type === 'line') {
-
 				if (this.points.length > 1) {
 					this.ctx.beginPath();
 					this.ctx.setLineCap('round')
@@ -124,27 +121,31 @@
 
 			} // 旋转元素
 			if (this.type === 'text') {
-				this.ctx.setFontSize(this.fontSize);
-				this.ctx.setTextBaseline('middle');
-				this.ctx.setTextAlign('center');
-				this.ctx.setFillStyle(this.color);
-				textWidth = this.ctx.measureText(this.text).width;
-				textHeight = this.fontSize + 10; // 字体区域中心点不变，左上角位移
+				if (!status) {
+					this.ctx.setFontSize(this.fontSize);
+					this.ctx.setTextBaseline('middle');
+					this.ctx.setTextAlign('center');
+					this.ctx.setFillStyle(this.color);
+					textWidth = this.ctx.measureText(this.text).width;
+					textHeight = this.fontSize + 10; // 字体区域中心点不变，左上角位移
 
-				this.x = this.centerX - textWidth / 2;
-				this.y = this.centerY - textHeight / 2;
+					this.x = this.centerX - textWidth / 2;
+					this.y = this.centerY - textHeight / 2;
+				}
 			} // 旋转元素
 
 			if (this.type === 'audio') {
-				this.ctx.setFontSize(this.fontSize);
-				this.ctx.setTextBaseline('middle');
-				this.ctx.setTextAlign('center');
-				this.ctx.setFillStyle(this.color);
-				textWidth = this.ctx.measureText(this.text).width + 40;
-				textHeight = this.fontSize + 10; // 字体区域中心点不变，左上角位移
+				if (!status) {
+					this.ctx.setFontSize(this.fontSize);
+					this.ctx.setTextBaseline('middle');
+					this.ctx.setTextAlign('center');
+					this.ctx.setFillStyle(this.color);
+					textWidth = this.ctx.measureText(this.text).width + 40;
+					textHeight = this.fontSize + 10; // 字体区域中心点不变，左上角位移
 
-				this.x = this.centerX - textWidth / 2;
-				this.y = this.centerY - textHeight / 2;
+					this.x = this.centerX - textWidth / 2;
+					this.y = this.centerY - textHeight / 2;
+				}
 			} // 旋转元素
 
 			this.ctx.translate(this.centerX, this.centerY);
@@ -152,25 +153,28 @@
 			this.ctx.translate(-this.centerX, -this.centerY); // 渲染元素
 
 			if (this.type === 'text') {
-				this.ctx.beginPath()
-				this.ctx.setLineWidth(5)
-				this.ctx.setStrokeStyle('#fff')
+				if (!status) {
+					this.ctx.beginPath()
+					this.ctx.setLineWidth(5)
+					this.ctx.setStrokeStyle('#fff')
 
-				this.ctx.arc(this.x - 15, this.y + 19, 10, 0, Math.PI * 2)
-				this.ctx.setFillStyle('red')
-				this.ctx.fill()
-				this.ctx.stroke()
+					this.ctx.arc(this.x - 15, this.y + 19, 10, 0, Math.PI * 2)
+					this.ctx.setFillStyle('red')
+					this.ctx.fill()
+					this.ctx.stroke()
+				}
 			} else if (this.type === 'image') {
 				this.ctx.drawImage(this.fileUrl, this.x, this.y, this.w, this.h);
 			} else if (this.type === 'audio') {
-
-				this.ctx.beginPath()
-				this.ctx.setLineWidth(5)
-				this.ctx.setStrokeStyle('#fff')
-				this.ctx.arc(this.x - 15, this.y + 19, 10, 0, Math.PI * 2)
-				this.ctx.setFillStyle('red')
-				this.ctx.fill()
-				this.ctx.stroke()
+				if (!status) {
+					this.ctx.beginPath()
+					this.ctx.setLineWidth(5)
+					this.ctx.setStrokeStyle('#fff')
+					this.ctx.arc(this.x - 15, this.y + 19, 10, 0, Math.PI * 2)
+					this.ctx.setFillStyle('red')
+					this.ctx.fill()
+					this.ctx.stroke()
+				}
 				// this.ctx.drawImage(this.fileUrl, this.x, this.y, this.w, this.h);
 			} else if (this.type === 'circle') {
 				if (this.points.length > 1) {
@@ -219,7 +223,7 @@
 					// this.ctx.strokeRect(this.x - this.w, this.y - this.h, this.w * 2, this.h * 2);
 					// this.ctx.drawImage(DRAG_ICON, this.x + this.w - 20, this.y + this.h - 20, 30, 30);
 				} else {
-					
+
 					this.ctx.setStrokeStyle('rgba(255,255,255,.5)')
 					this.ctx.strokeRect(this.x, this.y, this.w, this.h);
 					// this.ctx.drawImage(DELETE_ICON, this.x - 15, this.y - 15, 30, 30);
@@ -790,6 +794,8 @@
 		},
 
 		created() {
+
+
 			uni.downloadFile({
 				url: DELETE_ICON, //仅为示例，并非真实的资源
 				success: (res) => {
@@ -810,55 +816,49 @@
 
 		methods: {
 			// 初始化画板
-			init_image(url) {
+			async init_image(url) {
+
 				uni.getImageInfo({
 					src: url,
 					success: (image) => {
-						if (image.width >= image.height) {
-							//初始化canvas尺寸
-							this.canvas.width = this.width / (uni.upx2px(100) /
-								100)
-							// this.canvas.width = image.width > transverse_canvas_width ?
-							// 	transverse_canvas_width : image.width
-							this.canvas.height = parseInt(this.canvas.width * image.height / image.width);
-							this.canvas.origin_height = this.canvas.height
-							this.canvas.origin_width = this.canvas.width
+						const query = uni.createSelectorQuery().in(this);
+						query.select('.container-canvas').boundingClientRect(data => {
+							let img_res = this.$mHelper.imgFit(url, data.width, data.height, image.width, image.height);
+							if (image.width >= image.height) {
+								//初始化canvas尺寸
+								this.canvas.width = img_res.width / (uni.upx2px(100) /
+									100)
+								this.canvas.height = img_res.height / (uni.upx2px(100) /
+									100)
+								this.canvas.origin_height = this.canvas.height
+								this.canvas.origin_width = this.canvas.width
 
-							//初始化预览图尺寸
-							this.render_image.width = this.render_image.max_width;
-							this.render_image.height = parseInt(this.render_image.width * image.height / image
-								.width);
+								//初始化预览图尺寸
+								this.render_image.width = this.canvas.width;
+								this.render_image.height = this.canvas.height;
 
-						} else {
-							//初始化canvas尺寸
-							// this.canvas.height = this.height / (uni.upx2px(100) /
-							// 	100)
-							// this.canvas.width = this.width / (uni.upx2px(100) /
-							// 	100)
-							
-							this.canvas.width = this.width / (uni.upx2px(100) /
-								100)
-							this.canvas.height = image.height > lengthways_canvas_height ?
-								lengthways_canvas_height : (image.height * 2 > lengthways_canvas_height) ? lengthways_canvas_height : image.height * 2
-								
-								 // parseInt(this.canvas.height * image.width / image.height);
-							this.canvas.origin_width = this.canvas.width;
-							this.canvas.origin_height = this.canvas.height
-
-
-							//初始化预览图尺寸
-							this.render_image.width = this.render_image.max_width
-							this.render_image.height = parseInt(this.render_image.width * image.height / image
-								.width);
-							if (this.render_image.height > this.render_image.max_height) {
-								this.render_image.height = this.render_image.max_height
-								this.render_image.width = parseInt(this.render_image.height * image.width /
-									image.height);
+							} else {
+								//初始化canvas尺寸
+								// this.canvas.height = this.height / (uni.upx2px(100) /
+								// 	100)
+								// this.canvas.width = this.width / (uni.upx2px(100) /
+								// 	100)
+								this.canvas.width = img_res.width / (uni.upx2px(100) /
+									100)
+								this.canvas.height = img_res.height / (uni.upx2px(100) /
+									100)
+								// parseInt(this.canvas.height * image.width / image.height);
+								this.canvas.origin_width = this.canvas.width;
+								this.canvas.origin_height = this.canvas.height
+								//初始化预览图尺寸
+								this.render_image.width = this.canvas.width
+								this.render_image.height = this.canvas.height;
 							}
 							this.bgImage = image.path;
 							this.draw(); // 改变背景图片时记录历史
 							this.recordHistory();
-						}
+						}).exec();
+
 					},
 					fail: (e) => {
 						console.log(e);
@@ -1002,21 +1002,22 @@
 				this.draw();
 			},
 
-			draw() {
+			draw(status) {
 				if (this.bgImage !== '') {
-					this.ctx.drawImage(this.bgImage, 0, 0, this.upx2px(this.upx2px(this.canvas.width)), this.upx2px(this
+					console.log(this.bgImage)
+					this.ctx.drawImage(this.bgImage, 0, 0, this.upx2px(this.canvas.width), this.upx2px(this
 						.canvas.height));
 				}
 
 				if (this.bgColor !== '') {
 					this.ctx.save();
 					this.ctx.setFillStyle(this.bgColor);
-					this.ctx.fillRect(0, 0, this.upx2px(this.upx2px(this.canvas.width)), this.upx2px(this.canvas.height));
+					this.ctx.fillRect(0, 0, this.upx2px(this.canvas.width), this.upx2px(this.canvas.height));
 					this.ctx.restore();
 				}
 
 				this.drawArr.forEach(item => {
-					item.paint();
+					item.paint(status);
 				});
 				return new Promise(resolve => {
 					this.ctx.draw(false, () => {
@@ -1091,8 +1092,6 @@
 						}
 					} else {
 						if (this.selectActive === 4) {
-
-
 							this.circleItem = {
 								lineWidth: 3,
 								color: this.colorCircleColor,
@@ -1219,7 +1218,7 @@
 				} else {
 					if (this.selectActive === 4) {
 						console.log(this.circleItem.points)
-						if(this.circleItem.points){
+						if (this.circleItem.points) {
 							if (this.circleItem.points.length > 4) {
 								this.onCircleChange(this.circleItem)
 							}
@@ -1253,7 +1252,7 @@
 						item.selected = false;
 						return item;
 					});
-					this.draw().then(() => {
+					this.draw(true).then(() => {
 						uni.canvasToTempFilePath({
 							canvasId: 'canvas-drag',
 							x: 0,
@@ -1268,7 +1267,10 @@
 					});
 				});
 			},
-
+			// 刷新
+			refresh() {
+				this.draw().then(() => {});
+			},
 			exportJson() {
 				return new Promise((resolve, reject) => {
 					let exportArr = this.drawArr.map(item => {
@@ -1432,8 +1434,8 @@
 				this.initBg(); // 重置绘画背景
 
 				this.initHistory(); // 清空历史记录
-			}
-
+			},
+			
 		}
 	};
 </script>
@@ -1441,11 +1443,21 @@
 	@import "./index.css";
 
 	.container-canvas {
+		width: 100vw;
+		height: 100%;
 		// padding-bottom: 365rpx;
 		display: flex;
 		justify-content: center;
 		align-items: center;
-		canvas{
+
+
+		image {
+			object-fit: cover;
+			width: 100%;
+			height: 100%;
+		}
+
+		canvas {
 			z-index: 2 !important;
 		}
 	}

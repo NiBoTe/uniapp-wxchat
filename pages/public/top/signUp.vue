@@ -324,9 +324,11 @@
 					this.btnLoading = false;
 					this.goPay(res.data.examOrderId)
 				}).catch(err => {
-					this.$mHelper.toast(err.msg)
 					this.btnLoading = false;
 					uni.hideLoading()
+					setTimeout(()=> {
+						this.$mHelper.toast(err.msg)
+					}, 200)
 				})
 			},
 			focus() {

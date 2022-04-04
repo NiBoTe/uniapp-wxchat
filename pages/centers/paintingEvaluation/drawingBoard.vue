@@ -1,7 +1,7 @@
 <template>
 	<view class="container">
 
-		<scroll-view scroll-y="true">
+		<view class="canvas u-flex u-row-center">
 			<view class="canvas-box" v-show="!maskShow">
 				<canvas-drag ref="canvasRef" id="canvas-drag" :graph="graph" enableUndo="true" :active="selectActive"
 					@actionChange="actionChange">
@@ -10,7 +10,7 @@
 			<view class="canvas-box" v-show="maskShow">
 				<image :src="canvasImage" mode="widthFix"></image>
 			</view>
-		</scroll-view>
+		</view>
 		<!-- <scroll-view class="scroll-view_H" scroll-y="true">
 			<canvas canvas-id="canvas" class="canvas"
 				:style="{width: upx2px(canvas.width)+ 'px', height: upx2px(canvas.height) +'px'}"
@@ -97,8 +97,8 @@
 				<view class="right u-flex u-row-center" @click="textConfirm">保存</view>
 			</view>
 			<view class="mask-content">
-				<textarea placeholder="请输入" :focus="maskShow" v-model="textValue" :cursor-spacing="20" placeholder-style="font-size:14px;"
-					:style="{color: textColor}" />
+				<textarea placeholder="请输入" :focus="maskShow" v-model="textValue" :cursor-spacing="20"
+					placeholder-style="font-size:14px;" :style="{color: textColor}" />
 			</view>
 
 			<view class="mask-footer" :style="{bottom: KeyboardHeight + 'px'}">
@@ -207,6 +207,9 @@
 				console.log('log', res);
 				this.KeyboardHeight = res.height
 			})
+		},
+		onShow() {
+			this.$refs.canvasRef.refresh()
 		},
 		methods: {
 			// /**
@@ -328,7 +331,15 @@
 				}).then(res => {
 					console.log(res)
 					this.detail = res.data;
-					this.$refs.canvasRef.init_image(this.detail.url)
+					uni.downloadFile({
+						url: this.detail.url,
+						success: (data) => {
+							 // data.tempFilePath
+							// let src = 'https://top-face-detect.oss-cn-shanghai.aliyuncs.com/sys/image/2022-04-03/1510632415707828225.jpg'
+							this.$refs.canvasRef.init_image(data.tempFilePath)
+						}
+
+					})
 				})
 			},
 
@@ -384,6 +395,10 @@
 			},
 			// 下一步
 			async submitTap() {
+
+				uni.showLoading({
+					title: '正在生成图片'
+				})
 				const response = await this.$refs.canvasRef.exportJson();
 				console.log(response)
 				uni.setStorageSync('paintingEvaluationJson', response)
@@ -391,6 +406,7 @@
 					this.handleUploadFile(filePath)
 				}).catch(e => {
 					console.error(e);
+					uni.hideLoading()
 				});
 			},
 			// 保存文字
@@ -404,7 +420,6 @@
 			},
 			// 选中修改
 			actionChange(e) {
-				console.log(e)
 				if (e.selectActive === 1) {
 					console.log(e.item)
 				} else if (e.selectActive === 0) {
@@ -450,10 +465,14 @@
 							}
 						})
 						.then(async r => {
+							console.log(r)
 							_this.url = r;
 							uni.navigateTo({
 								url: `/pages/centers/paintingEvaluation/teacherEvaluate?id=${_this.id}&evaluateUrl=${r}`
 							})
+							uni.hideLoading()
+						}).catch(err => {
+							uni.hideLoading()
 						});
 				}).catch(err => {
 					console.log(err)
@@ -467,17 +486,24 @@
 	.container {
 		position: relative;
 	}
+	
+	.canvas{
+		height: calc(100vh - 250rpx - constant(safe-area-inset-bottom));
+		height: calc(100vh - 250rpx - env(safe-area-inset-bottom));
+	}
 
 	.canvas-box {
+		height: 100%;
+	
 		image {
 			width: 100%;
 		}
 	}
 
 	.drawingBoard-fixed-bottom {
-		// position: fixed;
-		// bottom: 0;
-		// left: 0;
+		position: fixed;
+		bottom: 0;
+		left: 0;
 		width: 100%;
 		text-align: center;
 		z-index: 999;
@@ -652,8 +678,7 @@
 
 		.drawingBoard-next {
 			padding: 24rpx 48rpx;
-			padding-bottom: constant(safe-area-inset-bottom);
-			padding-bottom: env(safe-area-inset-bottom);
+	
 			background-color: #fff;
 
 			.drawingBoard-btn {

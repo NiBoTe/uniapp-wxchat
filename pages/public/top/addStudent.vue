@@ -144,13 +144,12 @@
 		onLoad(options) {
 			if(options.item){
 				let item = JSON.parse(options.item)
-				
 				this.name = item.name;
 				this.province = item.province;
 				this.identification = item.identification;
 				this.mobile = item.mobile;
 				this.url = item.url;
-				this.sex = item.sex;
+				this.sex = item.gender;
 				
 				this.index = options.index
 			}
@@ -174,13 +173,11 @@
 					}
 				}
 				if(this.identification !== ''){
-					
-					console.log(this.identification)
-					console.log(this.$mHelper.checkIdCard(this.identification))
 					if(!this.$mHelper.checkIdCard(this.identification)) {
 						return this.$mHelper.toast('请输入正确的身份证号码')
 					}
 				}
+				console.log(this.sex)
 				uni.$emit('examineeInfoChange', {
 					params: {
 						gender: this.sex,

@@ -567,7 +567,7 @@
 			.header {
 				margin: 0;
 				height: 600rpx;
-				background: linear-gradient(360deg, rgba(255, 255, 255, 0) 0%, $u-type-primary 100%);
+				background: linear-gradient(360deg, rgba(255, 255, 255, 0) 0%, rgba(44, 58, 255, 0.8) 100%);
 
 				.search {
 					margin: 40rpx 32rpx 30rpx;
@@ -597,7 +597,7 @@
 						height: 56rpx;
 						line-height: 56rpx;
 						text-align: center;
-						background: $u-type-primary;
+						background: rgba(44, 58, 255, 0.7);
 						border-radius: 30rpx;
 						font-size: 28rpx;
 						font-weight: 600;

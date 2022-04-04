@@ -57,7 +57,7 @@
 
 
 			<view class="works" v-if="type === 'default'">
-				<view class="works-img" v-if="detail.isPayed || activeIndex < detail.hdImgViewCount">
+				<view class="works-img" v-if="detail.isPayed || activeIndex < detail.hdImgViewCount" @click="prevImageTap(detail.items[activeIndex].hdImg)">
 					<image :src="detail.items[activeIndex].hdImg" mode="widthFix"></image>
 				</view>
 				<view v-else class="works-img filter">
@@ -230,6 +230,7 @@
 				list: [], // 考试列表
 				placeholder: '',
 				type: 'default',
+				userInfo: {}
 			};
 		},
 		onLoad(options) {
@@ -243,12 +244,12 @@
 
 		onShow() {
 			this.hasLogin = this.$mStore.getters.hasLogin;
+			this.userInfo = this.$mStore.state.userInfo;
 			uni.$on('detailRefresh', () => {
 				this.initData()
 			})
 		},
 		methods: {
-
 			initData() {
 				this.$http.get(this.type === 'default' ? getDetail : myDetail, {
 					id: this.id
@@ -387,14 +388,12 @@
 					content: '下架后对应高分教材前台将不可见，是否确认下架？',
 					success: (res) => {
 						if (res.confirm) {
-							uni.$emit('removeHighScore', true)
 							this.$http.post(myUpdateSaleState, {
 								id: this.id,
 								isSale: this.detail.auditStatus === 1 ? false : true
 							}).then(res => {
 								this.$mHelper.toast('下架成功')
 								uni.$emit('offHighScore', true)
-
 								this.initData()
 								// setTimeout(() => {
 								// 	uni.navigateBack({
@@ -425,7 +424,6 @@
 					content: '删除后不可恢复，是否确认删除？',
 					success: (res) => {
 						if (res.confirm) {
-							uni.$emit('removeHighScore', true)
 							this.$http.post(myDeleteTeachingMaterial, null, {
 								params: {
 									id: this.id
@@ -446,21 +444,36 @@
 				});
 			},
 			switchTap(type) {
-
-
 				switch (type) {
 					case 1:
-
-						if ((this.activeIndex + 1) <= this.detail.hdImgViewCount || this.detail.isPayed) {
-							uni.navigateTo({
-								url: `/pages/public/highScore/imageFilter?url=${this.detail.items[this.activeIndex].hdImg}`
-							})
+						if(this.userInfo.id !== this.detail.teacherId){
+							if ((this.activeIndex + 1) <= this.detail.hdImgViewCount || this.detail.isPayed) {
+								uni.navigateTo({
+									url: `/pages/public/highScore/imageFilter?url=${this.detail.items[this.activeIndex].hdImg}`
+								})
+							} else {
+								this.$mHelper.toast('请先购买该教材')
+							}
 						} else {
-							this.$mHelper.toast('请先购买该教材')
+							uni.navigateTo({
+								url: `/pages/public/highScore/imageFilter?url=${this.detail.items[this.activeIndex].url}`
+							})
 						}
+						
 
 						break;
 				}
+			},
+			// 预览图片
+			prevImageTap(image){
+				
+				if(this.detail.isPayed || this.activeIndex < this.detail.hdImgViewCount){
+					uni.previewImage({
+						current: 0,
+						urls: [image]
+					})
+				}
+				
 			}
 		},
 		onReachBottom() {

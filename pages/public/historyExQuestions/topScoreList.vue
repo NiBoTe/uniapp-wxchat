@@ -4,12 +4,20 @@
 			<view class="list">
 				<view class="item" v-for="(item, index) in list" :key="index" @click="detailTap(item, index)">
 					<view class="img">
-						<image :src="item.hdImg !== '' ? item.hdImg : item.mosaicImg"></image>
+						<image :src="item.hdImg !== '' && item.hdImg !== null ? item.hdImg : item.mosaicImg"></image>
 					</view>
 					<view class="bottom">
-						<view class="text u-line-1">
-							{{item.copyright}}
+						<view class="header u-flex u-row-between">
+							<view class="text u-line-1">
+								{{item.copyright}}
+							</view>
+							
+							<view class="price" v-if="item.price > 0 || !item.isPayed">
+								<text>¥</text>
+								<text>{{item.price}}</text>
+							</view>
 						</view>
+						
 						<view class="operation u-flex u-row-between">
 							<view class="left u-flex">
 								<u-icon name="eye" color="#3A3D71" size="30"></u-icon>
@@ -155,15 +163,33 @@
 
 					.bottom {
 						padding-left: 26rpx;
-
-						.text {
-							margin-top: 16rpx;
-							font-size: 24rpx;
-							font-family: PingFang-SC-Regular, PingFang-SC;
-							font-weight: 400;
-							color: #888C90;
-							line-height: 24rpx;
+						
+						
+						.header{
+							.text {
+								flex: 1;
+								margin-top: 16rpx;
+								font-size: 24rpx;
+								color: #888C90;
+								line-height: 24rpx;
+							}
+							
+							.price{
+								padding-right: 26rpx;
+								text{
+									font-size: 18rpx;
+									font-weight: bold;
+									color: #EF2E3B;
+									
+									&:last-of-type{
+										font-size: 24rpx;
+										font-weight: 800;
+										color: #EF2E3B;
+									}
+								}
+							}
 						}
+						
 
 						.operation {
 							margin-top: 22rpx;

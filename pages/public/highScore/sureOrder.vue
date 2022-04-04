@@ -42,7 +42,7 @@
 					<view class="parameter-list">
 						商品数量 ：{{detail.items ? detail.items.length : 0}}张
 						<view class="price">
-							¥<text>{{detail.items ? (detail.price * detail.items.length).toFixed(2) : 0}}</text>
+							¥<text>{{detail.items ? detail.price : 0}}</text>
 						</view>
 					</view>
 				</view>

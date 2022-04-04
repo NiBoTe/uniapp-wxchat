@@ -94,7 +94,6 @@
 				this.initData()
 			} else {
 				this.initData()
-				this.getList();
 			}
 
 		},
@@ -124,6 +123,7 @@
 						
 						this.tabList = list;
 						this.examSubjectItem = list[0]
+						this.getList();
 					}).catch(err => {
 						console.log(err)
 					})
@@ -134,7 +134,7 @@
 				this.loadStatus = 'loading';
 				this.$http.post(examPaperList, {
 					course: this.examSubjectItem.subjectName,
-					examId: this.examId,
+					examId: this.id,
 					uploadState: this.statusList[this.statusIndex].value,
 					size: this.size,
 					current: this.current,

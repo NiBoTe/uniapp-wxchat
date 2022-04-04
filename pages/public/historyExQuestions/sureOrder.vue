@@ -180,10 +180,10 @@
 						},
 						fail: (err) => {
 							if (err.code === 201) {
-								this.$mHelper.toast('支付成功')
+								this.$mHelper.toast('购买成功，可以查看高清图')
 								setTimeout(() => {
 									uni.navigateBack({
-										delta: 2
+										delta: 1
 									})
 								}, 1500)
 							} else {
@@ -194,10 +194,10 @@
 				}).catch(err => {
 					this.btnLoading = false;
 					if (err.code === 201) {
-						this.$mHelper.toast('支付成功')
+						this.$mHelper.toast('购买成功，可以查看高清图')
 						setTimeout(() => {
 							uni.navigateBack({
-								delta: 2
+								delta: 1
 							})
 						}, 1500)
 					} else {

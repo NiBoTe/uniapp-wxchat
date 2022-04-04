@@ -132,6 +132,9 @@
 			}
 		},
 		onLoad() {
+			
+		},
+		onShow() {
 			this.initData();
 		},
 		methods: {
@@ -198,6 +201,8 @@
 				this.initData();
 			},
 			handleLeftClick(index) {
+				
+				
 				this.leftNum = index
 				this.leftItemNum = 0
 				this.leftItemName = this.leftData[this.leftNum].childMenus[0].name;
@@ -296,9 +301,8 @@
 			.c-left {
 				flex: 0 0 174rpx;
 				border-right: 1rpx solid #E9E9E9;
-
+				overflow: auto;
 				.item {
-
 					.item-title {
 						width: 174rpx;
 						height: 80rpx;

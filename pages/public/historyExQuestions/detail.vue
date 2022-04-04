@@ -14,7 +14,7 @@
 		</view>
 		<view class="top">
 			<view class="img" @click="previewTap">
-				<image :src="detail.hdImg !== '' ? detail.hdImg : detail.mosaicImg"
+				<image :src="detail.hdImg !== '' && detail.hdImg !== null ? detail.hdImg : detail.mosaicImg"
 					mode="widthFix"></image>
 			</view>
 			<view class="content">
@@ -24,7 +24,7 @@
 				<view class="level">
 					<u-icon name="eye" color="#3A3D71" size="30"></u-icon>
 					<view class="num">{{detail.viewCount}}次</view>
-					<view class="price">
+					<view class="price" v-if="detail.price > 0">
 						¥<text>{{detail.price}}</text>
 					</view>
 				</view>
@@ -43,7 +43,7 @@
 			</view>
 		</view>
 
-		<view class="footer">
+		<view class="footer" v-if="!detail.isPayed && detail.price > 0">
 			<view class="footer-btn" @click="submitTap">立即购买</view>
 		</view>
 		
@@ -70,6 +70,8 @@
 		},
 		onLoad(options) {
 			if (options.id) this.id = options.id;
+		},
+		onShow() {
 			this.initData();
 		},
 		methods: {
@@ -111,7 +113,7 @@
 			previewTap(){
 				uni.previewImage({
 					current: 0,
-					urls: [this.detail.hdImg !== '' ? this.detail.hdImg : this.detail.mosaicImg]
+					urls: [this.detail.hdImg !== '' && detail.hdImg !== null ? this.detail.hdImg : this.detail.mosaicImg]
 				});
 			}
 		},

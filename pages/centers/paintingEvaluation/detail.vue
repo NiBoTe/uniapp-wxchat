@@ -32,7 +32,7 @@
 			</view>
 			<view class="title">{{detail.title}}</view>
 
-			<view class="label u-flex">
+			<view class="label u-flex" v-if="detail.dimensions">
 				<image :src="setSrc('painting/painting_dimensions.png')"></image>
 				<text>纬度分析</text>
 			</view>
@@ -170,7 +170,7 @@
 			</view>
 		</view>
 
-		<view class="footer" v-else>
+		<view class="footer" v-else-if="detail.state === 'wait_confirm'">
 			<view class="footer-btn" @click="submitTap">
 				<text>确认评画</text>
 			</view>

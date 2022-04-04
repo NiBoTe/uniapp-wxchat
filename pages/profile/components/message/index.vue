@@ -119,7 +119,7 @@
 						
 						if(item.targetType === 11) {
 							uni.navigateTo({
-								url: `/pages/centers/paintingEvaluation/detail?id=${item.targetId}&source=list&type=teacherInfo`
+								url: `/pages/centers/paintingEvaluation/detail?id=${item.targetId}&source=list&type=default`
 							})
 						}
 						break;

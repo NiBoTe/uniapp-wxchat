@@ -285,11 +285,12 @@
 					orderId: this.orderId,
 					cancelReason: this.cancelReason
 				}).then(res => {
-					console.log(res)
 					this.initData()
+					this.$mHelper.toast('取消成功');
+					this.popShow = false
 				}).catch(err => {
-					console.log(err)
 					this.$mHelper.toast(err.msg)
+					this.popShow = false
 				})
 			},
 			// 复制

@@ -239,6 +239,8 @@
 					this.getList();
 				}).catch(err => {
 					this.$mHelper.toast(err.msg)
+					this.current = 1;
+					this.getList();
 				})
 			}
 		},

@@ -97,7 +97,6 @@
 				</view>
 			</view>
 		</view>
-
 		<view class="footer" v-if="orderDetail.status === 0">
 			<view class="footer-btn esc" @click="escTap">取消订单</view>
 			<view class="footer-btn" @click="submitTap">立即支付</view>
@@ -229,7 +228,7 @@
 			},
 			goPay() {
 				this.$http.post(orderPay, {
-					openid: this.$mStore.state.userInfo.openid,
+					openid: this.$mStore.state.openid,
 					orderId: this.orderId,
 					payType: 1,
 					tradeType: 'JSAPI'
@@ -252,8 +251,11 @@
 						}
 					});
 				}).catch(err => {
-					this.$mHelper.toast(err.msg)
 					uni.hideLoading()
+					setTimeout(() => {
+						this.$mHelper.toast(err.msg)
+					}, 200)
+
 				})
 			},
 			// 取消订单
@@ -262,11 +264,13 @@
 					orderId: this.orderId,
 					cancelReason: this.cancelReason
 				}).then(res => {
-					console.log(res)
+					
 					this.initData()
+					this.$mHelper.toast('取消成功');
+					this.popShow = false
 				}).catch(err => {
-					console.log(err)
 					this.$mHelper.toast(err.msg)
+					this.popShow = false
 				})
 			},
 			// 复制

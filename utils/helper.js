@@ -218,7 +218,7 @@ export default {
 	},
 	// 验证手机号
 	checkMobile(mobile) {
-		return RegExp(/^1[34578]\d{9}$/).test(mobile);
+		return RegExp(/^(0|86|17951)?(13[0-9]|15[012356789]|166|17[0-9]|18[0-9]|19[0-9]|14[0-9])[0-9]{8}$/).test(mobile);
 	},
 	// 验证身份证号码
 	checkIdCard(idcard) {
@@ -319,10 +319,14 @@ export default {
 		let iq = 0
 		//死循环
 		while (bgn != -1 && end != -1) {
+			
+			console.log('=====')
 			iq += 1;
 			//不存在跳出
 			if (bgn == -1 || end == -1) {
+				console.log(message)
 				msg += message
+			
 				break;
 			}
 			//防止死循环
@@ -331,6 +335,8 @@ export default {
 			}
 			//是否是表情格式
 			if (bgn < end && end <= bgn + 3) {
+				
+				
 				let ok = false
 				for (let i = 0; i < emojiList.length; i++) {
 					//匹配到表情退出
@@ -370,8 +376,9 @@ export default {
 			//消息不存在表情格式，直接赋值
 			if (msg.length == 0) {
 				msg = message
+			} else {
+				msg += message
 			}
-
 		}
 		return msg
 	},
@@ -395,6 +402,24 @@ export default {
 			  }
 		  }
 		})
+	},
+	// 图片比例计算
+	imgFit(url = "", box_w, box_h, img_w, img_h) {
+		var r = img_w / img_h,
+			final_w = 0,
+			final_h = 0;
+		if (img_w > img_h) {
+			r = img_h / img_w;
+			final_w = box_w;
+			final_h = box_w * r;
+		} else {
+			final_h = box_h;
+			final_w = r * box_h;
+		}
+		return {
+			width: final_w,
+			height: final_h
+		}
 	}
 
 };

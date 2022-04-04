@@ -182,7 +182,8 @@
 		itemXNun = 0; // 拖拽元素的列数
 
 	import {
-		generatePostPolicy
+		generatePostPolicy,
+		financeConfig
 	} from '@/api/basic.js'
 	import {
 		myAddTeachingMaterial,
@@ -219,11 +220,13 @@
 				flag: false, // 是否可拖拽
 				x: 0,
 				y: 0,
-				beginIndex: null // 当前拖拽元素的索引
+				beginIndex: null, // 当前拖拽元素的索引
+				deliverOvertime: 0, // 发货超时天数
 			};
 		},
 
 		onLoad(options) {
+			this.getConfig()
 			if (options.id) {
 				this.id = options.id;
 				this.initData();
@@ -247,6 +250,12 @@
 			this.videoContext = uni.createVideoContext('videoContext')
 		},
 		methods: {
+
+			getConfig() {
+				this.$http.get(financeConfig).then(res => {
+					this.deliverOvertime = res.data.deliverOvertime
+				})
+			},
 			init() { // 初始化数据
 				// 设置拖拽区域信息
 				let wrap = uni.createSelectorQuery().in(this).select('.inner')
@@ -553,10 +562,12 @@
 					})
 				} else {
 					this.$http.post(myAddTeachingMaterial, params).then(res => {
-						console.log(res)
-
-						uni.$emit('updateHighScore', true);
-						this.$mHelper.toast('发布成功')
+						if(res.data.auditStatus === 1) {
+							this.$mHelper.toast('发布成功')
+						} else {
+							this.$mHelper.toast('提交成功，请等待审核，审核通过后会显示')
+						}
+						uni.$emit('offHighScore', true)
 						setTimeout(() => {
 							uni.navigateBack({
 								delta: 1
@@ -599,7 +610,7 @@
 					uni.showModal({
 						title: '提示',
 						confirmText: '确认',
-						content: '当前设置为需要发货，若有用户下单购买，需要在2天内发货，否则会超时取消订单，请务必真实发货',
+						content: `当前设置为需要发货，若有用户下单购买，需要在${this.deliverOvertime}天内发货，否则会超时取消订单，请务必真实发货`,
 						success: (res) => {
 							if (res.confirm) {
 								this.isNeedExpress = true

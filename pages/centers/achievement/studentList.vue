@@ -2,22 +2,22 @@
 	<view class="studentList">
 		<view class="header">
 			<view class="tabs u-flex">
-				<view class="tab" :class="faceDetectState === '' ? 'active' : ''" @click="tabClick('')">
+				<view class="tab" :class="state === '' ? 'active' : ''" @click="tabClick('')">
 					<view class="tab-num">{{total}}</view>
 					<view class="tab-name">全部</view>
 					<view class="tab-border"></view>
 				</view>
-				<view class="tab" :class="faceDetectState === 'tested' ? 'active' : ''" @click="tabClick('tested')">
+				<view class="tab" :class="state === 'tested' ? 'active' : ''" @click="tabClick('tested')">
 					<view class="tab-num">{{testedCount}}</view>
 					<view class="tab-name">已考</view>
 					<view class="tab-border"></view>
 				</view>
-				<view class="tab" :class="faceDetectState === 'untested' ? 'active' : ''" @click="tabClick('untested')">
+				<view class="tab" :class="state === 'untested' ? 'active' : ''" @click="tabClick('untested')">
 					<view class="tab-num">{{untestedCount}}</view>
 					<view class="tab-name">未考</view>
 					<view class="tab-border"></view>
 				</view>
-				<view class="tab" :class="faceDetectState === 'not_pay' ? 'active' : ''" @click="tabClick('not_pay')">
+				<view class="tab" :class="state === 'not_pay' ? 'active' : ''" @click="tabClick('not_pay')">
 					<view class="tab-num">{{notPayCount}}</view>
 					<view class="tab-name">未支付</view>
 					<view class="tab-border"></view>
@@ -83,7 +83,7 @@
 				loadStatus: 'loadmore',
 				current: 1,
 				size: 10,
-				faceDetectState: '',
+				state: '',
 				course: '',
 				examSubjectItem: {},
 				list: [],
@@ -123,7 +123,7 @@
 					examId: this.id,
 					current: this.current,
 					size: this.size,
-					faceDetectState: this.faceDetectState
+					state: this.state
 				}).then(res => {
 					let data = res.data
 					this.untestedCount = data.untestedCount;
@@ -131,11 +131,11 @@
 					this.testedCount = data.testedCount
 					this.total = data.total;
 					if (this.current === 1) {
-						this.list = res.data.records;
+						this.list = data.records;
 					} else {
-						this.list = this.list.concat(res.data.records);
+						this.list = this.list.concat(data.records);
 					}
-					if (res.data.total <= this.list.length) {
+					if (data.total <= this.list.length) {
 						this.loadStatus = 'nomore';
 					} else {
 						this.loadStatus = 'loadmore';
@@ -155,7 +155,7 @@
 			},
 			// tab状态
 			tabClick(tab) {
-				this.faceDetectState = tab;
+				this.state = tab;
 				this.current = 1;
 				this.getList();
 			},

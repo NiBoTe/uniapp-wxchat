@@ -253,7 +253,7 @@
 
 <style lang="scss" scoped>
 	.container {
-		width: 100vw;
+		width: 100%;
 		overflow-x: hidden;
 		background-color: #fff;
 	}

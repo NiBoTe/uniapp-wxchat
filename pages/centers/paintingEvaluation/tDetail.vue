@@ -2,10 +2,11 @@
 	<view class="detail">
 		<view class="swiper-wrapper">
 			<view class="swiper">
-				
+
 				<view class="swiper-item">
 					<image :src="detail.evaluateUrl" mode="widthFix"></image>
-					<view class="evaluateParams" v-for="(item, index) in evaluateParams" :key="index" :style="{top: (item.y / (upx2px(100) /100) - 20) + 'rpx', left:(item.x / (upx2px(100) / 100) - 48) + 'rpx'}">
+					<view class="evaluateParams" v-for="(item, index) in evaluateParams" :key="index"
+						:style="{top: (item.y / (upx2px(100) /100) - 20) + 'rpx', left:(item.x / (upx2px(100) / 100) - 48) + 'rpx'}">
 						<view class="evaluateParams-box">
 							<voicePlayback :item="item"></voicePlayback>
 						</view>
@@ -55,6 +56,8 @@
 
 
 		<view class="card">
+
+
 			<view class="card-title u-flex">
 				<view class="image">
 					<u-avatar size="65" :src="detail.teacherInfo.headUrl"></u-avatar>
@@ -64,15 +67,18 @@
 					<text>评画老师</text>
 				</view>
 			</view>
-
+			<view class="card-subtitle">
+				<text>{{detail.textComment || ''}}</text>
+			</view>
 			<view class="card-footer u-flex">
+
 				<view class="left">总评语</view>
 				<view class="right u-flex u-row-between">
 					<view class="right-vol u-flex">
 						<image src="/static/public/voice_blue.png"></image>
 						<text>{{$mHelper.formatMinutes(detail.voiceCommentDuration)}}</text>
 					</view>
-					
+
 					<view class="right-btn u-flex u-row-center" @click="playBtn()">
 						<u-icon v-if="!playStatus" name="play-right-fill" color="#fff" size="28"></u-icon>
 						<u-icon v-else name="pause" color="#fff" size="28"></u-icon>
@@ -193,8 +199,8 @@
 					height: 100%;
 					border-radius: 24rpx;
 				}
-				
-				.evaluateParams{
+
+				.evaluateParams {
 					position: absolute;
 					z-index: 99;
 				}

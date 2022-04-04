@@ -18,8 +18,9 @@
 								<u-avatar size="186" :src="userInfo.headUrl"></u-avatar>
 							</view>
 
-							<view class="head-auth" v-if="userInfo.roleSelect === 'teacher'" >
-								<image src="/static/my/no_auth.png" @click="goAuth" v-if="userInfo.authStatus === 0"></image>
+							<view class="head-auth" v-if="userInfo.roleSelect === 'teacher'">
+								<image src="/static/my/no_auth.png" @click="goAuth" v-if="userInfo.authStatus === 0">
+								</image>
 								<image src="/static/my/auth.png" v-else-if="userInfo.authStatus === 1"></image>
 							</view>
 						</view>
@@ -124,7 +125,7 @@
 					<!-- 消息 -->
 					<message v-show="current === 6" ref="Message"></message>
 				</view>
-				
+
 				<view class="content-box" v-if="isTabActive === 3">
 
 					<!-- 动态 -->
@@ -140,8 +141,8 @@
 					<message v-show="current === 3" ref="Message"></message>
 
 				</view>
-				
-				
+
+
 				<view class="content-box" v-if="isTabActive === 2">
 
 					<!-- 评画 -->
@@ -242,7 +243,6 @@
 					name: '消息',
 				}],
 				current: 0,
-				swiperCurrent: 0,
 				isFixed: false,
 				isTabActive: -1,
 				title: ''
@@ -252,15 +252,10 @@
 			await this.initData();
 		},
 		async onShow() {
-			if(this.hasLogin){
+			if (this.hasLogin) {
 				await this.getMemberInfo();
 			}
-			
-			uni.$on('isRefresh', async (bool) => {
-				if (bool) {
-					await this.initData();
-				}
-			})
+
 			uni.$on('isRefresh', async (bool) => {
 				if (bool) {
 					await this.getMemberInfo();
@@ -282,7 +277,6 @@
 			},
 
 			refresh() {
-
 				this.$nextTick(() => {
 					if (this.isTabActive === 1 || this.isTabActive === 2) {
 						this.$refs.PaintingEvaluation.refresh();
@@ -295,7 +289,7 @@
 					this.$refs.Order.refresh()
 					this.$refs.Collection.refresh()
 					this.$refs.Message.refresh()
-					
+
 					setTimeout(() => {
 						uni.stopPullDownRefresh()
 					}, 1500)
@@ -310,24 +304,24 @@
 						let data = r.data
 						let user = r.data.user;
 						user.skilledMajor = user.skilledMajor ? user.skilledMajor.split(",") : []
-						
-						if(user.roleSelect !== this.userInfo.roleSelect) {
-							if (user.roleSelect === 'teacher' && user.authStatus === 1) {
-								this.tabList = this.tabList1
-								this.isTabActive = 1
-							} else if (user.roleSelect === 'teacher' && user.authStatus === 0) {
-								this.tabList = this.tabList3
-								this.isTabActive = 3
-							} else {
-								this.tabList = this.tabList2
-								this.isTabActive = 2
-							}
-							this.refresh();
+
+						// if(user.roleSelect !== this.userInfo.roleSelect) {
+						if (user.roleSelect === 'teacher' && user.authStatus === 1) {
+							this.tabList = this.tabList1
+							this.isTabActive = 1
+						} else if (user.roleSelect === 'teacher' && user.authStatus === 0) {
+							this.tabList = this.tabList3
+							this.isTabActive = 3
+						} else {
+							this.tabList = this.tabList2
+							this.isTabActive = 2
 						}
+						this.refresh();
+						// }
 						this.userInfo = user;
 						this.title = this.userInfo.fullName
 						this.$mStore.commit('login', data.user);
-					
+
 					})
 					.catch((err) => {
 						console.log(err)
@@ -400,7 +394,6 @@
 			},
 			tabChange(index) {
 				this.current = index
-				this.swiperCurrent = index;
 			},
 			fixedTap(e) {
 				this.isFixed = true
@@ -426,11 +419,11 @@
 			},
 			toSetting: function() {
 				if (!this.hasLogin) return this.goLogin()
-				
+
 				uni.$on('roleSelect', (role) => {
 					console.log(role)
 					this.userInfo.roleSelect = role
-					
+
 					if (role === 'teacher' && this.userInfo.authStatus === 1) {
 						this.tabList = this.tabList1
 						this.isTabActive = 1
@@ -463,7 +456,7 @@
 				})
 			},
 			// 去认证
-			goAuth(){
+			goAuth() {
 				uni.navigateTo({
 					url: '/pages/set/teacherAuth'
 				})

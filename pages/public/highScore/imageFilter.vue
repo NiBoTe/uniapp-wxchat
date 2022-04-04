@@ -6,17 +6,16 @@
 		</view>
 		<!-- <scroll-view :style="{top: top+'px', left: left+'px'}" class="scroll-view_H" scroll-x="true"> -->
 		<view class="canvas">
-			<view :style="{top: top+'px', left: left+'px'}" class="scroll-view_H" scroll-x="true">
+			<!-- <view :style="{top: top+'px', left: left+'px'}" class="scroll-view_H" scroll-x="true"> -->
 				<canvas canvas-id="canvas" class="canvas" disable-scroll="true"
 					:style="{width: upx2px(canvas.width)+ 'px', height: upx2px(canvas.height) +'px'}"
 					@touchstart="touchstart" @touchmove="touchmove" @touchend="touchend"></canvas>
-			</view>
+			<!-- </view> -->
 
-
-			<view class="render-area" @touchstart="startPen">
+			<!-- <view class="render-area" @touchstart="startPen">
 				<image v-if="render_src" :src="render_src"
 					:style="{width: render_image.width + 'px', height: render_image.height +'px'}"></image>
-			</view>
+			</view> -->
 		</view>
 		<!-- </scroll-view> -->
 		<view class="drawingBoard-fixed-bottom">
@@ -44,7 +43,7 @@
 						<text>0</text>
 						<view class="slider">
 							<u-slider height="10" block-width="40" inactive-color="#D8D8D8" active-color="#999090"
-								v-model="contrastRatio"></u-slider>
+								v-model="contrastRatio" @end="sliderEnd" @click="sliderEnd"></u-slider>
 						</view>
 						<view class="refresh u-flex" @click="resetTap(2)">
 							<image src="/static/public/reset.png"></image>
@@ -147,7 +146,6 @@
 				ctx: null,
 				selectActive: -1,
 				id: '',
-				dom: null,
 				width: 0,
 				height: 0,
 				colorRgb: {
@@ -173,33 +171,6 @@
 
 			}
 		},
-		watch: {
-			contrastRatio(val) {
-				setTimeout(() => {
-					let imageData = strokes.length > 0 ? strokes[strokes.length - 1].imageData : initImageData
-					let filtered = ImageFilters.BrightnessContrastPhotoshop(imageData, val - 50, 13)
-					helper.putImageData(filtered, (tempFilePath) => {
-						this.render_src = tempFilePath;
-						if (strokes.length > 0) {
-							if (strokes[strokes.length - 1].type === 2) {
-								strokes[strokes.length - 1].imageData = imageData
-							} else {
-								strokes.push({
-									type: 2,
-									imageData,
-								})
-							}
-						} else {
-							strokes.push({
-								type: 2,
-								imageData,
-							})
-						}
-					})
-				}, 600)
-				// ImageFilters.BrightnessContrastPhotoshop(data, 26, 13)
-			}
-		},
 		onLoad(options) {
 			helper = '';
 			strokes = [];
@@ -210,17 +181,25 @@
 					this.width = res.windowWidth;
 					this.height = res.windowHeight;
 					if (options.url) {
-						this.src = decodeURIComponent(options.url)
-						this.render_src = decodeURIComponent(options.url);
-						this.init_image()
+						console.log(decodeURIComponent(options.url))
+
+						uni.showLoading({
+							title: '加载中'
+						})
+						uni.downloadFile({
+							url: decodeURIComponent(options.url),
+							success: (res) => {
+								this.src = res.tempFilePath
+								this.render_src = res.tempFilePath;
+								this.init_image()
+							}
+						})
+
+
 					}
 				}
 			});
 
-		},
-
-		onReady() {
-			this.dom = uni.createCanvasContext('canvas', this);
 		},
 		methods: {
 			init_image() {
@@ -305,17 +284,40 @@
 
 						// this.ctx = uni.createCanvasContext('canvas');
 						helper.initCanvas(image.path, () => {
-							initImageData = {
-								data: helper.originalImageData,
-								width: helper.canvasInfo.width,
-								height: helper.canvasInfo.height,
-							}
+							// initImageData = {
+							// 	data: helper.originalImageData,
+							// 	width: helper.canvasInfo.width,
+							// 	height: helper.canvasInfo.height,
+							// }
+
 							this.ctx = helper.ctx;
-							console.log(this.ctx)
 							// strokes.push({
 							// 	imageData: image.path,
 							// 	type: 'image',
 							// })
+
+							this.ctx.beginPath();
+							this.ctx.setLineCap('round')
+							this.ctx.setStrokeStyle('rgba(0,0,0,0)');
+							this.ctx.setLineWidth(1);
+							this.ctx.moveTo(0, 0);
+							this.ctx.lineTo(100, 100);
+							this.ctx.stroke();
+							// helper.ctx.draw(true);
+							this.ctx.draw(true, () => {
+								// helper.saveImageData()
+							})
+
+							helper.saveImageData(() => {
+								initImageData = {
+									data: helper.originalImageData,
+									width: helper.canvasInfo.width,
+									height: helper.canvasInfo.height,
+								}
+								helper.putImageData(initImageData, (tempFilePath) => {
+									this.render_src = tempFilePath;
+								})
+							})
 							uni.hideLoading();
 						})
 
@@ -346,20 +348,45 @@
 							_this.$mHelper.toast('保存成功')
 						},
 						fail: function() {
-							_this.$mHelper.toast('保存失败')
+							if (err.errMsg === "saveImageToPhotosAlbum:fail:auth denied" || err
+								.errMsg === "saveImageToPhotosAlbum:fail auth deny" || err.errMsg ===
+								"saveImageToPhotosAlbum:fail authorize no response") {
+								_this.$mHelper.getAuth()
+							} else {
+								_this.$mHelper.toast('保存失败')
+							}
 						}
 					});
 					uni.hideToast();
 				})
 			},
-			clear() { //清空
-				this.dom.clearRect(0, 0, this.width, this.height)
-				this.dom.draw();
-			},
 			revoke() { //撤销上一步
 				if (!strokes.length) return
 				strokes.pop();
 				this.drawCanves();
+			},
+			// 对比度滑动结束
+			sliderEnd(e) {
+				let imageData = strokes.length > 0 ? strokes[strokes.length - 1].imageData : initImageData
+				let filtered = ImageFilters.BrightnessContrastPhotoshop(imageData, this.contrastRatio - 50, 13)
+				helper.putImageData(filtered, (tempFilePath) => {
+					this.render_src = tempFilePath;
+					if (strokes.length > 0) {
+						if (strokes[strokes.length - 1].type === 2) {
+							strokes[strokes.length - 1].imageData = imageData
+						} else {
+							strokes.push({
+								type: 2,
+								imageData,
+							})
+						}
+					} else {
+						strokes.push({
+							type: 2,
+							imageData,
+						})
+					}
+				})
 			},
 			drawCanves() {
 				let findIndex = strokes.findIndex(item => item.type === 0);
@@ -396,7 +423,6 @@
 				this.drawLine(strokes[strokes.length - 1], e.type);
 			},
 			touchmove(e) {
-				console.log('======')
 				if (this.selectActive !== 1) return
 				strokes[strokes.length - 1].points.push({
 					x: e.touches[0].x,
@@ -445,7 +471,6 @@
 					// helper.ctx.draw(true);
 					this.ctx.draw(true, () => {
 						// helper.saveImageData()
-
 					})
 				}
 			},
@@ -838,7 +863,9 @@
 
 	.canvas {
 		display: flex;
-		flex-direction: column;
+		// flex-direction: column;
+		justify-content: center;
+		height: calc(100vh - 300rpx);
 		align-items: center;
 	}
 

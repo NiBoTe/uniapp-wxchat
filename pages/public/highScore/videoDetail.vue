@@ -5,19 +5,21 @@
 				title-color="#ffffff">
 			</u-navbar>
 
-			<video id="myVideo" :direction="90" :custom-cache="false" :src="videoUrl" @loadedmetadata="videoLoadedmetadata" @error="videoErrorCallback"
-				@timeupdate='videoUpdate' @ended="videoEnded" @play="palyFlag = true" :controls="false" object-fit="contain"
-				enable-play-gesture>
+			<video id="myVideo" :direction="90" :custom-cache="false" :src="videoUrl"
+				@loadedmetadata="videoLoadedmetadata" @error="videoErrorCallback" @timeupdate='videoUpdate'
+				@ended="videoEnded" @play="palyFlag = true" :controls="false" object-fit="contain" enable-play-gesture>
 			</video>
 
-			<view class="try u-flex u-row-center" v-if="!detail.isPayed && !isTrialEnd" @click="submitTap">
-				<text>{{palyFlag ? '正在试看，购买后观看完整视频' : '内容可试看'}}</text>
-				<view v-if="palyFlag" class="try-btn">购买</view>
-			</view>
-
-			<view class="trial u-flex u-row-center" v-if="!detail.isPayed && isTrialEnd">
-				<view class="trial-btn u-flex u-row-center" @click="submitTap">购买</view>
-				<text>本内容需要购买后才能观看</text>
+			<view v-if="userInfo.id !== detail.teacherId">
+				<view class="try u-flex u-row-center" v-if="!detail.isPayed && !isTrialEnd" @click="submitTap">
+					<text>{{palyFlag ? '正在试看，购买后观看完整视频' : '内容可试看'}}</text>
+					<view v-if="palyFlag" class="try-btn">购买</view>
+				</view>
+				
+				<view class="trial u-flex u-row-center" v-if="!detail.isPayed && isTrialEnd">
+					<view class="trial-btn u-flex u-row-center" @click="submitTap">购买</view>
+					<text>本内容需要购买后才能观看</text>
+				</view>
 			</view>
 
 
@@ -127,7 +129,7 @@
 						</view>
 						<view class="text">
 							<rich-text :nodes="$mHelper.messageemoj(item.content)"></rich-text>
-				<!-- 			<expandable-text :line="3" expandText="全文" foldText="收起">
+							<!-- 			<expandable-text :line="3" expandText="全文" foldText="收起">
 							  {{item.content}}
 							</expandable-text> -->
 						</view>
@@ -177,19 +179,29 @@
 
 		<view class="commit u-flex" v-if="isFocus">
 			<view class="left u-flex">
-				<textarea :fixed="true" auto-height :cursor-spacing="30" v-model="content" :placeholder="placeholder" focus
-					@confirm="confirmTap()" @blur="isFocus = false" />
+				<textarea :fixed="true" auto-height :cursor-spacing="30" v-model="content" :placeholder="placeholder"
+					focus @confirm="confirmTap()" @blur="isFocus = false" />
 			</view>
 			<view class="commit-btn u-flex" @click.stop="confirmTap()">
 				<image src="/static/public/commit.png"></image>
 			</view>
 		</view>
-		<view v-if="!isFocus">
+
+		<view v-if="!isFocus && type === 'default'">
 			<view class="footer" v-if="!detail.isPayed">
 				<view class="footer-btn" @click="submitTap">立即购买</view>
 			</view>
 			<view class="footer" v-else-if="detail.notCommentOrderIds.length > 0">
 				<view class="footer-btn" @click="submitTap">我要评价</view>
+			</view>
+		</view>
+		<view v-if="!isFocus && type === 'user'">
+			<view class="footer u-flex">
+				<view v-if="detail.state === 'on_sale'" class="footer-btn" style="margin-right: 24rpx;" @click="offTap">
+					下架作品</view>
+				<view v-if="detail.state === 'auditing' || detail.state === 'rejected' || detail.state === 'stop_sale'"
+					class="footer-btn" style="margin-right: 24rpx;" @click="updateTap">编辑作品</view>
+				<view class="footer-btn" @click="removeTap">删除作品</view>
 			</view>
 		</view>
 	</view>
@@ -200,7 +212,10 @@
 		getDetail,
 		addFavorite,
 		commentList,
-		addComment
+		addComment,
+		myDetail,
+		myDeleteTeachingMaterial,
+		myUpdateSaleState
 	} from '@/api/teaching_material.js'
 	import moment from '@/common/moment.js'
 	export default {
@@ -229,12 +244,15 @@
 				updateState: false, //防止视频播放过程中导致的拖拽失效
 				palyFlag: false,
 				isTrialEnd: false,
-				placeholder: ''
+				placeholder: '',
+				type: 'default',
+				userInfo: {}
 			};
 		},
 		onLoad(options) {
 			if (options.id) {
 				this.id = options.id
+				this.type = options.type || 'default'
 				this.initData()
 				this.getComment();
 			}
@@ -242,6 +260,7 @@
 
 		onShow() {
 			this.hasLogin = this.$mStore.getters.hasLogin;
+			this.userInfo = this.$mStore.state.userInfo;
 			uni.$on('detailRefresh', () => {
 				this.initData()
 			})
@@ -251,13 +270,14 @@
 		},
 		methods: {
 			initData() {
-				this.$http.get(getDetail, {
+				this.$http.get(this.type === 'default' ? getDetail : myDetail, {
 					id: this.id
 				}).then(res => {
 					this.detail = res.data
 					console.log(this.detail.notCommentOrderIds)
-					
-					this.detail.videoTrialDuration = this.detail.videoTrialDuration ? this.detail.videoTrialDuration * 60 : 0
+
+					this.detail.videoTrialDuration = this.detail.videoTrialDuration ? this.detail
+						.videoTrialDuration * 60 : 0
 					this.videoUrl = this.detail.items[0].hdImg
 				}).catch(err => {
 					console.log(err)
@@ -362,7 +382,9 @@
 			},
 			// 立即购买
 			submitTap() {
-
+				if(this.userInfo.id === this.detail.teacherId){
+					return this.$mHelper.toast('不允许购买自己发布的商品')
+				}
 				if (!this.hasLogin) {
 					uni.navigateTo({
 						url: '/pages/public/logintype'
@@ -380,6 +402,73 @@
 					})
 				}
 
+			},
+
+			// 下架作品
+			offTap() {
+				uni.showModal({
+					title: '提示',
+					confirmText: '确认',
+					content: '下架后对应高分教材前台将不可见，是否确认下架？',
+					success: (res) => {
+						if (res.confirm) {
+							uni.$emit('removeHighScore', true)
+							this.$http.post(myUpdateSaleState, {
+								id: this.id,
+								isSale: this.detail.auditStatus === 1 ? false : true
+							}).then(res => {
+								this.$mHelper.toast('下架成功')
+								uni.$emit('offHighScore', true)
+
+								this.initData()
+								// setTimeout(() => {
+								// 	uni.navigateBack({
+								// 		delta: 1
+								// 	})
+								// }, 1500)
+							}).catch(err => {
+								console.log(err)
+							})
+						}
+					}
+				});
+			},
+			// 编辑作品
+			updateTap() {
+				uni.$on('updateHighScore', () => {
+					this.initData()
+				})
+				uni.navigateTo({
+					url: `/pages/centers/highScoreRelease?id=${this.detail.id}`
+				})
+			},
+			// 删除作品
+			removeTap() {
+				uni.showModal({
+					title: '提示',
+					confirmText: '确认',
+					content: '删除后不可恢复，是否确认删除？',
+					success: (res) => {
+						if (res.confirm) {
+							uni.$emit('removeHighScore', true)
+							this.$http.post(myDeleteTeachingMaterial, null, {
+								params: {
+									id: this.id
+								}
+							}).then(res => {
+								this.$mHelper.toast('删除成功')
+								uni.$emit('removeHighScore', true)
+								setTimeout(() => {
+									uni.navigateBack({
+										delta: 1
+									})
+								}, 1500)
+							}).catch(err => {
+								console.log(err)
+							})
+						}
+					}
+				});
 			},
 			// 全屏+退出全屏
 			videoAllscreen(e) {
@@ -413,11 +502,13 @@
 				let duration = e.detail.duration
 				let sliderValue = (e.detail.currentTime / duration) * 100;
 
-				if (sliderValue >= this.sliderMax) {
-					// this.videoContext.seek(0)
-					this.videoContext.pause()
-
-					this.isTrialEnd = true;
+				if(this.userInfo.id !== this.detail.teacherId){
+					if (sliderValue >= this.sliderMax) {
+						// this.videoContext.seek(0)
+						this.videoContext.pause()
+					
+						this.isTrialEnd = true;
+					}
 				}
 				if (this.updateState) { //判断拖拽完成后才触发更新，避免拖拽失效
 					this.sliderValue = sliderValue;
@@ -461,8 +552,8 @@
 			videoLoadedmetadata(e) {
 				this.duration = e.detail.duration.toFixed(0)
 				this.druationTime = this.formatSeconds(this.duration);
-
-				if (!this.detail.isPayed) {
+				
+				if (!this.detail.isPayed && this.userInfo.id !== this.detail.teacherId) {
 					this.sliderMax = ((this.detail.videoTrialDuration / this.duration) * 100).toFixed(2);
 				}
 			}
@@ -707,6 +798,7 @@
 			background-color: #fff;
 
 			&-btn {
+				flex: 1;
 				height: 88rpx;
 				line-height: 88rpx;
 				text-align: center;

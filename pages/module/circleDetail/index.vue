@@ -81,8 +81,8 @@
 
 					<view class="more u-flex u-row-between" v-if="item.replyList.length">
 						<view class="left" @click="moreTap(item, index, true)" v-if="item.replyCount > 5">
-							<text v-if="!item.isMore">展开{{item.replyCount}}条回复</text>
-							<text v-else-if="item.replyCount > item.replyList.length" @click="itemMoreTap(item, itemc, index)">查看更多回复</text>
+							<text v-if="!item.isMore" @click="itemMoreTap(item, itemc, index)">{{item.replyCount > item.replyList.length ? '查看更多回复' : '展开' + item.replyCount + '条回复'}}</text>
+							<text v-else-if="item.replyCount > item.replyList.length">展开{{item.replyCount}}条回复</text>
 							<image v-if="!item.isMore" src="/static/public/arrow_down_text.png"></image>
 							<image v-else-if="item.replyCount > item.replyList.length" @click="itemMoreTap(item, itemc, index)" src="/static/public/arrow_down_text.png"></image>
 						</view>

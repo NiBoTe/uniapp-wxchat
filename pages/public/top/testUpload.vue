@@ -187,9 +187,9 @@
 					if (this.examSubjectItem.subjectName) {
 						this.studentDetail = res.data ? res.data[0] : {};
 						this.id = this.studentDetail.examId;
-						if (this.course && this.studentDetail.faceDetectState === 1) {
-							this.isEnter = true;
-						}
+						// if (this.course && this.studentDetail.faceDetectState === 1) {
+						// 	this.isEnter = true;
+						// }
 					}
 				}).catch(err => {
 					this.$mHelper.toast(err.msg)

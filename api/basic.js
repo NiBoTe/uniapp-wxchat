@@ -19,10 +19,14 @@ const submitV2 = `${common}feedback/submitV2`;
 // 获取物流信息
 const expressList = `${common}dict/expressList`;
 
+//二期获取财务配置
+const financeConfig = `${common}dict/financeConfig`;
+
 export {
 	areaList,
 	generatePostPolicy,
 	skilledMajorList,
 	submitV2,
-	expressList
+	expressList,
+	financeConfig
 };

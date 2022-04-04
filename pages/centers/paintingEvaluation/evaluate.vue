@@ -143,7 +143,6 @@
 			}
 
 			.right {
-				height: 174rpx;
 				margin-left: 22rpx;
 				flex: 1;
 				display: flex;

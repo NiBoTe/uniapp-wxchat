@@ -73,16 +73,6 @@ Helper.prototype.createImageData = function() {
 
 Helper.prototype.putImageData = function(imageData, cb) {
 	const z = this
-
-
-	console.log({
-		canvasId: z.canvasInfo.canvasId,
-		data: imageData.data,
-		x: 0,
-		y: 0,
-		width: z.canvasInfo.width,
-		height: z.canvasInfo.height
-	})
 	// 将像素数据绘制到画布
 	wx.canvasPutImageData({
 		canvasId: z.canvasInfo.canvasId,
@@ -92,8 +82,6 @@ Helper.prototype.putImageData = function(imageData, cb) {
 		width: z.canvasInfo.width,
 		height: z.canvasInfo.height,
 		complete: res => {
-			console.log(res)
-			console.log('canvasPutImageData==========')
 			z.getImageTempFilePath((tempFilePath) => {
 				if (cb) {
 					cb(tempFilePath)

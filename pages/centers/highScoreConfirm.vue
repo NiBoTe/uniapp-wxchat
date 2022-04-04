@@ -79,14 +79,21 @@
 			submitTap() {
 				if(this.btnLoading) return 
 				this.btnLoading = true;
-				
-				uni.showLoading()
+				uni.showLoading({
+					title: '加载中'
+				})
 				// if (this.params.isNeedExpress && this.params.expressContent === '') {
 				// 	return this.$mHelper.toast('请输入发货内容')
 				// 	this.btnLoading = false;
 				// }
 				this.$http.post(myAddTeachingMaterial, this.params).then(res => {
-					this.$mHelper.toast('发布成功')
+					
+					if(res.data.auditStatus === 1) {
+						this.$mHelper.toast('发布成功')
+					} else {
+						this.$mHelper.toast('提交成功，请等待审核，审核通过后会显示')
+					}
+					uni.$emit('offHighScore', true)
 					uni.$emit('detailRefresh',true);
 					setTimeout(() => {
 						uni.navigateBack({

@@ -5,9 +5,11 @@
 
 			<view class="content">
 				<view class="header" :style="{paddingTop: StatusBar + 'px'}">
-					<view class="header-switch" @click="devicePositionTap">
+					<view class="header-switch" @click="devicePositionTap" v-if="!isBegin">
 						<image src="/static/public/switch_camera.png"></image>
 					</view>
+					
+					<view class="header-switch" v-else></view>
 					<view class="header-btn u-flex u-row-center" @click="questionTap">
 						<text v-if="!isQuestions">查看考题</text>
 						<text v-else>隐藏考题</text>
@@ -102,7 +104,7 @@
 			return {
 				modalShow: false,
 				StatusBar: this.StatusBar - 20,
-				devicePosition: 'back',
+				devicePosition: 'front',
 				isQuestions: false,
 				isBegin: false,
 				timer: null,

@@ -10,12 +10,15 @@
 			<view class="footer">
 				<view class="footer-title u-flex" v-if="type === 'default'">
 					<view class="image">
-						<u-avatar size="65" :src="item.teacherHeadUrl"></u-avatar>
+						<u-avatar v-if="!item.teacherInfo" size="65" :src="item.teacherHeadUrl"></u-avatar>
+						<u-avatar v-else size="65" :src="item.teacherInfo.headUrl"></u-avatar>
 					</view>
 					<view class="text">
-						<text>{{item.teacherFullName || ''}}</text>
+						<text v-if="!item.teacherInfo">{{item.teacherFullName || ''}}</text>
+						<text v-else>{{item.teacherInfo.fullName || ''}}</text>
 						<text>评画老师</text>
 					</view>
+					
 				</view>
 				<view class="footer-title u-flex" v-else-if="type === 'teacherInfo'">
 					<view class="image">
@@ -79,9 +82,8 @@
 			getBox() {
 				uni.createSelectorQuery().in(this).select('.container').boundingClientRect(result => {
 					if (result) {
-						console.log('==========1111', result)
 					} else {
-						getBox();
+						this.getBox();
 					}
 				}).exec();
 			},

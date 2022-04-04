@@ -125,13 +125,12 @@
 						if(this.tabCurrent === 0) {
 							this.selectList = this.evaluatedList
 							if (this.evaluatedList.length) {
-								this.skilledMajorId = this.evaluatedList[0].id
+								// this.skilledMajorId = this.evaluatedList[0].id
 								this.getList()
 							} else {
 								this.loading = false;
 							}
 						} else {
-							console.log('=========')
 							this.selectList = this.notEvaluatedList
 							if (this.notEvaluatedList.length) {
 								this.skilledMajorId = this.notEvaluatedList[0].id

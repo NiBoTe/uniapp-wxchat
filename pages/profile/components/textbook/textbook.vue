@@ -80,13 +80,14 @@ import TextbookItem from './textbookItem.vue'
 			})
 			
 			uni.$on('offHighScore', () => {
-				console.log('=======')
+					console.log('刷新数据offHighScore')
 				this.$refs.uWaterfall.clear();
 				this.current = 1
 				this.getList()
 			})
 			
 			uni.$on('updateHighScore', () => {
+				console.log('刷新数据updateHighScore')
 				this.$refs.uWaterfall.clear();
 				this.current = 1
 				this.getList()

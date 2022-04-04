@@ -88,7 +88,7 @@
 
 				<u-gap height="16" bg-color="#F7F7F7" margin-top="40"></u-gap>
 				<view class="content-tabs">
-					<u-sticky :offset-top="0" bg-color="#fff" @fixed="fixedTap" @unfixed="unfixedTap">
+					<u-sticky :offset-top="isFixed ? StatusBar : 0" bg-color="#fff" @fixed="fixedTap" @unfixed="unfixedTap">
 						<view class="tabs" :style="{paddingTop: isFixed ? StatusBar + 'px' : '0'}">
 							<u-tabs ref="tabs" :is-scroll="true" :list="tabList" :current="current" bar-width="62"
 								bar-height="8" gutter="40" active-color="#1B1B1B" inactive-color="#9E9E9E" font-size="30"
