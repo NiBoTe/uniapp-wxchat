@@ -823,7 +823,7 @@
 					success: (image) => {
 						const query = uni.createSelectorQuery().in(this);
 						query.select('.container-canvas').boundingClientRect(data => {
-							let img_res = this.$mHelper.imgFit(url, data.width, data.height, image.width, image.height);
+							let img_res = this.$mHelper.imgFit(data.width, data.height, image.width, image.height);
 							if (image.width >= image.height) {
 								//初始化canvas尺寸
 								this.canvas.width = img_res.width / (uni.upx2px(100) /

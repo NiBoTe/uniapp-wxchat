@@ -809,7 +809,7 @@
 
 				&-item {
 					display: inline-block;
-					width: 356rpx;
+					width: 376rpx;
 
 					&:first-of-type {
 						margin-left: 28rpx;

@@ -315,9 +315,11 @@
 			},
 			refresh(keyword) {
 				this.keyword = keyword;
-				this.current = 1;
-				this.list = []
-				this.getList()
+				if(this.keyword && this.keyword !== null && this.keyword !== '') {
+					this.current = 1;
+					this.list = []
+					this.getList()
+				}
 			}
 
 		},

@@ -7,9 +7,9 @@
 		<!-- <scroll-view :style="{top: top+'px', left: left+'px'}" class="scroll-view_H" scroll-x="true"> -->
 		<view class="canvas">
 			<!-- <view :style="{top: top+'px', left: left+'px'}" class="scroll-view_H" scroll-x="true"> -->
-				<canvas canvas-id="canvas" class="canvas" disable-scroll="true"
-					:style="{width: upx2px(canvas.width)+ 'px', height: upx2px(canvas.height) +'px'}"
-					@touchstart="touchstart" @touchmove="touchmove" @touchend="touchend"></canvas>
+			<canvas canvas-id="canvas" class="canvas" disable-scroll="true"
+				:style="{width: upx2px(canvas.width)+ 'px', height: upx2px(canvas.height) +'px'}"
+				@touchstart="touchstart" @touchmove="touchmove" @touchend="touchend"></canvas>
 			<!-- </view> -->
 
 			<!-- <view class="render-area" @touchstart="startPen">
@@ -43,7 +43,7 @@
 						<text>0</text>
 						<view class="slider">
 							<u-slider height="10" block-width="40" inactive-color="#D8D8D8" active-color="#999090"
-								v-model="contrastRatio" @end="sliderEnd" @click="sliderEnd"></u-slider>
+								v-model="contrastRatio" @end="sliderEnd" @start="sliderStart"></u-slider>
 						</view>
 						<view class="refresh u-flex" @click="resetTap(2)">
 							<image src="/static/public/reset.png"></image>
@@ -168,6 +168,7 @@
 				},
 				thicknessValue: 3, // 线条粗细
 				contrastRatio: 50, // 对比度
+				isSliderMove: false,
 
 			}
 		},
@@ -201,49 +202,130 @@
 			});
 
 		},
+		watch: {
+			contrastRatio(val) {
+				if (!this.isSliderMove) {
+					let imageData = strokes.length > 0 ? strokes[strokes.length - 1].imageData : initImageData
+					let filtered = ImageFilters.BrightnessContrastPhotoshop(imageData, this.contrastRatio - 50, 13)
+					helper.putImageData(filtered, (tempFilePath) => {
+						this.render_src = tempFilePath;
+						if (strokes.length > 0) {
+							if (strokes[strokes.length - 1].type === 2) {
+								strokes[strokes.length - 1].imageData = imageData
+							} else {
+								strokes.push({
+									type: 2,
+									imageData: filtered,
+								})
+							}
+						} else {
+							strokes.push({
+								type: 2,
+								imageData: filtered,
+							})
+						}
+					})
+				}
+			}
+		},
 		methods: {
 			init_image() {
 				uni.getImageInfo({
 					src: this.src,
 					success: (image) => {
+						console.log(image)
+						const query = uni.createSelectorQuery().in(this);
+						query.select('.canvas').boundingClientRect(data => {
+							let img_res = this.$mHelper.imgFit(data.width, data.height, image.width,
+								image.height);
+							console.log(img_res)
+							if (image.width >= image.height) {
+								//初始化canvas尺寸
+								this.canvas.width = img_res.width / (uni.upx2px(100) /
+									100)
+								this.canvas.height = img_res.height / (uni.upx2px(100) /
+									100)
+								this.canvas.origin_height = this.canvas.height
+								this.canvas.origin_width = this.canvas.width
 
-						if (image.width >= image.height) {
-							//初始化canvas尺寸
-							this.canvas.width = image.width > transverse_canvas_width ?
-								transverse_canvas_width : image.width
-							this.canvas.height = parseInt(this.canvas.width * image.height / image.width);
-							this.canvas.origin_height = this.canvas.height
-							this.canvas.origin_width = this.canvas.width
+								//初始化预览图尺寸
+								this.render_image.width = this.canvas.width;
+								this.render_image.height = this.canvas.height;
 
-							//初始化预览图尺寸
-							this.render_image.width = this.render_image.max_width;
-							this.render_image.height = parseInt(this.render_image.width * image.height / image
-								.width);
-
-						} else {
-							//初始化canvas尺寸
-							this.canvas.height = image.height > lengthways_canvas_height ?
-								lengthways_canvas_height : image.height
-							this.canvas.width = parseInt(this.canvas.height * image.width / image.height);
-							this.canvas.origin_width = this.canvas.width;
-							this.canvas.origin_height = this.canvas.height
-
-							//初始化预览图尺寸
-							this.render_image.width = this.render_image.max_width
-							this.render_image.height = parseInt(this.render_image.width * image.height / image
-								.width);
-							if (this.render_image.height > this.render_image.max_height) {
-								this.render_image.height = this.render_image.max_height
-								this.render_image.width = parseInt(this.render_image.height * image.width /
-									image.height);
+							} else {
+								//初始化canvas尺寸
+								// this.canvas.height = this.height / (uni.upx2px(100) /
+								// 	100)
+								// this.canvas.width = this.width / (uni.upx2px(100) /
+								// 	100)
+								this.canvas.width = img_res.width / (uni.upx2px(100) /
+									100)
+								this.canvas.height = img_res.height / (uni.upx2px(100) /
+									100)
+								// parseInt(this.canvas.height * image.width / image.height);
+								this.canvas.origin_width = this.canvas.width;
+								this.canvas.origin_height = this.canvas.height
+								//初始化预览图尺寸
+								this.render_image.width = this.canvas.width
+								this.render_image.height = this.canvas.height;
 							}
-						}
+
+							helper = new Helper({
+								canvasId: 'canvas',
+								width: this.upx2px(this.canvas.width),
+								height: this.upx2px(this.canvas.height)
+							})
+
+							// this.ctx = uni.createCanvasContext('canvas');
+							helper.initCanvas(image.path, () => {
+								// initImageData = {
+								// 	data: helper.originalImageData,
+								// 	width: helper.canvasInfo.width,
+								// 	height: helper.canvasInfo.height,
+								// }
+
+								this.ctx = helper.ctx;
+								// strokes.push({
+								// 	imageData: image.path,
+								// 	type: 'image',
+								// })
+
+								this.ctx.beginPath();
+								this.ctx.setLineCap('round')
+								this.ctx.setStrokeStyle('rgba(0,0,0,0)');
+								this.ctx.setLineWidth(1);
+								this.ctx.moveTo(0, 0);
+								this.ctx.lineTo(100, 100);
+								this.ctx.stroke();
+								// helper.ctx.draw(true);
+								this.ctx.draw(true, () => {
+									// helper.saveImageData()
+
+									helper.saveImageData(() => {
+										initImageData = {
+											data: helper.originalImageData,
+											width: helper.canvasInfo.width,
+											height: helper.canvasInfo
+												.height,
+										}
+										helper.putImageData(initImageData, (
+											tempFilePath) => {
+											this.render_src =
+												tempFilePath;
+										})
+									})
+								})
+
+
+								uni.hideLoading();
+							})
+
+						}).exec();
+
 						// if (image.width >= image.height) {
 						// 	//初始化canvas尺寸
-						// 	this.canvas.width = this.width / (uni.upx2px(100) /
-						// 		100)
-						// 	// this.canvas.width = image.width > transverse_canvas_width ?
-						// 	// 	transverse_canvas_width : image.width
+						// 	this.canvas.width = image.width > transverse_canvas_width ?
+						// 		transverse_canvas_width : image.width
 						// 	this.canvas.height = parseInt(this.canvas.width * image.height / image.width);
 						// 	this.canvas.origin_height = this.canvas.height
 						// 	this.canvas.origin_width = this.canvas.width
@@ -255,16 +337,11 @@
 
 						// } else {
 						// 	//初始化canvas尺寸
-						// 	// this.canvas.height = this.height / (uni.upx2px(100) /
-						// 	// 	100)
-						// 	this.canvas.width = this.width / (uni.upx2px(100) /
-						// 		100)
 						// 	this.canvas.height = image.height > lengthways_canvas_height ?
-						// 		lengthways_canvas_height : (image.height * 2 > lengthways_canvas_height) ? lengthways_canvas_height : image.height * 2
-						// 	this.canvas.width = this.width/(uni.upx2px(100)/100) // parseInt(this.canvas.height * image.width / image.height);
+						// 		lengthways_canvas_height : image.height
+						// 	this.canvas.width = parseInt(this.canvas.height * image.width / image.height);
 						// 	this.canvas.origin_width = this.canvas.width;
 						// 	this.canvas.origin_height = this.canvas.height
-
 
 						// 	//初始化预览图尺寸
 						// 	this.render_image.width = this.render_image.max_width
@@ -276,50 +353,8 @@
 						// 			image.height);
 						// 	}
 						// }
-						helper = new Helper({
-							canvasId: 'canvas',
-							width: this.upx2px(this.canvas.width),
-							height: this.upx2px(this.canvas.height)
-						})
 
-						// this.ctx = uni.createCanvasContext('canvas');
-						helper.initCanvas(image.path, () => {
-							// initImageData = {
-							// 	data: helper.originalImageData,
-							// 	width: helper.canvasInfo.width,
-							// 	height: helper.canvasInfo.height,
-							// }
 
-							this.ctx = helper.ctx;
-							// strokes.push({
-							// 	imageData: image.path,
-							// 	type: 'image',
-							// })
-
-							this.ctx.beginPath();
-							this.ctx.setLineCap('round')
-							this.ctx.setStrokeStyle('rgba(0,0,0,0)');
-							this.ctx.setLineWidth(1);
-							this.ctx.moveTo(0, 0);
-							this.ctx.lineTo(100, 100);
-							this.ctx.stroke();
-							// helper.ctx.draw(true);
-							this.ctx.draw(true, () => {
-								// helper.saveImageData()
-							})
-
-							helper.saveImageData(() => {
-								initImageData = {
-									data: helper.originalImageData,
-									width: helper.canvasInfo.width,
-									height: helper.canvasInfo.height,
-								}
-								helper.putImageData(initImageData, (tempFilePath) => {
-									this.render_src = tempFilePath;
-								})
-							})
-							uni.hideLoading();
-						})
 
 						// this.ctx.drawImage(this.src, 0, 0, this.px_width, this.px_height);
 						// this.ctx.draw();
@@ -361,12 +396,28 @@
 				})
 			},
 			revoke() { //撤销上一步
-				if (!strokes.length) return
+				if (!strokes.length) {
+					return
+				}
+				let isZero = false;
+				strokes.map(item => {
+					if (item.type === 0) {
+						isZero = true;
+
+					}
+				})
+				if (isZero) {
+					this.isBlack = false
+				}
 				strokes.pop();
 				this.drawCanves();
 			},
+			sliderStart() {
+				this.isSliderMove = true;
+			},
 			// 对比度滑动结束
 			sliderEnd(e) {
+				this.isSliderMove = false;
 				let imageData = strokes.length > 0 ? strokes[strokes.length - 1].imageData : initImageData
 				let filtered = ImageFilters.BrightnessContrastPhotoshop(imageData, this.contrastRatio - 50, 13)
 				helper.putImageData(filtered, (tempFilePath) => {
@@ -377,13 +428,13 @@
 						} else {
 							strokes.push({
 								type: 2,
-								imageData,
+								imageData: filtered,
 							})
 						}
 					} else {
 						strokes.push({
 							type: 2,
-							imageData,
+							imageData: filtered,
 						})
 					}
 				})
@@ -478,36 +529,62 @@
 				switch (index) {
 					case 0:
 						try {
-							this.isBlack = !this.isBlack;
-							let isGrayScale = false,
-								isGrayScaleIndex = -1;
-							strokes.map((item, index) => {
-								if (item.type === 0) {
-									isGrayScale = true
-									isGrayScaleIndex = index
-								}
-							})
-							if (isGrayScale) {
-								let imageData = strokes.length > 0 ? strokes[strokes.length - 1].imageData : initImageData;
-								helper.putImageData(imageData, (tempFilePath) => {
+							if (this.isBlack) {
+								helper.putImageData(initImageData, (tempFilePath) => {
 									this.render_src = tempFilePath;
-									if (isGrayScaleIndex >= 0) strokes.splice(isGrayScaleIndex, 1)
+									strokes.push({
+										type: 0,
+										imageData: initImageData
+									})
 								})
 							} else {
-								let imageData = strokes.length > 0 ? strokes[strokes.length - 1].imageData : initImageData
-								// let imageData = helper.createImageData()
+								let imageData = imageData = strokes.length > 0 ? strokes[strokes.length - 1].imageData :
+									initImageData
 								let filtered = ImageFilters.GrayScale(imageData)
-								console.log('filtered=========================')
-								console.log(filtered)
-								console.log('filtered=========================')
 								helper.putImageData(filtered, (tempFilePath) => {
 									this.render_src = tempFilePath;
 									strokes.push({
 										type: 0,
-										imageData
+										imageData: filtered
 									})
+
 								})
+								console.log('filtered=========================')
+								console.log(filtered)
+								console.log('filtered=========================')
 							}
+							this.isBlack = !this.isBlack;
+
+							return
+							// let isGrayScale = false,
+							// 	isGrayScaleIndex = -1;
+							// strokes.map((item, index) => {
+							// 	if (item.type === 0) {
+							// 		isGrayScale = true
+							// 		isGrayScaleIndex = index
+							// 	}
+							// })
+							// if (isGrayScale) {
+							// 	console.log(isGrayScale+ '======')
+							// 	console.log(this.isBlack+ '======')
+
+
+							// 	if(this.isBlack) {
+							// 		let imageData = strokes.length > 0 ? strokes[strokes.length - 1].imageData : helper.originalImageData;
+							// 		helper.putImageData(imageData, (tempFilePath) => {
+							// 			this.render_src = tempFilePath;
+							// 			if (isGrayScaleIndex >= 0) strokes.splice(isGrayScaleIndex, 1)
+							// 		})
+							// 	} else {
+							// 		let imageData = strokes[isGrayScaleIndex].imageData;
+							// 		helper.putImageData(imageData, (tempFilePath) => {
+							// 			this.render_src = tempFilePath;
+							// 			if (isGrayScaleIndex >= 0) strokes.splice(isGrayScaleIndex, 1)
+							// 		})
+							// 	}
+							// } else {
+
+							// }
 						} catch (err) {
 							console.log(err)
 						}
@@ -556,13 +633,13 @@
 						} else {
 							strokes.push({
 								type: 3,
-								imageData,
+								imageData:filtered,
 							})
 						}
 					} else {
 						strokes.push({
 							type: 3,
-							imageData,
+							imageData:filtered,
 						})
 					}
 
@@ -846,9 +923,7 @@
 	// 下一步
 
 	.drawingBoard-next {
-		padding: 24rpx 48rpx;
-		padding-bottom: constant(safe-area-inset-bottom);
-		padding-bottom: env(safe-area-inset-bottom);
+		padding: 24rpx 48rpx 0;
 
 		.drawingBoard-btn {
 			height: 80rpx;
@@ -865,7 +940,8 @@
 		display: flex;
 		// flex-direction: column;
 		justify-content: center;
-		height: calc(100vh - 300rpx);
+		height: calc(100vh - 395rpx - constant(safe-area-inset-bottom));
+		height: calc(100vh - 395rpx - env(safe-area-inset-bottom));
 		align-items: center;
 	}
 

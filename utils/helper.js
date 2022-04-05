@@ -404,18 +404,26 @@ export default {
 		})
 	},
 	// 图片比例计算
-	imgFit(url = "", box_w, box_h, img_w, img_h) {
+	imgFit(box_w, box_h, img_w, img_h) {
 		var r = img_w / img_h,
 			final_w = 0,
 			final_h = 0;
-		if (img_w > img_h) {
+		if (img_w >= img_h) {
 			r = img_h / img_w;
 			final_w = box_w;
 			final_h = box_w * r;
 		} else {
-			final_h = box_h;
-			final_w = r * box_h;
+			if(r * box_h > box_w) {
+				r = img_h / img_w;
+				final_w = box_w;
+				final_h = box_w * r;
+			} else {
+				final_h = box_h;
+				final_w = r * box_h;
+			}
 		}
+		
+		
 		return {
 			width: final_w,
 			height: final_h

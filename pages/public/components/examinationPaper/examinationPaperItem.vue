@@ -4,9 +4,9 @@
 			<view class="header">{{item.title}}</view>
 
 			<view class="content">
-				<view class="content-text">{{item.content}}</view>
+				<view class="content-text u-line-2">{{item.content}}</view>
 
-				<view class="content-footer u-flex u-row-between">
+				<view class="content-footer u-flex u-row-between" :style="{borderWidth: item.havePaper ? '4rpx' : 0}">
 					<view class="left u-flex">
 						<text>考试时间</text>
 						<text class="time">{{item.examDate}}</text>
@@ -19,7 +19,7 @@
 				</view>
 			</view>
 
-			<view class="item-footer u-flex u-row-between">
+			<view class="item-footer u-flex u-row-between" v-if="item.havePaper">
 				<view class="left u-flex">
 					<image src="/static/public/examinationPaper_icon.png"></image>
 					<text>高分试卷</text>
@@ -80,17 +80,18 @@
 			.content {
 
 				&-text {
-					padding: 14rpx 24rpx;
+					margin: 14rpx 0;
+					padding: 0 24rpx;
 					font-size: 26rpx;
 					color: #3A3D71;
 					line-height: 36rpx;
-					text-overflow: -o-ellipsis-lastline;
-					overflow: hidden;
-					text-overflow: ellipsis;
-					display: -webkit-box;
-					-webkit-line-clamp: 2;
-					line-clamp: 2;
-					-webkit-box-orient: vertical;
+					// text-overflow: -o-ellipsis-lastline;
+					// overflow: hidden;
+					// text-overflow: ellipsis;
+					// display: -webkit-box;
+					// -webkit-line-clamp: 2;
+					// line-clamp: 2;
+					// -webkit-box-orient: vertical;
 				}
 
 				&-footer {

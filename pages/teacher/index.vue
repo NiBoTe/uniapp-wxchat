@@ -16,7 +16,7 @@
 				<!-- option end-->
 				<scroll-view scroll-y class="right-box-scroll" @scrolltolower="lower">
 					<view class="page-view">
-						<view class="class-item" v-for="(item , index) in list" :key="index" @click="detailTap(item, index)">
+						<view class="class-item" v-for="(item , index) in list" :key="new Date().getTime() + index" @click="detailTap(item, index)">
 							<view class="item-container">
 								<famous-teacher-item :ref="'FamousTeacherItem' + index" :item="item" :index="index"></famous-teacher-item>
 							</view>
@@ -71,8 +71,7 @@
 			},
 			getList(){
 				this.loadStatus = 'loading';
-				console.log(this.drawList)
-				console.log(this.skilledMajorIndex)
+				console.log(this.drawList[this.skilledMajorIndex])
 				this.$http.post(teacherList, {
 					province: this.province,
 					skilledMajorId: this.drawList[this.skilledMajorIndex].id,
@@ -119,6 +118,7 @@
 				this.currentIndex = index;
 				this.province = item;
 				this.current = 1;
+				this.list = []
 				this.getList();
 			},
 			// 筛选
@@ -126,6 +126,7 @@
 				console.log(value)
 				this.skilledMajorIndex = value.index;
 				this.current = 1;
+				this.list = []
 				this.getList();
 				
 			}
