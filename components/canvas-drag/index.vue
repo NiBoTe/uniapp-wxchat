@@ -494,12 +494,7 @@
 				},
 				selectActive: 0,
 				thicknessValue: 3, // 线条粗细
-				colorValue: {
-					r: 255,
-					g: 0,
-					b: 0,
-					a: 0.6
-				},
+				colorValue: "#ff0000",
 				colorCircleValue: {
 					r: 255,
 					g: 0,

@@ -37,8 +37,8 @@
 			if (options.detail) {
 				this.detail = JSON.parse(options.detail)
 				if (this.detail.paintEvaluate) {
-					this.description = this.detail.description;
-					this.price = this.detail.price
+					this.description = this.detail.paintEvaluate.description;
+					this.price = this.detail.paintEvaluate.price
 				}
 			}
 		},

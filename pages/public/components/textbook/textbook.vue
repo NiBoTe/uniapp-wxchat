@@ -45,7 +45,7 @@
 		},
 		data() {
 			return {
-				isFixed: false,
+				isFixed: true,
 				loading: true,
 				keyword: '',
 				loadStatus: 'loadmore',
@@ -98,6 +98,7 @@
 			refresh(keyword) {
 				this.keyword = keyword;
 				if(this.keyword && this.keyword !== null && this.keyword !== '') {
+					this.$refs.uWaterfall.clear();
 					this.current = 1;
 					this.list = []
 					this.getList()
@@ -109,9 +110,12 @@
 
 
 <style lang="scss" scoped>
-	.scroll-warper {
-		height: calc(100vh - 94rpx);
+	.container {
+		height: calc(100vh - 120rpx);
+		padding-bottom: 200rpx;
 	}
-
-	.item {}
+	
+	.scroll-warper{
+		height: 100%;
+	}
 </style>

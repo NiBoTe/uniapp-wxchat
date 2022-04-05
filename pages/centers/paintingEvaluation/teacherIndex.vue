@@ -36,12 +36,12 @@
 			<u-waterfall v-model="list" ref="uWaterfall" v-if="tabIndex === 0">
 				<template v-slot:left="{leftList}">
 					<view class="item" v-for="(item, index) in leftList" :key="index">
-						<painting-evaluation-item :item="item" type="teacherInfo"></painting-evaluation-item>
+						<painting-evaluation-item-teacher :item="item" type="teacherInfo"></painting-evaluation-item-teacher>
 					</view>
 				</template>
 				<template v-slot:right="{rightList}">
 					<view class="item" v-for="(item, index) in rightList" :key="index">
-						<painting-evaluation-item :item="item" type="teacherInfo"></painting-evaluation-item>
+						<painting-evaluation-item-teacher :item="item" type="teacherInfo"></painting-evaluation-item-teacher>
 					</view>
 				</template>
 			</u-waterfall>
@@ -76,6 +76,7 @@
 <script>
 	import drawingColumn from '@/components/drawingColumn/drawingColumn.vue'
 	import PaintingEvaluationItem from '@/components/paintingEvaluation/paintingEvaluationItem.vue'
+	import PaintingEvaluationItemTeacher from '@/components/paintingEvaluation/paintingEvaluationItemTeacher.vue'
 
 
 	import {
@@ -89,7 +90,8 @@
 	export default {
 		components: {
 			drawingColumn,
-			PaintingEvaluationItem
+			PaintingEvaluationItem,
+			PaintingEvaluationItemTeacher
 		},
 		data() {
 			return {

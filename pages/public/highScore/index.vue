@@ -2,7 +2,7 @@
 	<view class="high-score">
 		<view class="top">
 			<u-navbar title=" " :border-bottom="false">
-				<view class="search u-flex" @click="searchTap">
+				<view class="search u-flex" style="flex: 1;" @click="searchTap">
 					<u-icon name="search" color="#5D6086" size="32"></u-icon>
 					<text>梵高名画</text>
 				</view>
@@ -55,7 +55,8 @@
 			</u-waterfall>
 
 			<nodata v-if="!loading && !list.length"></nodata>
-			<u-loadmore v-else bg-color="rgb(240, 240, 240)" :status="loadStatus" @loadmore="addData" margin-top="30" margin-bottom="30"></u-loadmore>
+			<u-loadmore v-else bg-color="rgb(240, 240, 240)" :status="loadStatus" @loadmore="addData" margin-top="30"
+				margin-bottom="30"></u-loadmore>
 		</scroll-view>
 
 	</view>
@@ -170,6 +171,8 @@
 			background: #FFFFFF;
 
 			.search {
+				position: relative;
+				z-index: 999;
 				margin-right: 22rpx;
 				flex: 1;
 				padding-left: 22rpx;

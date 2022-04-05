@@ -156,9 +156,15 @@
 			searchTap() {
 				let text = this.keyword.replace(/ /g, '');
 				if(this.keyword !== '' && text !== ''){
-					this.historyList.push(this.keyword);
+					if(this.historyList.length > 0 && this.historyList[this.historyList.length - 1] === text){
+						console.log('========')
+					} else {
+						this.historyList.unshift(this.keyword);
+					}
+					if(this.historyList.length > 8){
+						this.historyList.pop()
+					}
 					uni.setStorageSync('historyList', this.historyList);
-					
 					this.searchConentStatus = true;
 					this.seachContent(this.keyword)
 				}

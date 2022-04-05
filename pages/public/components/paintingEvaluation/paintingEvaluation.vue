@@ -5,12 +5,12 @@
 			<u-waterfall v-model="list" ref="uWaterfall">
 				<template v-slot:left="{leftList}">
 					<view class="item" v-for="(item, index) in leftList" :key="index">
-						<painting-evaluation-item :item="item"></painting-evaluation-item>
+						<painting-evaluation-item :item="item" source="home"></painting-evaluation-item>
 					</view>
 				</template>
 				<template v-slot:right="{rightList}">
 					<view class="item" v-for="(item, index) in rightList" :key="index">
-						<painting-evaluation-item :item="item"></painting-evaluation-item>
+						<painting-evaluation-item :item="item" source="home"></painting-evaluation-item>
 					</view>
 				</template>
 			</u-waterfall>
@@ -35,7 +35,7 @@
 		},
 		data() {
 			return {
-				isFixed: false,
+				isFixed: true,
 				keyword: '',
 				loadStatus: 'loadmore',
 				current: 1,
@@ -87,6 +87,7 @@
 			refresh(keyword) {
 				this.keyword = keyword;
 				if(this.keyword && this.keyword !== null && this.keyword !== '') {
+					this.$refs.uWaterfall.clear();
 					this.current = 1;
 					this.list = []
 					this.getList()
@@ -98,9 +99,12 @@
 
 
 <style lang="scss" scoped>
-	.scroll-warper {
-		height: calc(100vh - 94rpx);
+	.container {
+		height: calc(100vh - 120rpx);
+		padding-bottom: 200rpx;
 	}
-
-	.item {}
+	
+	.scroll-warper{
+		height: 100%;
+	}
 </style>

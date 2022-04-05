@@ -160,12 +160,7 @@
 					b: 0,
 					a: 0.6
 				},
-				colorValue: {
-					r: 255,
-					g: 0,
-					b: 0,
-					a: 0.6
-				},
+				colorValue: '#ff0000',
 				thicknessValue: 3, // 线条粗细
 				contrastRatio: 50, // 对比度
 				isSliderMove: false,
@@ -182,8 +177,6 @@
 					this.width = res.windowWidth;
 					this.height = res.windowHeight;
 					if (options.url) {
-						console.log(decodeURIComponent(options.url))
-
 						uni.showLoading({
 							title: '加载中'
 						})
@@ -233,12 +226,10 @@
 				uni.getImageInfo({
 					src: this.src,
 					success: (image) => {
-						console.log(image)
 						const query = uni.createSelectorQuery().in(this);
 						query.select('.canvas').boundingClientRect(data => {
 							let img_res = this.$mHelper.imgFit(data.width, data.height, image.width,
 								image.height);
-							console.log(img_res)
 							if (image.width >= image.height) {
 								//初始化canvas尺寸
 								this.canvas.width = img_res.width / (uni.upx2px(100) /
@@ -549,9 +540,6 @@
 									})
 
 								})
-								console.log('filtered=========================')
-								console.log(filtered)
-								console.log('filtered=========================')
 							}
 							this.isBlack = !this.isBlack;
 
@@ -600,6 +588,7 @@
 			},
 			// 选择颜色
 			colorConfirm(e) {
+				console.log(e)
 				this.colorRgb = e.rgba
 				this.colorValue = e.hex
 			},
@@ -633,13 +622,13 @@
 						} else {
 							strokes.push({
 								type: 3,
-								imageData:filtered,
+								imageData,
 							})
 						}
 					} else {
 						strokes.push({
 							type: 3,
-							imageData:filtered,
+							imageData
 						})
 					}
 

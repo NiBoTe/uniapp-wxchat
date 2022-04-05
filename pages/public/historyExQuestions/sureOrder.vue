@@ -39,7 +39,7 @@
 				</view>
 				<view class="parameter-list">
 					商品数量 ：1张
-					<view class="price">
+					<view class="price" v-if="detail.price > 0">
 						¥<text>{{detail.price}}</text>
 					</view>
 				</view>
@@ -48,7 +48,7 @@
 			<view class="img">
 				<image :src="detail.hdImg !== '' ? detail.hdImg : detail.mosaicImg" mode="widthFix"></image>
 			</view>
-			<view class="content">
+			<view class="content" v-if="detail.price > 0">
 				<u-checkbox-group>
 					<u-checkbox v-model="checked" size="28" icon-size="20" shape="circle"><text>我已阅读并同意 </text><text
 							class="agreement" @click.stop="navTo">《付费内容使用协议》</text>
@@ -58,7 +58,7 @@
 		</view>
 
 		<view class="footer">
-			<view class="footer-btn" @click="submitTap">去支付</view>
+			<view class="footer-btn" @click="submitTap">{{detail.price > 0 ? '去支付' : '确认'}}</view>
 		</view>
 
 		<!--页面加载动画-->
@@ -92,6 +92,9 @@
 		},
 		onLoad(options) {
 			if (options.id) this.id = options.id;
+
+		},
+		onShow() {
 			this.getAddressList();
 			this.initData();
 			uni.$on('selectAddress', (data) => {
@@ -138,18 +141,20 @@
 			},
 			// 去支付
 			async submitTap() {
-				
-				uni.showLoading({
-					title: '支付中'
-				})
-				if (!this.checked) {
-					return this.$mHelper.toast('请先勾选阅读付费内容使用协议')
+
+				if (this.detail.price > 0) {
+					uni.showLoading({
+						title: '支付中'
+					})
+					if (!this.checked) {
+						return this.$mHelper.toast('请先勾选阅读付费内容使用协议')
+					}
 				}
 				if (this.detail.isNeedExpress && !this.addressDetail) {
 					return this.$mHelper.toast('请选择收货地址')
 				}
-				
-				if(this.btnLoading) return
+
+				if (this.btnLoading) return
 				this.btnLoading = true;
 				await this.createOrder();
 			},
@@ -180,7 +185,11 @@
 						},
 						fail: (err) => {
 							if (err.code === 201) {
-								this.$mHelper.toast('购买成功，可以查看高清图')
+								if (this.detail.price > 0) {
+									this.$mHelper.toast('购买成功，可以查看高清图')
+								} else {
+									this.$mHelper.toast('确认成功')
+								}
 								setTimeout(() => {
 									uni.navigateBack({
 										delta: 1
@@ -194,7 +203,11 @@
 				}).catch(err => {
 					this.btnLoading = false;
 					if (err.code === 201) {
-						this.$mHelper.toast('购买成功，可以查看高清图')
+						if (this.detail.price > 0) {
+							this.$mHelper.toast('购买成功，可以查看高清图')
+						} else {
+							this.$mHelper.toast('确认成功')
+						}
 						setTimeout(() => {
 							uni.navigateBack({
 								delta: 1
@@ -203,7 +216,7 @@
 					} else {
 						this.$mHelper.toast('支付失败')
 					}
-					
+
 				})
 			},
 			navTo() {

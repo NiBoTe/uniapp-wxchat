@@ -252,6 +252,7 @@
 			await this.initData();
 		},
 		async onShow() {
+			this.hasLogin = this.$mStore.getters.hasLogin;
 			if (this.hasLogin) {
 				await this.getMemberInfo();
 			}
@@ -297,6 +298,7 @@
 			},
 			// 获取用户信息
 			async getMemberInfo() {
+				this.userInfo = {}
 				await this.$http
 					.post(getMyInfo)
 					.then(async r => {
@@ -304,7 +306,6 @@
 						let data = r.data
 						let user = r.data.user;
 						user.skilledMajor = user.skilledMajor ? user.skilledMajor.split(",") : []
-
 						// if(user.roleSelect !== this.userInfo.roleSelect) {
 						if (user.roleSelect === 'teacher' && user.authStatus === 1) {
 							this.tabList = this.tabList1
@@ -316,9 +317,9 @@
 							this.tabList = this.tabList2
 							this.isTabActive = 2
 						}
+						this.userInfo = user;
 						this.refresh();
 						// }
-						this.userInfo = user;
 						this.title = this.userInfo.fullName
 						this.$mStore.commit('login', data.user);
 
