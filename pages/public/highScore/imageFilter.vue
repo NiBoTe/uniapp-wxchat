@@ -98,8 +98,9 @@
 				</view> -->
 			</view>
 
-			<view class="drawingBoard-next" @click="submitTap()">
-				<view class="drawingBoard-btn">保存</view>
+			<view class="drawingBoard-next u-flex">
+				<view class="drawingBoard-btn" style="margin-right: 24rpx;" @click="toBack()">返回</view>
+				<view class="drawingBoard-btn" @click="submitTap()">保存</view>
 			</view>
 			<!-- <view class="drawingBoard-fixed-bottom-item submit" @click="submitTap">提交</view> -->
 		</view>
@@ -217,6 +218,8 @@
 								imageData: filtered,
 							})
 						}
+
+						this.isSliderMove = false;
 					})
 				}
 			}
@@ -638,19 +641,32 @@
 			resetTap(type) {
 				switch (type) {
 					case 2:
+						this.resetImage(2)
+						this.isSliderMove = true;
 						this.contrastRatio = 50;
 						break;
 
 					case 3:
-						this.colorRgbThree = {
-							r: 255,
-							g: 0,
-							b: 0,
-							a: 0.6
-						}
-						this.setTone(true);
+						// this.colorRgbThree = {
+						// 	r: 255,
+						// 	g: 0,
+						// 	b: 0,
+						// 	a: 0.6
+						// }
+						// this.setTone(true);
+						this.resetImage(3)
 						break;
 				}
+			},
+			resetImage(type) {
+				let imageData = initImageData;
+				helper.putImageData(imageData, (tempFilePath) => {
+					this.render_src = tempFilePath;
+					strokes.push({
+						type,
+						imageData,
+					})
+				})
 			},
 			toBack() {
 				this.$mRouter.back()
@@ -915,6 +931,7 @@
 		padding: 24rpx 48rpx 0;
 
 		.drawingBoard-btn {
+			flex: 1;
 			height: 80rpx;
 			line-height: 80rpx;
 			background: $u-type-primary;

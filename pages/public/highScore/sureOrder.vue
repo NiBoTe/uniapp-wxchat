@@ -52,12 +52,12 @@
 
 			<view class="navbar" v-if="detail.type === 'video'">
 
-				<video id="myVideo" :direction="90" :src="videoUrl" @loadedmetadata="videoLoadedmetadata" @error="videoErrorCallback"
-					@timeupdate='videoUpdate' @play="palyFlag = true" @ended="videoEnded" :controls="false" object-fit="contain"
-					enable-play-gesture>
+				<video id="myVideo" :direction="90" :src="videoUrl" @loadedmetadata="videoLoadedmetadata"
+					@error="videoErrorCallback" @timeupdate='videoUpdate' @play="palyFlag = true" @ended="videoEnded"
+					:controls="controls" @fullscreenchange="fullScreenChange" object-fit="contain" enable-play-gesture>
 				</video>
 
-				<view class="panel u-flex">
+				<view class="panel u-flex" v-if="!controls">
 					<view class="video-play" @click='videoOpreation'>
 						<u-icon v-if="!palyFlag" name="play-right-fill" color="#fff" size="28"></u-icon>
 						<u-icon v-else name="pause" color="#fff" size="28"></u-icon>
@@ -100,7 +100,7 @@
 					<image :src="setSrc('highScore/highScore_mask.png')"></image>
 				</view>
 			</view> -->
-			
+
 			<view class="works" v-if="detail.type === 'image'">
 				<view class="works-img" v-if="detail.isPayed || activeIndex < detail.hdImgViewCount">
 					<image :src="detail.items[activeIndex].hdImg" mode="widthFix"></image>
@@ -108,7 +108,7 @@
 				<view v-else class="works-img filter">
 					<image :src="detail.items[activeIndex].thumbImg" mode="widthFix"></image>
 				</view>
-			
+
 				<view v-if="detail.isPayed || activeIndex < detail.hdImgViewCount"></view>
 				<view v-else class="mask u-flex u-row-center">
 					<image :src="setSrc('highScore/highScore_mask.png')"></image>
@@ -161,6 +161,7 @@
 				sliderValue: 0, //控制进度条slider的值，
 				updateState: false, //防止视频播放过程中导致的拖拽失效
 				palyFlag: false,
+				controls: false
 			};
 		},
 		onLoad(options) {
@@ -174,7 +175,7 @@
 		},
 		onShow() {
 			this.hasLogin = this.$mStore.getters.hasLogin
-			if(this.hasLogin) {
+			if (this.hasLogin) {
 				this.initData()
 			} else {
 				uni.navigateTo({
@@ -274,24 +275,33 @@
 					uni.hideLoading()
 					setTimeout(() => {
 						this.$mHelper.toast(err.msg)
-						if(err.code === 201) {
+						if (err.code === 201) {
 							setTimeout(() => {
 								uni.navigateBack({
 									delta: 2
 								})
 							}, 1500)
 						}
-					},500)
-					
-					
+					}, 500)
+
+
 				})
 			},
 
 			// 全屏+退出全屏
 			videoAllscreen(e) {
-				!this.fullScreenFlag ? this.videoContext.exitFullScreen() : this.videoContext.requestFullScreen();
-				// this.fullScreenFlag ? this.bool=true : this.bool=false;
+				if (!this.fullScreenFlag) {
+					this.videoContext.exitFullScreen()
+					this.controls = false;
+				} else {
+					this.controls = true;
+					this.videoContext.requestFullScreen()
+				}
 				this.fullScreenFlag = !this.fullScreenFlag;
+			},
+			// 监听全屏
+			fullScreenChange(e){
+				this.controls = e.detail.fullScreen
 			},
 			// 根据秒获取时间
 			formatSeconds(a) {
@@ -369,7 +379,7 @@
 					this.sliderMax = ((this.detail.videoTrialDuration * 60 / this.duration) * 100).toFixed(2);
 				}
 			},
-			navTo(){
+			navTo() {
 				uni.navigateTo({
 					url: '/pages/set/about/paymentAgreement'
 				})
@@ -399,6 +409,7 @@
 				overflow: hidden;
 				border-radius: 24rpx;
 				background: rgba($color: #000000, $alpha: .7);
+
 				image {
 					width: 478rpx;
 					height: 268rpx;
@@ -732,6 +743,7 @@
 
 			&-img {
 				border-radius: 24rpx;
+
 				&.filter {
 					background: rgba($color: #D8D8D8, $alpha: .6);
 					filter: blur(2rpx);

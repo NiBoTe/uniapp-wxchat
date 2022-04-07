@@ -3,7 +3,7 @@
 
 		<view class="page">
 			<view class="header">
-				<image :src="userInfo.bgImg"></image>
+				<image :src="userInfo.bgUrl"></image>
 
 				<view class="navbar">
 					<u-navbar title=" " immersive back-icon-color="#ffffff" :background="background"
@@ -142,7 +142,7 @@
 </template>
 <script>
 	import drawingColumn from '@/components/drawingColumnTeachers/drawingColumn.vue'
-	import PaintingEvaluation from '@/components/paintingEvaluation/paintingEvaluation.vue'
+	import PaintingEvaluation from './components/paintingEvaluation/paintingEvaluation.vue'
 	import Textbook from '@/components/textbook/textbook.vue'
 	import Dynamic from '@/pages/teachers/dynamic/dynamic.vue'
 

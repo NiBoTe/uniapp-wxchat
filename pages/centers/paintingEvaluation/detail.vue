@@ -216,6 +216,7 @@ import { orderItemPaintEvaluateTeacherDetail } from '@/api/paint_evaluate_v2_tea
 					color: '#1B1B1B'
 				},
 				playStatus: 0,
+				loadStatus: 'loadmore',
 				isFocus: false,
 				content: '',
 				replyId: 0,

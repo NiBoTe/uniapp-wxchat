@@ -218,7 +218,12 @@
 					content: this.content,
 					targetId: item.id
 				}).then(res => {
-					this.$mHelper.toast('评论成功')
+					let data = res.data;
+					if(data.auditStatus === 1) {
+						this.$mHelper.toast('评论成功')
+					} else {
+						this.$mHelper.toast('提交成功，请等待审核，审核通过后显示')
+					}
 					this.commentIndex = -1;
 					this.$set(this.list[index], 'commentCount', Number(item.commentCount) + 1)
 					this.content = ''

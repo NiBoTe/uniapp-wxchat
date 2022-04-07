@@ -488,8 +488,8 @@
 	}
 	
 	.canvas{
-		height: calc(100vh - 250rpx - constant(safe-area-inset-bottom));
-		height: calc(100vh - 250rpx - env(safe-area-inset-bottom));
+		height: calc(100vh - 376rpx - constant(safe-area-inset-bottom));
+		height: calc(100vh - 376rpx - env(safe-area-inset-bottom));
 	}
 
 	.canvas-box {

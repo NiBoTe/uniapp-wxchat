@@ -5,9 +5,9 @@
 				title-color="#ffffff">
 			</u-navbar>
 
-			<video id="myVideo" :direction="90" :custom-cache="false" :src="videoUrl"
+			<video id="myVideo" :direction="90" :controls="controls" @fullscreenchange="fullScreenChange" :custom-cache="false" :src="videoUrl"
 				@loadedmetadata="videoLoadedmetadata" @error="videoErrorCallback" @timeupdate='videoUpdate'
-				@ended="videoEnded" @play="palyFlag = true" :controls="false" object-fit="contain" enable-play-gesture>
+				@ended="videoEnded" @play="palyFlag = true" object-fit="contain" enable-play-gesture>
 			</video>
 
 			<view v-if="userInfo.id !== detail.teacherId">
@@ -15,7 +15,7 @@
 					<text>{{palyFlag ? '正在试看，购买后观看完整视频' : '内容可试看'}}</text>
 					<view v-if="palyFlag" class="try-btn">购买</view>
 				</view>
-				
+
 				<view class="trial u-flex u-row-center" v-if="!detail.isPayed && isTrialEnd">
 					<view class="trial-btn u-flex u-row-center" @click="submitTap">购买</view>
 					<text>本内容需要购买后才能观看</text>
@@ -23,7 +23,7 @@
 			</view>
 
 
-			<view class="panel u-flex">
+			<view class="panel u-flex" v-if="!controls">
 				<view class="video-play" @click='videoOpreation'>
 					<u-icon v-if="!palyFlag" name="play-right-fill" color="#fff" size="28"></u-icon>
 					<u-icon v-else name="pause" color="#fff" size="28"></u-icon>
@@ -246,7 +246,8 @@
 				isTrialEnd: false,
 				placeholder: '',
 				type: 'default',
-				userInfo: {}
+				userInfo: {},
+				controls: false
 			};
 		},
 		onLoad(options) {
@@ -280,7 +281,10 @@
 						.videoTrialDuration * 60 : 0
 					this.videoUrl = this.detail.items[0].hdImg
 				}).catch(err => {
-					console.log(err)
+					this.$mHelper.toast(err.msg)
+					setTimeout(() => {
+						this.$mRouter.back();
+					}, 1500)
 				})
 			},
 
@@ -371,7 +375,12 @@
 					content: this.content,
 					targetId: this.id
 				}).then(res => {
-					this.$mHelper.toast('评论成功')
+					let data = res.data;
+					if (data.auditStatus === 1) {
+						this.$mHelper.toast('评论成功')
+					} else {
+						this.$mHelper.toast('提交成功，请等待审核，审核通过后显示')
+					}
 					this.content = ''
 					this.isFocus = false
 					this.current = 1;
@@ -382,7 +391,7 @@
 			},
 			// 立即购买
 			submitTap() {
-				if(this.userInfo.id === this.detail.teacherId){
+				if (this.userInfo.id === this.detail.teacherId) {
 					return this.$mHelper.toast('不允许购买自己发布的商品')
 				}
 				if (!this.hasLogin) {
@@ -472,10 +481,19 @@
 			},
 			// 全屏+退出全屏
 			videoAllscreen(e) {
-				console.log(this.fullScreenFlag);
-				!this.fullScreenFlag ? this.videoContext.exitFullScreen() : this
-					.videoContext.requestFullScreen();
+				if (!this.fullScreenFlag) {
+					this.videoContext.exitFullScreen()
+					this.controls = false;
+				} else {
+					this.controls = true;
+					this.videoContext.requestFullScreen()
+				}
 				this.fullScreenFlag = !this.fullScreenFlag;
+			},
+			// 监听全屏
+			fullScreenChange(e){
+				console.log(e)
+				this.controls = e.detail.fullScreen
 			},
 			// 根据秒获取时间
 			formatSeconds(a) {
@@ -502,11 +520,11 @@
 				let duration = e.detail.duration
 				let sliderValue = (e.detail.currentTime / duration) * 100;
 
-				if(this.userInfo.id !== this.detail.teacherId){
+				if (this.userInfo.id !== this.detail.teacherId) {
 					if (sliderValue >= this.sliderMax) {
 						// this.videoContext.seek(0)
 						this.videoContext.pause()
-					
+
 						this.isTrialEnd = true;
 					}
 				}
@@ -552,7 +570,7 @@
 			videoLoadedmetadata(e) {
 				this.duration = e.detail.duration.toFixed(0)
 				this.druationTime = this.formatSeconds(this.duration);
-				
+
 				if (!this.detail.isPayed && this.userInfo.id !== this.detail.teacherId) {
 					this.sliderMax = ((this.detail.videoTrialDuration / this.duration) * 100).toFixed(2);
 				}

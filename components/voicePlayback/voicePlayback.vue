@@ -3,7 +3,7 @@
 		<view class="left" @click="isHide = !isHide">
 			<view class="left-box"></view>
 		</view>
-		<view class="right u-flex" @click="playBtn(item)" v-if="isHide" :class="isLeft ? 'triangle-left' : 'triangle-right'">
+		<view class="right triangle-left u-flex" :class="item.type  === 'text' ? 'text' : ''" @click="playBtn(item)" v-show="isHide">
 			<image src="/static/public/voice_white.png" v-if="item.type === 'audio'"></image>
 			<text v-if="item.type === 'audio'">{{item.text}}</text>
 			<text v-else-if="item.type === 'text'" :style="{color: item.color || '#ffffff'}">{{item.text}}</text>
@@ -107,6 +107,7 @@
 <style scoped lang="scss">
 	.container {
 		z-index: 2;
+		max-width: 500rpx;
 
 		.left {
 			height: 64rpx;
@@ -139,6 +140,10 @@
 					border-right: 15rpx solid rgba(7, 7, 7, 0.5);
 					border-bottom: 10rpx solid transparent;
 				}
+			}
+			
+			&.text{
+				padding: 12rpx 24rpx !important;
 			}
 
 			&.triangle-right {

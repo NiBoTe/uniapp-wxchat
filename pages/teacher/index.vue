@@ -1,6 +1,14 @@
 
 <template>
 	<view class="u-wrap">
+		
+		<view class="navbar">
+			<u-navbar title="名师" :is-back="false" :border-bottom="false">
+				<view class="navbar-right" slot="right" @click="searchTap">
+					<image src="/static/public/home_search.png"></image>
+				</view>
+			</u-navbar>
+		</view>
 		<view class="u-menu-wrap">
 			<scroll-view scroll-y scroll-with-animation class="u-tab-view menu-scroll-view">
 				<view v-for="(item,index) in tabbar" :key="index" class="u-tab-item"
@@ -129,12 +137,31 @@
 				this.list = []
 				this.getList();
 				
+			},
+			// 搜索
+			searchTap(){
+				uni.navigateTo({
+					url: '/pages/public/search'
+				})
 			}
 		}
 	}
 </script>
 
 <style lang="scss" scoped>
+	
+	
+	.navbar{
+		&-right{
+			margin-right: 12rpx;
+			display: flex;
+			align-items: center;
+			image {
+				width: 32rpx;
+				height: 32rpx;
+			}
+		}
+	}
 	// option-item
 	.opt-container{
 		background: #FFFFFF;

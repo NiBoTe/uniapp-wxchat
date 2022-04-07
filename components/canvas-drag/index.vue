@@ -6,6 +6,8 @@
 </template>
 
 <script>
+	
+	import $mHelper from '@/utils/helper';
 	// components/canvas-drag/index.js
 	let DELETE_ICON = 'https://oss.123tool.cn/client/canvas/close.png'; // 删除按钮
 	// 删除按钮
@@ -40,7 +42,10 @@
 	}, canvas, factor) {
 		if (type === 'text') {
 			canvas.setFontSize(fontSize);
-			const textWidth = canvas.measureText(text).width;
+			
+			let textArr = $mHelper.groupArr(text, 15)
+			const textWidth = canvas.measureText(textArr.length > 0 ? textArr[0] : '').width;
+			console.log(textWidth)
 			const textHeight = fontSize + 10;
 			this.centerX = x + textWidth / 2;
 			this.centerY = y + textHeight / 2;
@@ -124,12 +129,13 @@
 				if (!status) {
 					this.ctx.setFontSize(this.fontSize);
 					this.ctx.setTextBaseline('middle');
-					this.ctx.setTextAlign('center');
+					this.ctx.setTextAlign('left');
 					this.ctx.setFillStyle(this.color);
-					textWidth = this.ctx.measureText(this.text).width;
+					let textArr = $mHelper.groupArr(this.text, 15)
+					textWidth = this.ctx.measureText(textArr.length > 0 ? textArr[0] : '').width;
 					textHeight = this.fontSize + 10; // 字体区域中心点不变，左上角位移
 
-					this.x = this.centerX - textWidth / 2;
+					this.x = this.centerX;
 					this.y = this.centerY - textHeight / 2;
 				}
 			} // 旋转元素
@@ -193,14 +199,21 @@
 				// this.ctx.setStrokeStyle(STROKE_COLOR);
 				// this.ctx.lineDashOffset = 6;
 				if (this.type === 'text') {
+					console.log($mHelper.groupArr(this.text, 15))
+					
+					let textArr = $mHelper.groupArr(this.text, 15)
 					this.ctx.setStrokeStyle('rgba(7, 7, 7, 0.5)')
 					this.ctx.setLineJoin('round'); //交点设置成圆角
 					this.ctx.setLineWidth(10);
-					this.ctx.strokeRect(this.x + 10 / 2, this.y + 10 / 2, this.w - 10 + 30, this.h - 10 + 14);
+					let diffHeight = (textArr.length > 0 ? (textArr.length - 1) * 24 : 0) + 4
+					this.ctx.strokeRect(this.x + 10 / 2, this.y + 10 / 2, this.w - 10 + 30, this.h + diffHeight);
 					this.ctx.setFillStyle('rgba(7, 7, 7, 0.5)')
-					this.ctx.fillRect(this.x + 10, this.y + 10, this.w - 10 * 2 + 30, this.h - 10 * 2 + 14);
+					this.ctx.fillRect(this.x + 10, this.y + 10, this.w - 10 * 2 + 30, this.h + diffHeight - 10);
 					this.ctx.setFillStyle(typeof this.color === 'object' ? 'white' : this.color)
-					this.ctx.fillText(this.text, this.centerX + 15, this.centerY + 7);
+					textArr.map((item, index) => {
+						this.ctx.fillText(item, this.centerX + 15, this.centerY + 7 + (index * 22));
+					})
+					
 					// this.ctx.strokeRect(this.x, this.y, textWidth, textHeight);
 					// this.ctx.drawImage(DELETE_ICON, this.x, this.y - 15, 30, 30);
 					// this.ctx.drawImage(DRAG_ICON, this.x + textWidth + 15, this.y + textHeight - 15, 30, 30);
@@ -387,7 +400,8 @@
 			// 获取选择区域的宽度高度
 			if (this.type === 'text') {
 				this.ctx.setFontSize(this.fontSize);
-				const textWidth = this.ctx.measureText(this.text).width;
+				let textArr = $mHelper.groupArr(this.text, 15)
+				const textWidth = this.ctx.measureText(textArr.length > 0 ? textArr[0] : '').width;
 				const textHeight = this.fontSize + 10;
 				this.w = textWidth;
 				this.h = textHeight; // 字体区域中心点不变，左上角位移
@@ -444,7 +458,9 @@
 				this.fontSize = fontSize <= this.MIN_FONTSIZE ? this.MIN_FONTSIZE : fontSize; // 旋转位移后重新计算坐标
 
 				this.ctx.setFontSize(this.fontSize);
-				const textWidth = this.ctx.measureText(this.text).width;
+				let textArr = $mHelper.groupArr(this.text, 15)
+				const textWidth = this.ctx.measureText(textArr.length > 0 ? textArr[0] : '').width;
+				// const textWidth = this.ctx.measureText(this.text).width;
 				const textHeight = this.fontSize + 10;
 				this.w = textWidth;
 				this.h = textHeight; // 字体区域中心点不变，左上角位移
@@ -560,7 +576,9 @@
 				this.ctx.setTextBaseline('middle');
 				this.ctx.setTextAlign('center');
 				this.ctx.setFillStyle(this.color);
-				textWidth = this.ctx.measureText(this.text).width;
+				let textArr = $mHelper.groupArr(this.text, 15)
+				textWidth = this.ctx.measureText(textArr.length > 0 ? textArr[0] : '').width;
+				// textWidth = this.ctx.measureText(this.text).width;
 				textHeight = this.fontSize + 10; // 字体区域中心点不变，左上角位移
 
 				this.x = this.centerX - textWidth / 2;
@@ -584,7 +602,7 @@
 			this.ctx.translate(-this.centerX, -this.centerY); // 渲染元素
 
 			if (this.type === 'text') {
-				this.ctx.fillText(this.text, this.centerX, this.centerY);
+				this.ctx.fillText(this.text, this.centerX, this.centerY, 300);
 			} else if (this.type === 'image') {
 				this.ctx.drawImage(this.fileUrl, this.x, this.y, this.w, this.h);
 			} else if (this.type === 'audio') {
@@ -713,7 +731,9 @@
 			// 获取选择区域的宽度高度
 			if (this.type === 'text') {
 				this.ctx.setFontSize(this.fontSize);
-				const textWidth = this.ctx.measureText(this.text).width;
+				let textArr = $mHelper.groupArr(this.text, 15)
+				const textWidth = this.ctx.measureText(textArr.length > 0 ? textArr[0] : '').width;
+				// const textWidth = this.ctx.measureText(this.text).width;
 				const textHeight = this.fontSize + 10;
 				this.w = textWidth;
 				this.h = textHeight; // 字体区域中心点不变，左上角位移
@@ -761,7 +781,9 @@
 				this.fontSize = fontSize <= this.MIN_FONTSIZE ? this.MIN_FONTSIZE : fontSize; // 旋转位移后重新计算坐标
 
 				this.ctx.setFontSize(this.fontSize);
-				const textWidth = this.ctx.measureText(this.text).width;
+				let textArr = $mHelper.groupArr(this.text, 15)
+				const textWidth = this.ctx.measureText(textArr.length > 0 ? textArr[0] : '').width;
+				// const textWidth = this.ctx.measureText(this.text).width;
 				const textHeight = this.fontSize + 10;
 				this.w = textWidth;
 				this.h = textHeight; // 字体区域中心点不变，左上角位移

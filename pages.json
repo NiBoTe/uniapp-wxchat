@@ -31,6 +31,7 @@
 			"style": {
 				"navigationBarTitleText": "名师",
 				"navigationBarTextStyle": "black",
+				"navigationStyle": "custom", // 隐藏系统导航栏
 				"enablePullDownRefresh": false
 			}
 

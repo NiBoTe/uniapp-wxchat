@@ -382,7 +382,12 @@
 					content: this.content,
 					targetId: this.id
 				}).then(res => {
-					this.$mHelper.toast('评论成功')
+					let data = res.data;
+					if(data.auditStatus === 1) {
+						this.$mHelper.toast('评论成功')
+					} else {
+						this.$mHelper.toast('提交成功，请等待审核，审核通过后显示')
+					}
 					
 					this.$set(this.detail, 'commentCount', Number(this.detail.commentCount || 0) + 1)
 					this.content = ''
