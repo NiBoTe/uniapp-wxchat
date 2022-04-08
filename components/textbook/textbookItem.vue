@@ -1,6 +1,10 @@
 <template>
 	<view class="container">
 		<view class="item" :class="imgHeight !== 'auto' ? 'boxShadow' : ''" @click="detailTap">
+			
+			<view class="play" v-if="item.type === 'video'">
+				<image src="/static/public/video_icon.png"></image>
+			</view>
 			<view class="item-image">
 				<u-lazy-load threshold="-450" border-radius="10" :height="imgHeight"
 					:img-mode="imgHeight === 'auto' ? 'widthFix' :  'aspectFill'" :image="item.cover">
@@ -73,10 +77,21 @@
 <style lang="scss">
 	.container {
 		.item {
+			position: relative;
 			margin: 10rpx;
 			background: #FFFFFF;
 			border-radius: 16rpx;
-
+			.play {
+				position: absolute;
+				z-index: 22;
+				top: 20rpx;
+				right: 20rpx;
+			
+				image {
+					width: 42rpx;
+					height: 32rpx;
+				}
+			}
 			&.boxShadow {
 				margin: 0 12rpx 34rpx;
 				box-shadow: 0px 6rpx 16rpx 6rpx rgba(230, 230, 230, 0.5);

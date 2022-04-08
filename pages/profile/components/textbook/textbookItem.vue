@@ -1,6 +1,10 @@
 <template>
 	<view class="container">
 		<view class="item" :class="imgHeight !== 'auto' ? 'boxShadow' : ''" @click="detailTap">
+
+			<view class="play" v-if="item.type === 'video'">
+				<image src="/static/public/video_icon.png"></image>
+			</view>
 			<view class="item-image">
 				<u-lazy-load threshold="-450" border-radius="10" :image="item.cover">
 				</u-lazy-load>
@@ -8,7 +12,7 @@
 					<text>¥</text>
 					<text>{{item.price}}</text>
 				</view>
-				
+
 				<view class="mark u-flex u-row-center" v-if="item.state === 'stop_sale'">
 					<image :src="setSrc('highScore/stop_sale.png')"></image>
 				</view>
@@ -25,7 +29,7 @@
 				</view>
 			</view>
 
-			
+
 		</view>
 	</view>
 </template>
@@ -77,6 +81,18 @@
 			margin: 10rpx;
 			background: #FFFFFF;
 			border-radius: 16rpx;
+
+			.play {
+				position: absolute;
+				z-index: 22;
+				top: 20rpx;
+				right: 20rpx;
+
+				image {
+					width: 42rpx;
+					height: 32rpx;
+				}
+			}
 
 			&.boxShadow {
 				margin: 0 12rpx 34rpx;
@@ -197,7 +213,8 @@
 				bottom: 0;
 				left: 0;
 				background: rgba($color: #000000, $alpha: .5);
-				image{
+
+				image {
 					width: 148rpx;
 					height: 148rpx;
 				}

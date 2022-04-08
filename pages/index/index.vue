@@ -30,27 +30,32 @@
 
 			<!-- menus -->
 			<view class="menus u-flex">
-				<view class="menus-item" @click="singleTap">
-					<image src="/static/public/home_tab01.png"></image>
-					<text>专业评画</text>
+				<view class="menus-item" @click="singleTap('1')" v-if="filterItem('1')">
+					<!-- <image src="/static/public/home_tab01.png"></image> -->
+					<image :src="filterItem('1')['imgUrl']"></image>
+					<text>{{filterItem('1')['name']}}</text>
 				</view>
-				<view class="menus-item" @click="navTo('/pages/public/highScore/index')">
-					<image src="/static/public/home_tab02.png"></image>
-					<text>高分教材</text>
+				<view class="menus-item" @click="navTo('/pages/public/highScore/index', '2')" v-if="filterItem('2')">
+					<!-- <image src="/static/public/home_tab02.png"></image> -->
+					<image :src="filterItem('2')['imgUrl']"></image>
+					<text>{{filterItem('2')['name']}}</text>
 				</view>
-				<view class="menus-item" @click="navTo('/pages/public/historyExQuestions/historyExQuestions')">
-					<image src="/static/public/home_tab03.png"></image>
-					<text>历年考题</text>
+				<view class="menus-item" @click="navTo('/pages/public/historyExQuestions/historyExQuestions', '3')" v-if="filterItem('3')">
+					<!-- <image src="/static/public/home_tab03.png"></image> -->
+					<image :src="filterItem('3')['imgUrl']"></image>
+					<text>{{filterItem('3')['name']}}</text>
 				</view>
-				<view class="menus-item" @click="navTo('/pages/public/school/index')">
-					<image src="/static/public/home_tab04.png"></image>
-					<text>名牌高校</text>
+				<view class="menus-item" @click="navTo('/pages/public/school/index', '4')" v-if="filterItem('4')">
+					<!-- <image src="/static/public/home_tab04.png"></image> -->
+					<image :src="filterItem('4')['imgUrl']"></image>
+					<text>{{filterItem('4')['name']}}</text>
 				</view>
 			</view>
 			<!-- top 美考入口 -->
 
-			<view class="top" @click="navTo('/pages/public/top/top', true)">
-				<image :src="setSrc('home_top_banner.png')"></image>
+			<view class="top" @click="navTo('/pages/public/top/top', '5')" v-if="filterItem('5')">
+				<!-- <image :src="setSrc('home_top_banner.png')"></image> -->
+				<image :src="filterItem('5')['imgUrl']"></image>
 			</view>
 
 
@@ -59,10 +64,11 @@
 				<u-row gutter="16" justify="space-between">
 					<u-col span="6">
 						<view class="left">
-							<view class="left-item" @click="testTap(2)">
+							<view class="left-item" @click="testTap(2)" v-if="filterItem('6')">
 								<view class="left-item-label u-flex">
 									<image src="/static/public/home_tested_style.png"></image>
-									<text>我的已考</text>
+									<!-- <text>我的已考</text> -->
+									<text>{{filterItem('6')['name']}}</text>
 								</view>
 
 								<swiper class="left-item-sublabel u-line-1" :circular="true" :autoplay="true"
@@ -72,10 +78,11 @@
 									</swiper-item>
 								</swiper>
 							</view>
-							<view class="left-item" @click="testTap(1)" style="position: relative;z-index: 10;">
+							<view class="left-item" @click="testTap(1)" style="position: relative;z-index: 10;" v-if="filterItem('7')">
 								<view class="left-item-label u-flex">
 									<image src="/static/public/home_nottested_style.png"></image>
-									<text>我的未考</text>
+									<!-- <text>我的未考</text> -->
+									<text>{{filterItem('7')['name']}}</text>
 								</view>
 
 								<swiper class="left-item-sublabel u-line-1" :circular="true" :autoplay="true"
@@ -88,11 +95,12 @@
 						</view>
 					</u-col>
 					<u-col span="6">
-						<view class="right" @click="testTap(0)">
+						<view class="right" @click="testTap(0)" v-if="filterItem('8')">
 							<view class="right-item">
 								<view class="right-item-label u-flex">
 									<image :src="setSrc('home_ecent_exam_label.png')"></image>
-									<text>近期考试</text>
+									<!-- <text>近期考试</text> -->
+									<text>{{filterItem('8')['name']}}</text>
 								</view>
 								<swiper class="right-item-sublabel" :circular="true" :autoplay="true"
 									:disable-touch="true">
@@ -243,10 +251,12 @@
 	import {
 		banner,
 		exam,
-		moduleConfigure,
+		bannerPlusViewCount,
 		paintEvaluateList,
 		teachingMaterialList,
-		teacherList
+		teacherList,
+		functionList,
+		functionPlusViewCount,
 	} from '@/api/homepage.js'
 	export default {
 		components: {
@@ -264,7 +274,7 @@
 				recentExam: [], // 近期考试
 				testedExam: [], // 我的已考
 				untestedExam: [], // 我的未考
-				moduleMap: {},
+				moduleList: [],
 				materialList: [], // 高分教材
 				materialIndex: 0,
 				teachersList: [], // 名师推荐
@@ -319,11 +329,13 @@
 					this.untestedExam = data.untestedExam;
 					uni.stopPullDownRefresh()
 				})
-				// this.$http.get(moduleConfigure).then(res => {
-				// 	console.log(res.data)
-				// 	this.moduleMap = res.data
-				// 	console.log(this.moduleMap)
-				// })
+				this.$http.get(functionList).then(res => {
+					this.moduleList = res.data
+					// this.moduleMap = res.data
+				})
+			},
+			filterItem(id) {
+				return this.moduleList.find(item => item.id === id)
 			},
 			// 高分教材
 			getMaterialList() {
@@ -352,13 +364,16 @@
 					console.log(err)
 				})
 			},
-			navTo(route, isLogin) {
-				// if (isLogin && !this.hasLogin) {
-				// 	this.$mRouter.push({
-				// 		route: '/pages/public/logintype'
-				// 	})
-				// 	return
-				// }
+			navTo(route, id) {
+				if(id){
+					this.$http.post(functionPlusViewCount, null, {
+						params: {
+							id
+						}
+					}).then(res => {
+						console.log(res)
+					})
+				}
 				this.$mRouter.push({
 					route
 				})
@@ -422,13 +437,20 @@
 				})
 			},
 			// 专业评画
-			singleTap() {
+			singleTap(id) {
 				if (!this.hasLogin) {
 					this.$mRouter.push({
 						route: '/pages/public/logintype'
 					})
 					return
 				}
+				this.$http.post(functionPlusViewCount, null, {
+					params: {
+						id
+					}
+				}).then(res => {
+					console.log(res)
+				})
 				let userInfo = this.$mStore.state.userInfo;
 				if (userInfo && userInfo.roleSelect !== 'teacher') {
 					uni.navigateTo({
@@ -457,9 +479,15 @@
 			},
 			// 轮播图指向
 			bannerDetail(index) {
-				console.log(index)
-
 				let item = this.bannerList[index];
+				this.$http.post(bannerPlusViewCount, null, {
+					params: {
+						id: item.id
+					}
+				}).then(res => {
+					console.log(res)
+				})
+
 				switch (item.type) {
 					case 0:
 						uni.navigateTo({

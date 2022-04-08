@@ -46,7 +46,6 @@
 			<view class="line"></view>
 			<view class="tro">
 				<view class="title">{{detail.title || ''}}</view>
-				<text class="pre">{{detail.description}}</text>
 			</view>
 			<view class="swiper">
 				<view class="swiper-item" :class="{'active':activeIndex === index}"
@@ -97,9 +96,9 @@
 				<view class="title">
 					<image src="/static/public/examinationPaper_icon.png" mode=""></image>作品描述
 				</view>
-				<view class="d-c">{{detail.items[activeIndex].description}}</view>
+				<view class="d-c">{{detail.description}}</view>
+				<!-- <view class="d-c">{{detail.items[activeIndex].description}}</view> -->
 			</view>
-
 
 			<view class="line" v-if="detail.isNeedExpress"></view>
 

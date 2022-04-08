@@ -1,11 +1,11 @@
 <template>
 	<view class="tab-bar">
 		<view v-for="(item,index) in list" :key="index" class="tab-bar-item" @click="switchTab(item, index)">
-			<image class="tab-center" v-if="index === 2" src="/static/public/center.png"></image>
-			<view class="tab_text" v-else :style="{color: selected === index ? selectedColor : color}">{{item.text}}
+			<!-- <image class="tab-center" v-if="index === 2" src="/static/public/center.png"></image> -->
+			<image class="tab-center" v-if="index === 2" :src="item.defaultIcon"></image>
+			<view class="tab_text" v-else :style="{color: selected === index ? selectedColor : color}">{{item.name}}
 			</view>
 		</view>
-
 
 		<u-popup v-model="popShow" mode="bottom" border-radius="40">
 			<view class="pop-content">
@@ -42,6 +42,10 @@
 
 
 <script>
+	import {
+		tabList,
+		tabPlusViewCount
+	} from '@/api/homepage.js'
 	export default {
 		props: {
 			selected: { // 当前选中的tab index
@@ -55,6 +59,28 @@
 				color: "#9C9C9C",
 				selectedColor: this.$mConstDataConfig.themeColor,
 				popShow: false,
+
+				pathList: [{
+						"pagePath": "/pages/index/index",
+						"text": "首页"
+					},
+					{
+						"pagePath": "/pages/circle/index",
+						"text": "广场"
+					},
+					{
+						"pagePath": "/pages/center/index",
+						"text": "中心"
+					},
+					{
+						"pagePath": "/pages/teacher/index",
+						"text": "名师"
+					},
+					{
+						"pagePath": "/pages/profile/profile",
+						"text": "我的"
+					}
+				],
 				list: [{
 						"pagePath": "/pages/index/index",
 						"text": "首页"
@@ -80,11 +106,45 @@
 				hasLogin: false
 			}
 		},
+		async created() {
+			await this.initData()
+		},
 		mounted() {
 
 			this.userInfo = this.$mStore.state.userInfo
 		},
 		methods: {
+			async initData() {
+				let res = await this.$http.get(tabList)
+				console.log(res)
+
+				let data = res.data
+
+				data.map(item => {
+					switch (item.id) {
+						case '1':
+							item['pagePath'] = "/pages/index/index";
+							break;
+							
+						case '2':
+							item['pagePath'] = "/pages/circle/index";
+							break;
+							
+						case '3':
+							item['pagePath'] = "/pages/center/index";
+							break;
+							
+						case '4':
+							item['pagePath'] = "/pages/teacher/index";
+							break;
+							
+						case '5':
+							item['pagePath'] = "/pages/profile/profile";
+							break;
+					}
+				})
+				this.list = data;
+			},
 			switchTab(item, index) {
 				this.hasLogin = this.$mStore.getters.hasLogin
 				let url = item.pagePath;
@@ -108,10 +168,15 @@
 						url
 					})
 				}
-
-
+				
+				this.$http.post(tabPlusViewCount, null, {
+					params: {
+						id: item.id
+					}
+				}).then(res => {
+					console.log(res)
+				})
 			},
-
 			itemTap(index) {
 				this.popShow = false
 				this.hasLogin = this.$mStore.getters.hasLogin

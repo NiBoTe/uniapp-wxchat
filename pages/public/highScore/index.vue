@@ -38,18 +38,11 @@
 				<template v-slot:left="{leftList}">
 					<view class="item" v-for="(item, index) in leftList" :key="index">
 						<textbook-item :item="item"></textbook-item>
-
-						<view class="play" v-if="type === 'video'">
-							<image src="/static/public/video_icon.png"></image>
-						</view>
 					</view>
 				</template>
 				<template v-slot:right="{rightList}">
 					<view class="item" v-for="(item, index) in rightList" :key="index">
 						<textbook-item :item="item"></textbook-item>
-						<view class="play" v-if="type === 'video'">
-							<image src="/static/public/video_icon.png"></image>
-						</view>
 					</view>
 				</template>
 			</u-waterfall>
@@ -252,22 +245,6 @@
 					font-weight: 800;
 					color: #3A3D71;
 				}
-			}
-		}
-	}
-
-
-	.item {
-		position: relative;
-
-		.play {
-			position: absolute;
-			top: 20rpx;
-			right: 20rpx;
-
-			image {
-				width: 42rpx;
-				height: 32rpx;
 			}
 		}
 	}

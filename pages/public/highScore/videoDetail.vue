@@ -10,7 +10,7 @@
 				@ended="videoEnded" @play="palyFlag = true" object-fit="contain" enable-play-gesture>
 			</video>
 
-			<view v-if="userInfo.id !== detail.teacherId">
+			<view v-if="userInfo.id !== detail.teacherId && detail.price > 0">
 				<view class="try u-flex u-row-center" v-if="!detail.isPayed && !isTrialEnd" @click="submitTap">
 					<text>{{palyFlag ? '正在试看，购买后观看完整视频' : '内容可试看'}}</text>
 					<view v-if="palyFlag" class="try-btn">购买</view>
@@ -91,7 +91,7 @@
 			<view class="line"></view>
 			<view class="tro">
 				<view class="title">{{detail.title || ''}}</view>
-				<text class="pre">{{detail.description}}</text>
+				
 			</view>
 
 
@@ -101,7 +101,7 @@
 				<view class="title">
 					<image src="../../../static/public/examinationPaper_icon.png" mode=""></image>作品描述
 				</view>
-				<view class="d-c">{{detail.items[activeIndex].description}}</view>
+				<view class="d-c">{{detail.description}}</view>
 			</view>
 
 
@@ -492,7 +492,6 @@
 			},
 			// 监听全屏
 			fullScreenChange(e){
-				console.log(e)
 				this.controls = e.detail.fullScreen
 			},
 			// 根据秒获取时间
@@ -520,7 +519,7 @@
 				let duration = e.detail.duration
 				let sliderValue = (e.detail.currentTime / duration) * 100;
 
-				if (this.userInfo.id !== this.detail.teacherId) {
+				if (this.userInfo.id !== this.detail.teacherId && this.detail.price > 0) {
 					if (sliderValue >= this.sliderMax) {
 						// this.videoContext.seek(0)
 						this.videoContext.pause()
@@ -571,7 +570,7 @@
 				this.duration = e.detail.duration.toFixed(0)
 				this.druationTime = this.formatSeconds(this.duration);
 
-				if (!this.detail.isPayed && this.userInfo.id !== this.detail.teacherId) {
+				if (!this.detail.isPayed && this.userInfo.id !== this.detail.teacherId && this.detail.price > 0) {
 					this.sliderMax = ((this.detail.videoTrialDuration / this.duration) * 100).toFixed(2);
 				}
 			}
