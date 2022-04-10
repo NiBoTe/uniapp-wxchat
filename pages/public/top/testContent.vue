@@ -41,10 +41,10 @@
 
 		<view class="footer u-flex u-row-center" v-if="type !== 2">
 			<view class="u-flex u-row-center" style="flex: 1;" v-if="!isHours">
-				<view class="footer-btn disabled" v-if="!isStart">考试时间未到</view>
-				<view class="footer-btn" v-if="isStart && examDetail.isRecordVideo && recordVideoCount <= 0"
+				<view class="footer-btn disabled" v-if="isBegin">考试时间未到</view>
+				<view class="footer-btn" v-if="!isBegin && examDetail.isRecordVideo && recordVideoCount <= 0"
 					style="margin-right: 24rpx;" @click="submitTap">录制作画步骤</view>
-				<view class="footer-btn" v-if="isStart" :class="!isUpload ? 'disabled' : '' " @click="uploadTap">
+				<view class="footer-btn" v-if="!isBegin" :class="!isUpload ? 'disabled' : '' " @click="uploadTap">
 					{{!examDetail.isRecordVideo ? '请点击上传试卷图片' : '上传试卷图片'}}
 				</view>
 			</view>
@@ -150,6 +150,7 @@
 						this.isBegin = true;
 					} else {
 						this.isBegin = false;
+						this.isHours = this.diffHours();
 						clearInterval(this.timer);
 						this.initData();
 					}

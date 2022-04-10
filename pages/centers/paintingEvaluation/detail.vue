@@ -152,14 +152,14 @@
 			</view>
 		</view>
 
-		<view class="footer" v-if="detail.state === 'completed'">
+		<view class="footer" v-if="detail.state === 'completed'" :style="{paddingBottom: safeAreaHeight + 7 + 'px'}">
 			<view class="footer-box u-flex u-row-between">
 				<view class="left u-flex" v-if="!isFocus" @click="commentTap">
 					<text>说一下你的想法…</text>
 				</view>
 				<view class="left u-flex" v-else>
 					<input type="text" :cursor-spacing="20" v-model="content" placeholder="说一下你的想法…" focus
-						@confirm="confirmCommentTap()" @blur="isFocus = false"  confirm-type="done" />
+						@confirm="confirmCommentTap()" :hold-keyboard="holdKeyboard" @blur="isFocus = false"  confirm-type="done" @keyboardheightchange="keyboardheightChange" />
 				</view>
 
 				<view class="right u-flex">
@@ -219,6 +219,7 @@ import { orderItemPaintEvaluateTeacherDetail } from '@/api/paint_evaluate_v2_tea
 				loadStatus: 'loadmore',
 				isFocus: false,
 				content: '',
+				holdKeyboard: false,
 				replyId: 0,
 				total: 0,
 				current: 1,
@@ -227,9 +228,17 @@ import { orderItemPaintEvaluateTeacherDetail } from '@/api/paint_evaluate_v2_tea
 				type: 'default',
 				source: "list",
 				evaluateParams: [],
+				safeAreaHeight: 0,
 			};
 		},
 		onLoad(options) {
+			try {
+			  const res = wx.getSystemInfoSync()
+			  console.log(res)
+			  this.safeAreaHeight = res.screenHeight - res.safeArea.bottom
+			} catch (e) {
+			  // Do something when catch error
+			}
 			if (options.id) {
 				this.id = options.id
 				this.source = options.source
@@ -402,6 +411,7 @@ import { orderItemPaintEvaluateTeacherDetail } from '@/api/paint_evaluate_v2_tea
 			},
 			// 评论
 			commentTap() {
+				this.holdKeyboard = true;
 				this.isFocus = true
 				this.replyId = 0;
 			},
@@ -423,7 +433,13 @@ import { orderItemPaintEvaluateTeacherDetail } from '@/api/paint_evaluate_v2_tea
 					content: this.content,
 					targetId: this.id
 				}).then(res => {
-					this.$mHelper.toast('评论成功')
+					this.holdKeyboard = false;
+					let data = res.data;
+					if(data.auditStatus === 1) {
+						this.$mHelper.toast('评论成功')
+					} else {
+						this.$mHelper.toast('提交成功，请等待审核，审核通过后显示')
+					}
 					this.content = ''
 					this.isFocus = false
 					this.current = 1;
@@ -432,6 +448,9 @@ import { orderItemPaintEvaluateTeacherDetail } from '@/api/paint_evaluate_v2_tea
 					this.$mHelper.toast(err.msg)
 				})
 
+			},
+			keyboardheightChange(e){
+				console.log(e)
 			}
 		},
 		onReachBottom() {

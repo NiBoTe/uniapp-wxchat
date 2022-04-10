@@ -106,7 +106,7 @@
 				<view class="item u-flex u-row-between" v-if="type === 'image'">
 					<view class="left">允许查看高清图数量</view>
 					<view class="right u-flex u-row-center">
-						<input type="number" v-model="hdImgViewCount" placeholder="请输入张数" maxlength="2" />
+						<input type="number" v-model="hdImgViewCount" @input="hdImgViewCountInput" placeholder="请输入张数" maxlength="2" />
 					</view>
 				</view>
 				<view class="item u-flex u-row-between" v-else>
@@ -357,6 +357,16 @@
 				data[endIndex] = tem
 				this.flag = false
 			},
+			// 限制最大数
+			hdImgViewCountInput(e){
+				if(this.hdImgViewCount > this.imgsList.length) {
+					console.log('=====')
+					console.log(this.hdImgViewCount)
+					this.$nextTick(() => {
+						this.hdImgViewCount = this.imgsList.length
+					})
+				}
+			},
 			initData(id) {
 				this.$http.get(myDetail, {
 					id: this.id
@@ -425,7 +435,7 @@
 				// 从相册选择图片
 				const _this = this;
 				uni.chooseMedia({
-					count: _this.type === 'image' && _this.imgsList.length >= 1 ? 9 : 1,
+					count: _this.type === 'image' && _this.imgsList.length >= 1 ? (9 - _this.imgsList.length) : 1,
 					mediaType: _this.type === 'video' && _this.cover === '' ? ['image'] : _this.mediaType,
 					sourceType: ['album', 'camera'],
 					sizeType: ['original', 'compressed'],

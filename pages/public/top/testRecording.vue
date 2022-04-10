@@ -1,9 +1,9 @@
 <template>
 	<view class="top">
 		<view>
-			<camera v-if="!isStop" :device-position="devicePosition" resolution="low" frame-size="small" flash="off"
+			<camera :device-position="devicePosition" resolution="low" frame-size="small" flash="off"
 				@error="error" class="camera"></camera>
-			<view class="temp">
+			<view class="temp" :style="{zIndex: isStop ? 1 : -1}">
 				<image :src="tempThumbPath"></image>
 			</view>
 			<view class="content">
@@ -150,6 +150,7 @@
 					this.examQuestion = res.data.examQuestion;
 				}).catch(err => {
 					console.log(err)
+					this.$mHelper.toast(err.msg)
 				})
 			},
 			submitTap() {
@@ -157,10 +158,14 @@
 					this.isBegin = true
 					this.settingTimer();
 					const ctx = wx.createCameraContext()
-					_this.isStop = false;
+					this.isStop = false;
 					ctx.startRecord({
-						timeout: 10000,
+						timeout: 60 * 60 * 4,
 						success(e) {
+							console.log(e)
+						},
+						complete(e){
+							console.log('开始录制回调========')
 							console.log(e)
 						}
 					})
@@ -190,11 +195,11 @@
 				const _this = this;
 				if (!this.isEnd) {
 					clearInterval(this.timer)
+					_this.isStop = true;
 					const ctx = wx.createCameraContext()
 					ctx.stopRecord({
 						compressed: true,
 						success(e) {
-							_this.isStop = true;
 							_this.tempThumbPath = e.tempThumbPath;
 							_this.enterClick(e.tempVideoPath)
 						}
@@ -223,19 +228,27 @@
 								OSSAccessKeyId: data.accessid,
 								signature: data.signature,
 							},
-							getTask: this.getTask
+							getTask: _this.getTask
 						}).then(r => {
+							console.log('上传成功==============')
+							console.log(r)
 							_this.$mHelper.toast('上传成功')
 							_this.recordVideoUpload(r)
 						}).catch(err => {
 							_this.$mHelper.toast(err);
 						});
 				}).catch(err => {
+					console.log('上传错误==============')
+					console.log(err)
 					_this.$mHelper.toast(err);
 				})
 			},
 			getTask(requestTask, handleRe) {
+				console.log('上传进度监听')
 				requestTask.onProgressUpdate((res) => {
+					console.log('上传进度' + res.progress);
+					console.log('已经上传的数据长度' + res.totalBytesSent);
+					console.log('预期需要上传的数据总长度' + res.totalBytesExpectedToSend);
 					if (res.progress < 100) {
 						uni.showLoading({
 							title: `上传进度${res.progress}%`
@@ -246,6 +259,7 @@
 				});
 			},
 			recordVideoUpload(url) {
+				console.log(url)
 				this.$http.post(recordVideoSave, {
 					course: this.examSubjectItem.subjectName,
 					examId: this.examId,
@@ -275,9 +289,12 @@
 		}
 
 		.temp {
+			position:absolute;
+			background-color: #000;
+			top: 0;
 			width: 100%;
 			height: 100vh;
-
+			
 			image {
 				width: 100%;
 				height: 100%;
@@ -386,6 +403,7 @@
 		.time {
 			transform: rotate(90deg);
 			position: absolute;
+			z-index: 23;
 			right: -38rpx;
 			top: 50%;
 			width: 280rpx;

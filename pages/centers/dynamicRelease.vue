@@ -64,7 +64,7 @@
 				uni.chooseImage({
 					count: 9,
 					sizeType: ['original', 'compressed'],
-					sourceType: ['album'],
+					sourceType: ['album','camera'],
 					success: function(res) {
 						_this.handleUploadFile(res.tempFilePaths, 0);
 					}

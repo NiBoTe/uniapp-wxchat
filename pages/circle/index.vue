@@ -84,7 +84,7 @@
 					<view class="left">
 						<text v-if="commentIndex !== index">说一下你的想法...</text>
 						<input v-else type="text" :cursor-spacing="20" v-model="content" placeholder="说一下你的想法..." focus
-							@confirm="confirmTap(item, index)" 	:hold-keyboard="holdKeyboard"  confirm-type="done" />
+							@confirm="confirmTap(item, index)" :hold-keyboard="holdKeyboard" confirm-type="done" />
 					</view>
 					<view class="right u-flex">
 						<image src="/static/public/applause.png" @click="sendExpression(index,0)"></image>
@@ -233,6 +233,7 @@
 			uni.$on('refreshList', (bool) => {
 				if(bool) {
 					this.current = 1;
+					this.list = [];
 					this.getList();
 				}
 			})

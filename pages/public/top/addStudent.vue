@@ -11,7 +11,7 @@
 				<view class="item u-flex u-row-between">
 					<view class="left">
 						<view class="left-title">
-							<text>*</text>
+							<!-- <text>*</text> -->
 							<text>学生照片</text>
 						</view>
 						<view class="left-subtitle">正面免冠证件照</view>
@@ -85,7 +85,7 @@
 				<view class="item u-flex u-row-between">
 					<view class="left">
 						<view class="left-title">
-							<text class="tips">*</text>
+							<text class="tips" v-if="isFaceDetect">*</text>
 							<text>身份证号码</text>
 						</view>
 					</view>
@@ -145,8 +145,7 @@
 		},
 		onLoad(options) {
 			if (options.isFaceDetect) {
-				this.isFaceDetect = options.isFaceDetect
-				console.log(this.isFaceDetect)
+				this.isFaceDetect = options.isFaceDetect == 'true'
 			}
 			if (options.item) {
 				let item = JSON.parse(options.item)

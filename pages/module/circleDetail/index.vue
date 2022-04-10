@@ -98,10 +98,10 @@
 
 
 
-		<view class="commit u-flex" v-if="isFocus">
+		<view class="commit u-flex" v-if="isFocus" :style="{bottom: keyboardheight + 'px'}">
 			<view class="left u-flex">
-				<textarea :fixed="true" auto-height :cursor-spacing="30" v-model="content" :placeholder="placeholder"
-					focus @confirm="confirmTap()" @blur="isFocus = false" />
+				<textarea :fixed="true" auto-height :fixed="true" :cursor-spacing="30" v-model="content" :placeholder="placeholder"
+					focus @confirm="confirmTap()" @blur="isFocus = false" :adjust-position="false" :hold-keyboard="true" @keyboardheightchange="keyboardheightChange" />
 			</view>
 			<view class="commit-btn u-flex" @click.stop="confirmTap()">
 				<image src="/static/public/commit.png"></image>
@@ -213,7 +213,8 @@
 				itemIndex: 0,
 				isFocus: false,
 				content: '',
-				replyId: 0
+				replyId: 0,
+				keyboardheight: 0,
 			};
 		},
 		onLoad(options) {
@@ -235,6 +236,10 @@
 				}).catch(err => {
 					console.log(err)
 				})
+			},
+			// 监听键盘
+			keyboardheightChange(e){
+				this.keyboardheight = e.detail.height
 			},
 			getComment() {
 				this.loadStatus = 'loading';
