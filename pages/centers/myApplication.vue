@@ -13,7 +13,8 @@
 				<text>考试信息</text>
 			</view>
 			<view class="line"></view>
-			<view class="tab" @click="navTo('/pages/public/top/testUpload?type=0')">
+			<view class="tab" @click="navTo('/pages/centers/achievement/scoreList?type=5')">
+				 <!-- @click="navTo('/pages/public/top/testUpload?type=0')" -->
 				<image :src="setSrc('myApplication/tab02.png')"></image>
 				<text>上传试卷</text>
 			</view>
@@ -69,7 +70,8 @@
 					</view>
 				</view>
 			</view>
-			<view class="item u-flex" @click="navTo('/pages/public/top/takeRecord')">
+			
+			<view class="item u-flex" @click="navTo('/pages/centers/achievement/scoreList?type=6')">
 				<view class="item-icon">
 					<image :src="setSrc('myApplication/item01.png')"></image>
 				</view>

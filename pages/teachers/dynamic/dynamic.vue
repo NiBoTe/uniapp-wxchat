@@ -253,18 +253,17 @@
 <style lang="scss" scoped>
 	.container {
 		width: 100vw;
+		height: 100vh;
 		overflow-x: hidden;
 		background-color: #F3F3F3;
 	}
 
 	.list-view {
-		padding-bottom: 160rpx;
+		height: 100vh;
 		position: relative;
-
 
 		.item-main {
 			.year {
-
 				text {
 					display: inline-block;
 					padding: 30rpx 0 0 36rpx;

@@ -124,9 +124,13 @@
 
 
 <style lang="scss" scoped>
-	.scroll-warper {
-		height: calc(100vh - 94rpx);
+	
+	.container{
+		height: 100vh;
 	}
+	// .scroll-warper {
+	// 	height: calc(100vh - 94rpx);
+	// }
 
-	.item {}
+	// .item {}
 </style>

@@ -218,6 +218,7 @@
 				addressName: '', // 收货地址名称
 				studioCode: '', // 机构编码
 				studioName: '', // 机构名称
+				isFaceDetect: false,
 			}
 		},
 		onLoad(options) {
@@ -270,8 +271,16 @@
 				}).then(res => {
 					console.log(res)
 					this.detail = res.data;
+					let examSubjectList = res.data.examSubjectList || []
+					examSubjectList.map(item => {
+						if(item.isFaceDetect) {
+							this.isFaceDetect = true
+						}
+					})
+					
 					this.examAddressList = this.$mHelper.segSort(this.detail.examAddressList, 'province')
 					console.log(this.examAddressList)
+					
 					this.loading = false;
 				}).catch(err => {
 					console.log(err)
@@ -354,7 +363,7 @@
 			// 添加考生
 			addStudentTap() {
 				uni.navigateTo({
-					url: '/pages/public/top/addStudent'
+					url: `/pages/public/top/addStudent?isFaceDetect=${this.isFaceDetect}`
 				})
 			},
 			// 编辑考生信息

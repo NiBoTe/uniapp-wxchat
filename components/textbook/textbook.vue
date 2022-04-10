@@ -123,9 +123,11 @@ import TextbookItemMy from '@/components/textbook/textbookItemMy.vue'
 
 
 <style lang="scss" scoped>
-	.scroll-warper {
-		height: calc(100vh - 94rpx);
+	
+	.container{
+		height: 100vh;
 	}
-
-	.item {}
+	.scroll-warper {
+		height: 100vh;
+	}
 </style>

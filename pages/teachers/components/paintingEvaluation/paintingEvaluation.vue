@@ -78,6 +78,7 @@
 				}
 			},
 			lower() {
+				console.log('=====')
 				this.loadStatus = 'loading';
 				this.addRandomData();
 			},
@@ -124,9 +125,14 @@
 
 
 <style lang="scss" scoped>
+	.container{
+		height: 100vh;
+	}
 	.scroll-warper {
-		height: calc(100vh - 94rpx);
+		padding-bottom: 120rpx;
+		height: 100vh;
+		background-color: #F3F3F3;
 	}
 
-	.item {}
+	// .item {}
 </style>

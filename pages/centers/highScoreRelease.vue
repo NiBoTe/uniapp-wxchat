@@ -476,21 +476,23 @@
 									return _this.$mHelper.toast('最多只能上传9张图片')
 								}
 							}
+						}).catch(err => {
+							_this.$mHelper.toast(err);
 						});
 				}).catch(err => {
-					console.log(err)
+					_this.$mHelper.toast(err);
 				})
 			},
 			getTask(requestTask, handleRe) {
-				// requestTask.onProgressUpdate((res) => {
-				// 	if(res.progress < 100) {
-				// 		uni.showLoading({
-				// 			title: `上传进度${res.progress}%`
-				// 		})
-				// 	}else {
-				// 		uni.hideLoading()
-				// 	}
-				// });
+				requestTask.onProgressUpdate((res) => {
+					if (res.progress < 100) {
+						uni.showLoading({
+							title: `上传进度${res.progress}%`
+						})
+					} else {
+						uni.hideLoading()
+					}
+				});
 			},
 			// 删除
 			deleteTap(index) {
@@ -562,7 +564,7 @@
 					})
 				} else {
 					this.$http.post(myAddTeachingMaterial, params).then(res => {
-						if(res.data.auditStatus === 1) {
+						if (res.data.auditStatus === 1) {
 							this.$mHelper.toast('发布成功')
 						} else {
 							this.$mHelper.toast('提交成功，请等待审核，审核通过后会显示')

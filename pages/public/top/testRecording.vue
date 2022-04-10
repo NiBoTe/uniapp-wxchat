@@ -1,14 +1,17 @@
 <template>
 	<view class="top">
 		<view>
-			<camera :device-position="devicePosition" resolution="low" 	frame-size="small" flash="off" @error="error" class="camera"></camera>
-
+			<camera v-if="!isStop" :device-position="devicePosition" resolution="low" frame-size="small" flash="off"
+				@error="error" class="camera"></camera>
+			<view class="temp">
+				<image :src="tempThumbPath"></image>
+			</view>
 			<view class="content">
 				<view class="header" :style="{paddingTop: StatusBar + 'px'}">
 					<view class="header-switch" @click="devicePositionTap" v-if="!isBegin">
 						<image src="/static/public/switch_camera.png"></image>
 					</view>
-					
+
 					<view class="header-switch" v-else></view>
 					<view class="header-btn u-flex u-row-center" @click="questionTap">
 						<text v-if="!isQuestions">查看考题</text>
@@ -124,7 +127,9 @@
 				examId: null,
 				examName: '',
 				examQuestion: {},
-				type: 0
+				type: 0,
+				isStop: false,
+				tempThumbPath: ''
 			};
 		},
 		onLoad(options) {
@@ -152,6 +157,7 @@
 					this.isBegin = true
 					this.settingTimer();
 					const ctx = wx.createCameraContext()
+					_this.isStop = false;
 					ctx.startRecord({
 						timeout: 10000,
 						success(e) {
@@ -188,6 +194,8 @@
 					ctx.stopRecord({
 						compressed: true,
 						success(e) {
+							_this.isStop = true;
+							_this.tempThumbPath = e.tempThumbPath;
 							_this.enterClick(e.tempVideoPath)
 						}
 					})
@@ -215,26 +223,27 @@
 								OSSAccessKeyId: data.accessid,
 								signature: data.signature,
 							},
-							getTask:this.getTask
-						})
-						.then(r => {
+							getTask: this.getTask
+						}).then(r => {
 							_this.$mHelper.toast('上传成功')
 							_this.recordVideoUpload(r)
+						}).catch(err => {
+							_this.$mHelper.toast(err);
 						});
 				}).catch(err => {
-					console.log(err)
+					_this.$mHelper.toast(err);
 				})
 			},
 			getTask(requestTask, handleRe) {
-				// requestTask.onProgressUpdate((res) => {
-				// 	if(res.progress < 100) {
-				// 		uni.showLoading({
-				// 			title: `上传进度${res.progress}%`
-				// 		})
-				// 	}else {
-				// 		uni.hideLoading()
-				// 	}
-				// });
+				requestTask.onProgressUpdate((res) => {
+					if (res.progress < 100) {
+						uni.showLoading({
+							title: `上传进度${res.progress}%`
+						})
+					} else {
+						uni.hideLoading()
+					}
+				});
 			},
 			recordVideoUpload(url) {
 				this.$http.post(recordVideoSave, {
@@ -263,6 +272,16 @@
 		.camera {
 			width: 100%;
 			height: 100vh;
+		}
+
+		.temp {
+			width: 100%;
+			height: 100vh;
+
+			image {
+				width: 100%;
+				height: 100%;
+			}
 		}
 
 		.content {

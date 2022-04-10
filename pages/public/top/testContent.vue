@@ -40,16 +40,16 @@
 		</scroll-view>
 
 		<view class="footer u-flex u-row-center" v-if="type !== 2">
-			<view class="u-flex u-row-center" style="flex: 1;" v-if="!isHours" >
+			<view class="u-flex u-row-center" style="flex: 1;" v-if="!isHours">
 				<view class="footer-btn disabled" v-if="!isStart">考试时间未到</view>
-				<view class="footer-btn" v-if="isStart && examDetail.isRecordVideo && recordVideoCount <= 0" style="margin-right: 24rpx;"
-					@click="submitTap">录制作画步骤</view>
+				<view class="footer-btn" v-if="isStart && examDetail.isRecordVideo && recordVideoCount <= 0"
+					style="margin-right: 24rpx;" @click="submitTap">录制作画步骤</view>
 				<view class="footer-btn" v-if="isStart" :class="!isUpload ? 'disabled' : '' " @click="uploadTap">
 					{{!examDetail.isRecordVideo ? '请点击上传试卷图片' : '上传试卷图片'}}
 				</view>
 			</view>
 			<view class="u-flex u-row-center" style="flex: 1;" v-else>
-				<view class="footer-btn":class="isHours ? 'disabled' : '' ">该科目考试已经结束</view>
+				<view class="footer-btn" :class="isHours ? 'disabled' : '' ">该科目考试已经结束</view>
 			</view>
 		</view>
 
@@ -127,8 +127,10 @@
 				}).then(res => {
 					this.examDetail = res.data
 					this.loading = false;
+
 					if (moment(`${this.examDetail.examStartTime} ${this.examSubjectItem.subjectStarttime}`).diff(
-							moment(), 'seconds') > 0) {
+							moment().add(this.examSubjectItem.seenQuestionBeforeMinute, "minutes"), 'seconds'
+						) > 0) {
 						this.isBegin = true;
 						this.setTimer();
 					} else {
@@ -143,7 +145,8 @@
 			setTimer() {
 				this.timer = setInterval(() => {
 					if (moment(`${this.examDetail.examStartTime} ${this.examSubjectItem.subjectStarttime}`).diff(
-							moment(), 'seconds') > 0) {
+							moment().add(this.examSubjectItem.seenQuestionBeforeMinute, "minutes"), 'seconds'
+						) > 0) {
 						this.isBegin = true;
 					} else {
 						this.isBegin = false;
@@ -152,10 +155,11 @@
 					}
 				}, 1000)
 			},
-			
+
 			// 是否可以开始考试
 			isStartExam() {
-				let start= moment(`${this.examSubjectItem.subjectDate} ${this.examSubjectItem.subjectStarttime}`).subtract(this.examSubjectItem.seenQuestionBeforeMinute, 'm').format('YYYY-MM-DD HH:mm:ss')
+				let start = moment(`${this.examSubjectItem.subjectDate} ${this.examSubjectItem.subjectStarttime}`)
+					.subtract(this.examSubjectItem.seenQuestionBeforeMinute, 'm').format('YYYY-MM-DD HH:mm:ss')
 				// let end = `${this.examSubjectItem.subjectDate} ${this.examSubjectItem.subjectEndtime}`
 				let end = moment().format('YYYY-MM-DD HH:mm:ss')
 				return moment().diff(moment(start)) > 0
@@ -173,7 +177,7 @@
 			},
 			// 上传试卷图片
 			uploadTap() {
-				if(this.isUpload){
+				if (this.isUpload) {
 					uni.navigateTo({
 						url: `/pages/public/top/testUpload?id=${this.examId}&examSubjectItem=${JSON.stringify(this.examSubjectItem)}&type=${this.type}`
 					})
@@ -181,7 +185,8 @@
 			},
 			// 一个小时后
 			diffHours() {
-				if (moment(`${this.examSubjectItem.subjectDate} ${this.examSubjectItem.subjectEndtime}`).add(1, "hours").diff(moment(), 'seconds') > 0) {
+				if (moment(`${this.examSubjectItem.subjectDate} ${this.examSubjectItem.subjectEndtime}`).add(1, "hours")
+					.diff(moment(), 'seconds') > 0) {
 					return false
 				}
 				return true

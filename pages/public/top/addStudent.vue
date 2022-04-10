@@ -85,7 +85,7 @@
 				<view class="item u-flex u-row-between">
 					<view class="left">
 						<view class="left-title">
-							<!-- <text class="tips">*</text> -->
+							<text class="tips">*</text>
 							<text>身份证号码</text>
 						</view>
 					</view>
@@ -104,7 +104,8 @@
 			<view class="footer-btn" @click="submitTap">添加</view>
 		</view>
 
-		<u-picker mode="selector" v-model="provinceShow" :range="provinceList" range-key="name" @confirm="provinceTap"></u-picker>
+		<u-picker mode="selector" v-model="provinceShow" :range="provinceList" range-key="name" @confirm="provinceTap">
+		</u-picker>
 	</view>
 </template>
 
@@ -139,18 +140,24 @@
 						value: '男'
 					}
 				],
+				isFaceDetect: false,
 			};
 		},
 		onLoad(options) {
-			if(options.item){
+			if (options.isFaceDetect) {
+				this.isFaceDetect = options.isFaceDetect
+				console.log(this.isFaceDetect)
+			}
+			if (options.item) {
 				let item = JSON.parse(options.item)
+
 				this.name = item.name;
 				this.province = item.province;
 				this.identification = item.identification;
 				this.mobile = item.mobile;
 				this.url = item.url;
 				this.sex = item.gender;
-				
+
 				this.index = options.index
 			}
 			this.getAreaList()
@@ -163,21 +170,32 @@
 				})
 			},
 			submitTap() {
-				if(this.name === ''){
+				if (this.name === '') {
 					return this.$mHelper.toast('请输入考生姓名')
 				}
-				
-				if(this.mobile !== ''){
-					if(!this.$mHelper.checkMobile(this.mobile)) {
+
+				if (this.mobile !== '') {
+					if (!this.$mHelper.checkMobile(this.mobile)) {
 						return this.$mHelper.toast('请输入正确的手机号码')
 					}
 				}
-				if(this.identification !== ''){
-					if(!this.$mHelper.checkIdCard(this.identification)) {
+
+				if (this.isFaceDetect) {
+					if (this.identification === '') {
+						return this.$mHelper.toast('请输入身份证号码')
+					}
+					if (!this.$mHelper.checkIdCard(this.identification)) {
 						return this.$mHelper.toast('请输入正确的身份证号码')
 					}
+					
+				} else {
+					if (this.identification !== '') {
+						if (!this.$mHelper.checkIdCard(this.identification)) {
+							return this.$mHelper.toast('请输入正确的身份证号码')
+						}
+					}
 				}
-				console.log(this.sex)
+
 				uni.$emit('examineeInfoChange', {
 					params: {
 						gender: this.sex,
@@ -189,7 +207,7 @@
 					},
 					index: this.index
 				})
-				
+
 				this.$mRouter.back();
 			},
 			radioGroupChange(e) {
@@ -237,12 +255,12 @@
 				})
 			},
 			// 选择省份
-			provinceTap(e){
+			provinceTap(e) {
 				console.log(e)
 				this.province = this.provinceList[e].name
 			}
 		},
-		
+
 	}
 </script>
 

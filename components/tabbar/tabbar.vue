@@ -3,7 +3,7 @@
 		<view v-for="(item,index) in list" :key="index" class="tab-bar-item" @click="switchTab(item, index)">
 			<!-- <image class="tab-center" v-if="index === 2" src="/static/public/center.png"></image> -->
 			<image class="tab-center" v-if="index === 2" :src="item.defaultIcon"></image>
-			<view class="tab_text" v-else :style="{color: selected === index ? selectedColor : color}">{{item.name}}
+			<view class="tab_text" v-else :style="{color: selected === index ? selectedColor : color}">{{item.name || ''}}
 			</view>
 		</view>
 

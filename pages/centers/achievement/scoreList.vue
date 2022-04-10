@@ -1,7 +1,7 @@
 <template>
 	<view class="scoreList">
 		<view class="navbar">
-			<u-navbar title="考试名称" back-icon-color="#ffffff" :background="background" :border-bottom="false"
+			<u-navbar title="考试列表名称" back-icon-color="#ffffff" :background="background" :border-bottom="false"
 				title-color="#ffffff">
 			</u-navbar>
 		</view>
@@ -90,6 +90,16 @@
 					case 4:
 						uni.navigateTo({
 							url: `/pages/centers/achievement/studentList?id=${item.id}&type=${this.type}`
+						})
+						break;
+					case 5:
+						uni.navigateTo({
+							url: `/pages/public/top/testUpload?id=${item.id}`
+						})
+						break;
+					case 6:
+						uni.navigateTo({
+							url: `/pages/public/top/takeRecord?id=${item.id}`
 						})
 						break;
 					default:
