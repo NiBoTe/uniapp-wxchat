@@ -137,6 +137,7 @@
 				this.examSubjectItem = JSON.parse(options.examSubjectItem);
 				this.examId = options.examId;
 				this.type = Number(options.type) || 0;
+				
 				this.initData()
 			}
 		},
@@ -165,6 +166,9 @@
 							console.log(e)
 						},
 						complete(e){
+							uni.setKeepScreenOn({
+								keepScreenOn:true
+							})
 							console.log('开始录制回调========')
 							console.log(e)
 						}
@@ -198,7 +202,7 @@
 					_this.isStop = true;
 					const ctx = wx.createCameraContext()
 					ctx.stopRecord({
-						compressed: true,
+						// compressed: true,
 						success(e) {
 							_this.tempThumbPath = e.tempThumbPath;
 							_this.enterClick(e.tempVideoPath)
@@ -268,12 +272,18 @@
 					this.isEnd = true
 					this.showCancelButton = false
 					this.$refs.uModal.clearLoading();
+					uni.setKeepScreenOn({
+						keepScreenOn:false
+					})
 				}).catch(err => {
 					this.$mHelper.toast(err.msg)
 				})
 			},
 		},
 		onUnload() {
+			uni.setKeepScreenOn({
+				keepScreenOn:false
+			})
 			if (this.timer) clearInterval(this.timer)
 		}
 	}

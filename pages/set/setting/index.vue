@@ -195,8 +195,10 @@
 							let pages = getCurrentPages() // 获取页面栈
 							let prePage = pages[pages.length - 2] //获取上一页
 							prePage.$vm.needRefresh = true // 需要刷新
-							_this.$mRouter.back();
-							
+							// _this.$mRouter.back();
+							uni.reLaunch({
+								url:'/pages/index/index'
+							})
 							uni.$emit('isRefresh', true)
 							// uni.redirectTo({
 							// 	url: '/pages/public/logintype'

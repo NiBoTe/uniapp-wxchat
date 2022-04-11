@@ -40,7 +40,8 @@
 					<image :src="filterItem('2')['imgUrl']"></image>
 					<text>{{filterItem('2')['name']}}</text>
 				</view>
-				<view class="menus-item" @click="navTo('/pages/public/historyExQuestions/historyExQuestions', '3')" v-if="filterItem('3')">
+				<view class="menus-item" @click="navTo('/pages/public/historyExQuestions/historyExQuestions', '3')"
+					v-if="filterItem('3')">
 					<!-- <image src="/static/public/home_tab03.png"></image> -->
 					<image :src="filterItem('3')['imgUrl']"></image>
 					<text>{{filterItem('3')['name']}}</text>
@@ -78,7 +79,8 @@
 									</swiper-item>
 								</swiper>
 							</view>
-							<view class="left-item" @click="testTap(1)" style="position: relative;z-index: 10;" v-if="filterItem('7')">
+							<view class="left-item" @click="testTap(1)" style="position: relative;z-index: 10;"
+								v-if="filterItem('7')">
 								<view class="left-item-label u-flex">
 									<image src="/static/public/home_nottested_style.png"></image>
 									<!-- <text>我的未考</text> -->
@@ -281,7 +283,7 @@
 				teachersIndex: 0,
 				hotList: [], // 热门评画
 				hotIndex: 0,
-				isScreen: true,
+				isScreen: uni.getStorageSync('isScreen') === '',
 				modalShow: false,
 				cancelText: "暂不使用",
 				confirmText: "同意",
@@ -294,8 +296,10 @@
 			}
 		},
 		onLoad() {
+
 			setTimeout(() => {
 				this.isScreen = false;
+				uni.setStorageSync('isScreen', true);
 			}, 2000)
 			this.initData();
 			this.getMaterialList();
@@ -365,7 +369,7 @@
 				})
 			},
 			navTo(route, id) {
-				if(id){
+				if (id) {
 					this.$http.post(functionPlusViewCount, null, {
 						params: {
 							id
@@ -529,6 +533,12 @@
 			this.getMaterialList();
 			this.getTeacherList();
 			this.getHotList();
+		},
+		onShareAppMessage(e) {
+		
+		},
+		onShareTimeline(e) {
+		
 		}
 	}
 </script>

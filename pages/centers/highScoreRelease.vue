@@ -438,7 +438,7 @@
 					count: _this.type === 'image' && _this.imgsList.length >= 1 ? (9 - _this.imgsList.length) : 1,
 					mediaType: _this.type === 'video' && _this.cover === '' ? ['image'] : _this.mediaType,
 					sourceType: ['album', 'camera'],
-					sizeType: ['original', 'compressed'],
+					sizeType: ['original'],
 					maxDuration: 60,
 					success: function(res) {
 						_this.handleUploadFile(res.tempFiles, 0, res.type);

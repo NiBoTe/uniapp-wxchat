@@ -18,7 +18,7 @@
 		</view>
 		<view class="list-view">
 			<view class="item" v-for="(item,index) in list" :key="index" @click="goDetail(item, index)">
-				<view class="item-top">
+				<view class="item-top" @click.stop="">
 					<view class="userInfo">
 						<view class="logo">
 							<u-avatar size="80" :src="item.user.headUrl"></u-avatar>
@@ -38,7 +38,7 @@
 					</expandable-text>
 				</view>
 				<!-- 照片 -->
-				<view class="thumbnails">
+				<view class="thumbnails" @click.stop="">
 					<view :class="item.snsImgs.length === 1?'my-gallery':'thumbnail'"
 						v-for="(image, index_images) in item.snsImgs" :key="index_images">
 						<image class="gallery_img" lazy-load mode="aspectFill" :src="image.thumbImg"
@@ -225,11 +225,12 @@
 			};
 		},
 		onLoad() {
-			this.hasLogin = this.$mStore.getters.hasLogin
 			this.current = 1;
+			this.list = []
 			this.getList();
 		},
 		onShow() {
+			this.hasLogin = this.$mStore.getters.hasLogin
 			uni.$on('refreshList', (bool) => {
 				if(bool) {
 					this.current = 1;
@@ -243,6 +244,7 @@
 			tabChange(e) {
 				this.tabCurrent = e;
 				this.current = 1;
+				this.list = [];
 				this.getList()
 			},
 			// 收藏

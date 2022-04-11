@@ -158,8 +158,8 @@
 					<text>说一下你的想法…</text>
 				</view>
 				<view class="left u-flex" v-else>
-					<input type="text" :cursor-spacing="20" v-model="content" placeholder="说一下你的想法…" focus
-						@confirm="confirmCommentTap()" :hold-keyboard="holdKeyboard" @blur="isFocus = false"  confirm-type="done" @keyboardheightchange="keyboardheightChange" />
+					<input type="text" :cursor-spacing="20" v-model="content" placeholder="说一下你的想法…" :focus="isFocus"
+						@confirm="confirmCommentTap()" :hold-keyboard="holdKeyboard" confirm-type="done" @keyboardheightchange="keyboardheightChange" />
 				</view>
 
 				<view class="right u-flex">
@@ -219,7 +219,7 @@ import { orderItemPaintEvaluateTeacherDetail } from '@/api/paint_evaluate_v2_tea
 				loadStatus: 'loadmore',
 				isFocus: false,
 				content: '',
-				holdKeyboard: false,
+				holdKeyboard: true,
 				replyId: 0,
 				total: 0,
 				current: 1,
@@ -411,7 +411,6 @@ import { orderItemPaintEvaluateTeacherDetail } from '@/api/paint_evaluate_v2_tea
 			},
 			// 评论
 			commentTap() {
-				this.holdKeyboard = true;
 				this.isFocus = true
 				this.replyId = 0;
 			},
@@ -433,7 +432,6 @@ import { orderItemPaintEvaluateTeacherDetail } from '@/api/paint_evaluate_v2_tea
 					content: this.content,
 					targetId: this.id
 				}).then(res => {
-					this.holdKeyboard = false;
 					let data = res.data;
 					if(data.auditStatus === 1) {
 						this.$mHelper.toast('评论成功')
@@ -451,6 +449,10 @@ import { orderItemPaintEvaluateTeacherDetail } from '@/api/paint_evaluate_v2_tea
 			},
 			keyboardheightChange(e){
 				console.log(e)
+				console.log('e=============')
+				// if(e.detail.height <= 0){
+				// 	this.isFocus = false;
+				// }
 			}
 		},
 		onReachBottom() {
@@ -742,6 +744,11 @@ import { orderItemPaintEvaluateTeacherDetail } from '@/api/paint_evaluate_v2_tea
 				font-size: 26rpx;
 				font-weight: 500;
 				color: #959595;
+				input {
+					font-size: 24rpx;
+					font-weight: 500;
+					color: #3A3D71;
+				}
 			}
 
 			.right {

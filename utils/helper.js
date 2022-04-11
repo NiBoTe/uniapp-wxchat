@@ -234,23 +234,16 @@ export default {
 			segs[item] = [];
 		})
 		arr.forEach(item => {
-			// 取姓氏并返回姓氏的拼音首字母
 			let a = PY.ConvertPinyin(item[keyName]).substr(0, 1);
-			console.log(a)
-			// 在A-z之中写入对应字母的对象数组中，否则传入*对象数组里
 			let rep = new RegExp(/[A-z]/)
 			rep.test(a) ? segs[a.toLocaleUpperCase()].push(item) : segs['*'].push(item)
-
 		})
-		// 循环segs对象，转换为indexList组件需要的格式
 		for (const [key, value] of Object.entries(segs)) {
 			value.length && indexedList.push({
 				letter: key,
 				data: value
 			})
 		}
-
-		console.log(indexedList)
 		indexedList.forEach(item => {
 			if (item.data.length > 1) {
 				// 这里是给相同拼音首字母进行排序
@@ -320,14 +313,10 @@ export default {
 		let iq = 0
 		//死循环
 		while (bgn != -1 && end != -1) {
-
-			console.log('=====')
 			iq += 1;
 			//不存在跳出
 			if (bgn == -1 || end == -1) {
-				console.log(message)
 				msg += message
-
 				break;
 			}
 			//防止死循环

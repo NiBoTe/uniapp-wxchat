@@ -43,8 +43,7 @@
 								<text>身份证号：{{item.identification || '—'}}</text>
 								<text>准考证号：{{item.admissionTicketCode || ''}}</text>
 							</view>
-
-							<view class="right u-flex u-row-center" v-if="item.uploadState=== 'not_uploaded'">去上传</view>
+							<view class="right u-flex u-row-center" :class="!timeInByDate(item) && item.faceDetectState !== 1 ? 'disabled' : ''" v-if="item.uploadState=== 'not_uploaded'">去上传</view>
 						</view>
 					</view>
 				</view>
@@ -59,7 +58,8 @@
 	import {
 		examDetail,
 		examPaperList,
-		getSubjectNameList
+		getSubjectNameList,
+		searchByAdmissionTicketCode
 	} from '@/api/exam.js'
 	export default {
 		data() {
@@ -120,7 +120,7 @@
 								subjectName: item
 							})
 						})
-						
+
 						this.tabList = list;
 						this.examSubjectItem = list[0]
 						this.getList();
@@ -162,6 +162,7 @@
 			},
 			// 状态
 			tabDrawChange(e) {
+				console.log(e)
 				this.statusIndex = e.index
 				this.current == 1;
 				this.getList();
@@ -177,11 +178,34 @@
 			// 查看详情
 			detailTap(item, index) {
 
-				console.log(item)
-				uni.navigateTo({
-					url: `/pages/public/top/testUpload?id=${this.id}&type=${this.type}&code=${item.admissionTicketCode}&uploadState=${item.uploadState}&course=${item.course}`
-				})
-			}
+				if (item.uploadState !== 'uploaded') {
+					this.$http.post(searchByAdmissionTicketCode, {
+						admissionTicketCode: item.admissionTicketCode,
+						course: item.course
+					}).then(res => {
+						let detail = res.data[0];
+						if (!this.$mHelper.timeInByDate(detail.uploadPaperStarttime, detail.uploadPaperEndtime)) {
+							return this.$mHelper.toast('试卷上传时间已过')
+						}
+						
+						if (detail.faceDetectState !== 1) {
+							return this.$mHelper.toast('人脸认证未通过')
+						}
+						uni.navigateTo({
+							url: `/pages/public/top/testUpload?id=${this.id}&type=${this.type}&code=${item.admissionTicketCode}&uploadState=${item.uploadState}&course=${item.course}&statusIndex=${this.statusIndex}&img=${item.img}`
+						})
+					}).catch(err => {
+						this.$mHelper.toast(err.msg)
+					})
+				} else {
+					uni.navigateTo({
+						url: `/pages/public/top/testUpload?id=${this.id}&type=${this.type}&code=${item.admissionTicketCode}&uploadState=${item.uploadState}&course=${item.course}&statusIndex=${this.statusIndex}&img=${item.img}`
+					})
+				}
+			},
+			timeInByDate(item){
+				return this.$mHelper.timeInByDate(item.uploadPaperStarttime, item.uploadPaperEndtime)
+			},
 		}
 	}
 </script>
@@ -297,6 +321,10 @@
 							font-size: 26rpx;
 							font-weight: 500;
 							color: $u-type-primary;
+							&.disabled {
+								background: #F2F2F2;
+								color: #9E9E9E;
+							}
 						}
 					}
 				}

@@ -1,6 +1,7 @@
 <template>
 	<view class="container">
-		<view class="list-view">
+
+		<scroll-view scroll-y="true" class="list-view" @scrolltolower="lower">
 			<view class="item" v-for="(item,index) in list" :key="index" @click="goDetail(item, index)">
 				<view class="item-top">
 					<view class="userInfo">
@@ -16,7 +17,11 @@
 						<image src="/static/public/dynamic_menu.png"></image>
 					</view>
 				</view>
-				<view class="paragraph">{{item.content}}</view>
+				<view class="paragraph">
+					<expandable-text :line="3" expandText="全文" foldText="收起">
+						{{item.content}}
+					</expandable-text>
+				</view>
 				<!-- 照片 -->
 				<view class="thumbnails">
 					<view :class="item.snsImgs.length === 1?'my-gallery':'thumbnail'"
@@ -64,7 +69,7 @@
 					<view class="left">
 						<text v-if="commentIndex !== index">说一下你的想法...</text>
 						<input v-else type="text" :cursor-spacing="20" v-model="content" placeholder="说一下你的想法..." focus
-							@confirm="confirmTap(item, index)"  confirm-type="done" />
+							@confirm="confirmTap(item, index)" confirm-type="done" />
 					</view>
 					<view class="right u-flex">
 						<image src="/static/public/applause.png" @click="sendExpression(index,0)"></image>
@@ -73,10 +78,9 @@
 					</view>
 				</view>
 			</view>
-
 			<nodata v-if="!loadStatus !== 'loading' && !list.length"></nodata>
 			<u-loadmore v-else margin-top="30" margin-bottom="30" :status="loadStatus" @loadmore="addData"></u-loadmore>
-		</view>
+		</scroll-view>
 
 		<bubblePopups ref="bubblePopups" v-model="popShow" :popData="popData" :isTwoline="true" @tapPopup="tapPopup"
 			:x="344" :y="positionY" placement="top-end">
@@ -290,7 +294,7 @@
 					targetId: item.id
 				}).then(res => {
 					let data = res.data;
-					if(data.auditStatus === 1) {
+					if (data.auditStatus === 1) {
 						this.$mHelper.toast('评论成功')
 					} else {
 						this.$mHelper.toast('提交成功，请等待审核，审核通过后显示')
@@ -320,13 +324,16 @@
 			},
 			refresh(keyword) {
 				this.keyword = keyword;
-				if(this.keyword && this.keyword !== null && this.keyword !== '') {
+				if (this.keyword && this.keyword !== null && this.keyword !== '') {
 					this.current = 1;
 					this.list = []
 					this.getList()
 				}
-			}
-
+			},
+			lower() {
+				this.loadStatus = 'loading';
+				this.addData();
+			},
 		},
 
 		onPageScroll(e) {
@@ -344,12 +351,13 @@
 		width: 100vw;
 		overflow-x: hidden;
 		background-color: #fff;
+		height: calc(100vh - 120rpx);
 	}
 
 	.list-view {
-		padding-bottom: 160rpx;
+		height: 100%;
+		padding-bottom: 200rpx;
 		position: relative;
-
 		.item {
 			background-color: #fff;
 			display: flex;
@@ -406,14 +414,7 @@
 				width: 100%;
 				margin-top: 12rpx;
 				margin-bottom: 24rpx;
-				font-size: 26rpx;
-				font-family: PingFangSC-Regular, PingFang SC;
-				font-weight: 400;
-				color: #3A3D71;
-				line-height: 23px;
-				word-break: break-all;
 			}
-
 
 			.thumbnails {
 				width: 100%;

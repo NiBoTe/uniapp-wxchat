@@ -209,13 +209,13 @@
 							} else {
 								strokes.push({
 									type: 2,
-									imageData: filtered,
+									imageData: imageData,
 								})
 							}
 						} else {
 							strokes.push({
 								type: 2,
-								imageData: filtered,
+								imageData: imageData,
 							})
 						}
 
@@ -309,49 +309,9 @@
 										})
 									})
 								})
-
-
 								uni.hideLoading();
 							})
-
 						}).exec();
-
-						// if (image.width >= image.height) {
-						// 	//初始化canvas尺寸
-						// 	this.canvas.width = image.width > transverse_canvas_width ?
-						// 		transverse_canvas_width : image.width
-						// 	this.canvas.height = parseInt(this.canvas.width * image.height / image.width);
-						// 	this.canvas.origin_height = this.canvas.height
-						// 	this.canvas.origin_width = this.canvas.width
-
-						// 	//初始化预览图尺寸
-						// 	this.render_image.width = this.render_image.max_width;
-						// 	this.render_image.height = parseInt(this.render_image.width * image.height / image
-						// 		.width);
-
-						// } else {
-						// 	//初始化canvas尺寸
-						// 	this.canvas.height = image.height > lengthways_canvas_height ?
-						// 		lengthways_canvas_height : image.height
-						// 	this.canvas.width = parseInt(this.canvas.height * image.width / image.height);
-						// 	this.canvas.origin_width = this.canvas.width;
-						// 	this.canvas.origin_height = this.canvas.height
-
-						// 	//初始化预览图尺寸
-						// 	this.render_image.width = this.render_image.max_width
-						// 	this.render_image.height = parseInt(this.render_image.width * image.height / image
-						// 		.width);
-						// 	if (this.render_image.height > this.render_image.max_height) {
-						// 		this.render_image.height = this.render_image.max_height
-						// 		this.render_image.width = parseInt(this.render_image.height * image.width /
-						// 			image.height);
-						// 	}
-						// }
-
-
-
-						// this.ctx.drawImage(this.src, 0, 0, this.px_width, this.px_height);
-						// this.ctx.draw();
 					},
 					fail: (e) => {
 						console.log(e);

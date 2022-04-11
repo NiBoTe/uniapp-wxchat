@@ -6,6 +6,7 @@
 
 import jsonBig from 'json-bigint'
 import $mRouter from '@/utils/router';
+import store from '@/store';
 export default class Request {
 	config = {
 		baseUrl: '',
@@ -175,21 +176,28 @@ export default class Request {
 				// #ifdef APP-PLUS
 				sslVerify: _config.sslVerify,
 				// #endif
-				complete: response => {
+				complete: async response => {
 					if (this.validateStatus(response.statusCode)) {
 						const data = JSON.parse(response.data)
 						if (this.validateStatus(data.code)) {
 							// 成功
 							resolve(data);
 						} else {
-							console.log(data.code)
 							if (data.code === 401) {
 								if(_config.url.indexOf('checkToken') === -1){
-									uni.navigateTo({
-										url: '/pages/public/logintype'
-									})
+									if(_config.header['APP_TOKEN']) {
+										uni.removeStorageSync('accessToken');
+										await store.commit('logout');
+										uni.reLaunch({
+											url:'/pages/index/index'
+										})
+									} else {
+										uni.navigateTo({
+											url: '/pages/public/logintype'
+										})
+									}
+									
 								}
-								
 							}
 							reject(data);
 						}

@@ -462,8 +462,9 @@
 								this.$mHelper.toast('请先购买该教材')
 							}
 						} else {
+							console.log(this.detail.items)
 							uni.navigateTo({
-								url: `/pages/public/highScore/imageFilter?url=${this.detail.items[this.activeIndex].url}`
+								url: `/pages/public/highScore/imageFilter?url=${this.detail.items[this.activeIndex].url || this.detail.items[this.activeIndex].hdImg}`
 							})
 						}
 						

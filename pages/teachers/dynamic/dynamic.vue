@@ -120,8 +120,8 @@
 		methods: {
 			scrollTap(e){
 				if(e.detail.scrollTop <= 0) {
-					this.isFixed = false
-					this.$emit('unfixedTap', true)
+					// this.isFixed = false
+					// this.$emit('unfixedTap', true)
 				}
 			},
 			// 收藏

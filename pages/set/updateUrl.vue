@@ -73,7 +73,6 @@
 							}
 						})
 						.then(r => {
-							console.log(r)
 							uni.$emit('updateUrl', true)
 							_this.setUpdateBgUrl(r)
 						});
@@ -81,11 +80,11 @@
 					console.log(err)
 				})
 			},
-
 			setUpdateBgUrl(bgUrl) {
 				this.$http.post(updateBgUrl, {
 					bgUrl
 				}).then(res => {
+					this.$mRouter.back()
 					this.getMemberInfo()
 				})
 			},

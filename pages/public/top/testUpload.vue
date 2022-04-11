@@ -37,7 +37,7 @@
 						<view class="td">{{item.examName || ''}}</view>
 					</view>
 				</view>
-				<view v-if="!isEnter && Object.keys(item).length && item.faceDetectState === 1"
+				<view v-if="!isEnter && Object.keys(item).length && item.faceDetectState === 1 && timeInByDate(item)"
 					class="submit u-flex u-row-center" @click="enterTap(item)">确认</view>
 			</view>
 		</view>
@@ -74,7 +74,7 @@
 		<u-gap v-if="isEnter" height="16" bg-color="#F7F7F7"></u-gap>
 		<!-- 示例图 -->
 		<view class="examples" v-if="isEnter">
-			<view class="title">
+			<view class="title" v-if="tempFilePath === ''">
 				<image src="/static/public/image_icon.png"></image>
 				<text>示例图</text>
 			</view>
@@ -133,7 +133,8 @@
 				studentDetail: {},
 				isEnter: false,
 				tempFilePath: '',
-				uploadState: 'not_uploaded'
+				uploadState: 'not_uploaded',
+				statusIndex: 0,
 			};
 		},
 		onLoad(options) {
@@ -141,6 +142,9 @@
 				this.id = options.id;
 				this.type = options.type;
 				this.course = options.course;
+				this.statusIndex = options.statusIndex || 0;
+				
+				this.tempFilePath  = options.img || '';
 				if (options.code) this.code = options.code;
 				if (options.uploadState) this.uploadState = options.uploadState;
 				this.initData()
@@ -174,6 +178,9 @@
 			tabChange(e) {
 				this.examSubjectItem = e.item;
 			},
+			timeInByDate(item){
+				return this.$mHelper.timeInByDate(item.uploadPaperStarttime, item.uploadPaperEndtime)
+			},
 			// 搜索
 			searchTap() {
 				if (this.code === '' || this.code === null) {
@@ -187,6 +194,9 @@
 					if (this.examSubjectItem.subjectName) {
 						this.studentDetail = res.data ? res.data[0] : {};
 						this.id = this.studentDetail.examId;
+						if(this.statusIndex == 1) {
+							this.isEnter = true
+						}
 						// if (this.course && this.studentDetail.faceDetectState === 1) {
 						// 	this.isEnter = true;
 						// }
@@ -223,7 +233,6 @@
 			},
 			// 拍摄试卷
 			submitTap() {
-
 				const _this = this
 				uni.chooseImage({
 					count: 1, //默认9

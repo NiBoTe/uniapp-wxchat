@@ -47,7 +47,7 @@
 			<view class="footer-btn" @click="submitTap">立即购买</view>
 		</view>
 		
-		<view class="footer" v-else-if="!detail.isPayed && detail.price <= 0">
+		<view class="footer" v-else-if="!detail.isPayed && detail.price <= 0 && detail.isNeedExpress">
 			<view class="footer-btn" @click="submitTap">确认收货地址</view>
 		</view>
 		

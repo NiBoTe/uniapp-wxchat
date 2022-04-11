@@ -109,7 +109,7 @@
 					</view>
 					<view class="content-box">
 						<!-- 评画-内容 -->
-						<painting-evaluation ref="PaintingEvaluation" :teacherId="id" @unfixedTap="unfixedTap" source="home"></painting-evaluation>
+						<painting-evaluation ref="PaintingEvaluation" :teacherId="id" source="home"></painting-evaluation>
 					</view>
 				</view>
 				<!-- 高分教材 -->
@@ -122,13 +122,13 @@
 					</view>
 					<!-- 高分教材-评论类型 -->
 					<view class="content-box">
-						<Textbook ref="TextBook" :teacherId="id" type="user" @unfixedTap="unfixedTap"></Textbook>
+						<Textbook ref="TextBook" :teacherId="id" type="user"></Textbook>
 					</view>
 				</view>
 				<!-- 评论 -->
 				<view class="" v-show="current == 2">
 					<view class="content-box">
-						<dynamic ref="Dynamic" :teacherId="id" @unfixedTap="unfixedTap"></dynamic>
+						<dynamic ref="Dynamic" :teacherId="id"></dynamic>
 					</view>
 				</view>
 			</view>

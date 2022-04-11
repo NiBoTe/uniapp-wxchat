@@ -63,7 +63,7 @@
 				<view class="right">
 					<text>总费用：</text>
 					<text class="unit">¥</text>
-					<text class="price">{{orderDetail.price}}</text>
+					<text class="price">{{orderDetail.total * orderDetail.price}}</text>
 				</view>
 			</view>
 		</view>

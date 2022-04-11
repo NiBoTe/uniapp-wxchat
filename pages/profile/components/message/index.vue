@@ -105,22 +105,38 @@
 
 				switch (item.type) {
 					case 0:
-						
-						if(item.targetType === 9) {
+						if (item.targetType === 3) {
+							uni.navigateTo({
+								url: `/pages/set/order/textbookDetail?orderId=${item.targetId}`
+							})
+							return
+						}
+						if (item.targetType === 9) {
 							uni.navigateTo({
 								url: `/pages/centers/paintingEvaluation/detail?id=${item.targetId}&source=list&type=teacherInfo`
 							})
+							return
 						}
-						if(item.targetType === 10) {
+						if (item.targetType === 10) {
 							uni.navigateTo({
 								url: `/pages/centers/paintingEvaluation/teacherIndex?tabCurrent=1`
 							})
+
+							return
 						}
-						
-						if(item.targetType === 11) {
+
+						if (item.targetType === 11) {
 							uni.navigateTo({
 								url: `/pages/centers/paintingEvaluation/detail?id=${item.targetId}&source=list&type=default`
 							})
+							return
+						}
+						
+						if (item.targetType === 12) {
+							uni.navigateTo({
+								url: `/pages/centers/paintingEvaluation/detail?id=${item.targetId}&source=home&type=default`
+							})
+							return
 						}
 						break;
 
@@ -131,6 +147,45 @@
 						break;
 
 					case 2:
+						if (item.targetType === 5) {
+							if(item.extData.type === 'image') {
+								uni.navigateTo({
+									url: `/pages/public/highScore/teachingMaterialDetail?id=${item.targetId}`
+								})
+							} else {
+								uni.navigateTo({
+									url: `/pages/public/highScore/videoDetail?id=${item.targetId}`
+								})
+							}
+							return
+						}
+						if (item.targetType === 9) {
+							uni.navigateTo({
+								url: `/pages/centers/paintingEvaluation/detail?id=${item.targetId}&source=list&type=teacherInfo`
+							})
+							return
+						}
+						if (item.targetType === 10) {
+							uni.navigateTo({
+								url: `/pages/centers/paintingEvaluation/teacherIndex?tabCurrent=1`
+							})
+							return
+						}
+						
+
+						if (item.targetType === 11) {
+							uni.navigateTo({
+								url: `/pages/centers/paintingEvaluation/detail?id=${item.targetId}&source=list&type=default`
+							})
+							return
+						}
+						
+						if (item.targetType === 12) {
+							uni.navigateTo({
+								url: `/pages/centers/paintingEvaluation/detail?id=${item.targetId}&source=home&type=default`
+							})
+							return
+						}
 						uni.navigateTo({
 							url: `/pages/module/circleDetail/index?id=${item.targetId}`
 						})

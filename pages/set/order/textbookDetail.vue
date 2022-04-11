@@ -93,7 +93,7 @@
 				<view class="title">
 					<image src="/static/public/examinationPaper_icon.png" mode=""></image>作品描述
 				</view>
-				<view class="d-c">{{detail.items[activeIndex].description}}</view>
+				<view class="d-c">{{productDetail.description}}</view>
 			</view>
 
 

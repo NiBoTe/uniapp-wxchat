@@ -85,9 +85,9 @@
 
 					<view class="navbar" v-if="isFixed">
 						<u-navbar :title="title" :border-bottom="false" :is-back="false">
-							<view class="navbar-right" slot="right">
+							<!-- <view class="navbar-right" slot="right">
 								<image src="/static/public/user_setting.png"></image>
-							</view>
+							</view> -->
 						</u-navbar>
 					</view>
 					<view class="tabs">

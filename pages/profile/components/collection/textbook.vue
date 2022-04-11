@@ -95,11 +95,12 @@ import TextbookItem from './textbookItem.vue'
 <style lang="scss" scoped>
 	
 	.container{
-		padding-bottom: 200rpx;
+		height: 100vh;
 	}
 	.scroll-warper {
-		padding: 18rpx 24rpx;
-		height: calc(100vh - 94rpx);
+		padding: 18rpx 0;
+		height: 100%;
+		padding-bottom: 170rpx;
 	}
 	
 	.subtabs {

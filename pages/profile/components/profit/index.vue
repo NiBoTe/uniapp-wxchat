@@ -46,14 +46,20 @@
 						<view class="left-subtitle">{{item.createTime}}</view>
 					</view>
 
-					<view class="right">
+					<view class="right" v-if="item.type === 1">
 						<view class="right-item">
 							<text>实际发放</text>
-							<text class="price">-{{item.realMoney.toFixed(2)}}</text>
+							<text class="price">{{item.realMoney.toFixed(2)}}</text>
 						</view>
 						<view class="right-item">
 							<text>可提现金额</text>
-							<text class="price">-{{item.money.toFixed(2)}}</text>
+							<text class="price">{{item.money.toFixed(2)}}</text>
+						</view>
+					</view>
+					
+					<view class="right" v-else>
+						<view class="right-item">
+							<text class="price">+{{item.realMoney.toFixed(2)}}</text>
 						</view>
 					</view>
 				</view>

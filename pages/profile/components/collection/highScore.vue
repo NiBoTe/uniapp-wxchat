@@ -1,5 +1,5 @@
 <template>
-	<view class="top-score-list">
+	<view class="container">
 		<scroll-view :scroll-y="isFixed" class="scroll-warper" @scrolltolower="lower">
 			<view class="list">
 				<view class="item" v-for="(item, index) in list" :key="index" @click="detailTap(item, index)">
@@ -112,9 +112,10 @@
 	}
 </script>
 <style lang="scss">
-	.top-score-list {
+	.container {
+		height: 100vh;
 		.scroll-warper {
-			height: calc(100vh - 94rpx);
+			height: 100%;
 			padding-bottom: 170rpx;
 			.list {
 				padding: 28rpx;

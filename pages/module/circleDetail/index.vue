@@ -100,7 +100,7 @@
 
 		<view class="commit u-flex" v-if="isFocus" :style="{bottom: keyboardheight + 'px'}">
 			<view class="left u-flex">
-				<textarea :fixed="true" auto-height :fixed="true" :cursor-spacing="30" v-model="content" :placeholder="placeholder"
+				<textarea :fixed="true" auto-height :cursor-spacing="30" v-model="content" :placeholder="placeholder"
 					focus @confirm="confirmTap()" @blur="isFocus = false" :adjust-position="false" :hold-keyboard="true" @keyboardheightchange="keyboardheightChange" />
 			</view>
 			<view class="commit-btn u-flex" @click.stop="confirmTap()">
