@@ -181,7 +181,7 @@
     "mp-weixin" : {
         /* 小程序特有相关 */
         "usingComponents" : true,
-        "appid" : "wx7b53803568176c70",
+        "appid" : "xxx",
         // 这里添加微信小程序appid
         "setting" : {
             "urlCheck" : false,

@@ -395,7 +395,6 @@
 			},
 			// 下一步
 			async submitTap() {
-
 				uni.showLoading({
 					title: '正在生成图片'
 				})
